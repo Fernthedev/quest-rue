@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+message Il2CPPData {
+  string type = 1;
+  bytes data = 2;
+}
+
+message IL2CPPClass {
+  string namespace = 1;
+  string clazz = 2;
+  uint32 genericCount = 3;
+
+  IL2CPPClass parent = 4; /* nullable */
+
+  // TODO: Fields
+  // TODO: Methods
+  // TODO: Interfaces
+  // TODO: Primitive bool?
+}
+
+message InvokeMethod {
+  uint64 methodId = 1;
+  uint64 invokeUUID = 2;
+  repeated Il2CPPData args = 3;
+}
+
+message InvokeMethodResult {
+  enum Status {
+    OK = 0;
+    ERR = 1;
+    NOT_FOUND = 2;
+  }
+  Status status = 1;
+  uint64 methodId = 2;
+  uint64 invokeUUID = 3;
+  Il2CPPData result = 4;
+  string error = 5; /* nullable */
+}
+
+message SearchObjects {
+  uint64 queryId = 1;
+  string objectName = 2; /* nullable */
+  IL2CPPClass requiredComponent = 3; /* nullable */
+}
+
+message SearchObjectsResult {
+  uint64 queryId = 1;
+  // TODO: Make a GameObject type with all the data
+  repeated string foundObjects = 2;
+}
