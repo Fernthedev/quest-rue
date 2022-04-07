@@ -2,6 +2,7 @@ import { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
 import { Button, NextUIProvider } from '@nextui-org/react'
+import GameObjectCard from './components/GameObject'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -9,7 +10,12 @@ function App() {
   return (
 
     <div className="App">
-      <header className="App-header">
+      <div className="center" style={{
+        minHeight: '100vh',
+      }}>
+        <GameObjectCard />
+      </div>
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Hello Vite + React!</p>
         <p>
@@ -38,8 +44,9 @@ function App() {
           >
             Vite Docs
           </a>
+          <GameObjectCard />
         </p>
-      </header>
+      </header> */}
     </div>
 
   )
