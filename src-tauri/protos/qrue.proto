@@ -1,50 +1,118 @@
 syntax = "proto3";
 
-message Il2CPPData {
-  string type = 1;
-  bytes data = 2;
+// DATA TYPES
+message Il2CppClassInfo {
+    string namespaze = 1;
+    string clazz = 2;
 }
 
-message IL2CPPClass {
-  string namespace = 1;
-  string clazz = 2;
-  uint32 genericCount = 3;
-
-  IL2CPPClass parent = 4; /* nullable */
-
-  // TODO: Fields
-  // TODO: Methods
-  // TODO: Interfaces
-  // TODO: Primitive bool?
+message TypeInfo {
+    enum Type {
+        PRIMITIVE = 0;
+        STRUCT = 1;
+        CLASS = 2;
+    }
+    enum Primitive {
+        BOOLEAN = 0;
+        CHAR = 1;
+        INT = 2;
+        FLOAT = 3;
+        STRING = 4;
+    }
+    Type type = 1;
+    Primitive primitiveType = 2; /* nullable */
+    Il2CppClassInfo classInfo = 3; /* nullable */
 }
+
+message Il2CppFieldInfo {
+    string name = 1;
+    string id = 2;
+    Il2CppData type = 3;
+}
+
+message Il2CppPropertyInfo {
+    string name = 1;
+    string id = 2;
+    bool hasGet = 3;
+    bool hasSet = 4;
+    Il2CppData type = 5;
+}
+
+message Il2CppMethodInfo {
+    string name = 1;
+    uint64 id = 2;
+
+    repeated string argNames = 3;
+    repeated Il2CppData argTypes = 4;
+}
+
+message Il2CppType {
+    string namespaze = 1;
+    string clazz = 2;
+
+    repeated Il2CppClassInfo generics = 3; /* nullable */
+
+    Il2CppType parent = 4; /* nullable */
+
+    repeated Il2CppType interfaces = 5; /* nullable */
+
+    repeated Il2CppFieldInfo fields = 6;
+    repeated Il2CppPropertyInfo properties = 7;
+    repeated Il2CppMethodInfo methods = 8;
+}
+
+message Il2CppData {
+    enum Type {
+        PRIMITIVE = 0;
+        STRUCT = 1;
+        CLASS = 2;
+    }
+    Type type = 1;
+    Il2CppClassInfo typeInfo = 2; /* nullable */
+
+    bytes data = 3;
+}
+
+// COMMAND/QUERY PACKETS
 
 message InvokeMethod {
-  uint64 methodId = 1;
-  uint64 invokeUUID = 2;
-  repeated Il2CPPData args = 3;
+    uint64 methodId = 1;
+    uint64 invokeUUID = 2;
+    repeated Il2CppData args = 3;
 }
 
 message InvokeMethodResult {
-  enum Status {
-    OK = 0;
-    ERR = 1;
-    NOT_FOUND = 2;
-  }
-  Status status = 1;
-  uint64 methodId = 2;
-  uint64 invokeUUID = 3;
-  Il2CPPData result = 4;
-  string error = 5; /* nullable */
+    enum Status {
+        OK = 0;
+        ERR = 1;
+        NOT_FOUND = 2;
+    }
+    Status status = 1;
+    uint64 methodId = 2;
+    uint64 invokeUUID = 3;
+    Il2CppData result = 4;
+    string error = 5; /* nullable */
 }
 
 message SearchObjects {
-  uint64 queryId = 1;
-  string objectName = 2; /* nullable */
-  IL2CPPClass requiredComponent = 3; /* nullable */
+    uint64 queryId = 1;
+    string objectName = 2; /* nullable */
+    Il2CppClassInfo requiredComponent = 3; /* nullable */
 }
 
 message SearchObjectsResult {
-  uint64 queryId = 1;
-  // TODO: Make a GameObject type with all the data
-  repeated string foundObjects = 2;
+    uint64 queryId = 1;
+    // TODO: Make a GameObject type with all the data
+    repeated string foundObjects = 2;
+}
+
+// ???
+message LoadObject {
+    uint64 loadId = 1;
+    bytes pointer = 2;
+}
+
+message LoadObjectResult {
+    uint64 loadId = 1;
+    Il2CppType object = 2;
 }
