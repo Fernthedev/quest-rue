@@ -14,7 +14,7 @@ interface ComponentDataCardProps {
 }
 
 function ComponentDataCard(props: ComponentDataCardProps) {
-    let iconSize = "10%";
+    let iconSize = "25px";
 
 
     let icon;
@@ -36,7 +36,7 @@ function ComponentDataCard(props: ComponentDataCardProps) {
     }
 
     return (
-        <Card css={{ ml: "10%", mw: "330px" }} clickable bordered>
+        <Card css={{ ml: "10%", mw: "200px" }} clickable bordered>
             <Row>
                 {icon}
                 <Spacer x={0.2} />
@@ -49,7 +49,8 @@ function ComponentDataCard(props: ComponentDataCardProps) {
 }
 
 function ComponentCard() {
-    const Comp = (props: ComponentDataCardProps) => (
+    const Comp = (props: ComponentDataCardProps) =>
+    (
         <>
             <Spacer y={0.2} />
             <ComponentDataCard {...props} />
@@ -58,10 +59,10 @@ function ComponentCard() {
 
     return (
         <>
-            <Container css={{ ml: "10%" }}>
-                <Card css={{ mw: "330px" }} clickable bordered>
+            <Container css={{ ml: "5%" }}>
+                <Card css={{ mw: "200px" }} clickable bordered>
                     <Row>
-                        <DeveloperBoardFilled title="GameObject" height={"10%"} width={"10%"} />
+                        <DeveloperBoardFilled title="GameObject" height={"25px"} width={"25px"} />
                         <Spacer x={0.2} />
                         <Text b>
                             Component 1
@@ -82,9 +83,9 @@ function GameObjectCard() {
     return (
         <div>
             <Container>
-                <Card css={{ mw: "330px" }} clickable bordered >
+                <Card css={{ mw: "200px" }} clickable bordered >
                     <Row>
-                        <CubeFilled title="GameObject" height={"10%"} width={"10%"} />
+                        <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
                         <Spacer x={0.2} />
                         <Text b>
                             GameObject
