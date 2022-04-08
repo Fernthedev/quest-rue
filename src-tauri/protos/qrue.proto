@@ -116,3 +116,15 @@ message LoadObjectResult {
     uint64 loadId = 1;
     Il2CppType object = 2;
 }
+
+// TODO: Rename?
+message PacketWrapper {
+    oneof Packet {
+        InvokeMethod invokeMethod = 1;
+        InvokeMethodResult invokeMethodResult = 2;
+        SearchObjects searchObjects = 3;
+        SearchObjectsResult searchObjectsResult = 4;
+        LoadObject loadObject = 5;
+        LoadObjectResult loadObjectResult = 6;
+    }
+}
