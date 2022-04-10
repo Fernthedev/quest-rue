@@ -3,10 +3,11 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::option::Option;
 use std::str::FromStr;
 
+use anyhow::bail;
 use anyhow::Context;
 use bytes::{Bytes, BytesMut};
-use futures::{SinkExt, StreamExt};
 use futures::lock::Mutex;
+use futures::{SinkExt, StreamExt};
 use std::sync::Arc;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 use tokio::net::TcpStream;
@@ -47,7 +48,7 @@ impl Connection {
     }
 
     pub async fn reset(&self) {
-        *self.read_frame.lock().await  = None;
+        *self.read_frame.lock().await = None;
         *self.write_frame.lock().await = None;
         self.cancellation_read_token.read().await.cancel();
     }
@@ -56,9 +57,28 @@ impl Connection {
 #[derive(Default)]
 pub struct AppState {
     connection: Connection,
+    _read_loop_lock: Mutex<()>,
 }
 
 impl AppState {
+    // TODO: Close all when unrecoverable error
+    pub async fn read_thread_loop(&self) -> anyhow::Result<()> {
+        if self._read_loop_lock.try_lock().is_none() {
+            bail!("Already running thread loop!");
+        }
+
+        let _lock_guard = self._read_loop_lock.lock();
+        let cancel_token = self.connection.cancellation_read_token.read().await.clone();
+
+        loop {
+            if cancel_token.is_cancelled() {
+                return Ok(());
+            }
+
+            let _result = self.read().await?;
+        }
+    }
+
     pub async fn connect(&self, ip: String, port: u16) -> anyhow::Result<()> {
         let socket_address = SocketAddr::new(IpAddr::V4(Ipv4Addr::from_str(&ip)?), port);
 
@@ -77,6 +97,7 @@ impl AppState {
         Ok(())
     }
 
+    // TODO: Close all when unrecoverable error
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
@@ -85,6 +106,7 @@ impl AppState {
         Ok(())
     }
 
+    // TODO: Close all when unrecoverable error
     pub async fn queue(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
@@ -94,6 +116,7 @@ impl AppState {
         Ok(())
     }
 
+    // TODO: Close all when unrecoverable error
     pub async fn flush(&self) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 

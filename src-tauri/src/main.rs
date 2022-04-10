@@ -2,7 +2,6 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-
 #![feature(mutex_unlock)]
 
 use appstate::AppState;
@@ -14,7 +13,11 @@ mod protos;
 async fn main() -> anyhow::Result<()> {
     tauri::Builder::default()
         .manage(AppState::default())
-        .invoke_handler(tauri::generate_handler![connect, disconnect])
+        .invoke_handler(tauri::generate_handler![
+            connect,
+            disconnect,
+            read_thread_loop
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
@@ -42,6 +45,7 @@ fn map_err<T, E, F, O: FnOnce(E) -> F>(r: Result<T, E>, op: O) -> Result<T, F> {
     }
 }
 
+#[inline]
 // I hate this I hate this I hate this
 fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     match r {
@@ -50,9 +54,20 @@ fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     }
 }
 
+// Must be called after connect()
+// Dies when close() is called 
+//
+// Runs on a new thread, as stated by Tauri docs https://tauri.studio/docs/guides/command#async-commands
+// TODO: Improve this, make less jank 
+#[tauri::command(async)]
+async fn read_thread_loop(state: tauri::State<'_, AppState>) -> Result<(), String> {
+    map_anyhow_str(state.read_thread_loop().await)?;
+    Ok(())
+}
+
 #[tauri::command]
 async fn connect(ip: String, port: u16, state: tauri::State<'_, AppState>) -> Result<(), String> {
-    map_anyhow_str(state.connect(ip, port).await)?;
+    map_anyhow_str(state.inner().connect(ip, port).await)?;
     Ok(())
 }
 
