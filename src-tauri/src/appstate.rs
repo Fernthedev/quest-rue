@@ -75,7 +75,7 @@ impl AppState {
                 return Ok(());
             }
 
-            let _result = self.read().await?;
+            let _result = self.read(&cancel_token).await?;
         }
     }
 
@@ -101,7 +101,7 @@ impl AppState {
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().context("Not connected, cannot run write_and_flush()")?;
         connection.send(bytes).await?;
         Ok(())
     }
@@ -110,7 +110,7 @@ impl AppState {
     pub async fn queue(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().context("Not connected, cannot run queue()")?;
 
         connection.feed(bytes).await?;
         Ok(())
@@ -120,19 +120,18 @@ impl AppState {
     pub async fn flush(&self) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().context("Not connected, cannot run flush()")?;
 
         connection.flush().await?;
 
         Ok(())
     }
 
-    pub async fn read(&self) -> anyhow::Result<Option<BytesMut>> {
+    pub async fn read(&self, token: &CancellationToken) -> anyhow::Result<Option<BytesMut>> {
         let mut connection_guard = self.connection.read_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().context("Not connected, cannot run read()")?;
 
-        let token = self.connection.cancellation_read_token.read().await.clone();
         let future = connection.next();
 
         select! {
