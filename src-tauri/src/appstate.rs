@@ -6,37 +6,56 @@ use std::str::FromStr;
 use anyhow::Context;
 use bytes::{Bytes, BytesMut};
 use futures::{SinkExt, StreamExt};
+use futures::lock::Mutex;
 use std::sync::Arc;
+use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 use tokio::net::TcpStream;
 use tokio::select;
 use tokio::sync::RwLock;
-use tokio_util::codec::Framed;
 use tokio_util::codec::LengthDelimitedCodec;
+use tokio_util::codec::{FramedRead, FramedWrite};
 use tokio_util::sync::CancellationToken;
 
-pub struct Connection {
-    frame: Framed<TcpStream, LengthDelimitedCodec>,
-    cancellation_read_token: CancellationToken,
+type ArcOptRwLock<T> = Arc<Mutex<Option<T>>>;
+
+#[derive(Default)]
+struct Connection {
+    // connection: Option<Connection>,
+    read_frame: ArcOptRwLock<FramedRead<OwnedReadHalf, LengthDelimitedCodec>>,
+    write_frame: ArcOptRwLock<FramedWrite<OwnedWriteHalf, LengthDelimitedCodec>>,
+    cancellation_read_token: Arc<RwLock<CancellationToken>>,
 }
 
 impl Connection {
-    pub fn new(tcp_stream: TcpStream) -> Self {
-        let frame = LengthDelimitedCodec::builder()
+    pub async fn new_connection(&self, tcp_stream: TcpStream) -> anyhow::Result<()> {
+        let (read_stream, write_stream) = tcp_stream.into_split();
+
+        let mut codec = LengthDelimitedCodec::builder();
+        codec
             .length_field_offset(0) // default value
             .length_field_type::<u64>()
-            .length_adjustment(0) // default value
-            .new_framed(tcp_stream);
+            .length_adjustment(0); // default value
 
-        Self {
-            frame,
-            cancellation_read_token: CancellationToken::new(),
-        }
+        let read_frame = codec.new_read(read_stream);
+        let write_frame = codec.new_write(write_stream);
+
+        *self.read_frame.lock().await = Some(read_frame);
+        *self.write_frame.lock().await = Some(write_frame);
+        *self.cancellation_read_token.write().await = CancellationToken::new();
+
+        Ok(())
+    }
+
+    pub async fn reset(&self) {
+        *self.read_frame.lock().await  = None;
+        *self.write_frame.lock().await = None;
+        self.cancellation_read_token.read().await.cancel();
     }
 }
 
 #[derive(Default)]
 pub struct AppState {
-    connection: Arc<RwLock<Option<Connection>>>,
+    connection: Connection,
 }
 
 impl AppState {
@@ -47,81 +66,51 @@ impl AppState {
             .await
             .with_context(|| format!("Unable to connect to {ip}:{port}"))?;
 
-        let connection = Connection::new(tcp_stream);
-
-        *self.connection.write().await = Some(connection);
+        self.connection.new_connection(tcp_stream).await?;
 
         Ok(())
     }
 
     pub async fn disconnect(&self) -> anyhow::Result<()> {
-        // if let Some(stream) = &mut *self
-        //     .tcp_stream
-        //     .lock()
-        //     .expect("Unable to get lock tcp stream")
-        // {
-        //     stream.shutdown().await?;
-        // }
-
-        let mut guard = self.connection.write().await;
-    
-        if let Some(connection) = &*guard {
-            connection.cancellation_read_token.cancel();
-        }
-
-        *guard = None;
+        self.connection.reset().await;
 
         Ok(())
     }
 
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
-        let mut connection_guard = self.connection.write().await;
+        let mut connection_guard = self.connection.write_frame.lock().await;
 
         let connection = (*connection_guard).as_mut().unwrap();
-
-        connection.frame.send(bytes).await?;
+        connection.send(bytes).await?;
         Ok(())
     }
 
     pub async fn queue(&self, bytes: Bytes) -> anyhow::Result<()> {
-        let mut connection_guard = self.connection.write().await;
+        let mut connection_guard = self.connection.write_frame.lock().await;
 
         let connection = (*connection_guard).as_mut().unwrap();
 
-        connection.frame.feed(bytes).await?;
+        connection.feed(bytes).await?;
         Ok(())
     }
 
     pub async fn flush(&self) -> anyhow::Result<()> {
-        let mut connection_guard = self.connection.write().await;
+        let mut connection_guard = self.connection.write_frame.lock().await;
 
         let connection = (*connection_guard).as_mut().unwrap();
 
-        connection.frame.flush().await?;
+        connection.flush().await?;
 
         Ok(())
     }
 
     pub async fn read(&self) -> anyhow::Result<Option<BytesMut>> {
-        // TODO: Don't lock, use something else
-        // let mut connection_guard = self
-        //     .connection
-        //     .lock()
-        //     .expect("Unable to unlock mutex connection");
-        // let connection = connection_guard.as_mut().unwrap();
-
-        // why can't read return &mut? smh
-        let mut connection_guard = self.connection.write().await;
+        let mut connection_guard = self.connection.read_frame.lock().await;
 
         let connection = (*connection_guard).as_mut().unwrap();
 
-        let token = connection.cancellation_read_token.clone();
-        let future = connection.frame.next();
-        // unsafe {
-        //     Mutex::unlock(connection_guard);
-        // }
-
-        // let res = connection.frame.next();
+        let token = self.connection.cancellation_read_token.read().await.clone();
+        let future = connection.next();
 
         select! {
             _ = token.cancelled() => {
