@@ -3,20 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use std::{
-    net::{IpAddr, Ipv4Addr, SocketAddr},
-    str::FromStr,
-    sync::Mutex,
-};
+use appstate::AppState;
 
-use tokio::net::TcpStream;
-
+mod appstate;
 mod protos;
-
-#[derive(Default)]
-struct AppState {
-    tcp_stream: Mutex<Option<TcpStream>>,
-}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -31,37 +21,48 @@ async fn main() -> anyhow::Result<()> {
 
 // ugh, Tauri doesn't like Future<std::result::Result<(), anyhow::Error>> because anyhow::Error doesn't implement Serialize/Deserialize
 fn map_result<R, E: std::error::Error>(res: Result<R, E>) -> anyhow::Result<R, String> {
-  match res {
-    Ok(e) => Ok(e),
-    Err(e) => Err(e.to_string())
-  }
+    match res {
+        Ok(e) => Ok(e),
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 // ugh, Tauri doesn't like Future<std::result::Result<(), anyhow::Error>> because anyhow::Error doesn't implement Serialize/Deserialize
 // this is so stupid
 fn map_error<E: std::error::Error>(e: E) -> String {
-  e.to_string()
+    e.to_string()
+}
+
+fn map_err<T, E, F, O: FnOnce(E) -> F>(r: Result<T, E>, op: O) -> Result<T, F> {
+    match r {
+        Ok(o) => Ok(o),
+        Err(e) => Err(op(e)),
+    }
+}
+
+// I hate this I hate this I hate this
+fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
+    match r {
+        Ok(o) => Ok(o),
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 #[tauri::command]
 async fn connect(ip: String, port: u16, state: tauri::State<'_, AppState>) -> Result<(), String> {
-    let socket_address = SocketAddr::new(IpAddr::V4(Ipv4Addr::from_str(&ip).map_err(map_error)?), port);
-
-    *state
-        .tcp_stream
-        .lock()
-        .expect("Unable to unlock tcp stream") = Some(TcpStream::connect(socket_address).await.map_err(map_error)?);
+    map_anyhow_str(state.connect(ip, port).await)?;
     Ok(())
 }
 
 #[tauri::command]
 async fn disconnect(state: tauri::State<'_, AppState>) -> Result<(), String> {
-
     // if let Some(stream) = &mut *state.tcp_stream.lock().expect("Unable to get lock tcp stream") {
     //     stream.shutdown().await.map_err(map_error)?;
     // }
 
-    *state.tcp_stream.lock().expect("Unable to get lock tcp stream") = None;
+    // *state.tcp_stream.lock().expect("Unable to get lock tcp stream") = None;
+
+    map_anyhow_str(state.disconnect().await)?;
 
     Ok(())
 }
