@@ -2,20 +2,21 @@ use std::default::Default;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::option::Option;
 use std::str::FromStr;
-use std::sync::Mutex;
 
 use anyhow::Context;
 use bytes::{Bytes, BytesMut};
 use futures::{SinkExt, StreamExt};
+use std::sync::Arc;
 use tokio::net::TcpStream;
 use tokio::select;
+use tokio::sync::RwLock;
 use tokio_util::codec::Framed;
 use tokio_util::codec::LengthDelimitedCodec;
 use tokio_util::sync::CancellationToken;
 
 pub struct Connection {
     frame: Framed<TcpStream, LengthDelimitedCodec>,
-    cancellationReadToken: CancellationToken,
+    cancellation_read_token: CancellationToken,
 }
 
 impl Connection {
@@ -28,14 +29,14 @@ impl Connection {
 
         Self {
             frame,
-            cancellationReadToken: CancellationToken::new(),
+            cancellation_read_token: CancellationToken::new(),
         }
     }
 }
 
 #[derive(Default)]
 pub struct AppState {
-    connection: Mutex<Option<Connection>>,
+    connection: Arc<RwLock<Option<Connection>>>,
 }
 
 impl AppState {
@@ -48,7 +49,7 @@ impl AppState {
 
         let connection = Connection::new(tcp_stream);
 
-        *self.connection.lock().expect("Unable to unlock connection") = Some(connection);
+        *self.connection.write().await = Some(connection);
 
         Ok(())
     }
@@ -62,45 +63,39 @@ impl AppState {
         //     stream.shutdown().await?;
         // }
 
-        *self
-            .connection
-            .lock()
-            .expect("Unable to get lock tcp stream") = None;
+        let mut guard = self.connection.write().await;
+    
+        if let Some(connection) = &*guard {
+            connection.cancellation_read_token.cancel();
+        }
+
+        *guard = None;
 
         Ok(())
     }
 
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
-        let mut connection_guard = self
-            .connection
-            .lock()
-            .expect("Unable to unlock mutex connection");
+        let mut connection_guard = self.connection.write().await;
 
-        let connection = connection_guard.as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().unwrap();
 
         connection.frame.send(bytes).await?;
         Ok(())
     }
 
     pub async fn queue(&self, bytes: Bytes) -> anyhow::Result<()> {
-        let mut connection_guard = self
-            .connection
-            .lock()
-            .expect("Unable to unlock mutex connection");
+        let mut connection_guard = self.connection.write().await;
 
-        let connection = connection_guard.as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().unwrap();
 
         connection.frame.feed(bytes).await?;
         Ok(())
     }
 
     pub async fn flush(&self) -> anyhow::Result<()> {
-        let mut connection_guard = self
-            .connection
-            .lock()
-            .expect("Unable to unlock mutex connection");
+        let mut connection_guard = self.connection.write().await;
 
-        let connection = connection_guard.as_mut().unwrap();
+        let connection = (*connection_guard).as_mut().unwrap();
 
         connection.frame.flush().await?;
 
@@ -113,16 +108,14 @@ impl AppState {
         //     .connection
         //     .lock()
         //     .expect("Unable to unlock mutex connection");
-
         // let connection = connection_guard.as_mut().unwrap();
-        let connection = self
-            .connection
-            .get_mut()
-            .unwrap()
-            .as_mut()
-            .unwrap();
 
-        let token = connection.cancellationReadToken.clone();
+        // why can't read return &mut? smh
+        let mut connection_guard = self.connection.write().await;
+
+        let connection = (*connection_guard).as_mut().unwrap();
+
+        let token = connection.cancellation_read_token.clone();
         let future = connection.frame.next();
         // unsafe {
         //     Mutex::unlock(connection_guard);
