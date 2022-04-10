@@ -58,6 +58,8 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bytes",
+ "futures",
  "protobuf",
  "protoc-rust",
  "serde",
@@ -65,6 +67,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -3359,6 +3362,23 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tokio-util"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0edfdeb067411dba2044da6d1cb2df793dd35add7888d73c16e3381ded401764"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "futures-io",
+ "futures-sink",
+ "futures-util",
+ "pin-project-lite",
+ "slab",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
