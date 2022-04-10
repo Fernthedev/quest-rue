@@ -3,6 +3,8 @@
     windows_subsystem = "windows"
 )]
 
+#![feature(mutex_unlock)]
+
 use appstate::AppState;
 
 mod appstate;
