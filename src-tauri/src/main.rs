@@ -3,8 +3,8 @@
     windows_subsystem = "windows"
 )]
 #![feature(mutex_unlock)]
-
 use appstate::AppState;
+use protos::qrue::{PacketWrapper, SearchObjects};
 
 mod appstate;
 mod protos;
@@ -16,7 +16,8 @@ async fn main() -> anyhow::Result<()> {
         .invoke_handler(tauri::generate_handler![
             connect,
             disconnect,
-            read_thread_loop
+            read_thread_loop,
+            request_game_objects
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -55,10 +56,10 @@ fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
 }
 
 // Must be called after connect()
-// Dies when close() is called 
+// Dies when close() is called
 //
 // Runs on a new thread, as stated by Tauri docs https://tauri.studio/docs/guides/command#async-commands
-// TODO: Improve this, make less jank 
+// TODO: Improve this, make less jank
 #[tauri::command(async)]
 async fn read_thread_loop(state: tauri::State<'_, AppState>) -> Result<(), String> {
     map_anyhow_str(state.read_thread_loop().await)?;
@@ -68,6 +69,17 @@ async fn read_thread_loop(state: tauri::State<'_, AppState>) -> Result<(), Strin
 #[tauri::command]
 async fn connect(ip: String, port: u16, state: tauri::State<'_, AppState>) -> Result<(), String> {
     map_anyhow_str(state.inner().connect(ip, port).await)?;
+    Ok(())
+}
+
+#[tauri::command]
+async fn request_game_objects(state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let mut packet_wrapper = PacketWrapper::new();
+    packet_wrapper.Packet = Some(protos::qrue::PacketWrapper_oneof_Packet::searchObjects(
+        SearchObjects::new(),
+    ));
+
+    map_anyhow_str(state.write_packet_and_flush(packet_wrapper).await)?;
     Ok(())
 }
 

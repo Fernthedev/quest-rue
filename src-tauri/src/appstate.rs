@@ -8,6 +8,7 @@ use anyhow::Context;
 use bytes::{Bytes, BytesMut};
 use futures::lock::Mutex;
 use futures::{SinkExt, StreamExt};
+use protobuf::Message;
 use std::sync::Arc;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 use tokio::net::TcpStream;
@@ -16,6 +17,8 @@ use tokio::sync::RwLock;
 use tokio_util::codec::LengthDelimitedCodec;
 use tokio_util::codec::{FramedRead, FramedWrite};
 use tokio_util::sync::CancellationToken;
+
+use crate::protos::qrue::PacketWrapper;
 
 type ArcOptRwLock<T> = Arc<Mutex<Option<T>>>;
 
@@ -48,7 +51,7 @@ impl Connection {
     }
 
     pub async fn reset(&self) {
-        self.cancellation_read_token.read().await.cancel();  
+        self.cancellation_read_token.read().await.cancel();
         *self.read_frame.lock().await = None;
         *self.write_frame.lock().await = None;
     }
@@ -97,11 +100,36 @@ impl AppState {
         Ok(())
     }
 
+    pub async fn write_packet_and_flush(
+        &self,
+        packet_wrapper: PacketWrapper,
+    ) -> anyhow::Result<()> {
+        assert!(
+            packet_wrapper.Packet.is_some(),
+            "PacketWrapper does not wrap packet!"
+        );
+        let bytes = Bytes::from(packet_wrapper.write_to_bytes()?);
+
+        self.write_and_flush(bytes).await
+    }
+
+    pub async fn queue_packet(&self, packet_wrapper: PacketWrapper) -> anyhow::Result<()> {
+        assert!(
+            packet_wrapper.Packet.is_some(),
+            "PacketWrapper does not wrap packet!"
+        );
+        let bytes = Bytes::from(packet_wrapper.write_to_bytes()?);
+
+        self.queue(bytes).await
+    }
+
     // TODO: Close all when unrecoverable error
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().context("Not connected, cannot run write_and_flush()")?;
+        let connection = (*connection_guard)
+            .as_mut()
+            .context("Not connected, cannot run write_and_flush()")?;
         connection.send(bytes).await?;
         Ok(())
     }
@@ -110,7 +138,9 @@ impl AppState {
     pub async fn queue(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().context("Not connected, cannot run queue()")?;
+        let connection = (*connection_guard)
+            .as_mut()
+            .context("Not connected, cannot run queue()")?;
 
         connection.feed(bytes).await?;
         Ok(())
@@ -120,7 +150,9 @@ impl AppState {
     pub async fn flush(&self) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().context("Not connected, cannot run flush()")?;
+        let connection = (*connection_guard)
+            .as_mut()
+            .context("Not connected, cannot run flush()")?;
 
         connection.flush().await?;
 
@@ -130,7 +162,9 @@ impl AppState {
     pub async fn read(&self, token: &CancellationToken) -> anyhow::Result<Option<BytesMut>> {
         let mut connection_guard = self.connection.read_frame.lock().await;
 
-        let connection = (*connection_guard).as_mut().context("Not connected, cannot run read()")?;
+        let connection = (*connection_guard)
+            .as_mut()
+            .context("Not connected, cannot run read()")?;
 
         let future = connection.next();
 
