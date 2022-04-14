@@ -48,9 +48,9 @@ impl Connection {
     }
 
     pub async fn reset(&self) {
+        self.cancellation_read_token.read().await.cancel();  
         *self.read_frame.lock().await = None;
         *self.write_frame.lock().await = None;
-        self.cancellation_read_token.read().await.cancel();
     }
 }
 
