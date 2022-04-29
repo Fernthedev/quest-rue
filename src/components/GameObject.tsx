@@ -1,20 +1,20 @@
 import { CubeFilled, DeveloperBoardFilled, FlagFilled, FlagPrideFilled, FlashOnFilled, FStopFilled } from "@fluentui/react-icons";
 import { Card, Container, Row, Spacer, Text } from "@nextui-org/react";
 
-enum ComponentDataType {
+export enum ComponentDataType {
     METHOD,
     FIELD,
     PROPERTY,
     ACTION // ?
 }
 
-interface ComponentDataCardProps {
+export interface ComponentDataCardProps {
     componentDataType: ComponentDataType
     componentName: string
 }
 
-function ComponentDataCard(props: ComponentDataCardProps) {
-    let iconSize = "25px";
+export function ComponentDataCard(props: ComponentDataCardProps) {
+    const iconSize = "25px";
 
 
     let icon;
@@ -48,7 +48,7 @@ function ComponentDataCard(props: ComponentDataCardProps) {
     )
 }
 
-function ComponentCard() {
+export function ComponentCard() {
     const Comp = (props: ComponentDataCardProps) =>
     (
         <>
@@ -79,23 +79,24 @@ function ComponentCard() {
     )
 }
 
-function GameObjectCard() {
+export interface GameObjectCardProps {
+    name: string
+}
+export function GameObjectCard(props: GameObjectCardProps) {
     return (
-        <div>
-            <Container>
-                <Card css={{ mw: "200px" }} clickable bordered >
-                    <Row>
-                        <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
-                        <Spacer x={0.2} />
-                        <Text b>
-                            GameObject
-                        </Text>
-                    </Row>
-                </Card>
-                <Spacer y={0.2} />
-                <ComponentCard />
-            </Container>
-        </div>
+        <Container>
+            <Card css={{ mw: "200px" }} clickable bordered >
+                <Row>
+                    <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
+                    <Spacer x={0.2} />
+                    <Text b>
+                        GameObject {props.name}
+                    </Text>
+                </Row>
+            </Card>
+            <Spacer y={0.2} />
+            <ComponentCard />
+        </Container>
     )
 }
 

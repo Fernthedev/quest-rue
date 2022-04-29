@@ -1,53 +1,60 @@
 import { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Button, NextUIProvider } from '@nextui-org/react'
-import GameObjectCard from './components/GameObject'
+import { Button, Collapse, Container, Grid, NextUIProvider } from '@nextui-org/react'
+import { GameObjectCard } from './components/GameObject'
+import { CubeFilled } from '@fluentui/react-icons'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const objects = ["GameCore", "Something", "Plant"]
 
   return (
-
     <div className="App">
-      <div className="center" style={{
-        minHeight: '100vh',
-      }}>
-        <GameObjectCard />
-      </div>
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <Button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </Button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-          <GameObjectCard />
-        </p>
-      </header> */}
-    </div>
+      {/* Component data */}
+      <Grid.Container >
+        <Grid xs={true}>
+          <div className="center" style={{
+            minHeight: '100vh',
+            height: "100%",
+            width: "100%",
+            // backgroundColor: "blue"
+          }}>
+
+
+          </div>
+        </Grid>
+
+        {/* Object list */}
+        <Grid xs={2.5} style={{
+          // backgroundColor: "red",
+        }}>
+
+          <Collapse.Group bordered
+            accordion={false}
+            style={{ minWidth: "20vw" }}>
+            {objects.map(e => (
+              <Collapse contentLeft={
+                <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
+              } key={e} title={e}>
+
+              </Collapse>
+            ))}
+          </Collapse.Group>
+
+          {/* <Button.Group vertical bordered flat auto  style={{ minWidth: "20vw" }}>
+            {objects.map(e => (
+              <Button auto key={e}>
+                {e}
+              </Button>
+            ))}
+          </Button.Group> */}
+
+          {/* {objects.map(e => GameObjectCard({ name: e }))} */}
+
+        </Grid>
+      </Grid.Container>
+    </div >
 
   )
 }

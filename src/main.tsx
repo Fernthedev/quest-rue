@@ -25,7 +25,7 @@ ReactDOM.render(
     <NextUIProvider
       theme={darkTheme}
     >
-      <App />
+    <App />
     </NextUIProvider>
 
   </React.StrictMode>,
