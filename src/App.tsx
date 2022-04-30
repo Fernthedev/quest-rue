@@ -1,19 +1,20 @@
-import { useState } from 'react'
-import logo from './logo.svg'
 import './App.css'
-import { Button, Collapse, Container, Grid, NextUIProvider } from '@nextui-org/react'
-import { GameObjectCard } from './components/GameObject'
-import { CubeFilled } from '@fluentui/react-icons'
+import { Grid } from '@nextui-org/react'
+import GameObjectsList from './components/GameObjectsList'
 
 function App() {
 
-  const objects = ["GameCore", "Something", "Plant"]
+  const objects = ["GameCore", "Something", "Plant", "Really long name", "Gaming", "Mom", "Moo", "Cow", "Beep", "Beep", "Boat dog", "fern"] // .slice(0, 3)
+
+
+  // future reference
+  // 100vh means 100% of the view height
 
   return (
     <div className="App">
       {/* Component data */}
-      <Grid.Container >
-        <Grid xs={true}>
+      <Grid.Container>
+        <Grid xs>
           <div className="center" style={{
             minHeight: '100vh',
             height: "100%",
@@ -26,32 +27,18 @@ function App() {
         </Grid>
 
         {/* Object list */}
-        <Grid xs={2.5} style={{
+        <Grid alignItems='stretch' css={{
           // backgroundColor: "red",
         }}>
 
-          <Collapse.Group bordered
-            accordion={false}
-            style={{ minWidth: "20vw" }}>
-            {objects.map(e => (
-              <Collapse contentLeft={
-                <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
-              } key={e} title={e}>
-
-              </Collapse>
-            ))}
-          </Collapse.Group>
-
-          {/* <Button.Group vertical bordered flat auto  style={{ minWidth: "20vw" }}>
-            {objects.map(e => (
-              <Button auto key={e}>
-                {e}
-              </Button>
-            ))}
-          </Button.Group> */}
-
-          {/* {objects.map(e => GameObjectCard({ name: e }))} */}
-
+          {/* Container box for scrolling */}
+          <div style={{
+            overflow: "auto",
+            maxHeight: "100vh",
+            // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
+          }}>
+            <GameObjectsList objects={objects} />
+          </div>
         </Grid>
       </Grid.Container>
     </div >
