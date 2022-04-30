@@ -1,8 +1,10 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse } from "@nextui-org/react";
+import { Collapse, Container, Radio, Spacer } from "@nextui-org/react";
 
 export interface GameObjectsListProps {
-    objects: string[]
+    objects: string[],
+    // TODO: Make this return GameObject
+    onSelect?: (value: string | number) => void,
 }
 export default function GameObjectsList(props: GameObjectsListProps) {
     return (
@@ -13,13 +15,22 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             style={{
                 //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
             }}>
-            {props.objects.map(e => (
-                <Collapse contentLeft={
-                    <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
-                } key={e} title={e} bordered={false}>
+            <Radio.Group onChange={props.onSelect}>
+                {props.objects.map(e => (
 
-                </Collapse>
-            ))}
+                    <Collapse contentLeft={
+                        <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
+                            { /* The marginTop position fix is so bad */}
+                            <Radio squared size={"sm"} value={e} style={{ marginTop: 10 }} />
+
+                            <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+
+                        </div>
+                    } key={e} title={e} bordered={false}>
+
+                    </Collapse>
+                ))}
+            </Radio.Group>
         </Collapse.Group>
     )
 }
