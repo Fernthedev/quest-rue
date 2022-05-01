@@ -10,6 +10,7 @@ use appstate::AppState;
 use bytes::{BytesMut};
 use protobuf::Message;
 use protos::qrue::{PacketWrapper, SearchObjects};
+use serde_json::Value;
 use tauri::{async_runtime, AppHandle, Manager};
 
 mod appstate;
@@ -18,7 +19,7 @@ mod protos;
 #[derive(Clone, serde::Serialize)]
 struct PacketReceivePayload {
     packet_type: String,
-    general_packet_data: Option<String>,
+    general_packet_data: Option<Value>,
 }
 
 const PACKET_LISTEN_EVENT: &str = "protobuf-receive";
