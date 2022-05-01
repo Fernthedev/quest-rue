@@ -9,13 +9,14 @@ export interface GameObjectsListProps {
 export default function GameObjectsList(props: GameObjectsListProps) {
     return (
         // TODO: Figure out how to remove rounded corners
-        <Collapse.Group
-            accordion={false}
+        <Radio.Group onChange={props.onSelect}>
+            <Collapse.Group
+                accordion={false}
 
-            style={{
-                //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
-            }}>
-            <Radio.Group onChange={props.onSelect}>
+                style={{
+                    //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
+                }}>
+
                 {props.objects.map(e => (
 
                     <Collapse contentLeft={
@@ -30,7 +31,8 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
                     </Collapse>
                 ))}
-            </Radio.Group>
-        </Collapse.Group>
+
+            </Collapse.Group>
+        </Radio.Group>
     )
 }
