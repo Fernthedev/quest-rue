@@ -1,5 +1,9 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse, Container, Radio, Spacer } from "@nextui-org/react";
+import { Collapse, Loading, Radio } from "@nextui-org/react";
+import { useEffect, useState, useTransition } from "react";
+import { listen, UnlistenFn } from '@tauri-apps/api/event'
+import { Constants } from "../misc/constants";
+import { PacketReceivePayload } from "../misc/packets";
 
 export interface GameObjectsListProps {
     objects: string[],
@@ -7,32 +11,77 @@ export interface GameObjectsListProps {
     onSelect?: (value: string | number) => void,
 }
 export default function GameObjectsList(props: GameObjectsListProps) {
+    // TODO: Clean
+    const [objects, setObjects] = useState<string[] | null>(null);
+
+    // https://reactjs.org/docs/hooks-reference.html#usetransition
+    const [isPendingGameObjects, loadGameObjects] = useTransition();
+
+
+    // Listen to game object list events
+    useEffect(() => {
+        // TODO: Remove, loading test
+        loadGameObjects(() => {
+            setTimeout(() => {
+                setObjects(props.objects)
+            }, 2000)
+        });
+
+        let unlisten: UnlistenFn | undefined;
+
+        // You can await here
+        listen<PacketReceivePayload>(Constants.GAMEOBJECTS_LIST_EVENT, event => {
+            loadGameObjects(() => {
+                setObjects(event.payload.general_packet_data as never)
+            });
+        }).then((l) => unlisten = l); // assign unlisten callback
+
+        // Unsubcribe 
+        return () => {
+            if (unlisten) {
+                unlisten()
+            }
+        };
+    }, []);
+
     return (
-        // TODO: Figure out how to remove rounded corners
-        <Radio.Group onChange={props.onSelect}>
-            <Collapse.Group
-                accordion={false}
+        <>
+            {(isPendingGameObjects || !objects) && (
+                <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
+                    <Loading size="xl" />
+                </div>
+            )}
 
-                style={{
-                    //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
-                }}>
+            <Radio.Group onChange={props.onSelect}>
 
-                {props.objects.map(e => (
 
-                    <Collapse contentLeft={
-                        <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
-                            { /* The marginTop position fix is so bad */}
-                            <Radio squared size={"sm"} value={e} style={{ marginTop: 10 }} />
+                <Collapse.Group
+                    accordion={false}
 
-                            <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+                    style={{
+                        //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
+                    }}>
 
-                        </div>
-                    } key={e} title={e} bordered={false}>
 
-                    </Collapse>
-                ))}
 
-            </Collapse.Group>
-        </Radio.Group>
+                    {objects?.map(e => (
+
+                        <Collapse contentLeft={
+                            <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
+                                { /* The marginTop position fix is so bad */}
+                                <Radio squared size={"sm"} value={e} style={{ marginTop: 10 }} />
+
+                                <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+
+                            </div>
+                        } key={e} title={e} bordered={false}>
+
+                        </Collapse>
+                    ))}
+
+                </Collapse.Group>
+
+            </Radio.Group>
+        </>
     )
 }
