@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client';
 import './index.css'
 import App from './App'
 import { createTheme, NextUIProvider, useTheme } from '@nextui-org/react'
@@ -19,7 +19,12 @@ const darkTheme = createTheme({
 // TODO: Figure this out
 // const darkMode = useDarkMode(true);
 
-ReactDOM.render(
+
+const container = document.getElementById('root');
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
 
     <NextUIProvider
@@ -29,5 +34,4 @@ ReactDOM.render(
     </NextUIProvider>
 
   </React.StrictMode>,
-  document.getElementById('root')
 )
