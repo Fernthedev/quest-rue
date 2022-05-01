@@ -65,7 +65,10 @@ pub struct AppState {
 
 impl AppState {
     // TODO: Close all when unrecoverable error
-    pub async fn read_thread_loop(&self) -> anyhow::Result<()> {
+    pub async fn read_thread_loop<F>(&self, on_packet_receive: F) -> anyhow::Result<()>
+    where
+        F: Fn(BytesMut),
+    {
         if self._read_loop_lock.try_lock().is_none() {
             bail!("Already running thread loop!");
         }
@@ -79,6 +82,9 @@ impl AppState {
             }
 
             let _result = self.read(&cancel_token).await?;
+            if let Some(bytes) = _result {
+                on_packet_receive(bytes)
+            }
         }
     }
 

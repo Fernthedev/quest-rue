@@ -17,11 +17,11 @@ protoc-rust = "2"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-tokio-util = {version = "0.7", features = ["full"] }
+tokio-util = { version = "0.7", features = ["full"] }
 bytes = "*"
 futures = "*"
 anyhow = "1.0"
-protobuf = "2"
+protobuf = { version = "2", features = ["with-bytes"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.0.0-rc.8", features = ["api-all"] }
@@ -29,7 +29,7 @@ tauri = { version = "1.0.0-rc.8", features = ["api-all"] }
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = [ "custom-protocol" ]
+default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
-custom-protocol = [ "tauri/custom-protocol" ]
+custom-protocol = ["tauri/custom-protocol"]

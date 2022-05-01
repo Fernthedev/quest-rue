@@ -3,12 +3,25 @@
     windows_subsystem = "windows"
 )]
 #![feature(mutex_unlock)]
+#![feature(iterator_try_collect)]
+
+
 use appstate::AppState;
+use bytes::{BytesMut};
+use protobuf::Message;
 use protos::qrue::{PacketWrapper, SearchObjects};
-use tauri::{App, Manager, AppHandle, Invoke, async_runtime};
+use tauri::{async_runtime, AppHandle, Manager};
 
 mod appstate;
 mod protos;
+
+#[derive(Clone, serde::Serialize)]
+struct PacketReceivePayload {
+    packet_type: String,
+    general_packet_data: Option<String>,
+}
+
+const PACKET_LISTEN_EVENT: &str = "protobuf-receive";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -26,26 +39,6 @@ async fn main() -> anyhow::Result<()> {
 }
 
 // ugh, Tauri doesn't like Future<std::result::Result<(), anyhow::Error>> because anyhow::Error doesn't implement Serialize/Deserialize
-fn map_result<R, E: std::error::Error>(res: Result<R, E>) -> anyhow::Result<R, String> {
-    match res {
-        Ok(e) => Ok(e),
-        Err(e) => Err(e.to_string()),
-    }
-}
-
-// ugh, Tauri doesn't like Future<std::result::Result<(), anyhow::Error>> because anyhow::Error doesn't implement Serialize/Deserialize
-// this is so stupid
-fn map_error<E: std::error::Error>(e: E) -> String {
-    e.to_string()
-}
-
-fn map_err<T, E, F, O: FnOnce(E) -> F>(r: Result<T, E>, op: O) -> Result<T, F> {
-    match r {
-        Ok(o) => Ok(o),
-        Err(e) => Err(op(e)),
-    }
-}
-
 #[inline]
 // I hate this I hate this I hate this
 fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
@@ -55,11 +48,41 @@ fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     }
 }
 
+fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
+    let packet = match PacketWrapper::parse_from_carllerche_bytes(&bytes_mut.into()) {
+        Ok(packet) => packet,
+        Err(e) => panic!("Unable to parse bytes {}", dbg!(e)),
+    };
+
+    if packet.Packet.is_none() {
+        panic!("Packet is null {:?}", dbg!(packet));
+    }
+
+    let payload = PacketReceivePayload {
+        packet_type: format!("{:?}", packet.Packet.unwrap()),
+        general_packet_data: None,
+    };
+
+    // TODO: Add packet data in event
+    app_handle
+        .emit_all(PACKET_LISTEN_EVENT, payload)
+        .expect("Unable to emit event");
+}
+
 #[tauri::command]
-async fn connect(ip: String, port: u16, app_handle: AppHandle, state: tauri::State<'_, AppState>) -> Result<(), String> {
+async fn connect(
+    ip: String,
+    port: u16,
+    app_handle: AppHandle,
+    state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
     map_anyhow_str(state.inner().connect(ip, port).await)?;
     async_runtime::spawn(async move {
-        if let Err(e) = app_handle.state::<AppState>().read_thread_loop().await {
+        if let Err(e) = app_handle
+            .state::<AppState>()
+            .read_thread_loop(|bytes| handle_packet(bytes, &app_handle))
+            .await
+        {
             dbg!(e);
         }
     });
