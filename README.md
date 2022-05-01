@@ -33,7 +33,7 @@ Currently on the roadmap:
 ### Node frontend
 The project uses Typescript and Vite. ESLint is configured but is not actively used in the build process.
 
-To start up the frontend, run `yarn run dev` and open the URL in the browser (usually [http://localhost:3000]())
+To start up the frontend, run `yarn run dev` and open the URL in the browser (usually http://localhost:3000)
 
 
 If you intend to test alongside the Rust backend, follow the rust instructions.
