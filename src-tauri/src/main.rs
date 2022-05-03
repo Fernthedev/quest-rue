@@ -15,6 +15,7 @@ use tauri::{async_runtime, AppHandle, Manager};
 
 mod appstate;
 mod protos;
+mod events;
 
 #[derive(Clone, serde::Serialize)]
 struct PacketReceivePayload {
@@ -59,11 +60,28 @@ fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
         panic!("Packet is null {:?}", dbg!(packet));
     }
 
+    let packet_enum = &packet.Packet;
+
     let payload = PacketReceivePayload {
-        packet_type: format!("{:?}", packet.Packet.unwrap()),
+        packet_type: format!("{:?}", packet_enum.as_ref().unwrap()),
         general_packet_data: None,
     };
 
+
+    // Invoke packet specific events with their respective data
+    if let Some((event_name, serde_value)) = events::handle_specific_events(packet_enum.as_ref().unwrap()) {
+        let specific_payload = PacketReceivePayload {
+            packet_type: format!("{:?}", packet_enum.as_ref().unwrap()),
+            general_packet_data: Some(serde_value)
+        };
+        app_handle
+        .emit_all(event_name, specific_payload)
+        .expect("Unable to emit event");
+    }
+
+
+
+    // Generic packet event
     // TODO: Add packet data in event
     app_handle
         .emit_all(PACKET_LISTEN_EVENT, payload)
