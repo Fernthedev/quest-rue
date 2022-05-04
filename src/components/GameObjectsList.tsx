@@ -1,9 +1,7 @@
 import { CubeFilled } from "@fluentui/react-icons";
 import { Collapse, Loading, Radio } from "@nextui-org/react";
 import { useEffect, useState, useTransition } from "react";
-import { listen, UnlistenFn } from '@tauri-apps/api/event'
-import { Constants } from "../misc/constants";
-import { PacketReceivePayload } from "../misc/packets";
+import { listenToGameOjects } from "../misc/events";
 
 export interface GameObjectsListProps {
     objects: string[],
@@ -27,21 +25,11 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             }, 2000)
         });
 
-        let unlisten: UnlistenFn | undefined;
-
-        // You can await here
-        listen<PacketReceivePayload>(Constants.GAMEOBJECTS_LIST_EVENT, event => {
+        return listenToGameOjects(objects => {
             loadGameObjects(() => {
-                setObjects(event.payload.general_packet_data as never)
+                setObjects(objects)
             });
-        }).then((l) => unlisten = l); // assign unlisten callback
-
-        // Unsubcribe 
-        return () => {
-            if (unlisten) {
-                unlisten()
-            }
-        };
+        })
     }, []);
 
     return (
