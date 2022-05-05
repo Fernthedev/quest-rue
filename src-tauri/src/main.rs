@@ -5,17 +5,16 @@
 #![feature(mutex_unlock)]
 #![feature(iterator_try_collect)]
 
-
 use appstate::AppState;
-use bytes::{BytesMut};
+use bytes::BytesMut;
 use protobuf::Message;
 use protos::qrue::{PacketWrapper, SearchObjects};
 use serde_json::Value;
 use tauri::{async_runtime, AppHandle, Manager};
 
 mod appstate;
-mod protos;
 mod events;
+mod protos;
 
 #[derive(Clone, serde::Serialize)]
 struct PacketReceivePayload {
@@ -67,19 +66,18 @@ fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
         general_packet_data: None,
     };
 
-
     // Invoke packet specific events with their respective data
-    if let Some((event_name, serde_value)) = events::handle_specific_events(packet_enum.as_ref().unwrap()) {
+    if let Some((event_name, serde_value)) =
+        events::handle_specific_events(packet_enum.as_ref().unwrap())
+    {
         let specific_payload = PacketReceivePayload {
             packet_type: format!("{:?}", packet_enum.as_ref().unwrap()),
-            general_packet_data: Some(serde_value)
+            general_packet_data: Some(serde_value),
         };
         app_handle
-        .emit_all(event_name, specific_payload)
-        .expect("Unable to emit event");
+            .emit_all(event_name, specific_payload)
+            .expect("Unable to emit event");
     }
-
-
 
     // Generic packet event
     // TODO: Add packet data in event
@@ -109,11 +107,38 @@ async fn connect(
 }
 
 #[tauri::command]
-async fn request_game_objects(state: tauri::State<'_, AppState>) -> Result<(), String> {
+async fn request_game_objects(
+    app_handle: AppHandle,
+    state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
     let mut packet_wrapper = PacketWrapper::new();
     packet_wrapper.Packet = Some(protos::qrue::PacketWrapper_oneof_Packet::searchObjects(
         SearchObjects::new(),
     ));
+
+    println!("Receiving object request, responding");
+    // TODO: Remove
+    let objects = [
+        "GameCore",
+        "Something",
+        "Plant",
+        "Really long name",
+        "Gaming",
+        "Mom",
+        "Moo",
+        "Cow",
+        "Beep",
+        "Beep",
+        "Boat dog",
+        "fern",
+    ];
+    app_handle.emit_all(
+        "GAMEOBJECTS_LIST_EVENT",
+        PacketReceivePayload {
+            packet_type: "GAMEOBJECTS_LIST_EVENT".to_string(),
+            general_packet_data: Some(serde_json::to_value(objects).unwrap()),
+        },
+    ).unwrap();
 
     map_anyhow_str(state.write_packet_and_flush(packet_wrapper).await)?;
     Ok(())

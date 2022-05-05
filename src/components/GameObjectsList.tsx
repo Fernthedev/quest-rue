@@ -1,5 +1,6 @@
 import { CubeFilled } from "@fluentui/react-icons";
 import { Collapse, Loading, Radio } from "@nextui-org/react";
+import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState, useTransition } from "react";
 import { listenToGameOjects } from "../misc/events";
 
@@ -18,14 +19,10 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
     // Listen to game object list events
     useEffect(() => {
-        // TODO: Remove, loading test
-        loadGameObjects(() => {
-            setTimeout(() => {
-                setObjects(props.objects)
-            }, 2000)
-        });
+        invoke("request_game_objects")
 
         return listenToGameOjects(objects => {
+            console.log(`Received objects ${objects}`)
             loadGameObjects(() => {
                 setObjects(objects)
             });
