@@ -12,6 +12,8 @@
     "@fluentui/react-icons": "^2.0.153-canary.0",
     "@nextui-org/react": "^1.0.0-beta.6",
     "@tauri-apps/api": "^1.0.0-rc.3",
+    "autoprefixer": "^10.4.5",
+    "postcss": "^8.4.13",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "use-dark-mode": "^2.3.1"
