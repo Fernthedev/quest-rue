@@ -11,11 +11,8 @@ export interface GameObjectsListProps {
 }
 export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
+    // TODO: Use Suspense?
     const [objects, setObjects] = useState<string[] | null>(null);
-
-    // https://reactjs.org/docs/hooks-reference.html#usetransition
-    const [isPendingGameObjects, loadGameObjects] = useTransition();
-
 
     // Listen to game object list events
     useEffect(() => {
@@ -23,15 +20,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
         return listenToGameOjects(objects => {
             console.log(`Received objects ${objects}`)
-            loadGameObjects(() => {
-                setObjects(objects)
-            });
+            setObjects(objects)
         })
     }, []);
 
     return (
         <>
-            {(isPendingGameObjects || !objects) && (
+            {!objects && (
                 <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
                     <Loading size="xl" />
                 </div>
