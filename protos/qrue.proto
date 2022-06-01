@@ -1,12 +1,19 @@
 syntax = "proto3";
 
-// DATA TYPES
-message Il2CppClassInfo {
+// Type Identification
+message ClassInfoMsg {
     string namespaze = 1;
     string clazz = 2;
+    repeated ClassInfoMsg generics = 3;
 }
 
-message TypeInfo {
+message StructInfoMsg {
+    ClassInfoMsg clazz = 1;
+
+    map<int32, TypeInfoMsg> contents = 2;
+}
+
+message TypeInfoMsg {
     enum Type {
         PRIMITIVE = 0;
         STRUCT = 1;
@@ -16,61 +23,60 @@ message TypeInfo {
         BOOLEAN = 0;
         CHAR = 1;
         INT = 2;
-        FLOAT = 3;
-        STRING = 4;
+        LONG = 3;
+        FLOAT = 4;
+        DOUBLE = 5;
+        STRING = 6;
     }
     Type type = 1;
-    Primitive primitiveType = 2; /* nullable */
-    Il2CppClassInfo classInfo = 3; /* nullable */
+    oneof Info {
+        Primitive primitiveInfo = 2;
+        StructInfoMsg structInfo = 3;
+        ClassInfoMsg classInfo = 4;
+    }
 }
 
-message Il2CppFieldInfo {
+// Type Details
+message FieldInfoMsg {
     string name = 1;
-    string id = 2;
-    Il2CppData type = 3;
+    uint64 id = 2;
+    TypeInfoMsg type = 3;
 }
 
-message Il2CppPropertyInfo {
+message PropertyInfoMsg {
     string name = 1;
-    string id = 2;
-    bool hasGet = 3;
+    bool hasGet = 2;
+    uint64 getId = 3;
     bool hasSet = 4;
-    Il2CppData type = 5;
+    uint64 setId = 5;
+    TypeInfoMsg type = 6;
 }
 
-message Il2CppMethodInfo {
+message MethodInfoMsg {
     string name = 1;
     uint64 id = 2;
 
-    repeated string argNames = 3;
-    repeated Il2CppData argTypes = 4;
+    map<string, TypeInfoMsg> args = 3;
+    TypeInfoMsg returnType = 4;
 }
 
-message Il2CppType {
-    string namespaze = 1;
-    string clazz = 2;
+message TypeDetailsMsg {
+    ClassInfoMsg clazz = 1;
 
-    repeated Il2CppClassInfo generics = 3; /* nullable */
+    repeated FieldInfoMsg fields = 2;
+    repeated PropertyInfoMsg properties = 3;
+    repeated MethodInfoMsg methods = 4;
+    
+    repeated ClassInfoMsg interfaces = 5; /* nullable */
 
-    Il2CppType parent = 4; /* nullable */
-
-    repeated Il2CppType interfaces = 5; /* nullable */
-
-    repeated Il2CppFieldInfo fields = 6;
-    repeated Il2CppPropertyInfo properties = 7;
-    repeated Il2CppMethodInfo methods = 8;
+    TypeDetailsMsg parent = 6; /* nullable */
 }
 
-message Il2CppData {
-    enum Type {
-        PRIMITIVE = 0;
-        STRUCT = 1;
-        CLASS = 2;
-    }
-    Type type = 1;
-    Il2CppClassInfo typeInfo = 2; /* nullable */
+// Data Sending
+message DataMsg {
+    TypeInfoMsg typeInfo = 1; /* nullable */
 
-    bytes data = 3;
+    bytes data = 2;
 }
 
 // COMMAND/QUERY PACKETS
@@ -78,7 +84,7 @@ message Il2CppData {
 message InvokeMethod {
     uint64 methodId = 1;
     uint64 invokeUUID = 2;
-    repeated Il2CppData args = 3;
+    repeated DataMsg args = 3;
 }
 
 message InvokeMethodResult {
@@ -90,14 +96,14 @@ message InvokeMethodResult {
     Status status = 1;
     uint64 methodId = 2;
     uint64 invokeUUID = 3;
-    Il2CppData result = 4;
+    DataMsg result = 4;
     string error = 5; /* nullable */
 }
 
 message SearchObjects {
     uint64 queryId = 1;
     string objectName = 2; /* nullable */
-    Il2CppClassInfo requiredComponent = 3; /* nullable */
+    ClassInfoMsg requiredComponent = 3; /* nullable */
 }
 
 message SearchObjectsResult {
@@ -114,7 +120,7 @@ message LoadObject {
 
 message LoadObjectResult {
     uint64 loadId = 1;
-    Il2CppType object = 2;
+    TypeDetailsMsg object = 2;
 }
 
 // TODO: Rename?

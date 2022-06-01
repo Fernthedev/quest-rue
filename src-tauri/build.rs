@@ -7,8 +7,8 @@ fn main() {
             ..Default::default()
         })
         .out_dir("src/protos")
-        .inputs(&["protos/qrue.proto"])
-        .include("protos")
+        .inputs(&["../protos/qrue.proto"])
+        .include("../protos")
         .run()
         .expect("Running protoc failed.");
 
