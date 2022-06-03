@@ -1,0 +1,33 @@
+{
+    "configurations": [
+        {
+            "defines": [
+                "__GNUC__",
+                "__aarch64__",
+                "VERSION=\"0.1.0\"",
+                "MOD_ID=\"qec\""
+            ],
+            "includePath": [
+                "${workspaceFolder}/qmod/extern/includes/libil2cpp/il2cpp/libil2cpp",
+                "${workspaceFolder}/qmod/extern/includes",
+                "${workspaceFolder}/qmod/include",
+                "${workspaceFolder}/qmod/shared",
+                "${workspaceFolder}",
+                "${workspaceFolder}/**",
+                "${vcpkgRoot}/arm64-android/include",
+                "${vcpkgRoot}/x64-windows/include",
+                "${vcpkgRoot}/x86-windows/include",
+                "E:/SSDUse/AppData/Android/SDK/ndk/24.0.8215888/**",
+                "E:/SSDUse/AppData/Android/SDK/ndk/24.0.8215888/toolchains/llvm/prebuilt/windows-x86_64/**",
+                "${default}"
+            ],
+            "name": "Quest",
+            "cStandard": "c11",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-clang-arm64",
+            "compileCommands": "${workspaceFolder}/qmod/build/compile_commands.json",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
