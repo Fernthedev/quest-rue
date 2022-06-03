@@ -30,6 +30,21 @@ Currently on the roadmap:
 
 ## Contribute/Testing
 
+### Quest mod
+Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variiable on Unix to the root of the vcpkg installation. Then, install protobuf for `arm64-android` using the following command:
+```
+vcpkg install protobuf:arm64-android
+```
+
+Then run while in `qmod/` 
+```
+pwsh ./make-proto.ps1
+```
+
+To build the mod, run `pwsh ./build.ps1`
+
+To copy the mod to your quest, run `pwsh ./copy.ps1`
+
 ### Node frontend
 The project uses Typescript and Vite. ESLint is configured but is not actively used in the build process.
 
