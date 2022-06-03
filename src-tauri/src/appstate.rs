@@ -64,6 +64,10 @@ pub struct AppState {
 }
 
 impl AppState {
+    pub async fn is_connected(&self) -> bool {
+        self.connection.cancellation_read_token.read().await.is_cancelled()
+    }
+
     // TODO: Close all when unrecoverable error
     pub async fn read_thread_loop<F>(&self, on_packet_receive: F) -> anyhow::Result<()>
     where
@@ -81,8 +85,13 @@ impl AppState {
                 return Ok(());
             }
 
-            let _result = self.read(&cancel_token).await?;
-            if let Some(bytes) = _result {
+            let result = self.read(&cancel_token).await;
+            if let Err(e) = result {
+                self.disconnect().await?;
+                return Err(e);
+            }
+
+            if let Some(bytes) = result.unwrap() {
                 on_packet_receive(bytes)
             }
         }

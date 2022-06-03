@@ -23,6 +23,10 @@ struct PacketReceivePayload {
 }
 
 const PACKET_LISTEN_EVENT: &str = "protobuf-receive";
+const CONNECTED_EVENT: &str = "connected-to-quest";
+const READ_LOOP_DIED: &str = "read-loop-died-disconnected";
+const FRONTEND_DISCONNECTED_EVENT: &str = "frontend-disconnected-to-quest";
+const FAILURE_DISCONNECTED_EVENT: &str = "failure-disconnected-to-quest";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -31,7 +35,8 @@ async fn main() -> anyhow::Result<()> {
         .invoke_handler(tauri::generate_handler![
             connect,
             disconnect,
-            request_game_objects
+            request_game_objects,
+            is_connected
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -45,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
 fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     match r {
         Ok(o) => Ok(o),
-        Err(e) => Err(e.to_string()),
+        Err(e) => Err(format!("{:?}", &e)),
     }
 }
 
@@ -74,6 +79,8 @@ fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
             packet_type: format!("{:?}", packet_enum.as_ref().unwrap()),
             general_packet_data: Some(serde_value),
         };
+        println!("Invoking event {}", event_name);
+        // TODO: Prefix event
         app_handle
             .emit_all(event_name, specific_payload)
             .expect("Unable to emit event");
@@ -94,12 +101,21 @@ async fn connect(
     state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     map_anyhow_str(state.inner().connect(ip, port).await)?;
+
+    app_handle
+        .emit_all(CONNECTED_EVENT, ())
+        .expect("Unable to emit event");
+
     async_runtime::spawn(async move {
+        println!("Reading loop started!");
         if let Err(e) = app_handle
             .state::<AppState>()
             .read_thread_loop(|bytes| handle_packet(bytes, &app_handle))
             .await
         {
+            app_handle
+                .emit_all(READ_LOOP_DIED, ())
+                .expect("Unable to emit event");
             dbg!(e);
         }
     });
@@ -116,36 +132,39 @@ async fn request_game_objects(
         SearchObjects::new(),
     ));
 
-    println!("Receiving object request, responding");
-    // TODO: Remove
-    let objects = [
-        "GameCore",
-        "Something",
-        "Plant",
-        "Really long name",
-        "Gaming",
-        "Mom",
-        "Moo",
-        "Cow",
-        "Beep",
-        "Beep",
-        "Boat dog",
-        "fern",
-    ];
-    app_handle.emit_all(
-        "GAMEOBJECTS_LIST_EVENT",
-        PacketReceivePayload {
-            packet_type: "GAMEOBJECTS_LIST_EVENT".to_string(),
-            general_packet_data: Some(serde_json::to_value(objects).unwrap()),
-        },
-    ).unwrap();
+    // println!("Receiving object request, responding");
+    // // TODO: Remove
+    // let objects = [
+    //     "GameCore",
+    //     "Something",
+    //     "Plant",
+    //     "Really long name",
+    //     "Gaming",
+    //     "Mom",
+    //     "Moo",
+    //     "Cow",
+    //     "Beep",
+    //     "Beep",
+    //     "Boat dog",
+    //     "fern",
+    // ];
+    // app_handle.emit_all(
+    //     "GAMEOBJECTS_LIST_EVENT",
+    //     PacketReceivePayload {
+    //         packet_type: "GAMEOBJECTS_LIST_EVENT".to_string(),
+    //         general_packet_data: Some(serde_json::to_value(objects).unwrap()),
+    //     },
+    // ).unwrap();
 
-    map_anyhow_str(state.write_packet_and_flush(packet_wrapper).await)?;
+    map_anyhow_str(write_packet(&app_handle, &state, packet_wrapper).await)?;
     Ok(())
 }
 
 #[tauri::command]
-async fn disconnect(state: tauri::State<'_, AppState>) -> Result<(), String> {
+async fn disconnect(
+    state: tauri::State<'_, AppState>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
     // if let Some(stream) = &mut *state.tcp_stream.lock().expect("Unable to get lock tcp stream") {
     //     stream.shutdown().await.map_err(map_error)?;
     // }
@@ -154,5 +173,32 @@ async fn disconnect(state: tauri::State<'_, AppState>) -> Result<(), String> {
 
     map_anyhow_str(state.disconnect().await)?;
 
+    app_handle
+        .emit_all(FRONTEND_DISCONNECTED_EVENT, ())
+        .expect("Unable to emit event");
+
     Ok(())
+}
+
+#[tauri::command]
+async fn is_connected(state: tauri::State<'_, AppState>) -> Result<bool, String> {
+    Ok(state.is_connected().await)
+}
+
+pub async fn write_packet(
+    app_handle: &AppHandle,
+    state: &tauri::State<'_, AppState>,
+    packet_wrapper: PacketWrapper,
+) -> anyhow::Result<()> {
+    let result = state.write_packet_and_flush(packet_wrapper).await;
+
+    if let Err(e) = &result {
+        app_handle
+            .emit_all(FAILURE_DISCONNECTED_EVENT, format!("Unable to write: {:?}", &e))
+            .expect("Unable to emit event");
+
+        state.disconnect().await?;
+    }
+
+    result
 }
