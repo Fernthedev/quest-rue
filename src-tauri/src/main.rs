@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
 fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     match r {
         Ok(o) => Ok(o),
-        Err(e) => Err(format!("{:?}", &e)),
+        Err(e) => Err(format!("{:?}", dbg!(&e))),
     }
 }
 
@@ -107,7 +107,7 @@ async fn connect(
         .expect("Unable to emit event");
 
     async_runtime::spawn(async move {
-        println!("Reading loop started!");
+        dbg!("Reading loop started!");
         if let Err(e) = app_handle
             .state::<AppState>()
             .read_thread_loop(|bytes| handle_packet(bytes, &app_handle))
@@ -131,6 +131,8 @@ async fn request_game_objects(
     packet_wrapper.Packet = Some(protos::qrue::PacketWrapper_oneof_Packet::searchObjects(
         SearchObjects::new(),
     ));
+
+    dbg!("Requesting objects!");
 
     // println!("Receiving object request, responding");
     // // TODO: Remove

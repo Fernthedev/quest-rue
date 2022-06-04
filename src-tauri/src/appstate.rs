@@ -2,6 +2,7 @@ use std::default::Default;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::option::Option;
 use std::str::FromStr;
+use std::time::Duration;
 
 use anyhow::bail;
 use anyhow::Context;
@@ -12,8 +13,8 @@ use protobuf::Message;
 use std::sync::Arc;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 use tokio::net::TcpStream;
-use tokio::select;
 use tokio::sync::RwLock;
+use tokio::{select, time};
 use tokio_util::codec::LengthDelimitedCodec;
 use tokio_util::codec::{FramedRead, FramedWrite};
 use tokio_util::sync::CancellationToken;
@@ -28,6 +29,7 @@ struct Connection {
     read_frame: ArcOptRwLock<FramedRead<OwnedReadHalf, LengthDelimitedCodec>>,
     write_frame: ArcOptRwLock<FramedWrite<OwnedWriteHalf, LengthDelimitedCodec>>,
     cancellation_read_token: Arc<RwLock<CancellationToken>>,
+    connected: Arc<RwLock<bool>>,
 }
 
 impl Connection {
@@ -46,6 +48,7 @@ impl Connection {
         *self.read_frame.lock().await = Some(read_frame);
         *self.write_frame.lock().await = Some(write_frame);
         *self.cancellation_read_token.write().await = CancellationToken::new();
+        *self.connected.write().await = true;
 
         Ok(())
     }
@@ -54,6 +57,7 @@ impl Connection {
         self.cancellation_read_token.read().await.cancel();
         *self.read_frame.lock().await = None;
         *self.write_frame.lock().await = None;
+        *self.connected.write().await = false;
     }
 }
 
@@ -65,7 +69,7 @@ pub struct AppState {
 
 impl AppState {
     pub async fn is_connected(&self) -> bool {
-        self.connection.cancellation_read_token.read().await.is_cancelled()
+        *self.connection.connected.read().await
     }
 
     // TODO: Close all when unrecoverable error
@@ -98,11 +102,16 @@ impl AppState {
     }
 
     pub async fn connect(&self, ip: String, port: u16) -> anyhow::Result<()> {
+        if self.is_connected().await {
+            self.disconnect().await?;
+        }
+
         let socket_address = SocketAddr::new(IpAddr::V4(Ipv4Addr::from_str(&ip)?), port);
 
-        let tcp_stream = TcpStream::connect(socket_address)
+        // TODO: Configure
+        let tcp_stream = time::timeout(Duration::from_secs(5), TcpStream::connect(socket_address))
             .await
-            .with_context(|| format!("Unable to connect to {ip}:{port}"))?;
+            .with_context(|| format!("Unable to connect to {ip}:{port}"))??;
 
         self.connection.new_connection(tcp_stream).await?;
 
