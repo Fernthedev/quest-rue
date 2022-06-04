@@ -44,7 +44,7 @@ void logChildren(Il2CppObject* t, std::ofstream& stream, int maxDepth, int depth
 void logHierarchy(std::string path) {
     std::ofstream stream(path);
     if(!stream) {
-        LOG_INFO("Couldn't open path %s for writing", path.c_str());
+        LOG_INFO("Couldn't open path {} for writing", path.c_str());
         return;
     }
     // slooow

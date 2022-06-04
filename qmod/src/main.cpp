@@ -10,26 +10,26 @@
 
 #include <filesystem>
 
-static ModInfo modInfo;
+static ModInfo modInfo{MOD_ID, VERSION};
+
 
 Logger& getLogger() {
-    static Logger* logger = new Logger(modInfo);
+    static Logger* logger = new Logger(ModInfo{"QuestEditor", "1.0.0"}, new LoggerOptions(false, true));
     return *logger;
 }
 
-std::string GetDataPath() {
+
+std::string_view GetDataPath() {
     static std::string s(getDataDir(modInfo));
     return s;
 }
 
-static int numFunctions = 0;
 static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
 
-void scheduleFunction(std::function<void()> func) {
-    std::lock_guard<std::mutex> lock(scheduleLock);
+void scheduleFunction(std::function<void()> const& func) {
+    std::unique_lock<std::mutex> lock(scheduleLock);
     scheduledFunctions.emplace_back(func);
-    numFunctions++;
 }
 
 // Hooks
@@ -40,18 +40,26 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(MainMenu, "", "MainMenuViewController", "DidActiva
 
 MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", void, Il2CppObject* self) {
     Update(self);
-    if(numFunctions > 0) {
-        std::lock_guard<std::mutex> lock(scheduleLock);
-        numFunctions = 0;
-        for(auto& function : scheduledFunctions) {
+    // TODO: Use concurrent queue?
+    if (!scheduledFunctions.empty())
+    {
+        std::unique_lock<std::mutex> lock(scheduleLock);
+        std::vector<std::function<void()>> functions(scheduledFunctions);
+        scheduledFunctions.clear();
+        lock.unlock();
+
+        for (auto const& function : functions)
+        {
             LOG_INFO("Running scheduled function on main thread");
             function();
         }
-        scheduledFunctions.clear();
     }
 }
 
+void setupLog();
+
 extern "C" void setup(ModInfo& info) {
+    setupLog();
     info.id = MOD_ID;
     info.version = VERSION;
     modInfo = info;
@@ -59,14 +67,13 @@ extern "C" void setup(ModInfo& info) {
     auto dataPath = GetDataPath();
     if(!direxists(dataPath))
         mkpath(dataPath);
-	
     LOG_INFO("Completed setup!");
 }
 
 extern "C" void load() {
     LOG_INFO("Installing hooks...");
     il2cpp_functions::Init();
-    
+
     LOG_INFO("Initializing connection manager");
     Manager::Instance = new Manager();
     Manager::Instance->Init();

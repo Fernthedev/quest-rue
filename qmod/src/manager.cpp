@@ -8,8 +8,8 @@ using namespace SocketLib;
 using namespace ClassUtils;
 
 template<class T>
-inline T& ReinterpretBytes(const std::string& bytes) {
-    return *(T*) bytes.c_str();
+inline T& ReinterpretBytes(std::string_view bytes) {
+    return *(T*) bytes.data();
 }
 
 Manager* Manager::Instance = nullptr;
@@ -19,6 +19,11 @@ void Manager::Init() {
     initialized = true;
     LOG_INFO("Starting server at port 3306");
     SocketHandler& socketHandler = SocketHandler::getCommonSocketHandler();
+
+    SocketLib::SocketHandler::getCommonSocketHandler().getLogger().loggerCallback += [](SocketLib::LoggerLevel level, std::string const &tag, std::string const &log)
+    {
+        QuestEditor::vInfofmtLog(log, QuestEditor::sl::current("", "", 0, 0), tag, fmt::make_format_args());
+    };
 
     serverSocket = socketHandler.createServerSocket(3306);
     serverSocket->bindAndListen();
@@ -42,33 +47,100 @@ void Manager::SetObject(Il2CppObject* obj) {
 }
 
 void Manager::connectEvent(Channel& channel, bool connected) {
-    LOG_INFO("Connected %i status: %s", channel.clientDescriptor, connected ? "connected" : "disconnected");
-    this->connected = connected;
-    client = &channel;
-
-    if(!connected)
-        client = nullptr;
+    LOG_INFO("Connected {} status: {}", channel.clientDescriptor, connected ? "connected" : "disconnected");
+    if (!connected)
+        channelIncomingQueue.erase(&channel);
+    else
+        channelIncomingQueue.try_emplace(&channel, 0);
 }
 
 void Manager::listenOnEvents(Channel& client, const Message& message) {
-    processBytes(message.toSpan());
+    // read the bytes
+    // if no packet is being parsed, get the first 8 bytes
+    // the first 8 bytes are the size frame, which dictate the size of the incoming packet (excluding the frame)
+    // then continue reading bytes until the expected size matches the current byte size
+    // if excess bytes, loop again
+
+    std::span<const byte> receivedBytes = message.toSpan();
+    auto &pendingPacket = channelIncomingQueue.at(&client);
+
+    // start of a new packet
+    if (!pendingPacket.isValid())
+    {
+        // get the first 8 bytes, then cast to size_t
+        size_t expectedLength = *receivedBytes.first(sizeof(size_t)).data();
+
+        pendingPacket = {expectedLength};
+
+        auto subspanData = receivedBytes.subspan(sizeof(size_t));
+        pendingPacket.data << subspanData.data();
+        pendingPacket.currentLength += subspanData.size();
+        // continue appending to existing packet
+    }
+    else
+    {
+        pendingPacket.data << receivedBytes.data();
+        pendingPacket.currentLength += receivedBytes.size();
+    }
+
+    if (pendingPacket.currentLength < pendingPacket.expectedLength)
+    {
+        return;
+    }
+
+    auto stream = std::move(pendingPacket.data); // avoid copying
+    auto finalMessage = stream.str();
+    auto packetBytes = finalMessage.substr(0, pendingPacket.expectedLength);
+
+
+    if (pendingPacket.currentLength > pendingPacket.expectedLength) {
+        std::string_view excessData = ((std::string_view)finalMessage).substr(pendingPacket.expectedLength);
+        // get the first 8 bytes, then cast to size_t
+        size_t expectedLength = *reinterpret_cast<size_t const*>(excessData.data());
+
+        pendingPacket = IncomingPacket(expectedLength); // reset with excess data
+
+        auto excessDataWithoutSize = excessData.substr(sizeof(size_t));
+
+        pendingPacket.data
+            << excessDataWithoutSize; // insert excess data, ignoring the size prefix
+        pendingPacket.currentLength += excessDataWithoutSize.size();
+    } else {
+        pendingPacket = IncomingPacket(); // reset 
+    }
+
+#ifdef MESSAGE_LOGGING
+    LOG_INFO("Received: {}", finalMessage);
+#endif
+
+    
+
+    PacketWrapper packet;
+    packet.ParseFromString(packetBytes);
+    processMessage(packet);
+
+    // Parse the next packet as it is ready
+    if (pendingPacket.isValid() && pendingPacket.currentLength >= pendingPacket.expectedLength)
+    {
+        listenOnEvents(client, Message(""));
+    }
 }
 
 void Manager::sendPacket(const PacketWrapper& packet) {
-    if(!connected) return;
-    
-    // send size header
-    size_t size = packet.ByteSizeLong();
-    client->queueWrite(Message((byte*) &size, sizeof(size_t)));
-    // send message with that size
-    byte bytes[size];
-    packet.SerializeToArray(bytes, size);
-    client->queueWrite(Message(bytes, size));
+    for (auto const& [id, client] : serverSocket->getClients()) {
+        // send size header
+        size_t size = packet.ByteSizeLong();
+        client->queueWrite(Message((byte*) &size, sizeof(size_t)));
+        // send message with that size
+        byte bytes[size];
+        packet.SerializeToArray(bytes, size);
+        client->queueWrite(Message(bytes, size));
+    }
 }
 
 #pragma region sending
 void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
-    if(!connected) return;
+    if(serverSocket->getClients().empty()) return;
     if(!obj) return;
 
     object = obj;
@@ -84,23 +156,23 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
     while(klass) {
         *packetObject->mutable_clazz() = GetClassInfo(il2cpp_functions::class_get_type(klass));
 
-        for(auto& iKlass : GetInterfaces(klass))
+        for(auto const& iKlass : GetInterfaces(klass))
             *packetObject->add_interfaces() = GetClassInfo(il2cpp_functions::class_get_type(iKlass));
 
-        for(auto& fieldInfo : GetFields(klass)) {
+        for(auto const& fieldInfo : GetFields(klass)) {
             methods.emplace_back(Method(object, fieldInfo, false));
             methods.emplace_back(Method(object, fieldInfo, true));
 
-            auto& fakeMethodSet = methods.back();
+            auto const& fakeMethodSet = methods.back();
             *packetObject->add_fields() = fakeMethodSet.GetFieldInfo(methods.size() - 2);
         }
 
         // all property get/set methods are contained in the methods
         // TODO: get the properties and match them to their methods somehow
-        for(auto& methodInfo : GetMethods(klass)) {
+        for(auto const& methodInfo : GetMethods(klass)) {
             methods.emplace_back(Method(object, methodInfo));
 
-            auto& method = methods.back();
+            auto const& method = methods.back();
             *packetObject->add_methods() = method.GetMethodInfo(methods.size() - 1);
         }
 
@@ -115,54 +187,6 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
 #pragma endregion
 
 #pragma region parsing
-void Manager::processBytes(std::span<const byte> bytes) {
-
-    // if there is header length left:
-    //   if the packet is longer:
-    //     fill the rest of the header
-    //     remove removed bytes from the packet
-    //     set message length left to the header
-    //     set header length left to 0
-    //   else:
-    //     add whole packet to header
-    //     update header length left
-    //     return
-    // if there is message length left:
-    //   if the packet is longer:
-    //     fill the rest of the message
-    //     remove removed bytes from the packet
-    //     set header length left to 4
-    //     process message
-    //     call again with remaining packet
-    //   else:
-    //     add whole packet to message
-    //     update message length left
-    //     return
-
-    auto headerRemaining = header.GetRemaining();
-    if(headerRemaining > 0) {
-        header.AddBytes(bytes.data());
-        if(int* len = header.Resolve<int>()) {
-            bytes = bytes.subspan(headerRemaining);
-            packetBytes.Init(*len);
-        } else
-            return;
-    }
-    auto packetRemaining = packetBytes.GetRemaining();
-    if(packetRemaining > 0) {
-        packetBytes.AddBytes(bytes.data());
-        if(std::byte** pkt = packetBytes.Resolve<std::byte*>()) {
-            bytes = bytes.subspan(packetRemaining);
-            PacketWrapper packet;
-            packet.ParseFromArray(*pkt, packetBytes.GetSize());
-            processMessage(packet);
-            header.Clear();
-            if(!bytes.empty())
-                processBytes(bytes);
-        }
-    }
-}
-
 void Manager::processMessage(const PacketWrapper& packet) {
     switch(packet.Packet_case()) {
     case PacketWrapper::kInvokeMethod:
@@ -172,7 +196,7 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kSearchObjects:
         searchObjects(packet.searchobjects());
     default:
-        LOG_INFO("Invalid packet type! %i", packet.Packet_case());
+        LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
 }
 
