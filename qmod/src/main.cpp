@@ -59,7 +59,9 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", vo
 void setupLog();
 
 extern "C" void setup(ModInfo& info) {
-    setupLog();
+    Paper::Logger::RegisterFileContextId("QuestEditor");
+    Paper::Logger::RegisterFileContextId("SocketLib");
+    
     info.id = MOD_ID;
     info.version = VERSION;
     modInfo = info;

@@ -20,11 +20,6 @@ void Manager::Init() {
     LOG_INFO("Starting server at port 3306");
     SocketHandler& socketHandler = SocketHandler::getCommonSocketHandler();
 
-    SocketLib::SocketHandler::getCommonSocketHandler().getLogger().loggerCallback += [](SocketLib::LoggerLevel level, std::string const &tag, std::string const &log)
-    {
-        QuestEditor::vInfofmtLog(log, QuestEditor::sl::current("", "", 0, 0), tag, fmt::make_format_args());
-    };
-
     serverSocket = socketHandler.createServerSocket(3306);
     serverSocket->bindAndListen();
     LOG_INFO("Started server");

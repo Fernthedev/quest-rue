@@ -22,7 +22,7 @@
     },
     {
       "id": "socket_lib",
-      "versionRange": "^0.6.0",
+      "versionRange": "^0.7.0",
       "additionalData": {}
     },
     {
