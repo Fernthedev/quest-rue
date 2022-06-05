@@ -64,7 +64,7 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
         expectedLength = ntohq(expectedLength);
         
 
-        LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
+        // LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
 
         pendingPacket = {expectedLength};
 
@@ -74,7 +74,6 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     }
     else
     {
-        LOG_INFO("Appending: {}", receivedBytes.size());
         pendingPacket.insertBytes(receivedBytes);
     }
 
@@ -83,19 +82,11 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
         return;
     }
 
-    // LOG_INFO("Str before move {}", pendingPacket.getData().str())
-    // auto stream = std::move(pendingPacket.getData()); // avoid copying
-    // std::string const finalMessage = stream.str();
-    // auto const packetBytes = ((std::string_view)finalMessage).substr(0, pendingPacket.getExpectedLength());
-
-
     auto stream = std::move(pendingPacket.getData()); // avoid copying
     std::span<const byte> const finalMessage = stream;
     auto const packetBytes = (finalMessage).subspan(0, pendingPacket.getExpectedLength());
 
     if (pendingPacket.getCurrentLength() > pendingPacket.getExpectedLength()) {
-        LOG_INFO("Excess data current length {} str length {} expected length {}", pendingPacket.getCurrentLength() , finalMessage.size(), pendingPacket.getExpectedLength())
-        // std::string_view excessData = ((std::string_view)finalMessage).substr(pendingPacket.getExpectedLength());
         auto excessData = finalMessage.subspan(pendingPacket.getExpectedLength());
         // get the first 8 bytes, then cast to size_t
         size_t expectedLength = *reinterpret_cast<size_t const*>(excessData.data());
@@ -109,10 +100,6 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     } else {
         pendingPacket = IncomingPacket(); // reset 
     }
-
-#ifdef MESSAGE_LOGGING
-    LOG_INFO("Received: {}", finalMessage);
-#endif
 
     
 
@@ -128,14 +115,25 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
 }
 
 void Manager::sendPacket(const PacketWrapper& packet) {
+    packet.CheckInitialized();
+    size_t size = packet.ByteSizeLong();
+    // send size header
+    // send message with that size
+    byte bytes[size + sizeof(size_t)];
+    auto networkSize = htonq(size); // convert to big endian
+
+    // size header, cast to make it length of 8
+    auto networkSizeAsBytes = reinterpret_cast<byte *>(&networkSize);
+    // idk why but `bytes[0] = networkSize` does not work, does funny stuff to the array
+    std::copy(networkSizeAsBytes, networkSizeAsBytes + sizeof(size_t), bytes);
+
+    packet.SerializeToArray(bytes + sizeof(size_t), size); // payload
+    std::span<byte> finishedBytes(bytes, bytes + size + sizeof(size_t));
+
+
     for (auto const& [id, client] : serverSocket->getClients()) {
-        // send size header
-        size_t size = packet.ByteSizeLong();
-        client->queueWrite(Message((byte*) &size, sizeof(size_t)));
-        // send message with that size
-        byte bytes[size];
-        packet.SerializeToArray(bytes, size);
-        client->queueWrite(Message(bytes, size));
+        client->queueWrite(Message(finishedBytes));
+        // LOG_INFO("Sending to {} bytes {} {}", id, size, finishedBytes);
     }
 }
 

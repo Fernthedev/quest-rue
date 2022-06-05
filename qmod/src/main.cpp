@@ -58,31 +58,42 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", vo
 
 void setupLog();
 
+namespace Paper::Logger {
+    bool IsInited();
+    void Init(std::string_view logPath, LoggerConfig const &config);
+}
+
 extern "C" void setup(ModInfo& info) {
     Paper::Logger::RegisterFileContextId("QuestEditor");
     Paper::Logger::RegisterFileContextId("SocketLib");
-    
-    info.id = MOD_ID;
-    info.version = VERSION;
-    modInfo = info;
-    
-    auto dataPath = GetDataPath();
-    if(!direxists(dataPath))
-        mkpath(dataPath);
-    LOG_INFO("Completed setup!");
-}
 
-extern "C" void load() {
-    LOG_INFO("Installing hooks...");
-    il2cpp_functions::Init();
+    if (!Paper::Logger::IsInited()) {
+        std::string path = fmt::format("/sdcard/Android/data/{}/files/logs/paper", Modloader::getApplicationId());
+        Paper::Logger::Init(path, Paper::LoggerConfig());
+    }
 
-    LOG_INFO("Initializing connection manager");
-    Manager::Instance = new Manager();
-    Manager::Instance->Init();
+        info.id = MOD_ID;
+        info.version = VERSION;
+        modInfo = info;
 
-    auto logger = getLogger().WithContext("load");
-    // Install hooks
-    INSTALL_HOOK(logger, Update);
-    // INSTALL_HOOK(logger, MainMenu);
-    getLogger().info("Installed all hooks!");
-}
+        auto dataPath = GetDataPath();
+        if (!direxists(dataPath))
+            mkpath(dataPath);
+        LOG_INFO("Completed setup!");
+    }
+
+    extern "C" void load()
+    {
+        LOG_INFO("Installing hooks...");
+        il2cpp_functions::Init();
+
+        LOG_INFO("Initializing connection manager");
+        Manager::Instance = new Manager();
+        Manager::Instance->Init();
+
+        auto logger = getLogger().WithContext("load");
+        // Install hooks
+        INSTALL_HOOK(logger, Update);
+        // INSTALL_HOOK(logger, MainMenu);
+        getLogger().info("Installed all hooks!");
+    }
