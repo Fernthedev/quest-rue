@@ -2,6 +2,8 @@
 #include "classutils.hpp"
 #include "main.hpp"
 
+#include <fmt/ranges.h>
+
 #define MESSAGE_LOGGING
 
 using namespace SocketLib;
@@ -58,43 +60,52 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     if (!pendingPacket.isValid())
     {
         // get the first 8 bytes, then cast to size_t
-        size_t expectedLength = *receivedBytes.first(sizeof(size_t)).data();
+        size_t expectedLength = *reinterpret_cast<size_t const *>(receivedBytes.first(sizeof(size_t)).data());
+        expectedLength = ntohq(expectedLength);
+        
+
+        LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
 
         pendingPacket = {expectedLength};
 
         auto subspanData = receivedBytes.subspan(sizeof(size_t));
-        pendingPacket.data << subspanData.data();
-        pendingPacket.currentLength += subspanData.size();
+        pendingPacket.insertBytes(subspanData);
         // continue appending to existing packet
     }
     else
     {
-        pendingPacket.data << receivedBytes.data();
-        pendingPacket.currentLength += receivedBytes.size();
+        LOG_INFO("Appending: {}", receivedBytes.size());
+        pendingPacket.insertBytes(receivedBytes);
     }
 
-    if (pendingPacket.currentLength < pendingPacket.expectedLength)
+    if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength())
     {
         return;
     }
 
-    auto stream = std::move(pendingPacket.data); // avoid copying
-    auto finalMessage = stream.str();
-    auto packetBytes = finalMessage.substr(0, pendingPacket.expectedLength);
+    // LOG_INFO("Str before move {}", pendingPacket.getData().str())
+    // auto stream = std::move(pendingPacket.getData()); // avoid copying
+    // std::string const finalMessage = stream.str();
+    // auto const packetBytes = ((std::string_view)finalMessage).substr(0, pendingPacket.getExpectedLength());
 
 
-    if (pendingPacket.currentLength > pendingPacket.expectedLength) {
-        std::string_view excessData = ((std::string_view)finalMessage).substr(pendingPacket.expectedLength);
+    auto stream = std::move(pendingPacket.getData()); // avoid copying
+    std::span<const byte> const finalMessage = stream;
+    auto const packetBytes = (finalMessage).subspan(0, pendingPacket.getExpectedLength());
+
+    if (pendingPacket.getCurrentLength() > pendingPacket.getExpectedLength()) {
+        LOG_INFO("Excess data current length {} str length {} expected length {}", pendingPacket.getCurrentLength() , finalMessage.size(), pendingPacket.getExpectedLength())
+        // std::string_view excessData = ((std::string_view)finalMessage).substr(pendingPacket.getExpectedLength());
+        auto excessData = finalMessage.subspan(pendingPacket.getExpectedLength());
         // get the first 8 bytes, then cast to size_t
         size_t expectedLength = *reinterpret_cast<size_t const*>(excessData.data());
 
         pendingPacket = IncomingPacket(expectedLength); // reset with excess data
 
-        auto excessDataWithoutSize = excessData.substr(sizeof(size_t));
+        auto excessDataWithoutSize = excessData.subspan(sizeof(size_t));
 
-        pendingPacket.data
-            << excessDataWithoutSize; // insert excess data, ignoring the size prefix
-        pendingPacket.currentLength += excessDataWithoutSize.size();
+        // insert excess data, ignoring the size prefix
+        pendingPacket.insertBytes(excessDataWithoutSize);
     } else {
         pendingPacket = IncomingPacket(); // reset 
     }
@@ -106,11 +117,11 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     
 
     PacketWrapper packet;
-    packet.ParseFromString(packetBytes);
+    packet.ParseFromArray(packetBytes.data(), packetBytes.size());
     processMessage(packet);
 
     // Parse the next packet as it is ready
-    if (pendingPacket.isValid() && pendingPacket.currentLength >= pendingPacket.expectedLength)
+    if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength())
     {
         listenOnEvents(client, Message(""));
     }
@@ -178,13 +189,17 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
 
 #pragma region parsing
 void Manager::processMessage(const PacketWrapper& packet) {
+    LOG_INFO("Packet is {}", packet.DebugString());
     switch(packet.Packet_case()) {
     case PacketWrapper::kInvokeMethod:
         invokeMethod(packet.invokemethod());
+        break;
     case PacketWrapper::kLoadObject:
         loadObject(packet.loadobject());
+        break;
     case PacketWrapper::kSearchObjects:
         searchObjects(packet.searchobjects());
+        break;
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }

@@ -40,6 +40,8 @@ impl Connection {
         codec
             .length_field_offset(0) // default value
             .length_field_type::<u64>()
+            .length_field_length(8)
+            .big_endian() // Do not strip frame header
             .length_adjustment(0); // default value
 
         let read_frame = codec.new_read(read_stream);
@@ -150,6 +152,8 @@ impl AppState {
     // TODO: Close all when unrecoverable error
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
+
+        dbg!("Sending bytes {}", bytes.len());
 
         let connection = (*connection_guard)
             .as_mut()

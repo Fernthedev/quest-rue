@@ -128,9 +128,9 @@ async fn request_game_objects(
     state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let mut packet_wrapper = PacketWrapper::new();
-    packet_wrapper.Packet = Some(protos::qrue::PacketWrapper_oneof_Packet::searchObjects(
+    packet_wrapper.set_searchObjects(
         SearchObjects::new(),
-    ));
+    );
 
     dbg!("Requesting objects!");
 

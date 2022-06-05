@@ -7,19 +7,54 @@
 
 struct IncomingPacket
 {
-    std::stringstream data;
-    size_t expectedLength;
-    size_t currentLength; // should we do this?
+    using byte = unsigned char;
+
+    IncomingPacket(size_t expectedLength) : data(), expectedLength(expectedLength) {
+        data.reserve(expectedLength);
+    }
+
+    // by default, invalid packet
+    explicit IncomingPacket() : IncomingPacket(0) {}
+
+    inline void insertBytes(std::span<const byte> bytes)
+    {
+        insertBytes(bytes.data(), bytes.size());
+        // data << bytes.data();
+        // currentLength += bytes.size();
+    }
+
+    template <typename T>
+    inline void insertBytes(T && bytes, size_t size)
+    {
+        data.insert(data.end(), std::forward<T>(bytes), std::forward<T>(bytes) + size);
+        // data << std::forward<T>(bytes);
+        // currentLength += size;
+    }
+
+    [[nodiscard]] auto &getData()
+    {
+        return data;
+    }
+
+    [[nodiscard]] size_t getExpectedLength() const {
+        return expectedLength;
+    }
+
+    [[nodiscard]] size_t getCurrentLength() const
+    {
+        return data.size();
+    }
 
     [[nodiscard]] constexpr bool isValid() const
     {
         return expectedLength > 0;
     }
 
-    IncomingPacket(size_t expectedLength) : data(expectedLength), expectedLength(expectedLength) {}
-
-    // by default, invalid packet
-    explicit IncomingPacket() : IncomingPacket(0) {}
+private:
+    std::vector<byte> data;
+    // size_t currentLength; // should we do this?
+    size_t expectedLength;
+    // std::stringstream data;
 };
 
 class Manager {
