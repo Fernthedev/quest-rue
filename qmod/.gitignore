@@ -56,3 +56,6 @@ protobuf/*
 !*.proto
 
 *.qmod
+perf.data
+binary_cache
+report.html

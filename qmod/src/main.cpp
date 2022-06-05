@@ -72,28 +72,28 @@ extern "C" void setup(ModInfo& info) {
         Paper::Logger::Init(path, Paper::LoggerConfig());
     }
 
-        info.id = MOD_ID;
-        info.version = VERSION;
-        modInfo = info;
+    info.id = MOD_ID;
+    info.version = VERSION;
+    modInfo = info;
 
-        auto dataPath = GetDataPath();
-        if (!direxists(dataPath))
-            mkpath(dataPath);
-        LOG_INFO("Completed setup!");
-    }
+    auto dataPath = GetDataPath();
+    if (!direxists(dataPath))
+        mkpath(dataPath);
+    LOG_INFO("Completed setup!");
+}
 
-    extern "C" void load()
-    {
-        LOG_INFO("Installing hooks...");
-        il2cpp_functions::Init();
+extern "C" void load()
+{
+    LOG_INFO("Installing hooks...");
+    il2cpp_functions::Init();
 
-        LOG_INFO("Initializing connection manager");
-        Manager::Instance = new Manager();
-        Manager::Instance->Init();
+    LOG_INFO("Initializing connection manager");
+    Manager::Instance = new Manager();
+    Manager::Instance->Init();
 
-        auto logger = getLogger().WithContext("load");
-        // Install hooks
-        INSTALL_HOOK(logger, Update);
-        // INSTALL_HOOK(logger, MainMenu);
-        getLogger().info("Installed all hooks!");
-    }
+    auto logger = getLogger().WithContext("load");
+    // Install hooks
+    INSTALL_HOOK(logger, Update);
+    // INSTALL_HOOK(logger, MainMenu);
+    getLogger().info("Installed all hooks!");
+}
