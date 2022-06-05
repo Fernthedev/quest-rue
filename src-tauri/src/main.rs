@@ -7,6 +7,7 @@
 
 use appstate::AppState;
 use bytes::BytesMut;
+use log::{debug, LevelFilter};
 use protobuf::Message;
 use protos::qrue::{PacketWrapper, SearchObjects};
 use serde_json::Value;
@@ -30,6 +31,8 @@ const FAILURE_DISCONNECTED_EVENT: &str = "failure-disconnected-to-quest";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    env_logger::builder().filter_level(LevelFilter::Trace).init();
+
     tauri::Builder::default()
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![
@@ -50,14 +53,20 @@ async fn main() -> anyhow::Result<()> {
 fn map_anyhow_str<T>(r: Result<T, anyhow::Error>) -> Result<T, String> {
     match r {
         Ok(o) => Ok(o),
-        Err(e) => Err(format!("{:?}", dbg!(&e))),
+        Err(e) => {
+            debug!("{:?}", &e);
+            Err(format!("{:?}", &e))
+        },
     }
 }
 
 fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
     let packet = match PacketWrapper::parse_from_carllerche_bytes(&bytes_mut.into()) {
         Ok(packet) => packet,
-        Err(e) => panic!("Unable to parse bytes {}", dbg!(e)),
+        Err(e) => {
+            debug!("{}", &e);
+            panic!("Unable to parse bytes {}", e)
+        },
     };
 
     if packet.Packet.is_none() {
@@ -79,7 +88,7 @@ fn handle_packet(bytes_mut: BytesMut, app_handle: &AppHandle) {
             packet_type: format!("{:?}", packet_enum.as_ref().unwrap()),
             general_packet_data: Some(serde_value),
         };
-        println!("Invoking event {}", event_name);
+        debug!("Invoking event {}", event_name);
         // TODO: Prefix event
         app_handle
             .emit_all(event_name, specific_payload)
@@ -107,7 +116,7 @@ async fn connect(
         .expect("Unable to emit event");
 
     async_runtime::spawn(async move {
-        dbg!("Reading loop started!");
+        debug!("Reading loop started!");
         if let Err(e) = app_handle
             .state::<AppState>()
             .read_thread_loop(|bytes| handle_packet(bytes, &app_handle))
@@ -116,7 +125,7 @@ async fn connect(
             app_handle
                 .emit_all(READ_LOOP_DIED, ())
                 .expect("Unable to emit event");
-            dbg!(e);
+            debug!("{}", e);
         }
     });
     Ok(())
@@ -128,11 +137,9 @@ async fn request_game_objects(
     state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let mut packet_wrapper = PacketWrapper::new();
-    packet_wrapper.set_searchObjects(
-        SearchObjects::new(),
-    );
+    packet_wrapper.set_searchObjects(SearchObjects::new());
 
-    dbg!("Requesting objects!");
+    debug!("Requesting objects!");
 
     // println!("Receiving object request, responding");
     // // TODO: Remove
@@ -196,7 +203,10 @@ pub async fn write_packet(
 
     if let Err(e) = &result {
         app_handle
-            .emit_all(FAILURE_DISCONNECTED_EVENT, format!("Unable to write: {:?}", &e))
+            .emit_all(
+                FAILURE_DISCONNECTED_EVENT,
+                format!("Unable to write: {:?}", &e),
+            )
             .expect("Unable to emit event");
 
         state.disconnect().await?;

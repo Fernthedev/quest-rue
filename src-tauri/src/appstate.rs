@@ -9,6 +9,7 @@ use anyhow::Context;
 use bytes::{Bytes, BytesMut};
 use futures::lock::Mutex;
 use futures::{SinkExt, StreamExt};
+use log::debug;
 use protobuf::Message;
 use std::sync::Arc;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
@@ -98,6 +99,7 @@ impl AppState {
             }
 
             if let Some(bytes) = result.unwrap() {
+                debug!("Received {:?}\n", &bytes);
                 on_packet_receive(bytes)
             }
         }
@@ -153,7 +155,7 @@ impl AppState {
     pub async fn write_and_flush(&self, bytes: Bytes) -> anyhow::Result<()> {
         let mut connection_guard = self.connection.write_frame.lock().await;
 
-        dbg!("Sending bytes {}", bytes.len());
+        debug!("Sending bytes {}", bytes.len());
 
         let connection = (*connection_guard)
             .as_mut()

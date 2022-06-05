@@ -1,4 +1,4 @@
-use std::{path::Path, option};
+use std::path::Path;
 
 use protoc_rust::Customize;
 
