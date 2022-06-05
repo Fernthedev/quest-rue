@@ -1,8 +1,9 @@
 import { CubeFilled } from "@fluentui/react-icons";
 import { Collapse, Loading, Radio } from "@nextui-org/react";
-import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect, useState, useTransition } from "react";
-import { listenToGameOjects } from "../misc/events";
+import { useEffect, useState } from "react";
+import { isConnected, requestGameObjects } from "../misc/commands";
+import { listenToConnect, listenToGameObjects } from "../misc/events";
+import { useEffectAsync } from "../misc/utils";
 
 export interface GameObjectsListProps {
     objects: string[],
@@ -16,13 +17,33 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
     // Listen to game object list events
     useEffect(() => {
-        invoke("request_game_objects")
-
-        return listenToGameOjects(objects => {
+        console.log("listening for game objects")
+        return listenToGameObjects(objects => {
             console.log(`Received objects ${objects}`)
             setObjects(objects)
         })
     }, []);
+
+
+    // On connect 
+    useEffectAsync(async () => {
+        const connected = await isConnected();
+        
+        if (connected) {
+            console.log("connected, requesting objects")
+            requestGameObjects().catch((e) => console.error(`Error: ${e}`));
+        } else {
+            console.log("Waiting for connection")
+            return listenToConnect((_) => {
+                console.log("connected after waiting, requesting objects")
+                try {
+                    requestGameObjects();
+                } catch (e) {
+                    console.error(`Error: ${e}`);
+                }
+            });
+        }
+    }, [])
 
     return (
         <>

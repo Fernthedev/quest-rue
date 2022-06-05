@@ -6,6 +6,14 @@ import { createTheme, NextUIProvider, useTheme } from '@nextui-org/react'
 
 import useDarkMode from 'use-dark-mode';
 
+import { connect } from './misc/commands';
+
+console.log("Connecting")
+connect('192.168.0.18', 3306).then(() => {
+  console.log("Connected!")
+}).catch((e) => {
+  console.error(`Unable to connect: ${e}`)
+})
 
 const lightTheme = createTheme({
   type: 'dark',
