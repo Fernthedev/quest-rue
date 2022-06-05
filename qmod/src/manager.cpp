@@ -26,13 +26,8 @@ void Manager::Init() {
 
     ServerSocket& serverSocket = *this->serverSocket;
     
-    serverSocket.connectCallback += [this](Channel& client, bool connected){
-        connectEvent(client, connected);
-    };
-
-    serverSocket.listenCallback += [this](Channel& client, const Message& message){
-        listenOnEvents(client, message);
-    };
+    serverSocket.connectCallback += {&Manager::connectEvent, this};
+    serverSocket.listenCallback += {&Manager::listenOnEvents, this};
 
     LOG_INFO("Server fully initialized");
 }
