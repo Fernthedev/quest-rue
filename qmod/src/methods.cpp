@@ -142,7 +142,7 @@ Method::Method(Il2CppObject* obj, FieldInfo* f, bool s) {
 // so int*, Vector3*, Il2CppObject*
 RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) const {
     if(method) {
-        LOG_INFO("Running method {}", name.c_str());
+        LOG_INFO("Running method {}", name);
 
         // deref reference types when running a method as it expects direct pointers to them
         if(derefReferences) {
@@ -156,7 +156,7 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
         auto ret = il2cpp_functions::runtime_invoke(method, object, args, &ex);
         
         if(ex) {
-            LOG_INFO("{}: Failed with exception: {}", name.c_str(), il2cpp_utils::ExceptionToString(ex).c_str());
+            LOG_INFO("{}: Failed with exception: {}", name, il2cpp_utils::ExceptionToString(ex));
             error = il2cpp_utils::ExceptionToString(ex);
             return {};
         }
@@ -175,8 +175,8 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
         return RetWrapper(ownedRet, size);
     } else if(field) {
         if(set) {
-            LOG_INFO("Setting field {}", name.c_str());
-            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType).c_str());
+            LOG_INFO("Setting field {}", name);
+            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType));
 
             // deref reference types here as well since it expects the same as if it were running a method
             if(typeIsValuetype(returnType) || !derefReferences)
@@ -185,8 +185,8 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
                 il2cpp_functions::field_set_value(object, field, *(void**) *args);
             return {};
         } else {
-            LOG_INFO("Getting field {}", name.c_str());
-            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType).c_str());
+            LOG_INFO("Getting field {}", name);
+            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType));
 
             // in the case of either a value type or not, the value we want will be copied to what we return
             size_t size = fieldTypeSize(returnType);

@@ -79,6 +79,13 @@ message DataMsg {
     bytes data = 2;
 }
 
+message ObjectMsg {
+    string name = 1;
+    ClassInfoMsg classInfo = 2;
+    
+    bytes pointer = 3;
+}
+
 // COMMAND/QUERY PACKETS
 
 message InvokeMethod {
@@ -108,8 +115,7 @@ message SearchObjects {
 
 message SearchObjectsResult {
     uint64 queryId = 1;
-    // TODO: Make a GameObject type with all the data
-    repeated string foundObjects = 2;
+    repeated ObjectMsg foundObjects = 2;
 }
 
 // ???

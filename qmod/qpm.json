@@ -29,6 +29,11 @@
       "id": "paper",
       "versionRange": "^1.0.5",
       "additionalData": {}
+    },
+    {
+      "id": "modloader",
+      "versionRange": "^1.2.3",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

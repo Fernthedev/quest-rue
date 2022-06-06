@@ -14,11 +14,8 @@
                 "${workspaceFolder}/qmod/shared",
                 "${workspaceFolder}",
                 "${workspaceFolder}/**",
-                "${vcpkgRoot}/arm64-android/include",
-                "${vcpkgRoot}/x64-windows/include",
-                "${vcpkgRoot}/x86-windows/include",
-                "E:/SSDUse/AppData/Android/SDK/ndk/24.0.8215888/**",
-                "E:/SSDUse/AppData/Android/SDK/ndk/24.0.8215888/toolchains/llvm/prebuilt/windows-x86_64/**",
+                "${env:VCPKG_ROOT}/installed/arm64-android/include/**",
+                "${env:ANDROID_NDK_HOME}/sources/**",
                 "${default}"
             ],
             "name": "Quest",

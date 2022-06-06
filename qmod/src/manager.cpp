@@ -14,6 +14,11 @@ inline T& ReinterpretBytes(std::string_view bytes) {
     return *(T*) bytes.data();
 }
 
+template<class T>
+inline std::string ByteString(const T& bytes) {
+    return {(char*) &bytes, sizeof(T)};
+}
+
 Manager* Manager::Instance = nullptr;
 
 void Manager::Init() {
@@ -57,13 +62,11 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     auto &pendingPacket = channelIncomingQueue.at(&client);
 
     // start of a new packet
-    if (!pendingPacket.isValid())
-    {
+    if (!pendingPacket.isValid()) {
         // get the first 8 bytes, then cast to size_t
         size_t expectedLength = *reinterpret_cast<size_t const *>(receivedBytes.first(sizeof(size_t)).data());
         expectedLength = ntohq(expectedLength);
         
-
         // LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
 
         pendingPacket = {expectedLength};
@@ -71,14 +74,11 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
         auto subspanData = receivedBytes.subspan(sizeof(size_t));
         pendingPacket.insertBytes(subspanData);
         // continue appending to existing packet
-    }
-    else
-    {
+    } else {
         pendingPacket.insertBytes(receivedBytes);
     }
 
-    if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength())
-    {
+    if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength()) {
         return;
     }
 
@@ -101,15 +101,12 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
         pendingPacket = IncomingPacket(); // reset 
     }
 
-    
-
     PacketWrapper packet;
     packet.ParseFromArray(packetBytes.data(), packetBytes.size());
     processMessage(packet);
 
     // Parse the next packet as it is ready
-    if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength())
-    {
+    if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength()) {
         listenOnEvents(client, Message(""));
     }
 }
@@ -256,73 +253,67 @@ void Manager::loadObject(const LoadObject& packet) {
 }
 
 void Manager::searchObjects(const SearchObjects& packet) {
-    LOG_INFO("yeah I'm definitely searching for objects rn. just a few months more to finish...");
     PacketWrapper wrapper;
     SearchObjectsResult& result = *wrapper.mutable_searchobjectsresult();
     result.set_queryid(packet.queryid());
+
+    std::string name = packet.objectname();
+    bool searchName = name.length() > 0;
+    bool searchComponent = packet.has_requiredcomponent();
+
+    static auto objClass = il2cpp_utils::GetClassFromName("UnityEngine", "Object");
+    Il2CppClass* klass = objClass;
+
+    if(searchComponent) {
+        const ClassInfoMsg& componentInfo = packet.requiredcomponent();
+        std::string namespaceName = componentInfo.namespaze();
+        if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
+            namespaceName = "";
+        auto& className = componentInfo.clazz();
+        if(!className.empty()) {
+            klass = il2cpp_utils::GetClassFromName(namespaceName, className);
+            if(!klass) {
+                LOG_INFO("Could not find class {}.{}", namespaceName, className);
+                if(!searchName)
+                    return;
+            }
+            // ensure class is a subclass of UnityEngine.Object
+            if(klass && !il2cpp_functions::class_is_subclass_of(klass, objClass, false)) {
+                LOG_INFO("Class must be a subclass of Object to search");
+                if(!searchName)
+                    return;
+                klass = objClass;
+            }
+        }
+    }
+    
+    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
+    auto objects = *il2cpp_utils::RunMethod<ArrayW<Il2CppObject*>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(klass));
+
+    std::span<Il2CppObject*> res = objects.ref_to();
+    std::vector<Il2CppObject*> namedObjs;
+    
+    auto nameMethod = il2cpp_functions::class_get_method_from_name(klass, "get_name", 0);
+    if(!nameMethod) {
+        LOG_INFO("Error: Could not find get_name() method in class");
+    } else if(searchName) {
+        LOG_INFO("Searching for name {}", name);
+        for(auto& obj : res) {
+            if(*il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod) == name)
+                namedObjs.push_back(obj);
+        }
+        res = std::span<Il2CppObject*>(namedObjs);
+    }
+
+    for(auto& obj : res) {
+        ObjectMsg& found = *result.add_foundobjects();
+        if(nameMethod && !searchName)
+            name = (std::string) *il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod);
+        found.set_name(name);
+        *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(obj)));
+        found.set_pointer(ByteString(obj));
+    }
+    
     sendPacket(wrapper);
 }
-
-// TODO: fix up for protobuf
-// void Manager::processFind(std::string command) {
-//     #ifdef MESSAGE_LOGGING
-//     LOG_INFO("Find: %s", sanitizeString(command).c_str());
-//     #endif
-//     try {
-//         // get args
-//         auto args = parse(command, "\n\n\n\n");
-//         bool nameSearch = std::stoi(args[0]);
-//         std::string name = args[1];
-//         std::string namespaceName = args[2];
-//         std::string className = args[3];
-//         // find class if provided
-//         Il2CppClass* klass = nullptr;
-//         static auto objClass = il2cpp_utils::GetClassFromName("UnityEngine", "Object");
-//         // account for global/unnamed namespace
-//         if(namespaceName == " " || namespaceName == "Global" || namespaceName == "GlobalNamespace")
-//             namespaceName = "";
-//         if(className != " ") {
-//             klass = il2cpp_utils::GetClassFromName(namespaceName, className);
-//             if(!klass) {
-//                 LOG_INFO("Could not find class %s.%s", namespaceName.c_str(), className.c_str());
-//             }
-//             // ensure class is a subclass of UnityEngine.Object
-//             if(klass && !il2cpp_functions::class_is_subclass_of(klass, objClass, false)) {
-//                 LOG_INFO("Class must be a subclass of Object to search");
-//                 return;
-//             }
-//         }
-//         if(!klass)
-//             klass = objClass;
-//         // get all objects of its class
-//         static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
-//         auto objects = unwrap_optionals(il2cpp_utils::RunMethod<ArrayW<Il2CppObject*>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(klass)));
-//         // do search or return first object
-//         if(nameSearch && name != " ") {
-//             LOG_INFO("name");
-//             auto nameMethod = il2cpp_functions::class_get_method_from_name(klass, "get_name", 0);
-//             if(!nameMethod) {
-//                 LOG_INFO("Class must have a get_name() method to search by name");
-//                 return;
-//             }
-//             auto obj = objects.FirstOrDefault([&name, &nameMethod](auto x) {
-//                 return unwrap_optionals(il2cpp_utils::RunMethod<StringW, false>(x, nameMethod)) == name;
-//             });
-//             if(!obj) {
-//                 LOG_INFO("Could not find object with name '%s'", name.c_str());
-//                 return;
-//             }
-//             SetObject(obj);
-//             return;
-//         } else {
-//             if(objects.Length() > 0)
-//                 SetObject(objects[0]);
-//             else
-//                 LOG_INFO("No objects found");
-//             return;
-//         }
-//     } catch(...) {
-//         LOG_INFO("Could not parse find command");
-//     }
-// }
 #pragma endregion

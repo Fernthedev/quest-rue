@@ -1,5 +1,5 @@
 if (Test-Path ".\protobuf\") {
-    del ./protobuf -Confirm
+    del ./protobuf -Confirm -Recurse
 }
 mkdir ./protobuf
 # & protoc -I="..\protos" --cpp_out="protobuf" ..\protos\qrue.proto
