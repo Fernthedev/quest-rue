@@ -117,6 +117,16 @@ message SearchComponentsResult {
     repeated ComponentMsg foundComponents = 2;
 }
 
+message FindGameObject {
+    uint64 queryId = 1;
+    string name = 2;
+}
+
+message FindGameObjectResult {
+    uint64 queryId = 1;
+    bytes pointer = 2; /* nullable */
+}
+
 // ???
 message LoadObject {
     uint64 loadId = 1;
@@ -137,5 +147,7 @@ message PacketWrapper {
         SearchComponentsResult searchComponentsResult = 4;
         LoadObject loadObject = 5;
         LoadObjectResult loadObjectResult = 6;
+        FindGameObject findGameObject = 7;
+        FindGameObjectResult findGameObjectResult = 8;
     }
 }

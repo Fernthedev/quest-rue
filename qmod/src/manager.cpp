@@ -195,6 +195,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kSearchComponents:
         searchComponents(packet.searchcomponents());
         break;
+    case PacketWrapper::kFindGameObject:
+        findGameObject(packet.findgameobject());
+        break;
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
@@ -302,6 +305,22 @@ void Manager::searchComponents(const SearchComponents& packet) {
         *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(obj)));
         found.set_pointer(ByteString(obj));
     }
+    
+    sendPacket(wrapper);
+}
+
+void Manager::findGameObject(const FindGameObject& packet) {
+    PacketWrapper wrapper;
+    FindGameObjectResult& result = *wrapper.mutable_findgameobjectresult();
+    result.set_queryid(packet.queryid());
+
+    const std::string& name = packet.name();
+
+    static auto findMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "Find", 1);
+    Il2CppObject* obj = *il2cpp_utils::RunMethod<Il2CppObject*, false>(nullptr, findMethod, StringW(name));
+
+    if(obj)
+        result.set_pointer(ByteString(obj));
     
     sendPacket(wrapper);
 }
