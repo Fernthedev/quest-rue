@@ -13,7 +13,7 @@ fn main() {
     let mut proto_invoke = protoc_rust::Codegen::new();
 
     // USE VCPKG PROTOBUF BY DEFAULT
-    if protoc.exists() {
+    if protoc.exists() || protoc.with_extension("exe").exists() {
         println!("Using \"{:?}\" for protoc", &protoc);
         proto_invoke.protoc_path(protoc);
     } else {
