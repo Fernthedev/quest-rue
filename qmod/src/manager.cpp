@@ -192,8 +192,8 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kLoadObject:
         loadObject(packet.loadobject());
         break;
-    case PacketWrapper::kSearchObjects:
-        searchObjects(packet.searchobjects());
+    case PacketWrapper::kSearchComponents:
+        searchComponents(packet.searchcomponents());
         break;
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
@@ -252,39 +252,30 @@ void Manager::loadObject(const LoadObject& packet) {
     setAndSendObject(ptr, packet.loadid());
 }
 
-void Manager::searchObjects(const SearchObjects& packet) {
+void Manager::searchComponents(const SearchComponents& packet) {
     PacketWrapper wrapper;
-    SearchObjectsResult& result = *wrapper.mutable_searchobjectsresult();
+    SearchComponentsResult& result = *wrapper.mutable_searchcomponentsresult();
     result.set_queryid(packet.queryid());
 
-    std::string name = packet.objectname();
+    std::string name = packet.componentname();
     bool searchName = name.length() > 0;
-    bool searchComponent = packet.has_requiredcomponent();
 
+    const ClassInfoMsg& componentInfo = packet.componentclass();
+    std::string namespaceName = componentInfo.namespaze();
+    if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
+        namespaceName = "";
+    auto& className = componentInfo.clazz();
+
+    Il2CppClass* klass = il2cpp_utils::GetClassFromName(namespaceName, className);
+    if(!klass) {
+        LOG_INFO("Could not find class {}.{}", namespaceName, className);
+        return;
+    }
+    // ensure class is a subclass of UnityEngine.Object
     static auto objClass = il2cpp_utils::GetClassFromName("UnityEngine", "Object");
-    Il2CppClass* klass = objClass;
-
-    if(searchComponent) {
-        const ClassInfoMsg& componentInfo = packet.requiredcomponent();
-        std::string namespaceName = componentInfo.namespaze();
-        if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
-            namespaceName = "";
-        auto& className = componentInfo.clazz();
-        if(!className.empty()) {
-            klass = il2cpp_utils::GetClassFromName(namespaceName, className);
-            if(!klass) {
-                LOG_INFO("Could not find class {}.{}", namespaceName, className);
-                if(!searchName)
-                    return;
-            }
-            // ensure class is a subclass of UnityEngine.Object
-            if(klass && !il2cpp_functions::class_is_subclass_of(klass, objClass, false)) {
-                LOG_INFO("Class must be a subclass of Object to search");
-                if(!searchName)
-                    return;
-                klass = objClass;
-            }
-        }
+    if(klass && !il2cpp_functions::class_is_subclass_of(klass, objClass, false)) {
+        LOG_INFO("Class must be a subclass of Object to search");
+        return;
     }
     
     static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
@@ -293,10 +284,8 @@ void Manager::searchObjects(const SearchObjects& packet) {
     std::span<Il2CppObject*> res = objects.ref_to();
     std::vector<Il2CppObject*> namedObjs;
     
-    auto nameMethod = il2cpp_functions::class_get_method_from_name(klass, "get_name", 0);
-    if(!nameMethod) {
-        LOG_INFO("Error: Could not find get_name() method in class");
-    } else if(searchName) {
+    static auto nameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
+    if(searchName) {
         LOG_INFO("Searching for name {}", name);
         for(auto& obj : res) {
             if(*il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod) == name)
@@ -306,8 +295,8 @@ void Manager::searchObjects(const SearchObjects& packet) {
     }
 
     for(auto& obj : res) {
-        ObjectMsg& found = *result.add_foundobjects();
-        if(nameMethod && !searchName)
+        ComponentMsg& found = *result.add_foundcomponents();
+        if(!searchName)
             name = (std::string) *il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod);
         found.set_name(name);
         *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(obj)));

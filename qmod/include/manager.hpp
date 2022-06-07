@@ -65,7 +65,7 @@ class Manager {
     void processMessage(const PacketWrapper& packet);
     void invokeMethod(const InvokeMethod& packet);
     void loadObject(const LoadObject& packet);
-    void searchObjects(const SearchObjects& packet);
+    void searchComponents(const SearchComponents& packet);
 
     void sendPacket(const PacketWrapper& packet);
 

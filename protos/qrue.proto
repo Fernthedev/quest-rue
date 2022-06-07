@@ -79,7 +79,7 @@ message DataMsg {
     bytes data = 2;
 }
 
-message ObjectMsg {
+message ComponentMsg {
     string name = 1;
     ClassInfoMsg classInfo = 2;
     
@@ -107,15 +107,15 @@ message InvokeMethodResult {
     string error = 5; /* nullable */
 }
 
-message SearchObjects {
+message SearchComponents {
     uint64 queryId = 1;
-    string objectName = 2; /* nullable */
-    ClassInfoMsg requiredComponent = 3; /* nullable */
+    ClassInfoMsg componentClass = 2;
+    string componentName = 3; /* nullable */
 }
 
-message SearchObjectsResult {
+message SearchComponentsResult {
     uint64 queryId = 1;
-    repeated ObjectMsg foundObjects = 2;
+    repeated ComponentMsg foundComponents = 2;
 }
 
 // ???
@@ -134,8 +134,8 @@ message PacketWrapper {
     oneof Packet {
         InvokeMethod invokeMethod = 1;
         InvokeMethodResult invokeMethodResult = 2;
-        SearchObjects searchObjects = 3;
-        SearchObjectsResult searchObjectsResult = 4;
+        SearchComponents searchComponents = 3;
+        SearchComponentsResult searchComponentsResult = 4;
         LoadObject loadObject = 5;
         LoadObjectResult loadObjectResult = 6;
     }
