@@ -58,7 +58,7 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
     // then continue reading bytes until the expected size matches the current byte size
     // if excess bytes, loop again
 
-    std::span<const byte> receivedBytes = message.toSpan();
+    std::span<const byte> receivedBytes = message;
     auto &pendingPacket = channelIncomingQueue.at(&client);
 
     // start of a new packet
@@ -116,20 +116,16 @@ void Manager::sendPacket(const PacketWrapper& packet) {
     size_t size = packet.ByteSizeLong();
     // send size header
     // send message with that size
-    byte bytes[size + sizeof(size_t)];
+    Message message(sizeof(size_t) + size);
     auto networkSize = htonq(size); // convert to big endian
 
-    // size header, cast to make it length of 8
-    auto networkSizeAsBytes = reinterpret_cast<byte *>(&networkSize);
-    // idk why but `bytes[0] = networkSize` does not work, does funny stuff to the array
-    std::copy(networkSizeAsBytes, networkSizeAsBytes + sizeof(size_t), bytes);
+    //set size header
+    *reinterpret_cast<size_t*>(message.data()) = networkSize;
 
-    packet.SerializeToArray(bytes + sizeof(size_t), size); // payload
-    std::span<byte> finishedBytes(bytes, bytes + size + sizeof(size_t));
-
+    packet.SerializeToArray(message.data() + sizeof(size_t), size); // payload
 
     for (auto const& [id, client] : serverSocket->getClients()) {
-        client->queueWrite(Message(finishedBytes));
+        client->queueWrite(message);
         // LOG_INFO("Sending to {} bytes {} {}", id, size, finishedBytes);
     }
 }
