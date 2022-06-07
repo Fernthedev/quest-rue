@@ -31,7 +31,7 @@ Currently on the roadmap:
 ## Contribute/Testing
 
 ### Quest mod
-Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variiable on Unix to the root of the vcpkg installation. Then, install protobuf for `arm64-android` using the following command:
+Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variable on Unix to the root of the vcpkg installation. Then, install protobuf for `arm64-android` using the following command:
 ```
 vcpkg install protobuf:arm64-android
 ```
