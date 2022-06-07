@@ -9,9 +9,11 @@ use appstate::AppState;
 use bytes::BytesMut;
 use log::{debug, LevelFilter};
 use protobuf::Message;
-use protos::qrue::{PacketWrapper, SearchObjects};
+use protos::qrue::PacketWrapper;
 use serde_json::Value;
 use tauri::{async_runtime, AppHandle, Manager};
+
+use crate::protos::qrue::FindGameObjects;
 
 mod appstate;
 mod events;
@@ -137,7 +139,7 @@ async fn request_game_objects(
     state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let mut packet_wrapper = PacketWrapper::new();
-    packet_wrapper.set_searchObjects(SearchObjects::new());
+    packet_wrapper.set_findGameObject(FindGameObjects::new());
 
     debug!("Requesting objects!");
 

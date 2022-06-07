@@ -66,7 +66,7 @@ class Manager {
     void invokeMethod(const InvokeMethod& packet);
     void loadObject(const LoadObject& packet);
     void searchComponents(const SearchComponents& packet);
-    void findGameObject(const FindGameObject& packet);
+    void findGameObjects(const FindGameObjects& packet);
 
     void sendPacket(const PacketWrapper& packet);
 

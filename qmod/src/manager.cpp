@@ -192,7 +192,7 @@ void Manager::processMessage(const PacketWrapper& packet) {
         searchComponents(packet.searchcomponents());
         break;
     case PacketWrapper::kFindGameObject:
-        findGameObject(packet.findgameobject());
+        findGameObjects(packet.findgameobject());
         break;
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
@@ -305,19 +305,39 @@ void Manager::searchComponents(const SearchComponents& packet) {
     sendPacket(wrapper);
 }
 
-void Manager::findGameObject(const FindGameObject& packet) {
-    PacketWrapper wrapper;
-    FindGameObjectResult& result = *wrapper.mutable_findgameobjectresult();
-    result.set_queryid(packet.queryid());
+void Manager::findGameObjects(const FindGameObjects &packet)
+{
+    LOG_INFO("Finding all game objects");
 
-    const std::string& name = packet.name();
+    auto const &name = packet.namefilter();
 
-    static auto findMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "Find", 1);
-    Il2CppObject* obj = *il2cpp_utils::RunMethod<Il2CppObject*, false>(nullptr, findMethod, StringW(name));
+    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
+    static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
+    static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
 
-    if(obj)
-        result.set_pointer(ByteString(obj));
-    
-    sendPacket(wrapper);
+    scheduleFunction([this, id = packet.queryid()]() mutable
+                     {
+                        PacketWrapper wrapper;
+                        FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
+                        result.set_queryid(id);
+
+                        LOG_INFO("Finding all game objects on main thread");
+                         auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject *>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
+                         LOG_INFO("Found {} objects", objects.size());
+                         result.mutable_foundobjects()->Reserve(objects.size());
+                         std::vector<std::string> str(objects.size());
+
+                         for (auto const &o : objects)
+                         {
+                             auto name = (std::string)CRASH_UNLESS(il2cpp_utils::RunMethod<StringW, false>(o, NameMethod));
+                             str.emplace_back(name);
+                             result.add_foundobjects(std::move(name));
+                         }
+
+                        //  LOG_INFO("Objects: {}",str);
+                         LOG_INFO("Packet wrapper" ,result.SerializeAsString());
+
+                         SocketHandler::getCommonSocketHandler().queueWork([this, wrapper = std::move(wrapper)]()
+                                                                           { sendPacket(wrapper); }); });
 }
 #pragma endregion

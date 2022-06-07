@@ -44,8 +44,8 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", vo
     if (!scheduledFunctions.empty())
     {
         std::unique_lock<std::mutex> lock(scheduleLock);
-        std::vector<std::function<void()>> functions(scheduledFunctions);
-        scheduledFunctions.clear();
+        std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
+        scheduledFunctions = {};
         lock.unlock();
 
         for (auto const& function : functions)

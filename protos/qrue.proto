@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+// optional = nullable
+// may change in future!
+
 // Type Identification
 message ClassInfoMsg {
     string namespaze = 1;
@@ -117,14 +120,16 @@ message SearchComponentsResult {
     repeated ComponentMsg foundComponents = 2;
 }
 
-message FindGameObject {
+message FindGameObjects {
     uint64 queryId = 1;
-    string name = 2;
+    /* optional */
+    string nameFilter = 2;
 }
 
-message FindGameObjectResult {
+message FindGameObjectsResult {
     uint64 queryId = 1;
-    bytes pointer = 2; /* nullable */
+    // TODO: GameObject data such as hierarchy
+    repeated string foundObjects = 2;
 }
 
 // ???
@@ -147,7 +152,7 @@ message PacketWrapper {
         SearchComponentsResult searchComponentsResult = 4;
         LoadObject loadObject = 5;
         LoadObjectResult loadObjectResult = 6;
-        FindGameObject findGameObject = 7;
-        FindGameObjectResult findGameObjectResult = 8;
+        FindGameObjects findGameObject = 7;
+        FindGameObjectsResult findGameObjectResult = 8;
     }
 }
