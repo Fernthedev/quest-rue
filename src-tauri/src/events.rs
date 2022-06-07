@@ -24,6 +24,6 @@ pub fn handle_gameobjects_result(packet: &SearchObjectsResult) -> EventReturnTyp
     (
         GAME_OBJECT_LIST_RESULT,
         // TODO: Is vec necessary? or is splice better?
-        serde_json::to_value(packet.foundObjects.to_vec()).expect("Value serialization failed"),
+        serde_json::to_value::<Vec<String>>(packet.foundObjects.to_vec().into_iter().map(|f| f.name).collect()).expect("Value serialization failed"),
     )
 }
