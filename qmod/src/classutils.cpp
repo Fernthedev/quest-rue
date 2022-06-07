@@ -69,44 +69,34 @@ TypeInfoMsg ClassUtils::GetTypeInfo(const Il2CppType* type) {
     TypeInfoMsg info;
     auto* klass = il2cpp_functions::class_from_il2cpp_type(type);
 
-    if(!typeIsValuetype(type)) {
-        info.set_type(TypeInfoMsg::CLASS);
+    if(!typeIsValuetype(type))
         *info.mutable_classinfo() = GetClassInfo(type);
-    }
     else {
         // TODO: might want to expand the primitive types specified
         switch(type->type) {
         case IL2CPP_TYPE_BOOLEAN:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::BOOLEAN);
             break;
         case IL2CPP_TYPE_CHAR:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::CHAR);
             break;
         case IL2CPP_TYPE_I4:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::INT);
             break;
         case IL2CPP_TYPE_I8:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::LONG);
             break;
         case IL2CPP_TYPE_R4:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::FLOAT);
             break;
         case IL2CPP_TYPE_R8:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::DOUBLE);
             break;
         case IL2CPP_TYPE_STRING:
-            info.set_type(TypeInfoMsg::PRIMITIVE);
             info.set_primitiveinfo(TypeInfoMsg::STRING);
             break;
         
         default:
-            info.set_type(TypeInfoMsg::STRUCT);
             *info.mutable_structinfo() = GetStructInfo(type);
             break;
         }

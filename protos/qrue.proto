@@ -28,11 +28,10 @@ message TypeInfoMsg {
         DOUBLE = 5;
         STRING = 6;
     }
-    Type type = 1;
     oneof Info {
-        Primitive primitiveInfo = 2;
-        StructInfoMsg structInfo = 3;
-        ClassInfoMsg classInfo = 4;
+        Primitive primitiveInfo = 1;
+        StructInfoMsg structInfo = 2;
+        ClassInfoMsg classInfo = 3;
     }
 }
 
