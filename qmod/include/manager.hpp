@@ -5,8 +5,7 @@
 
 #include <sstream>
 
-struct IncomingPacket
-{
+struct IncomingPacket {
     using byte = unsigned char;
 
     IncomingPacket(size_t expectedLength) : data(), expectedLength(expectedLength) {
@@ -16,23 +15,20 @@ struct IncomingPacket
     // by default, invalid packet
     explicit IncomingPacket() : IncomingPacket(0) {}
 
-    inline void insertBytes(std::span<const byte> bytes)
-    {
+    inline void insertBytes(std::span<const byte> bytes) {
         insertBytes(bytes.data(), bytes.size());
         // data << bytes.data();
         // currentLength += bytes.size();
     }
 
     template <typename T>
-    inline void insertBytes(T && bytes, size_t size)
-    {
+    inline void insertBytes(T && bytes, size_t size) {
         data.insert(data.end(), std::forward<T>(bytes), std::forward<T>(bytes) + size);
         // data << std::forward<T>(bytes);
         // currentLength += size;
     }
 
-    [[nodiscard]] auto &getData()
-    {
+    [[nodiscard]] auto &getData() {
         return data;
     }
 
@@ -40,20 +36,18 @@ struct IncomingPacket
         return expectedLength;
     }
 
-    [[nodiscard]] size_t getCurrentLength() const
-    {
+    [[nodiscard]] size_t getCurrentLength() const {
         return data.size();
     }
 
-    [[nodiscard]] constexpr bool isValid() const
-    {
+    [[nodiscard]] constexpr bool isValid() const {
         return expectedLength > 0;
     }
 
-private:
+    private:
     std::vector<byte> data;
-    // size_t currentLength; // should we do this?
     size_t expectedLength;
+    // size_t currentLength; // should we do this?
     // std::stringstream data;
 };
 

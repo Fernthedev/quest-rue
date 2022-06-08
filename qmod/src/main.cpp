@@ -41,15 +41,13 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(MainMenu, "", "MainMenuViewController", "DidActiva
 MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", void, Il2CppObject* self) {
     Update(self);
     // TODO: Use concurrent queue?
-    if (!scheduledFunctions.empty())
-    {
+    if (!scheduledFunctions.empty()) {
         std::unique_lock<std::mutex> lock(scheduleLock);
         std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
         scheduledFunctions = {};
         lock.unlock();
 
-        for (auto const& function : functions)
-        {
+        for (auto const& function : functions) {
             LOG_INFO("Running scheduled function on main thread");
             function();
         }

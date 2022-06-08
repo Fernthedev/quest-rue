@@ -305,8 +305,7 @@ void Manager::searchComponents(const SearchComponents& packet) {
     sendPacket(wrapper);
 }
 
-void Manager::findGameObjects(const FindGameObjects &packet)
-{
+void Manager::findGameObjects(const FindGameObjects &packet) {
     LOG_INFO("Finding all game objects");
 
     auto const &name = packet.namefilter();
