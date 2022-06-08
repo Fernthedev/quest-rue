@@ -65,12 +65,12 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
 
 
-                    {objects?.map(e => (
+                    {objects?.slice(0,20)?.map(e => (
 
                         <Collapse contentLeft={
                             <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
                                 { /* The marginTop position fix is so bad */}
-                                <Radio squared size={"sm"} value={e} style={{ marginTop: 10 }} />
+                                <Radio isSquared size={"sm"} value={e} style={{ marginTop: 10 }} label="R"/>
 
                                 <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
 

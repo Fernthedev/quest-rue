@@ -17,13 +17,13 @@ function App() {
     <div className="App">
       {/* Component data */}
       <Grid.Container>
-        <Grid xs css={{ backgroundColor: "$accents1" }}>
+        <Grid xs css={{ backgroundColor: "$accents0" }}>
           <div className="center" style={{
             minHeight: '100vh',
             height: "100%",
-            width: "100%",
+            width: "60%",
             display: "flex",
-            justifyContent: "center"
+            justifyContent: "center",
             // backgroundColor: "blue"
           }}>
 
@@ -41,6 +41,7 @@ function App() {
           <div style={{
             overflow: "auto",
             maxHeight: "100vh",
+            width: '35vw'
             // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
           }}>
             <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val as string)} />
