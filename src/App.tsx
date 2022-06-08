@@ -4,7 +4,6 @@ import GameObjectsList from './components/GameObjectsList'
 import { useState } from 'react'
 
 function App() {
-
   const objects = ["GameCore", "Something", "Plant", "Really long name", "Gaming", "Mom", "Moo", "Cow", "Beep", "Beep", "Boat dog", "fern"] // .slice(0, 3)
 
 

@@ -4,7 +4,7 @@ export function useEffectAsync(func: () => Promise<undefined | (() => void)>, de
     const unregister = useRef<(() => void) | undefined>(undefined);
 
     return useEffect(() => {
-        func().then(l => unregister.current = l).catch(e => error && error(e))
+        func().then(l => unregister.current = l).catch(e => (error && error(e)) || console.error(`Caught error in useEffectAsync(): ${e}`))
 
         return () => {
             if (unregister.current) unregister.current();

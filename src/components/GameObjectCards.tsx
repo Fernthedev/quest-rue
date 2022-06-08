@@ -36,7 +36,7 @@ export function ComponentDataCard(props: ComponentDataCardProps) {
     }
 
     return (
-        <Card css={{ ml: "10%", mw: "200px" }} clickable bordered>
+        <Card css={{ ml: "10%", mw: "200px" }} isPressable variant={"bordered"}>
             <Row>
                 {icon}
                 <Spacer x={0.2} />
@@ -60,7 +60,7 @@ export function ComponentCard() {
     return (
         <>
             <Container css={{ ml: "5%" }}>
-                <Card css={{ mw: "200px" }} clickable bordered>
+                <Card css={{ mw: "200px" }} isPressable variant={"bordered"}>
                     <Row>
                         <DeveloperBoardFilled title="GameObject" height={"25px"} width={"25px"} />
                         <Spacer x={0.2} />
@@ -85,7 +85,7 @@ export interface GameObjectCardProps {
 export function GameObjectCard(props: GameObjectCardProps) {
     return (
         <Container>
-            <Card css={{ mw: "200px" }} clickable bordered >
+            <Card css={{ mw: "200px" }} isPressable variant={"bordered"} >
                 <Row>
                     <CubeFilled title="GameObject" width={"25px"} height={"25px"} />
                     <Spacer x={0.2} />
