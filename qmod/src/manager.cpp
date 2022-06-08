@@ -138,13 +138,20 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
     object = obj;
     methods.clear();
 
-    PacketWrapper packet;
+    auto* klass = classofinst(object);
+
+    if(cachedClasses.contains(klass)) {
+        LOG_INFO("Sending cached class");
+        sendPacket(cachedClasses.at(klass));
+        return;
+    }
+
+    LOG_INFO("Adding class to cache");
+    PacketWrapper& packet = cachedClasses.insert({klass, {}}).first->second;
     LoadObjectResult& result = *packet.mutable_loadobjectresult();
     result.set_loadid(id);
     TypeDetailsMsg* packetObject = result.mutable_object();
     
-    auto* klass = classofinst(object);
-
     while(klass) {
         *packetObject->mutable_clazz() = GetClassInfo(il2cpp_functions::class_get_type(klass));
 

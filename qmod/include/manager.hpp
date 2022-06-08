@@ -75,6 +75,9 @@ class Manager {
     Il2CppObject* object;
     std::vector<Method> methods;
 
+    std::unordered_map<Il2CppClass*, PacketWrapper> cachedClasses;
+
+    // todo
     std::vector<SafePtr<Il2CppObject>> storedResults;
 
     public:
