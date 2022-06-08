@@ -16,17 +16,15 @@ function App() {
     <div className="App">
       {/* Component data */}
       <Grid.Container>
-        <Grid xs css={{ backgroundColor: "$accents0" }}>
+        <Grid xs css={{ backgroundColor: "$accents0", minHeight:"100vh" }}>
           <div className="center" style={{
-            minHeight: '100vh',
             height: "100%",
-            width: "60%",
-            display: "flex",
-            justifyContent: "center",
+            width: "100%",
             // backgroundColor: "blue"
           }}>
 
-            <Text h1>{selectedObject ?? ""}</Text>
+            {/* FIX BIG TEXT TAKING UP ALL SPACE */}
+            <Text h3>{selectedObject ?? ""}</Text>
 
           </div>
         </Grid>
@@ -40,7 +38,8 @@ function App() {
           <div style={{
             overflow: "auto",
             maxHeight: "100vh",
-            width: '35vw'
+            minWidth: '15vw',
+            maxWidth: "50vw"
             // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
           }}>
             <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val as string)} />

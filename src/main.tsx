@@ -15,7 +15,10 @@ initializeEvents()
 // VITE_QUEST_IP="MY_QUEST_IP"
 // VITE_QUEST_PORT=3306
 console.log("Connecting")
-connect(import.meta.env.VITE_QUEST_IP, parseInt(import.meta.env.VITE_QUEST_PORT) ?? 3306).then(() => {
+let port = parseInt(import.meta.env.VITE_QUEST_PORT);
+if (!port) port = 3306
+
+connect(import.meta.env.VITE_QUEST_IP, port).then(() => {
   console.log("Connected!")
 }).catch((e) => {
   console.error(`Unable to connect: ${e}`)
