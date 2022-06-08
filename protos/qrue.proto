@@ -88,6 +88,19 @@ message ComponentMsg {
     bytes pointer = 3;
 }
 
+message Scene {
+    string name = 1;
+}
+
+message GameObject {
+    Scene scene = 1;     /* optional */
+    GameObject parent = 2;     /* optional */
+    
+    // TODO: Should we just make the receiver post-process the data to get the children? 
+    // Could save up quite a bit of bandwidth 
+    repeated GameObject children = 3; /* optional */
+}
+
 // COMMAND/QUERY PACKETS
 
 message InvokeMethod {
@@ -124,12 +137,27 @@ message FindGameObjects {
     uint64 queryId = 1;
     /* optional */
     string nameFilter = 2;
+    /* optional */
+    GameObject parentFilter = 3;
+
+    /* optional */
+    /* Scene filter, does not affect onlyRootObjects or nonSceneObjects filter */
+    Scene sceneFilter = 4;
+
+    /* optional */
+    oneof sceneObjectFilter {
+        // only show root scene objects
+        bool onlyRootObjects = 5;
+
+        // allow objects outside of any scene
+        bool allowNonSceneObjects = 6;
+    }
 }
 
 message FindGameObjectsResult {
     uint64 queryId = 1;
     // TODO: GameObject data such as hierarchy
-    repeated string foundObjects = 2;
+    repeated GameObject foundObjects = 2;
 }
 
 // ???
