@@ -1,5 +1,5 @@
 import { DependencyList, useEffect, useState } from "react";
-import { Constants } from "./constants";
+import { GameObject } from "./proto/qrue";
 
 // Singleton for all events
 // Lazily initialized
@@ -16,7 +16,7 @@ export function getEvents() {
 function buildEvents() {
     return {
         CONNECTED_EVENT: new EventListener<void>(),
-        GAMEOBJECTS_LIST_EVENT: new EventListener<void>()
+        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>()
     } as const;
 }
 

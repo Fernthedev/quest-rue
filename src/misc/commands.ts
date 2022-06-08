@@ -17,7 +17,7 @@ export function connect(ip: string, port: number) {
         const wrapper = PacketWrapper.deserialize(bytes);
         console.log(wrapper.toObject());
         if(wrapper.findGameObjectResult != undefined) {
-            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(wrapper.findGameObjectResult.toObject().foundObjects);
+            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(wrapper.findGameObjectResult.toObject().foundObjects!);
         }
     };
 }
