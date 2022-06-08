@@ -12,10 +12,11 @@ class WebSocketHandler : public PacketHandler {
         WebSocketHandler(ReceivePacketFunc onReceivePacket) : PacketHandler(onReceivePacket) { }
         ~WebSocketHandler();
         void listen(const int port);
+        void stop();
         void sendPacket(const PacketWrapper& packet);
         bool hasConnection();
     private:
-        WebSocketServer serverSocket;
+        std::unique_ptr<WebSocketServer> serverSocket;
         std::thread serverThread;
         void OnOpen(websocketpp::connection_hdl hdl);
         void OnClose(websocketpp::connection_hdl hdl);

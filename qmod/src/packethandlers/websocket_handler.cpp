@@ -8,41 +8,62 @@ using lib::placeholders::_2;
 using lib::bind;
 
 WebSocketHandler::~WebSocketHandler() {
-    LOG_INFO("Stopping server!");
-    serverSocket.stop_listening();
-    for (auto const& hdl : connections) {
-        try {
-            serverSocket.close(hdl, close::status::going_away, "shutdown");
-        } catch (exception const & e) {
-            LOG_INFO("Close failed because: ({})", e.what());
-        }
-    }
-    serverSocket.stop();
+    stop();
 }
 
 void WebSocketHandler::listen(const int port) {
+    stop();
     try {
-        serverSocket.set_access_channels(log::alevel::none);
-        serverSocket.set_error_channels(log::elevel::none);
+        serverSocket = std::make_unique<WebSocketServer>();
+        serverSocket->set_access_channels(log::alevel::none);
+        serverSocket->set_error_channels(log::elevel::none);
 
-        serverSocket.init_asio();
-        serverSocket.set_open_handler(bind(&WebSocketHandler::OnOpen, this, ::_1));
-        serverSocket.set_close_handler(bind(&WebSocketHandler::OnClose, this, ::_1));
-        serverSocket.set_message_handler(bind(&WebSocketHandler::OnMessage, this, &serverSocket, ::_1, ::_2));
+        serverSocket->init_asio();
 
-        serverSocket.listen(port);
-        serverSocket.start_accept();
+        serverSocket->set_open_handler(bind(&WebSocketHandler::OnOpen, this, ::_1));
+        serverSocket->set_close_handler(bind(&WebSocketHandler::OnClose, this, ::_1));
+        serverSocket->set_message_handler(bind(&WebSocketHandler::OnMessage, this, serverSocket.get(), ::_1, ::_2));
+
+        serverSocket->listen(port);
+        serverSocket->start_accept();
         
         serverThread = std::thread([this]() {
-            serverSocket.run();
+            serverSocket->run();
         });
         serverThread.detach(); 
         LOG_INFO("Started server");
     } catch (exception const & e) {
         LOG_INFO("Server failed because: ({})!", e.what());
+        stop();
+        LOG_INFO("Retrying in 30 seconds!");
+        sleep(30);
+        listen(port);
     } catch (...) {
         LOG_INFO("Server failed!");
     }
+}
+
+void WebSocketHandler::stop() {
+    if(!serverSocket){
+        connections.clear();
+        return;
+    }
+    LOG_INFO("Stopping server!");
+    try {
+        if(serverSocket->is_listening())
+            serverSocket->stop_listening();
+    } catch (exception const & e) {
+        LOG_INFO("Stop_listening failed because: ({})", e.what());
+    }
+    for (auto const& hdl : connections) {
+        try {
+            serverSocket->close(hdl, close::status::going_away, "shutdown");
+        } catch (exception const & e) {
+            LOG_INFO("Close failed because: ({})", e.what());
+        }
+    }
+    serverSocket.release();
+    connections.clear();
 }
 
 bool WebSocketHandler::hasConnection() {
@@ -73,7 +94,7 @@ void WebSocketHandler::sendPacket(const PacketWrapper& packet) {
     auto string = packet.SerializeAsString();
     for (auto const& hdl : connections) {
         try {
-            serverSocket.send(hdl, string, frame::opcode::value::BINARY);
+            serverSocket->send(hdl, string, frame::opcode::value::BINARY);
         } catch (exception const & e) {
             LOG_INFO("Echo failed because: ({})", e.what());
         }
