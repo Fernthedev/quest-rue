@@ -21,12 +21,12 @@ pub fn handle_specific_events(
     }
 }
 
-pub fn handle_gameobjects_result(packet: &FindGameObjectsResult) -> EventReturnType {
-    debug!("Packet for game objects: {:?}", &packet.get_foundObjects());
+// pub fn handle_gameobjects_result(packet: &FindGameObjectsResult) -> EventReturnType {
+//     debug!("Packet for game objects: {:?}", &packet.get_foundObjects());
 
-    (
-        GAME_OBJECT_LIST_RESULT,
-        // TODO: Is vec necessary? or is splice better?
-        serde_json::to_value(packet.get_foundObjects()).expect("Value serialization failed"),
-    )
-}
+//     (
+//         GAME_OBJECT_LIST_RESULT,
+//         // TODO: Is vec necessary? or is splice better?
+//         serde_json::to_value(packet.get_foundObjects()).expect("Value serialization failed"),
+//     )
+// }

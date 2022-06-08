@@ -8,7 +8,7 @@ repository = ""
 default-run = "app"
 edition = "2021"
 rust-version = "1.57"
-include = ["../protos"]
+# include = ["../protos"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
