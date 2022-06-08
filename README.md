@@ -34,6 +34,7 @@ Currently on the roadmap:
 Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variable on Unix to the root of the vcpkg installation. Then, install protobuf for `arm64-android` using the following command:
 ```
 vcpkg install protobuf:arm64-android
+vcpkg install websocketpp:arm64-android
 ```
 
 Then run while in `qmod/` 

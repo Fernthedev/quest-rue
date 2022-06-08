@@ -58,6 +58,8 @@ add_library(
 # vcpkg stuff
 find_package(protobuf CONFIG REQUIRED)
 target_link_libraries(${COMPILE_ID} PRIVATE protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+find_package(websocketpp CONFIG REQUIRED)
+target_link_libraries(${COMPILE_ID} PRIVATE websocketpp::websocketpp)
 
 target_include_directories(${COMPILE_ID} PRIVATE .)
 
@@ -69,8 +71,6 @@ target_include_directories(${COMPILE_ID} PRIVATE ${INCLUDE_DIR})
 target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
 # codegen includes
 target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
-
-target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/websocketpp)
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog)
 # add extern stuff like libs and other includes
