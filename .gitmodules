@@ -1,3 +1,0 @@
-[submodule "qmod/include/websocketpp"]
-	path = qmod/include/websocketpp
-	url = https://github.com/zaphoyd/websocketpp.git
