@@ -18,11 +18,7 @@ console.log("Connecting")
 let port = parseInt(import.meta.env.VITE_QUEST_PORT);
 if (!port) port = 3306
 
-connect(import.meta.env.VITE_QUEST_IP, port).then(() => {
-  console.log("Connected!")
-}).catch((e) => {
-  console.error(`Unable to connect: ${e}`)
-})
+connect(import.meta.env.VITE_QUEST_IP, port);
 
 const lightTheme = createTheme({
   type: 'dark',

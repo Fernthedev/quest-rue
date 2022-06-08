@@ -21,17 +21,6 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // On connect 
     useEffectAsync(async () => {
         console.log("listening for game objects")
-
-        const connected = await isConnected();
-        
-        if (connected) {
-            console.log("connected, requesting objects")
-            requestGameObjects().catch((e) => console.error(`Error: ${e}`));
-        } else {
-            console.log("Waiting for connection")
-        }
-
-        
         return getEvents().CONNECTED_EVENT.addListener(() => {
             console.log("connected after waiting, requesting objects")
             requestGameObjects();
@@ -68,7 +57,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                                 <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
 
                             </div>
-                        } key={e} title={e} bordered={false}>
+                        } key={e.name} title={e.name} bordered={false}>
 
                         </Collapse>
                     ))}

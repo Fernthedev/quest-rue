@@ -1,13 +1,31 @@
-import { invoke } from "@tauri-apps/api/tauri";
+
+
+
+import { getEvents } from "./events";
+import { PacketWrapper, FindGameObjects } from "./proto/qrue";
+
+let socket : WebSocket;
 
 export function connect(ip: string, port: number) {
-    return invoke<void>('connect', { ip: ip, port: port });
+    socket = new WebSocket("ws://" + ip + ":" + port);
+    socket.binaryType = "arraybuffer";
+    socket.onopen = (event) => {
+        getEvents().CONNECTED_EVENT.invoke();
+    };
+    socket.onmessage = (event) => {
+        const bytes: Uint8Array = event.data;
+        const wrapper = PacketWrapper.deserialize(bytes);
+        console.log(wrapper.toObject());
+        if(wrapper.findGameObjectResult != undefined) {
+            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(wrapper.findGameObjectResult.toObject().foundObjects);
+        }
+    };
 }
 
 export function isConnected() {
-    return invoke<boolean>('is_connected');
+    return socket.readyState == WebSocket.OPEN;
 }
 
 export function requestGameObjects() {
-    return invoke<void>("request_game_objects")
+    socket.send(PacketWrapper.fromObject({ findGameObject: {queryId: 1}}).serializeBinary());
 }

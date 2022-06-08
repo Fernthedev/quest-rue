@@ -1,7 +1,5 @@
-import { listen, UnlistenFn, once as onceListen } from "@tauri-apps/api/event";
 import { DependencyList, useEffect, useState } from "react";
 import { Constants } from "./constants";
-import { PacketReceivePayload } from "./packets";
 
 // Singleton for all events
 // Lazily initialized
@@ -17,8 +15,8 @@ export function getEvents() {
 
 function buildEvents() {
     return {
-        CONNECTED_EVENT: createListener<void>(Constants.CONNECTED_EVENT),
-        GAMEOBJECTS_LIST_EVENT: createPacketListener<string[]>(Constants.GAMEOBJECTS_LIST_EVENT)
+        CONNECTED_EVENT: new EventListener<void>(),
+        GAMEOBJECTS_LIST_EVENT: new EventListener<void>()
     } as const;
 }
 
@@ -74,54 +72,4 @@ export class EventListener<T> {
             callback[0](value)
         });
     }
-}
-
-
-function createPacketListener<T, P extends PacketReceivePayload = PacketReceivePayload>(eventName: Constants) {
-    const listener = new EventListener<T>()
-
-    // TODO: What happens when we want to unlisten? oh no
-    listen<P>(eventName, (v) => listener.invoke(v.payload.general_packet_data as T))
-
-    return listener
-}
-
-function createListener<T>(eventName: Constants) {
-    console.log(`Created listener for ${eventName}`)
-    const listener = new EventListener<T>()
-
-    // TODO: What happens when we want to unlisten? oh no
-    listen<T>(eventName, (v) => listener.invoke(v.payload))
-
-    return listener
-}
-
-
-// Crazy stuff
-export type ReceiveCallback<T> = (r: T) => void;
-
-export function listenToPacketEvent<T, P extends PacketReceivePayload = PacketReceivePayload>(eventName: string, receiveCallback: ReceiveCallback<T>, once = false): UnlistenFn {
-    return listenToEvent<P>(eventName, (r: P) => receiveCallback(r.general_packet_data as T))
-}
-
-export function listenToEvent<T>(eventName: string, receiveCallback: ReceiveCallback<T>, once = false): UnlistenFn {
-    let unlisten: UnlistenFn | undefined;
-
-    // You can await here
-    if (!once) {
-        listen<T>(eventName, event => {
-            receiveCallback(event.payload as T);
-        }).then((l) => unlisten = l); // assign unlisten callback
-    } else {
-        onceListen<T>(eventName, event => {
-            receiveCallback(event.payload as T);
-        }).then((l) => unlisten = l); // assign unlisten callback
-    }
-
-    // Unsubcribe 
-    return () => {
-        if (unlisten) {
-            unlisten()
-        }
-    };
 }
