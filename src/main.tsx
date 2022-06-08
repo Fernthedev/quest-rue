@@ -9,7 +9,7 @@ import useDarkMode from 'use-dark-mode';
 import { connect } from './misc/commands';
 
 console.log("Connecting")
-connect('192.168.0.18', 3306).then(() => {
+connect('192.168.1.110', 3306).then(() => {
   console.log("Connected!")
 }).catch((e) => {
   console.error(`Unable to connect: ${e}`)

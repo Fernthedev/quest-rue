@@ -4,9 +4,11 @@
 
 #include <fmt/ranges.h>
 
+#include "packethandlers/socketlib_handler.hpp"
+#include "packethandlers/websocket_handler.hpp"
+
 #define MESSAGE_LOGGING
 
-using namespace SocketLib;
 using namespace ClassUtils;
 
 template<class T>
@@ -25,17 +27,8 @@ void Manager::Init() {
     Manager::Instance = this;
     initialized = true;
     LOG_INFO("Starting server at port 3306");
-    SocketHandler& socketHandler = SocketHandler::getCommonSocketHandler();
-
-    serverSocket = socketHandler.createServerSocket(3306);
-    serverSocket->bindAndListen();
-    LOG_INFO("Started server");
-
-    ServerSocket& serverSocket = *this->serverSocket;
-    
-    serverSocket.connectCallback += {&Manager::connectEvent, this};
-    serverSocket.listenCallback += {&Manager::listenOnEvents, this};
-
+    handler = new SocketLibHandler((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
+    handler->listen(3306);
     LOG_INFO("Server fully initialized");
 }
 
@@ -43,98 +36,9 @@ void Manager::SetObject(Il2CppObject* obj) {
     setAndSendObject(obj, 0);
 }
 
-void Manager::connectEvent(Channel& channel, bool connected) {
-    LOG_INFO("Connected {} status: {}", channel.clientDescriptor, connected ? "connected" : "disconnected");
-    if (!connected)
-        channelIncomingQueue.erase(&channel);
-    else
-        channelIncomingQueue.try_emplace(&channel, 0);
-}
-
-void Manager::listenOnEvents(Channel& client, const Message& message) {
-    // read the bytes
-    // if no packet is being parsed, get the first 8 bytes
-    // the first 8 bytes are the size frame, which dictate the size of the incoming packet (excluding the frame)
-    // then continue reading bytes until the expected size matches the current byte size
-    // if excess bytes, loop again
-
-    std::span<const byte> receivedBytes = message;
-    auto &pendingPacket = channelIncomingQueue.at(&client);
-
-    // start of a new packet
-    if (!pendingPacket.isValid()) {
-        // get the first 8 bytes, then cast to size_t
-        size_t expectedLength = *reinterpret_cast<size_t const *>(receivedBytes.first(sizeof(size_t)).data());
-        expectedLength = ntohq(expectedLength);
-        
-        // LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
-
-        pendingPacket = {expectedLength};
-
-        auto subspanData = receivedBytes.subspan(sizeof(size_t));
-        pendingPacket.insertBytes(subspanData);
-        // continue appending to existing packet
-    } else {
-        pendingPacket.insertBytes(receivedBytes);
-    }
-
-    if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength()) {
-        return;
-    }
-
-    auto stream = std::move(pendingPacket.getData()); // avoid copying
-    std::span<const byte> const finalMessage = stream;
-    auto const packetBytes = (finalMessage).subspan(0, pendingPacket.getExpectedLength());
-
-    if (pendingPacket.getCurrentLength() > pendingPacket.getExpectedLength()) {
-        auto excessData = finalMessage.subspan(pendingPacket.getExpectedLength());
-        // get the first 8 bytes, then cast to size_t
-        size_t expectedLength = *reinterpret_cast<size_t const*>(excessData.data());
-
-        pendingPacket = IncomingPacket(expectedLength); // reset with excess data
-
-        auto excessDataWithoutSize = excessData.subspan(sizeof(size_t));
-
-        // insert excess data, ignoring the size prefix
-        pendingPacket.insertBytes(excessDataWithoutSize);
-    } else {
-        pendingPacket = IncomingPacket(); // reset 
-    }
-
-    PacketWrapper packet;
-    packet.ParseFromArray(packetBytes.data(), packetBytes.size());
-    scheduleFunction([this, packet = std::move(packet)]() {
-        processMessage(packet);
-    });
-
-    // Parse the next packet as it is ready
-    if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength()) {
-        listenOnEvents(client, Message(""));
-    }
-}
-
-void Manager::sendPacket(const PacketWrapper& packet) {
-    packet.CheckInitialized();
-    size_t size = packet.ByteSizeLong();
-    // send size header
-    // send message with that size
-    Message message(sizeof(size_t) + size);
-    auto networkSize = htonq(size); // convert to big endian
-
-    //set size header
-    *reinterpret_cast<size_t*>(message.data()) = networkSize;
-
-    packet.SerializeToArray(message.data() + sizeof(size_t), size); // payload
-
-    for (auto const& [id, client] : serverSocket->getClients()) {
-        client->queueWrite(message);
-        // LOG_INFO("Sending to {} bytes {} {}", id, size, finishedBytes);
-    }
-}
-
 #pragma region sending
 void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
-    if(serverSocket->getClients().empty()) return;
+    if(!handler->hasConnection()) return;
     if(!obj) return;
 
     object = obj;
@@ -144,7 +48,7 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
 
     if(cachedClasses.contains(klass)) {
         LOG_INFO("Sending cached class");
-        sendPacket(cachedClasses.at(klass));
+        handler->sendPacket(cachedClasses.at(klass));
         return;
     }
 
@@ -182,7 +86,7 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
             packetObject = packetObject->mutable_parent();
     }
 
-    sendPacket(packet);
+    handler->sendPacket(packet);
     LOG_INFO("Object set");
 }
 #pragma endregion
@@ -218,7 +122,7 @@ void Manager::invokeMethod(const InvokeMethod& packet) {
         result.set_invokeuuid(id);
         result.set_methodid(methodIdx);
         result.set_status(InvokeMethodResult::NOT_FOUND);
-        sendPacket(wrapper);
+        handler->sendPacket(wrapper);
         return;
     }
     
@@ -243,7 +147,7 @@ void Manager::invokeMethod(const InvokeMethod& packet) {
         if(!err.empty()) {
             result.set_status(InvokeMethodResult::ERR);
             result.set_error(err);
-            sendPacket(wrapper);
+            handler->sendPacket(wrapper);
             return;
         }
 
@@ -251,7 +155,7 @@ void Manager::invokeMethod(const InvokeMethod& packet) {
         DataMsg& data = *result.mutable_result();
         *data.mutable_typeinfo() = methods[methodIdx].ReturnTypeInfo();
         data.set_data(res.GetAsString());
-        sendPacket(wrapper);
+        handler->sendPacket(wrapper);
     });
 }
 
@@ -311,7 +215,7 @@ void Manager::searchComponents(const SearchComponents& packet) {
         found.set_pointer(ByteString(obj));
     }
     
-    sendPacket(wrapper);
+    handler->sendPacket(wrapper);
 }
 
 void Manager::findGameObjects(const FindGameObjects &packet) {
@@ -340,9 +244,6 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     }
 
     LOG_INFO("Packet wrapper" ,result.SerializeAsString());
-
-    SocketHandler::getCommonSocketHandler().queueWork([this, wrapper = std::move(wrapper)] {
-        sendPacket(wrapper); 
-    }); 
+    handler->sendPacket(wrapper); 
 }
 #pragma endregion
