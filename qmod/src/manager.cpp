@@ -103,7 +103,9 @@ void Manager::listenOnEvents(Channel& client, const Message& message) {
 
     PacketWrapper packet;
     packet.ParseFromArray(packetBytes.data(), packetBytes.size());
-    processMessage(packet);
+    scheduleFunction([this, packet = std::move(packet)]() {
+        processMessage(packet);
+    });
 
     // Parse the next packet as it is ready
     if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength()) {
@@ -321,29 +323,26 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
 
-    scheduleFunction([this, id = packet.queryid()]() mutable
-                     {
-                        PacketWrapper wrapper;
-                        FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
-                        result.set_queryid(id);
+    PacketWrapper wrapper;
+    FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
+    result.set_queryid(packet.queryid());
 
-                        LOG_INFO("Finding all game objects on main thread");
-                         auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject *>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
-                         LOG_INFO("Found {} objects", objects.size());
-                         result.mutable_foundobjects()->Reserve(objects.size());
-                         std::vector<std::string> str(objects.size());
+    auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject*>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
+    LOG_INFO("Found {} objects", objects.size());
+    
+    result.mutable_foundobjects()->Reserve(objects.size());
+    std::vector<std::string> str(objects.size());
 
-                         for (auto const &o : objects)
-                         {
-                             auto name = (std::string)CRASH_UNLESS(il2cpp_utils::RunMethod<StringW, false>(o, NameMethod));
-                             str.emplace_back(name);
-                             result.add_foundobjects(std::move(name));
-                         }
+    for(const auto& obj : objects) {
+        auto name = (std::string) CRASH_UNLESS(il2cpp_utils::RunMethod<StringW, false>(obj, NameMethod));
+        str.emplace_back(name);
+        result.add_foundobjects(std::move(name));
+    }
 
-                        //  LOG_INFO("Objects: {}",str);
-                         LOG_INFO("Packet wrapper" ,result.SerializeAsString());
+    LOG_INFO("Packet wrapper" ,result.SerializeAsString());
 
-                         SocketHandler::getCommonSocketHandler().queueWork([this, wrapper = std::move(wrapper)]()
-                                                                           { sendPacket(wrapper); }); });
+    SocketHandler::getCommonSocketHandler().queueWork([this, wrapper = std::move(wrapper)] {
+        sendPacket(wrapper); 
+    }); 
 }
 #pragma endregion
