@@ -27,7 +27,7 @@ void Manager::Init() {
     Manager::Instance = this;
     initialized = true;
     LOG_INFO("Starting server at port 3306");
-    handler = new SocketLibHandler((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
+    handler = std::make_unique<SocketLibHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 }

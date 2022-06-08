@@ -19,7 +19,7 @@ class Manager {
     void setAndSendObject(class Il2CppObject* object, uint64_t id);
 
     bool initialized;
-    PacketHandler* handler;
+    std::unique_ptr<PacketHandler> handler;
     Il2CppObject* object;
     std::vector<Method> methods;
 

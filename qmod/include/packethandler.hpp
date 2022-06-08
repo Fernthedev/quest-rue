@@ -10,6 +10,7 @@ class PacketHandler {
         PacketHandler(ReceivePacketFunc onReceivePacket) {
             this->onReceivePacket = onReceivePacket;
         }
+        virtual ~PacketHandler() { };
         virtual void listen(const int port) = 0;
         virtual void sendPacket(const PacketWrapper& packet) = 0;
         virtual bool hasConnection() = 0;
