@@ -94,11 +94,15 @@ message Scene {
 
 message GameObject {
     Scene scene = 1;     /* optional */
-    GameObject parent = 2;     /* optional */
+    string name = 2;
+    int32 parentId = 3;     /* optional */
     
     // TODO: Should we just make the receiver post-process the data to get the children? 
     // Could save up quite a bit of bandwidth 
-    repeated GameObject children = 3; /* optional */
+    repeated int32 childrenIds = 4; /* optional */
+
+    bool active = 5;
+    int32 id = 6;
 }
 
 // COMMAND/QUERY PACKETS
@@ -152,6 +156,9 @@ message FindGameObjects {
         // allow objects outside of any scene
         bool allowNonSceneObjects = 6;
     }
+
+    /* optional */
+    bool mustBeActive = 7;
 }
 
 message FindGameObjectsResult {
