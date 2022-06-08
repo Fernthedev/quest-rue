@@ -28,9 +28,10 @@ class Manager {
     // todo
     std::vector<SafePtr<Il2CppObject>> storedResults;
 
+
     public:
     void Init();
     void SetObject(class Il2CppObject* object);
 
-    static Manager* Instance;
+    static Manager* GetInstance();
 };

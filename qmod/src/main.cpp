@@ -86,8 +86,7 @@ extern "C" void load()
     il2cpp_functions::Init();
 
     LOG_INFO("Initializing connection manager");
-    Manager::Instance = new Manager();
-    Manager::Instance->Init();
+    Manager::GetInstance()->Init();
 
     auto logger = getLogger().WithContext("load");
     // Install hooks

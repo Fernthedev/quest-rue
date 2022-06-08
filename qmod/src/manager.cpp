@@ -21,13 +21,15 @@ inline std::string ByteString(const T& bytes) {
     return {(char*) &bytes, sizeof(T)};
 }
 
-Manager* Manager::Instance = nullptr;
+Manager* Manager::GetInstance() {
+    static Manager* Instance = new Manager();
+    return Instance;
+}
 
 void Manager::Init() {
-    Manager::Instance = this;
     initialized = true;
     LOG_INFO("Starting server at port 3306");
-    handler = std::make_unique<SocketLibHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
+    handler = std::make_unique<WebSocketHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 }

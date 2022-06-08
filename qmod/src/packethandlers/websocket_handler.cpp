@@ -7,10 +7,23 @@ using lib::placeholders::_1;
 using lib::placeholders::_2;
 using lib::bind;
 
+WebSocketHandler::~WebSocketHandler() {
+    LOG_INFO("Stopping server!");
+    serverSocket.stop_listening();
+    for (auto const& hdl : connections) {
+        try {
+            serverSocket.close(hdl, close::status::going_away, "shutdown");
+        } catch (exception const & e) {
+            LOG_INFO("Close failed because: ({})", e.what());
+        }
+    }
+    serverSocket.stop();
+}
+
 void WebSocketHandler::listen(const int port) {
     try {
-        serverSocket.set_access_channels(websocketpp::log::alevel::none);
-        serverSocket.set_error_channels(websocketpp::log::elevel::none);
+        serverSocket.set_access_channels(log::alevel::none);
+        serverSocket.set_error_channels(log::elevel::none);
 
         serverSocket.init_asio();
         serverSocket.set_open_handler(bind(&WebSocketHandler::OnOpen, this, ::_1));
@@ -20,10 +33,10 @@ void WebSocketHandler::listen(const int port) {
         serverSocket.listen(port);
         serverSocket.start_accept();
         
-        std::thread thread([this]() {
+        serverThread = std::thread([this]() {
             serverSocket.run();
         });
-        thread.detach(); 
+        serverThread.detach(); 
         LOG_INFO("Started server");
     } catch (exception const & e) {
         LOG_INFO("Server failed because: ({})!", e.what());
