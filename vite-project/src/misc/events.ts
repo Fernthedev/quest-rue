@@ -1,6 +1,5 @@
 import { DependencyList, useEffect, useState } from "react";
 import { Constants } from "./constants";
-import { PacketReceivePayload } from "./packets";
 
 // Singleton for all events
 // Lazily initialized
@@ -16,8 +15,8 @@ export function getEvents() {
 
 function buildEvents() {
     return {
-        CONNECTED_EVENT: createListener<void>(Constants.CONNECTED_EVENT),
-        GAMEOBJECTS_LIST_EVENT: createPacketListener<string[]>(Constants.GAMEOBJECTS_LIST_EVENT)
+        CONNECTED_EVENT: new EventListener<void>(),
+        GAMEOBJECTS_LIST_EVENT: new EventListener<void>()
     } as const;
 }
 
@@ -73,18 +72,4 @@ export class EventListener<T> {
             callback[0](value)
         });
     }
-}
-
-
-function createPacketListener<T, P extends PacketReceivePayload = PacketReceivePayload>(eventName: Constants) {
-    const listener = new EventListener<T>()
-
-    return listener
-}
-
-function createListener<T>(eventName: Constants) {
-    console.log(`Created listener for ${eventName}`)
-    const listener = new EventListener<T>()
-
-    return listener
 }

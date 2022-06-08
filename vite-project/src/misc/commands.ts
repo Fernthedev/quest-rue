@@ -4,7 +4,7 @@
 import { getEvents } from "./events";
 import { PacketWrapper, FindGameObjects } from "./proto/qrue";
 
-var socket : WebSocket;
+let socket : WebSocket;
 
 export function connect(ip: string, port: number) {
     socket = new WebSocket("ws://" + ip + ":" + port);
