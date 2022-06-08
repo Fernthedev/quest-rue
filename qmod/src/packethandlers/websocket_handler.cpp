@@ -9,8 +9,10 @@ using lib::bind;
 
 void WebSocketHandler::listen(const int port) {
     try {
-        serverSocket.init_asio();
+        serverSocket.set_access_channels(websocketpp::log::alevel::none);
+        serverSocket.set_error_channels(websocketpp::log::elevel::none);
 
+        serverSocket.init_asio();
         serverSocket.set_open_handler(bind(&WebSocketHandler::OnOpen, this, ::_1));
         serverSocket.set_close_handler(bind(&WebSocketHandler::OnClose, this, ::_1));
         serverSocket.set_message_handler(bind(&WebSocketHandler::OnMessage, this, &serverSocket, ::_1, ::_2));

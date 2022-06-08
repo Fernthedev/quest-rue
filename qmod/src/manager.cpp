@@ -233,32 +233,32 @@ struct GameObjectData {
     GameObjectData(GameObjectData &&) = default;
 };
 
-// TODO: FIX
 struct SceneWrapper {
+    int m_Handle;
 };
 
-GameObjectData const& GetObjectData(Il2CppObject * mainGo, std::unordered_map<void const *, GameObjectData> &processedObjects)
+GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<void const *, GameObjectData> &processedObjects)
 {
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
-    static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceId", 0);
+    static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
 
     static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
     static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
     static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
-    static auto GetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_parent", 0);
 
-    static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Scene", "get_name", 0);
+    static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
 
     static auto TransformChildCountMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_childCount", 0);
     static auto TransformGetChild = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetChild", 1);
     static auto TransformGetGameObject = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_gameObject", 0);
+    static auto GetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_parent", 0);
 
     auto runForChildren = [&](auto &&transform, auto &&children, auto &&func) constexpr
     {
         for (int i = 0; i < children; ++i)
         {
-            auto child = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(transform, TransformGetChild, i);
+            auto child = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, TransformGetChild, i);
             func(child);
         }
     };
@@ -271,7 +271,7 @@ GameObjectData const& GetObjectData(Il2CppObject * mainGo, std::unordered_map<vo
 
     auto name = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(mainGo, NameMethod);
     auto isActive = il2cpp_utils::RunMethodRethrow<bool>(mainGo, IsActiveMethod);
-    auto transform = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(mainGo, GetTransformMethod);
+    auto transform = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(mainGo, GetTransformMethod);
     auto id = il2cpp_utils::RunMethodRethrow<int>(mainGo, GetInstanceIdMethod);
 
     // TODO: FIX
@@ -280,12 +280,13 @@ GameObjectData const& GetObjectData(Il2CppObject * mainGo, std::unordered_map<vo
     auto scene = il2cpp_utils::RunMethodRethrow<SceneWrapper>(mainGo, SceneMethod);
     auto sceneName = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(scene, SceneNameMethod);
 
-    auto parentPtr = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(mainGo, GetParentMethod);
+    auto parentPtr = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, GetParentMethod);
     std::optional<GameObjectData const*> parent;
 
     if (parentPtr)
     {
-        parent = &GetObjectData(parentPtr, processedObjects);
+        auto parentObj = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentPtr, TransformGetGameObject);
+        parent = &GetObjectData(parentObj, processedObjects);
     }
     int childrenCount = il2cpp_utils::RunMethodRethrow<int>(transform, TransformChildCountMethod);
     std::vector<GameObjectData const*> children;
@@ -293,7 +294,7 @@ GameObjectData const& GetObjectData(Il2CppObject * mainGo, std::unordered_map<vo
 
     runForChildren(
         transform, childrenCount, [&](auto &&child) constexpr {
-            auto go = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(child, TransformGetGameObject);
+            auto go = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(child, TransformGetGameObject);
             children.emplace_back(&GetObjectData(go, processedObjects));
         });
 
@@ -319,20 +320,8 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
 
     auto const &name = packet.namefilter();
 
-    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
-    static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
-
-    static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
-    static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
-    static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
-    static auto GetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_parent", 0);
-
-    static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Scene", "get_name", 0);
-
-    static auto TransformChildCountMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_childCount", 0);
-    static auto TransformGetChild = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetChild", 1);
-    static auto TransformGetGameObject = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_gameObject", 0);
+    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
 
     PacketWrapper wrapper;
     FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
@@ -376,8 +365,7 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
             }
         }
     }
-
-    LOG_INFO("Packet wrapper", result.SerializeAsString());
+    LOG_INFO("Packet wrapper");
     handler->sendPacket(wrapper);
 }
 #pragma endregion
