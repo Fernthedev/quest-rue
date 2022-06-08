@@ -2,7 +2,7 @@ import { CubeFilled } from "@fluentui/react-icons";
 import { Collapse, Loading, Radio } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { isConnected, requestGameObjects } from "../misc/commands";
-import { listenToConnect, listenToGameObjects } from "../misc/events";
+import { getEvents, useListenToEvent } from "../misc/events";
 import { useEffectAsync } from "../misc/utils";
 
 export interface GameObjectsListProps {
@@ -13,20 +13,15 @@ export interface GameObjectsListProps {
 export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
-    const [objects, setObjects] = useState<string[] | null>(null);
+    // const [objects, setObjects] = useState<string[] | null>(null);
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, [])
+    console.log(`Received objects ${objects}`)
 
     // Listen to game object list events
-    useEffect(() => {
-        console.log("listening for game objects")
-        return listenToGameObjects(objects => {
-            console.log(`Received objects ${objects}`)
-            setObjects(objects)
-        })
-    }, []);
-
-
     // On connect 
     useEffectAsync(async () => {
+        console.log("listening for game objects")
+
         const connected = await isConnected();
         
         if (connected) {
@@ -34,15 +29,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             requestGameObjects().catch((e) => console.error(`Error: ${e}`));
         } else {
             console.log("Waiting for connection")
-            return listenToConnect((_) => {
-                console.log("connected after waiting, requesting objects")
-                try {
-                    requestGameObjects();
-                } catch (e) {
-                    console.error(`Error: ${e}`);
-                }
-            });
         }
+
+        
+        return getEvents().CONNECTED_EVENT.addListener(() => {
+            console.log("connected after waiting, requesting objects")
+            requestGameObjects();
+        });
     }, [])
 
     return (

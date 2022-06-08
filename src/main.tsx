@@ -7,9 +7,15 @@ import { createTheme, NextUIProvider, useTheme } from '@nextui-org/react'
 import useDarkMode from 'use-dark-mode';
 
 import { connect } from './misc/commands';
+import { initializeEvents } from './misc/events';
 
+initializeEvents()
+
+// MAKE A .env.development or .env.development.local file WITH THESE CONTENTS:
+// VITE_QUEST_IP="MY_QUEST_IP"
+// VITE_QUEST_PORT=3306
 console.log("Connecting")
-connect('192.168.1.110', 3306).then(() => {
+connect(import.meta.env.VITE_QUEST_IP, parseInt(import.meta.env.VITE_QUEST_PORT) ?? 3306).then(() => {
   console.log("Connected!")
 }).catch((e) => {
   console.error(`Unable to connect: ${e}`)
@@ -38,7 +44,7 @@ root.render(
     <NextUIProvider
       theme={darkTheme}
     >
-    <App />
+      <App />
     </NextUIProvider>
 
   </React.StrictMode>,
