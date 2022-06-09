@@ -15,6 +15,10 @@ void SocketLibHandler::listen(const int port) {
     serverSocket.listenCallback += {&SocketLibHandler::listenOnEvents, this};
 }
 
+void SocketLibHandler::scheduleAsync(std::function<void()>&& f) {
+    serverSocket->getSocketHandler()->queueWork(std::move(f));
+}
+
 bool SocketLibHandler::hasConnection() {
     return !serverSocket->getClients().empty();
 }

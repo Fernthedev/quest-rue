@@ -139,26 +139,6 @@ message SearchComponentsResult {
 
 message FindGameObjects {
     uint64 queryId = 1;
-    /* optional */
-    string nameFilter = 2;
-    /* optional */
-    GameObject parentFilter = 3;
-
-    /* optional */
-    /* Scene filter, does not affect onlyRootObjects or nonSceneObjects filter */
-    Scene sceneFilter = 4;
-
-    /* optional */
-    oneof sceneObjectFilter {
-        // only show root scene objects
-        bool onlyRootObjects = 5;
-
-        // allow objects outside of any scene
-        bool allowNonSceneObjects = 6;
-    }
-
-    /* optional */
-    bool mustBeActive = 7;
 }
 
 message FindGameObjectsResult {

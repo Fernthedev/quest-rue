@@ -10,11 +10,12 @@ class WebSocketHandler : public PacketHandler {
 
     public:
         WebSocketHandler(ReceivePacketFunc onReceivePacket) : PacketHandler(onReceivePacket) { }
-        ~WebSocketHandler();
-        void listen(const int port);
+        ~WebSocketHandler() override;
+        void listen(const int port) override;
         void stop();
-        void sendPacket(const PacketWrapper& packet);
-        bool hasConnection();
+        void sendPacket(const PacketWrapper& packet) override;
+        bool hasConnection() override;
+        void scheduleAsync(std::function<void()> &&f) override;
     private:
         std::unique_ptr<WebSocketServer> serverSocket;
         std::thread serverThread;

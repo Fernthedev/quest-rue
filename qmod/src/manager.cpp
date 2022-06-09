@@ -225,8 +225,8 @@ struct GameObjectData {
     std::string name;
     std::optional<std::string> sceneName;
 
-    std::optional<GameObjectData const*> parent;
-    std::optional<std::vector<GameObjectData const*>> children;
+    std::optional<int32_t> parent;
+    std::optional<std::vector<int32_t>> children;
     bool active;
     int32_t id;
 
@@ -250,6 +250,7 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
     static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
 
     static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
+    static auto SceneIsValidMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "IsValid", 0);
 
     static auto TransformChildCountMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_childCount", 0);
     static auto TransformGetChild = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetChild", 1);
@@ -280,24 +281,30 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
     // TODO: CHECK IF GAMEOBJECT IS MARKED AS DONTDESTROYONLOAD
     // WHICH IS MOVED OUTSIDE OF ANY SCENE
     auto scene = il2cpp_utils::RunMethodRethrow<SceneWrapper>(mainGo, SceneMethod);
-    auto sceneName = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(scene, SceneNameMethod);
+    std::optional<std::string> sceneName;
+
+    auto sceneIsValid = il2cpp_utils::RunMethodRethrow<bool>(scene, SceneIsValidMethod);
+
+    if (sceneIsValid)
+        sceneName = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(scene, SceneNameMethod);
 
     auto parentPtr = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, GetParentMethod);
-    std::optional<GameObjectData const*> parent;
+    std::optional<int> parent;
 
     if (parentPtr)
     {
         auto parentObj = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentPtr, TransformGetGameObject);
-        parent = &GetObjectData(parentObj, processedObjects);
+        parent = il2cpp_utils::RunMethodRethrow<int>(parentObj, GetInstanceIdMethod);
     }
     int childrenCount = il2cpp_utils::RunMethodRethrow<int>(transform, TransformChildCountMethod);
-    std::vector<GameObjectData const*> children;
+    std::vector<int32_t> children;
     children.reserve(childrenCount);
 
     runForChildren(
         transform, childrenCount, [&](auto &&child) constexpr {
             auto go = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(child, TransformGetGameObject);
-            children.emplace_back(&GetObjectData(go, processedObjects));
+            auto id = il2cpp_utils::RunMethodRethrow<int>(child, GetInstanceIdMethod);
+            children.emplace_back(id);
         });
 
     GameObjectData goData;
@@ -325,13 +332,17 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
 
+    auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject *>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
+    std::vector<Il2CppObject *> objectsVec(objects.size());
+    objects.copy_to(objectsVec);
+
+    LOG_INFO("Found {} objects", objects.size());
+
+    // TODO: Move some stuff to async?
     PacketWrapper wrapper;
     FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
     result.set_queryid(packet.queryid());
 
-    auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject*>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
-    LOG_INFO("Found {} objects", objects.size());
-    
     result.mutable_foundobjects()->Reserve(objects.size());
 
     auto filter = [&](auto &&go) constexpr->bool{
@@ -358,16 +369,20 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
         }
 
         if (goData.parent) {
-            go->set_parentid(goData.parent.value()->id);
+            go->set_parentid(goData.parent.value());
         }
 
         if (goData.children) {
             for(auto const& child : *goData.children) {
-                go->mutable_childrenids()->Add(child->id);
+                go->mutable_childrenids()->Add(child);
             }
         }
     }
+
+    // TODO: Validate all ids are valid?
+    
     LOG_INFO("Packet wrapper");
-    handler->sendPacket(wrapper);
+    handler->sendPacket(wrapper); 
+
 }
 #pragma endregion

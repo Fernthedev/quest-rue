@@ -2,6 +2,8 @@
 
 #include "packethandlers/websocket_handler.hpp"
 
+#include "socket_lib/shared/SocketHandler.hpp"
+
 using namespace websocketpp;
 using lib::placeholders::_1;
 using lib::placeholders::_2;
@@ -64,6 +66,12 @@ void WebSocketHandler::stop() {
     }
     serverSocket.release();
     connections.clear();
+}
+
+void WebSocketHandler::scheduleAsync(std::function<void()> &&f)
+{
+    // TODO: Thread pool or something
+    SocketLib::SocketHandler::getCommonSocketHandler().queueWork(std::move(f));
 }
 
 bool WebSocketHandler::hasConnection() {

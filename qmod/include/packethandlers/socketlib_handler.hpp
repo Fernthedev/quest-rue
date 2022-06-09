@@ -59,9 +59,10 @@ private:
 class SocketLibHandler : public PacketHandler {
     public:
         SocketLibHandler(ReceivePacketFunc onReceivePacket) : PacketHandler(onReceivePacket) { }
-        void listen(const int port);
-        void sendPacket(const PacketWrapper& packet);
-        bool hasConnection();
+        void listen(const int port) override;
+        void sendPacket(const PacketWrapper &packet) override;
+        bool hasConnection() override;
+        void scheduleAsync(std::function<void()> &&f) override;
     private:
         SocketLib::ServerSocket* serverSocket;
 
