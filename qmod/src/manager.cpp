@@ -239,11 +239,20 @@ struct SceneWrapper {
     int m_Handle;
 };
 
-GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<void const *, GameObjectData> &processedObjects)
+auto GetObjectId(Il2CppObject* obj) {
+    // static auto GetInternalHandle = il2cpp_utils::FindField("UnityEngine", "Object", "m_CachedPtr");
+
+    // return CRASH_UNLESS(il2cpp_utils::GetFieldValue<void*>(obj, GetInternalHandle));
+    static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
+
+    return il2cpp_utils::RunMethodRethrow<int>(obj, GetInstanceIdMethod);
+}
+
+GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int32_t, GameObjectData> &processedObjects)
 {
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
-    static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
+    // static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
 
     static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
     static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
@@ -251,22 +260,26 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
 
     static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
     static auto SceneIsValidMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "IsValid", 0);
+    
+    static auto ComponentGetGameObject = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Component", "get_gameObject", 0);
 
     static auto TransformChildCountMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_childCount", 0);
     static auto TransformGetChild = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetChild", 1);
-    static auto TransformGetGameObject = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_gameObject", 0);
-    static auto GetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_parent", 0);
+    static auto TransformGetSiblingIndex = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetSiblingIndex", 0);
+    static auto TransformGetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_parent", 0);
 
-    auto runForChildren = [&](auto &&transform, auto &&children, auto &&func) constexpr
+    auto runForChildren = [](Il2CppObject* transform, auto &&childrenCount, auto &&func) constexpr
     {
-        for (int i = 0; i < children; ++i)
+        for (int i = 0; i < childrenCount; ++i)
         {
             auto child = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, TransformGetChild, i);
             func(child);
         }
     };
 
-    auto it = processedObjects.find(mainGo);
+    auto id = GetObjectId(mainGo);
+
+    auto it = processedObjects.find(id);
     if (it != processedObjects.end())
     {
         return it->second;
@@ -275,7 +288,7 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
     auto name = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(mainGo, NameMethod);
     auto isActive = il2cpp_utils::RunMethodRethrow<bool>(mainGo, IsActiveMethod);
     auto transform = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(mainGo, GetTransformMethod);
-    auto id = il2cpp_utils::RunMethodRethrow<int>(mainGo, GetInstanceIdMethod);
+
 
     // TODO: FIX
     // TODO: CHECK IF GAMEOBJECT IS MARKED AS DONTDESTROYONLOAD
@@ -288,24 +301,35 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
     if (sceneIsValid)
         sceneName = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(scene, SceneNameMethod);
 
-    auto parentPtr = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, GetParentMethod);
+    auto parentTransform = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, TransformGetParentMethod);
     std::optional<int> parent;
 
-    if (parentPtr)
+    if (parentTransform)
     {
-        auto parentObj = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentPtr, TransformGetGameObject);
-        parent = il2cpp_utils::RunMethodRethrow<int>(parentObj, GetInstanceIdMethod);
+        auto parentObj = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentTransform, ComponentGetGameObject);
+        parent = GetObjectId(parentObj);
     }
     int childrenCount = il2cpp_utils::RunMethodRethrow<int>(transform, TransformChildCountMethod);
     std::vector<int32_t> children;
     children.reserve(childrenCount);
 
     runForChildren(
-        transform, childrenCount, [&](auto &&child) constexpr {
-            auto go = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(child, TransformGetGameObject);
-            auto id = il2cpp_utils::RunMethodRethrow<int>(child, GetInstanceIdMethod);
-            children.emplace_back(id);
+        transform, childrenCount, [&](Il2CppObject* child) {
+            auto childGo = il2cpp_utils::RunMethodRethrow<Il2CppObject*, true>(child, ComponentGetGameObject);
+            auto childId = GetObjectId(childGo);
+            children.emplace_back(childId);
         });
+
+    // DEBUGGING
+    // if (parentTransform) {
+    //     auto siblingIndex = il2cpp_utils::RunMethodRethrow<int>(transform, TransformGetSiblingIndex);
+    //     auto parentSelf = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentTransform, TransformGetChild, siblingIndex);
+    //     auto parentSelfGO = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(parentSelf, ComponentGetGameObject);
+    //     auto idParentSelf = GetObjectId(parentSelfGO);
+
+    //     LOG_INFO("My id {} | my parent's child id {}", id, idParentSelf);
+    //     CRASH_UNLESS(idParentSelf == id);
+    // }
 
     GameObjectData goData;
 
@@ -320,14 +344,12 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<voi
         goData.children = children;
     }
 
-    return processedObjects.emplace(mainGo, std::move(goData))
+    return processedObjects.emplace(id, std::move(goData))
         .first->second;
 }
 
 void Manager::findGameObjects(const FindGameObjects &packet) {
     LOG_INFO("Finding all game objects");
-
-    auto const &name = packet.namefilter();
 
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
@@ -350,7 +372,7 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
         return true;
     };
 
-    std::unordered_map<void const*, GameObjectData> processedObjects;
+    std::unordered_map<int32_t, GameObjectData> processedObjects;
     processedObjects.reserve(objects.size());
 
     for (const auto &obj : objects)
@@ -378,6 +400,19 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
             }
         }
     }
+
+    // validate
+    // for (auto const& [id, o]: processedObjects) {
+    //     if (!o.children)
+    //         continue;
+
+    //     for (auto const child: *o.children) {
+    //         if (processedObjects.contains(child))
+    //             continue;
+
+    //         LOG_INFO("COULD NOT FIND CHILD {} IN MAP", child);
+    //     }
+    // }
 
     // TODO: Validate all ids are valid?
     

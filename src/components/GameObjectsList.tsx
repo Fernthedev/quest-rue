@@ -1,21 +1,89 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse, Loading, Radio } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { Collapse, Loading, Radio, Spacer } from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react";
 import { isConnected, requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
+import { GameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
 
 export interface GameObjectsListProps {
     objects: string[],
     // TODO: Make this return GameObject
-    onSelect?: (value: string | number) => void,
+    onSelect?: (value: GameObjectJSON | undefined) => void,
 }
+
+type GameObjectJSON = ReturnType<typeof GameObject.prototype.toObject>;
+
+interface GameObjectRowProps {
+    objects: Record<number, GameObjectJSON>,
+    go: GameObjectJSON,
+    depth?: number
+}
+
+function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
+    return (
+
+        <Collapse
+            contentLeft={
+                <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
+                    { /* The marginTop position fix is so bad */}
+                    <Radio isSquared key={go.id} size={"sm"} value={go.id!.toString()} style={{ marginTop: 10 }} label="R" />
+
+                    <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+
+                </div>
+            }
+            key={go.id}
+            title={go.name}
+            bordered={false}
+            showArrow={(go.childrenIds?.length ?? 0) > 0}
+            disabled={(go.childrenIds?.length ?? 0) <= 0}
+        >
+
+        
+            {(!depth || depth > 0) && go.childrenIds && (
+                <>
+                    <Spacer x={5} />
+                    <Collapse.Group key={`children-${go.id}`}>
+
+                    {go.childrenIds.map(childId => {
+                        const child = objects[childId];
+
+                        if (!child) {
+                            console.error(`Did not find child for id ${childId}`)
+                            return undefined
+                        }
+
+
+                        return GameObjectRow({ objects: objects, go: child, depth: depth && depth-- })
+                    })}
+
+                    </Collapse.Group>
+                </>
+            )}
+
+        </Collapse>
+
+    );
+}
+
 export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
     // const [objects, setObjects] = useState<string[] | null>(null);
     const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, [])
-    console.log(`Received objects ${objects}`)
+    const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
+        if (!objects) return undefined;
+
+        const obj: Record<number, GameObjectJSON> = {}
+        objects?.forEach(o => {
+            obj[o.id!] = o;
+        });
+
+        return obj;
+    }, [objects]);
+
+    console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
 
     // Listen to game object list events
     // On connect 
@@ -35,7 +103,10 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 </div>
             )}
 
-            <Radio.Group onChange={props.onSelect}>
+            <Radio.Group onChange={(e) => {
+                console.log(`Selected ${e}`)
+                props.onSelect && props.onSelect(objectsMap![parseInt(e)])
+            }}>
 
 
                 <Collapse.Group
@@ -47,20 +118,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
 
 
-                    {objects?.slice(0,20)?.map(e => (
-
-                        <Collapse contentLeft={
-                            <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
-                                { /* The marginTop position fix is so bad */}
-                                <Radio isSquared size={"sm"} value={e} style={{ marginTop: 10 }} label="R"/>
-
-                                <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
-
-                            </div>
-                        } key={e.name} title={e.name} bordered={false}>
-
-                        </Collapse>
-                    ))}
+                    {objectsMap && objects?.filter(g => !g.parentId).slice(0, 50)?.map(e => GameObjectRow({ objects: objectsMap, go: e, depth: 2 }))}
 
                 </Collapse.Group>
 

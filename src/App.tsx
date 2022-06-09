@@ -42,7 +42,7 @@ function App() {
             maxWidth: "50vw"
             // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
           }}>
-            <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val as string)} />
+            <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val?.name ?? "NOT FOUND")} />
           </div>
         </Grid>
       </Grid.Container>
