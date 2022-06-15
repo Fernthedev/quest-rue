@@ -41,8 +41,8 @@ function App() {
         <div style={{
           overflow: "auto",
           maxHeight: "100vh",
-          minWidth: '15vw',
-          maxWidth: "50vw",
+          minWidth: '15%',
+          maxWidth: "50%",
           flex: "1 2"
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}>
