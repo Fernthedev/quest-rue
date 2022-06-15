@@ -1,10 +1,11 @@
 import './App.css'
-import { Grid, Text } from '@nextui-org/react'
+import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from './components/GameObjectsList'
 import { useState } from 'react'
 
 function App() {
   const objects = ["GameCore", "Something", "Plant", "Really long name", "Gaming", "Mom", "Moo", "Cow", "Beep", "Beep", "Boat dog", "fern"] // .slice(0, 3)
+  const { theme } = useTheme();
 
 
   const [selectedObject, setSelectedObject] = useState<string | undefined>(undefined)
@@ -12,40 +13,42 @@ function App() {
   // future reference
   // 100vh means 100% of the view height
 
+  // TODO: Figure out the resizing mess smh
   return (
     <div className="App">
-      {/* Component data */}
-      <Grid.Container>
-        <Grid xs css={{ backgroundColor: "$accents0", minHeight:"100vh" }}>
-          <div className="center" style={{
-            height: "100%",
-            width: "100%",
-            // backgroundColor: "blue"
-          }}>
-
-            {/* FIX BIG TEXT TAKING UP ALL SPACE */}
-            <Text h3>{selectedObject ?? ""}</Text>
-
-          </div>
-        </Grid>
-
-        {/* Object list */}
-        <Grid alignItems='stretch' css={{
-          // backgroundColor: "red",
+      {/* Object list */}
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+      }}>
+        {/* Component data */}
+        <div className="center" style={{
+          // backgroundColor: "blue"
+          flex: "2 1",
+          backgroundColor: theme?.colors.accents0.value,
+          minHeight: "100vh",
         }}>
 
-          {/* Container box for scrolling */}
-          <div style={{
-            overflow: "auto",
-            maxHeight: "100vh",
-            minWidth: '15vw',
-            maxWidth: "50vw"
-            // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
-          }}>
-            <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val?.name ?? "NOT FOUND")} />
-          </div>
-        </Grid>
-      </Grid.Container>
+          {/* FIX BIG TEXT TAKING UP ALL SPACE */}
+          <Text size="2em">{selectedObject ?? ""}</Text>
+          {/* <span style={{ fontSize:"1em" }}>{selectedObject ?? ""}</span> */}
+          
+        </div>
+
+
+
+        {/* Container box for scrolling */}
+        <div style={{
+          overflow: "auto",
+          maxHeight: "100vh",
+          minWidth: '15vw',
+          maxWidth: "50vw",
+          flex: "1 2"
+          // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
+        }}>
+          <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val?.name ?? "NOT FOUND")} />
+        </div>
+      </div>
     </div >
 
   )
