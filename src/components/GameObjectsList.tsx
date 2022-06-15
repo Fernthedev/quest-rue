@@ -71,7 +71,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
     // const [objects, setObjects] = useState<string[] | null>(null);
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, [])
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? song_select_json
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
         if (!objects) return undefined;
 
