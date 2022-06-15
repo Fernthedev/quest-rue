@@ -5,7 +5,7 @@ import { isConnected, requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
 import { GameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
-import { TreeItem } from "./Tree";
+import { LazyCollapsable } from "./LazyCollapsable";
 
 import { items as song_select_json } from "../misc/test_data_in_song_select.json";
 
@@ -49,7 +49,7 @@ function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
 
     return (
         <>
-            <TreeItem key={go.id} childrenFactory={childrenFactory}
+            <LazyCollapsable key={go.id} childrenFactory={childrenFactory}
                 unclickableChildren={(
                     <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
                         { /* The marginTop position fix is so bad */}
@@ -63,7 +63,7 @@ function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
 
                 <Text h4>{go.name}</Text>
 
-            </TreeItem>
+            </LazyCollapsable>
         </>
     );
 }

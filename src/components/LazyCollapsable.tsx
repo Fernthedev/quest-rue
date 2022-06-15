@@ -1,7 +1,6 @@
 import { ArrowDownFilled, ArrowUpFilled, FluentIconsProps } from "@fluentui/react-icons";
 import { Divider } from "@nextui-org/react";
 import { useState } from "react";
-import "./Tree.css"
 
 export interface TreeItemProps {
     childrenFactory?: (() => React.ReactNode) | undefined; // use a lambda to lazy load
@@ -16,7 +15,7 @@ export interface TreeItemProps {
  * @param props 
  * @returns 
  */
-export function TreeItem(props: TreeItemProps) {
+export function LazyCollapsable(props: TreeItemProps) {
     const [renderedAlready, setRenderedAlready] = useState(false);
     const [expanded, setExpanded] = useState(props.expanded ?? false);
 
@@ -32,9 +31,9 @@ export function TreeItem(props: TreeItemProps) {
 
     const arrowProps: FluentIconsProps = { width: "1.5em", height: "1.5em" }
 
-    const arrow = expandable && 
-        expanded ? ArrowUpFilled(arrowProps) : ArrowDownFilled(arrowProps) 
-    
+    const arrow = expandable &&
+        expanded ? ArrowUpFilled(arrowProps) : ArrowDownFilled(arrowProps)
+
 
     return (
         <>
