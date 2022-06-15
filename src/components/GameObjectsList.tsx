@@ -1,10 +1,13 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse, Loading, Radio, Spacer } from "@nextui-org/react";
+import { Collapse, Divider, Loading, Radio, Spacer, Text } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { isConnected, requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
 import { GameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
+import { TreeItem } from "./Tree";
+
+import { items as song_select_json } from "../misc/test_data_in_song_select.json";
 
 export interface GameObjectsListProps {
     objects: string[],
@@ -21,32 +24,14 @@ interface GameObjectRowProps {
 }
 
 function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
-    return (
+    let childrenFactory: (() => JSX.Element) | undefined = undefined;
 
-        <Collapse
-            contentLeft={
-                <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
-                    { /* The marginTop position fix is so bad */}
-                    <Radio isSquared key={go.id} size={"sm"} value={go.id!.toString()} style={{ marginTop: 10 }} label="R" />
-
-                    <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
-
-                </div>
-            }
-            key={go.id}
-            title={go.name}
-            bordered={false}
-            showArrow={(go.childrenIds?.length ?? 0) > 0}
-            disabled={(go.childrenIds?.length ?? 0) <= 0}
-        >
-
-        
-            {(!depth || depth > 0) && go.childrenIds && (
-                <>
-                    <Spacer x={5} />
-                    <Collapse.Group key={`children-${go.id}`}>
-
-                    {go.childrenIds.map(childId => {
+    if ((!depth || depth > 0) && go.childrenIds && go.childrenIds.length > 0) {
+        // eslint-disable-next-line react/display-name
+        childrenFactory = () => (
+            <>
+                {
+                    go?.childrenIds?.map(childId => {
                         const child = objects[childId];
 
                         if (!child) {
@@ -56,14 +41,30 @@ function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
 
 
                         return GameObjectRow({ objects: objects, go: child, depth: depth && depth-- })
-                    })}
+                    })
+                }
+            </>
+        );
+    }
 
-                    </Collapse.Group>
-                </>
-            )}
+    return (
+        <>
+            <TreeItem key={go.id} childrenFactory={childrenFactory}
+                unclickableChildren={(
+                    <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
+                        { /* The marginTop position fix is so bad */}
+                        <Radio isSquared key={go.id} size={"sm"} value={go.id!.toString()} style={{ marginTop: 10 }} label="R" />
 
-        </Collapse>
+                        <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
 
+
+                    </div >
+                )}>
+
+                <Text h4>{go.name}</Text>
+
+            </TreeItem>
+        </>
     );
 }
 
@@ -107,21 +108,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 console.log(`Selected ${e}`)
                 props.onSelect && props.onSelect(objectsMap![parseInt(e)])
             }}>
+                <div style={{ lineHeight: 1.5, }}>
 
+                    {objectsMap && objects?.filter(g => !g.parentId).slice(0, 50)?.map(e => (
+                        <GameObjectRow objects={objectsMap} go={e} key={e.id} />
+                    ))}
 
-                <Collapse.Group
-                    accordion={false}
-
-                    style={{
-                        //flexDirection: "column", flexWrap: "nowrap", height: "101%", overflowY: "auto"
-                    }}>
-
-
-
-                    {objectsMap && objects?.filter(g => !g.parentId).slice(0, 50)?.map(e => GameObjectRow({ objects: objectsMap, go: e, depth: 2 }))}
-
-                </Collapse.Group>
-
+                </div>
             </Radio.Group>
         </>
     )
