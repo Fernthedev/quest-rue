@@ -40,12 +40,11 @@ function App() {
       <div style={{
         overflow: "auto",
         maxHeight: "100vh",
-        minWidth: '15%',
         maxWidth: "50%",
         flex: "1 2"
         // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
       }}>
-        <GameObjectsList objects={objects} onSelect={(id, val) => getEvents().SELECTED_GAME_OBJECT.invoke([id ?? -1, val?.name ?? "NOT FOUND"])} />
+        <GameObjectsList />
       </div>
     </div>
     </div >

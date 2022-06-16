@@ -10,9 +10,7 @@ import { LazyCollapsable } from "./LazyCollapsable";
 import { items as song_select_json } from "../misc/test_data_in_song_select.json";
 
 export interface GameObjectsListProps {
-    objects: string[],
-    // TODO: Make this return GameObject
-    onSelect?: (id: number | undefined, value: GameObjectJSON | undefined) => void,
+
 }
 
 type GameObjectJSON = ReturnType<typeof GameObject.prototype.toObject>;
@@ -98,7 +96,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         });
     }, [])
 
-    // TODO: Slicing 
+    // TODO: Slicing
     // if (objectsRow && objectsRow.length > 300) {
     //     const oldObjectsRow = objectsRow;
     //     objectsRow = [];
@@ -107,20 +105,22 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     //         objectsRow[i] = (<GameObjectRow objects={objectsMap} go={undefined} key={`DUMMY_OBJECT_PARENT_QUEST_RUE${i}`} oldObjectsRow.slice(i, i + 300) />)
     //     }
     // }
+    
+    if (!objects) {
+        return (
+            <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
+                <Loading size="xl" />
+            </div>
+        )
+    }
 
     return (
         <>
-            {!objects && (
-                <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
-                    <Loading size="xl" />
-                </div>
-            )}
-
             <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} />
 
             <Radio.Group onChange={(e) => {
                 console.log(`Selected ${e}`)
-                props.onSelect && props.onSelect(parseInt(e), objectsMap![parseInt(e)])
+                getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap![parseInt(e)])
             }}>
                 <div style={{ lineHeight: 1.5, }}>
 

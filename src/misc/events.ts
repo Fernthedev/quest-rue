@@ -23,7 +23,7 @@ function buildEvents() {
         GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>(),
 
         // INTERNAL EVENTS
-        SELECTED_GAME_OBJECT: new EventListener<[number, string] | undefined>()
+        SELECTED_GAME_OBJECT: new EventListener<ReturnType<typeof GameObject.prototype.toObject> | undefined>()
     } as const;
 }
 

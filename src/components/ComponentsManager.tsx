@@ -10,20 +10,18 @@ export interface ComponentsManagerProps {
 export function ComponentsManager(props: ComponentsManagerProps) {
     const selectedObject = useListenToEvent(getEvents().SELECTED_GAME_OBJECT)
 
-    const [id, objectName] = selectedObject ?? [undefined, undefined]
-
-    const [components, getComponents] = useRequestAndResponsePacket<GetComponentsOfGameObjectResult>([id]);
+    const [components, getComponents] = useRequestAndResponsePacket<GetComponentsOfGameObjectResult>([selectedObject]);
 
     useEffect(() => {
-        if (!id) return;
+        if (!selectedObject) return;
 
 
         getComponents({
             getComponentsOfGameObject: {
-                id: id
+                id: selectedObject.id
             }
         })
-    }, [id]);
+    }, [selectedObject]);
 
 
     // Professional React developers, I'm sorry
@@ -32,7 +30,7 @@ export function ComponentsManager(props: ComponentsManagerProps) {
         <>
 
             {/* FIX BIG TEXT TAKING UP ALL SPACE */}
-            <Text size="2em">{objectName ?? ""}</Text>
+            <Text size="2em">{selectedObject?.name ?? "NOT FOUND"}</Text>
             {components?.foundComponents.map(c => (
                 <Text key={c.pointer.toString()} size="1em">{JSON.stringify(c)}</Text>
             ))}
