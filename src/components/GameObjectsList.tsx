@@ -12,7 +12,7 @@ import { items as song_select_json } from "../misc/test_data_in_song_select.json
 export interface GameObjectsListProps {
     objects: string[],
     // TODO: Make this return GameObject
-    onSelect?: (value: GameObjectJSON | undefined) => void,
+    onSelect?: (id: number | undefined, value: GameObjectJSON | undefined) => void,
 }
 
 type GameObjectJSON = ReturnType<typeof GameObject.prototype.toObject>;
@@ -72,7 +72,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
     // const [objects, setObjects] = useState<string[] | null>(null);
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? song_select_json
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) // ?? song_select_json
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
         if (!objects) return undefined;
 
@@ -106,7 +106,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
             <Radio.Group onChange={(e) => {
                 console.log(`Selected ${e}`)
-                props.onSelect && props.onSelect(objectsMap![parseInt(e)])
+                props.onSelect && props.onSelect(parseInt(e), objectsMap![parseInt(e)])
             }}>
                 <div style={{ lineHeight: 1.5, }}>
 

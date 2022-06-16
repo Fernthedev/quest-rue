@@ -1,14 +1,30 @@
 import './App.css'
 import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from './components/GameObjectsList'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRunAndListenToEvent as useRequestAndResponsePacket } from './misc/events'
+import { FindGameObjectsResult, GetComponentsOfGameObjectResult } from './misc/proto/qrue'
 
 function App() {
   const objects = ["GameCore", "Something", "Plant", "Really long name", "Gaming", "Mom", "Moo", "Cow", "Beep", "Beep", "Boat dog", "fern"] // .slice(0, 3)
   const { theme } = useTheme();
 
 
-  const [selectedObject, setSelectedObject] = useState<string | undefined>(undefined)
+  const [selectedObject, setSelectedObject] = useState<[number, string] | undefined>(undefined)
+
+  const [id, objectName] = selectedObject ?? [undefined, undefined]
+
+  const [components, getComponents] = useRequestAndResponsePacket<GetComponentsOfGameObjectResult>([id]);
+
+  useEffect(() => { 
+    if (!id) return;
+
+
+    getComponents({
+      getComponentsOfGameObject: {
+      id: id
+    }})
+  }, [id]);
 
   // future reference
   // 100vh means 100% of the view height
@@ -30,7 +46,10 @@ function App() {
         }}>
 
           {/* FIX BIG TEXT TAKING UP ALL SPACE */}
-          <Text size="2em">{selectedObject ?? ""}</Text>
+          <Text size="2em">{objectName ?? ""}</Text>
+          {components?.foundComponents.map(c => (
+            <Text key={c.name} size="1em">{JSON.stringify(c)}</Text>
+          ))}
           {/* <span style={{ fontSize:"1em" }}>{selectedObject ?? ""}</span> */}
           
         </div>
@@ -46,7 +65,7 @@ function App() {
           flex: "1 2"
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}>
-          <GameObjectsList objects={objects} onSelect={(val) => setSelectedObject(val?.name ?? "NOT FOUND")} />
+          <GameObjectsList objects={objects} onSelect={(id, val) => setSelectedObject([id ?? -1, val?.name ?? "NOT FOUND"])} />
         </div>
       </div>
     </div >

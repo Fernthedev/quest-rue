@@ -10,11 +10,11 @@ class Manager {
     private:
     
     void processMessage(const PacketWrapper& packet);
-    void invokeMethod(const InvokeMethod& packet);
-    void loadObject(const LoadObject& packet);
-    void searchComponents(const SearchComponents& packet);
-    void getGameObjectComponents(const GetComponentsOfGameObject& packet);
-    void findGameObjects(const FindGameObjects& packet);
+    void invokeMethod(const InvokeMethod& packet, uint64_t id);
+    void loadObject(const LoadObject& packet, uint64_t id);
+    void searchComponents(const SearchComponents& packet, uint64_t id);
+    void getGameObjectComponents(const GetComponentsOfGameObject& packet, uint64_t id);
+    void findGameObjects(const FindGameObjects& packet, uint64_t id);
 
     // separating seems difficult
     void setAndSendObject(class Il2CppObject* object, uint64_t id);

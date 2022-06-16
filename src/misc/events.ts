@@ -1,5 +1,7 @@
 import { DependencyList, useEffect, useState } from "react";
-import { GameObject } from "./proto/qrue";
+import { sendPacket } from "./commands";
+import { GameObject, PacketWrapper } from "./proto/qrue";
+import { uniqueNumber } from "./utils";
 
 // Singleton for all events
 // Lazily initialized
@@ -15,9 +17,41 @@ export function getEvents() {
 
 function buildEvents() {
     return {
+        ALL_PACKETS: new EventListener<ReturnType<typeof PacketWrapper.prototype.toObject>>(),
         CONNECTED_EVENT: new EventListener<void>(),
         GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>()
     } as const;
+}
+
+export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
+
+export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(deps?: DependencyList, once = false): [T | undefined, (p: P) => void] {
+    const [val, setValue] = useState<T | undefined>(undefined)
+    const [expectedQueryID, setExpectedQueryID] = useState<number | undefined>(undefined)
+
+    const fixedDeps = deps ? [expectedQueryID, ...deps] : undefined;
+
+    useEffect(() => {
+        const listener = getEvents().ALL_PACKETS;
+        const callback = listener.addListener((v) => {
+            if (expectedQueryID && v.queryResultId === expectedQueryID) {
+                const packet = Object.values(v).find(e => e !== expectedQueryID)!
+
+                setValue(packet as T)
+            }
+        }, once)
+
+        return () => {
+            listener.removeListener(callback)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, fixedDeps)
+
+    return [val, (p: P) => {
+        const randomId = uniqueNumber();
+        setExpectedQueryID(randomId)
+        sendPacket(PacketWrapper.fromObject({queryResultId: randomId, ...p}));
+    }];
 }
 
 export function useListenToEvent<T>(listener: EventListener<T>, deps?: DependencyList, once = false) : T | undefined {

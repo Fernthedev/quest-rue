@@ -57,7 +57,7 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
     LOG_INFO("Adding class to cache");
     PacketWrapper& packet = cachedClasses.insert({klass, {}}).first->second;
     LoadObjectResult& result = *packet.mutable_loadobjectresult();
-    result.set_loadid(id);
+    packet.set_queryresultid(id);
     TypeDetailsMsg* packetObject = result.mutable_object();
     
     while(klass) {
@@ -95,28 +95,34 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
 
 #pragma region parsing
 void Manager::processMessage(const PacketWrapper& packet) {
+    // scheduleFunction([=, this]{
+    auto id = packet.queryresultid();
     LOG_INFO("Packet is {}", packet.DebugString());
     switch(packet.Packet_case()) {
     case PacketWrapper::kInvokeMethod:
-        invokeMethod(packet.invokemethod());
+        invokeMethod(packet.invokemethod(), id);
         break;
     case PacketWrapper::kLoadObject:
-        loadObject(packet.loadobject());
+        loadObject(packet.loadobject(), id);
         break;
     case PacketWrapper::kSearchComponents:
-        searchComponents(packet.searchcomponents());
+        searchComponents(packet.searchcomponents(), id);
         break;
     case PacketWrapper::kFindGameObject:
-        findGameObjects(packet.findgameobject());
+        findGameObjects(packet.findgameobject(), id);
         break;
-    case PacketWrapper::kGetComponentsOfGameObjectResult:
-        
+    case PacketWrapper::kGetComponentsOfGameObject:
+        getGameObjectComponents(packet.getcomponentsofgameobject(), id);
+        break;
+
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
+    // });
 }
 
-void Manager::invokeMethod(const InvokeMethod& packet) {
+void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
+{
     uint64_t id = packet.invokeuuid();
     int methodIdx = packet.methodid();
 
@@ -163,15 +169,17 @@ void Manager::invokeMethod(const InvokeMethod& packet) {
     });
 }
 
-void Manager::loadObject(const LoadObject& packet) {
+void Manager::loadObject(const LoadObject &packet, uint64_t id)
+{
     auto ptr = ReinterpretBytes<Il2CppObject*>(packet.pointer());
-    setAndSendObject(ptr, packet.loadid());
+    setAndSendObject(ptr, id);
 }
 
-void Manager::searchComponents(const SearchComponents& packet) {
+void Manager::searchComponents(const SearchComponents &packet, uint64_t id)
+{
     PacketWrapper wrapper;
     SearchComponentsResult& result = *wrapper.mutable_searchcomponentsresult();
-    result.set_queryid(packet.queryid());
+    wrapper.set_queryresultid(id);
 
     std::string name = packet.componentname();
     bool searchName = name.length() > 0;
@@ -253,6 +261,7 @@ auto GetObjectId(Il2CppObject* obj) {
 
 GameObjectData GetObjectData(Il2CppObject* mainGo)
 {
+    static auto ComponentType = il2cpp_utils::GetSystemType(il2cpp_utils::GetClassFromName("UnityEngine", "Component"));
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
     // static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
@@ -260,7 +269,7 @@ GameObjectData GetObjectData(Il2CppObject* mainGo)
     static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
     static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
     static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
-    static auto GetComponents = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "GetComponents", 0);
+    static auto GetComponents = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "GetComponents", 1);
 
     static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
     static auto SceneIsValidMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "IsValid", 0);
@@ -318,7 +327,7 @@ GameObjectData GetObjectData(Il2CppObject* mainGo)
             children.emplace_back(childId);
         });
 
-    auto components = il2cpp_utils::RunMethodRethrow<ArrayW<Il2CppObject *>>(mainGo, GetComponents);
+    auto components = il2cpp_utils::RunMethodRethrow<ArrayW<Il2CppObject *>>(mainGo, GetComponents, ComponentType);
 
     // DEBUGGING
     // if (parentTransform) {
@@ -348,7 +357,8 @@ GameObjectData GetObjectData(Il2CppObject* mainGo)
     return goData;
 }
 
-void Manager::findGameObjects(const FindGameObjects &packet) {
+void Manager::findGameObjects(const FindGameObjects &packet, uint64_t id)
+{
     LOG_INFO("Finding all game objects");
 
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
@@ -361,7 +371,7 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     // TODO: Move some stuff to async?
     PacketWrapper wrapper;
     FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
-    result.set_queryid(packet.queryid());
+    wrapper.set_queryresultid(id);
 
     result.mutable_foundobjects()->Reserve(objects.size());
 
@@ -412,15 +422,14 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     // TODO: Validate all ids are valid?
     
     LOG_INFO("Packet wrapper");
-    handler->sendPacket(wrapper); 
-
+    handler->sendPacket(wrapper);
 }
 
-void Manager::getGameObjectComponents(const GetComponentsOfGameObject &packet)
+void Manager::getGameObjectComponents(const GetComponentsOfGameObject &packet, uint64_t id)
 {
     PacketWrapper wrapper;
     GetComponentsOfGameObjectResult &result = *wrapper.mutable_getcomponentsofgameobjectresult();
-    result.set_queryid(packet.queryid());
+    wrapper.set_queryresultid(id);
 
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto FindByInstanceID = il2cpp_utils::resolve_icall<Il2CppObject*, int>("UnityEngine.Object::FindObjectFromInstanceID");
