@@ -84,7 +84,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         return obj;
     }, [objects]);
 
-    console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
+    // console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
 
     // Listen to game object list events
     // On connect 
@@ -95,6 +95,16 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             requestGameObjects();
         });
     }, [])
+
+    // TODO: Slicing 
+    // if (objectsRow && objectsRow.length > 300) {
+    //     const oldObjectsRow = objectsRow;
+    //     objectsRow = [];
+
+    //     for (let i = 0; i + 300 < objectsRow.length; i++) {
+    //         objectsRow[i] = (<GameObjectRow objects={objectsMap} go={undefined} key={`DUMMY_OBJECT_PARENT_QUEST_RUE${i}`} oldObjectsRow.slice(i, i + 300) />)
+    //     }
+    // }
 
     return (
         <>
@@ -110,7 +120,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             }}>
                 <div style={{ lineHeight: 1.5, }}>
 
-                    {objectsMap && objects?.filter(g => !g.parentId).slice(0, 50)?.map(e => (
+                    {objectsMap && objects?.filter(g => !g.parentId)?.map(e => (
                         <GameObjectRow objects={objectsMap} go={e} key={e.id} />
                     ))}
 

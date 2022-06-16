@@ -17,9 +17,13 @@ export function getEvents() {
 
 function buildEvents() {
     return {
+        // PACKET EVENTS
         ALL_PACKETS: new EventListener<ReturnType<typeof PacketWrapper.prototype.toObject>>(),
         CONNECTED_EVENT: new EventListener<void>(),
-        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>()
+        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>(),
+
+        // INTERNAL EVENTS
+        SELECTED_GAME_OBJECT: new EventListener<[number, string] | undefined>()
     } as const;
 }
 
@@ -37,7 +41,10 @@ export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = Packet
             if (expectedQueryID && v.queryResultId === expectedQueryID) {
                 const packet = Object.values(v).find(e => e !== expectedQueryID)!
 
+                if (!packet) throw "Packet is undefined why!"
+
                 setValue(packet as T)
+                setExpectedQueryID(undefined)
             }
         }, once)
 
