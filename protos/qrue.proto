@@ -158,6 +158,15 @@ message LoadObjectResult {
     TypeDetailsMsg object = 2;
 }
 
+message GetComponentsOfGameObject {
+    uint64 queryId = 1;
+    int32 id = 2;
+}
+message GetComponentsOfGameObjectResult {
+    uint64 queryId = 1;
+    repeated ComponentMsg foundComponents = 2;
+}
+
 // TODO: Rename?
 message PacketWrapper {
     oneof Packet {
@@ -169,5 +178,7 @@ message PacketWrapper {
         LoadObjectResult loadObjectResult = 6;
         FindGameObjects findGameObject = 7;
         FindGameObjectsResult findGameObjectResult = 8;
+        GetComponentsOfGameObject getComponentsOfGameObject = 9;
+        GetComponentsOfGameObjectResult getComponentsOfGameObjectResult = 10;
     }
 }

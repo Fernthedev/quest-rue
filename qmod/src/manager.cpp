@@ -109,6 +109,8 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kFindGameObject:
         findGameObjects(packet.findgameobject());
         break;
+    case PacketWrapper::kGetComponentsOfGameObjectResult:
+        
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
@@ -229,6 +231,7 @@ struct GameObjectData {
     std::optional<std::vector<int32_t>> children;
     bool active;
     int32_t id;
+    ArrayW<Il2CppObject *> components;
 
     // lazy
     GameObjectData() = default;
@@ -248,7 +251,7 @@ auto GetObjectId(Il2CppObject* obj) {
     return il2cpp_utils::RunMethodRethrow<int>(obj, GetInstanceIdMethod);
 }
 
-GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int32_t, GameObjectData> &processedObjects)
+GameObjectData GetObjectData(Il2CppObject* mainGo)
 {
     static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
     static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
@@ -257,6 +260,7 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int
     static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
     static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
     static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
+    static auto GetComponents = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "GetComponents", 0);
 
     static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
     static auto SceneIsValidMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "IsValid", 0);
@@ -278,12 +282,6 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int
     };
 
     auto id = GetObjectId(mainGo);
-
-    auto it = processedObjects.find(id);
-    if (it != processedObjects.end())
-    {
-        return it->second;
-    }
 
     auto name = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(mainGo, NameMethod);
     auto isActive = il2cpp_utils::RunMethodRethrow<bool>(mainGo, IsActiveMethod);
@@ -320,6 +318,8 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int
             children.emplace_back(childId);
         });
 
+    auto components = il2cpp_utils::RunMethodRethrow<ArrayW<Il2CppObject *>>(mainGo, GetComponents);
+
     // DEBUGGING
     // if (parentTransform) {
     //     auto siblingIndex = il2cpp_utils::RunMethodRethrow<int>(transform, TransformGetSiblingIndex);
@@ -338,14 +338,14 @@ GameObjectData const& GetObjectData(Il2CppObject* mainGo, std::unordered_map<int
     goData.parent = parent;
     goData.id = id;
     goData.active = isActive;
+    goData.components = components;
 
     if (children.size() > 0)
     {
         goData.children = children;
     }
 
-    return processedObjects.emplace(id, std::move(goData))
-        .first->second;
+    return goData;
 }
 
 void Manager::findGameObjects(const FindGameObjects &packet) {
@@ -355,8 +355,6 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
 
     auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject *>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
-    std::vector<Il2CppObject *> objectsVec(objects.size());
-    objects.copy_to(objectsVec);
 
     LOG_INFO("Found {} objects", objects.size());
 
@@ -372,12 +370,9 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
         return true;
     };
 
-    std::unordered_map<int32_t, GameObjectData> processedObjects;
-    processedObjects.reserve(objects.size());
-
     for (const auto &obj : objects)
     {
-        auto const& goData = GetObjectData(obj, processedObjects);
+        auto const& goData = GetObjectData(obj);
         if (!filter(goData))
             continue;
 
@@ -419,5 +414,43 @@ void Manager::findGameObjects(const FindGameObjects &packet) {
     LOG_INFO("Packet wrapper");
     handler->sendPacket(wrapper); 
 
+}
+
+void Manager::getGameObjectComponents(const GetComponentsOfGameObject &packet)
+{
+    PacketWrapper wrapper;
+    GetComponentsOfGameObjectResult &result = *wrapper.mutable_getcomponentsofgameobjectresult();
+    result.set_queryid(packet.queryid());
+
+    static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
+    static auto FindByInstanceID = il2cpp_utils::resolve_icall<Il2CppObject*, int>("UnityEngine.Object::FindObjectFromInstanceID");
+    static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
+
+    auto object = FindByInstanceID(packet.id()); // il2cpp_utils::RunMethodRethrow<Il2CppObject *, false>(nullptr, FindByInstanceID, packet.id());
+
+    if (!object || object->klass != GameObjectKlass)
+    {
+        // TODO: Return error to client
+        LOG_INFO("Object with id {} is not a game object! {}", packet.id(), object ? il2cpp_utils::ClassStandardName(object->klass) : "");
+        return;
+    }
+
+    auto goInfo = GetObjectData(object);
+
+    if (goInfo.components)
+    {
+        for (auto const &comp : goInfo.components)
+        {
+            ComponentMsg &found = *result.add_foundcomponents();
+
+            StringW name = il2cpp_utils::RunMethodRethrow<StringW>(comp, NameMethod);
+
+            found.set_name(name);
+            *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(comp)));
+            found.set_pointer(ByteString(comp));
+        }
+    }
+
+    handler->sendPacket(wrapper);
 }
 #pragma endregion
