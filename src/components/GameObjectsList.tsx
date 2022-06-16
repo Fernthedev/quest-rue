@@ -77,7 +77,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
     const [renderedAmount, setRenderedAmount] = useState<number>(increment);
 
-    
+
 
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
         if (!objects) return undefined;
@@ -89,6 +89,21 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
         return obj;
     }, [objects]);
+
+    // Reuse allocated html
+    const objectsRendered = useMemo<Record<number, JSX.Element> | undefined>(() => {
+        if (!objects || !objectsMap) return undefined;
+
+        const map: Record<number, JSX.Element> = {}
+
+        objects.forEach(e =>
+            map[e.id!] = (
+                <GameObjectRow objects={objectsMap} go={e} key={e.id} />
+            )
+        )
+
+        return map;
+    }, [objects])
 
     // console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
 
@@ -111,7 +126,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     //         objectsRow[i] = (<GameObjectRow objects={objectsMap} go={undefined} key={`DUMMY_OBJECT_PARENT_QUEST_RUE${i}`} oldObjectsRow.slice(i, i + 300) />)
     //     }
     // }
-    
+
     if (!objects) {
         return (
             <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
@@ -131,15 +146,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 <div style={{ lineHeight: 1.5, }}>
 
                     {/* TODO: Allow filter to include children */}
-                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => (
-                        <GameObjectRow objects={objectsMap} go={e} key={e.id} />
-                    ))}
+                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => objectsRendered![e.id!]!)}
 
                 </div>
             </Radio.Group>
 
             {renderedAmount < objects.length && (
-                <Button onClick={() => setRenderedAmount(a => a + increment)}> 
+                <Button onClick={() => setRenderedAmount(a => a + increment)}>
 
                     <Text>
                         Load {increment < objects.length - renderedAmount ? increment : objects.length - renderedAmount} more. {objects.length - renderedAmount} remaining
