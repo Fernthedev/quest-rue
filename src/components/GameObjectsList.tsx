@@ -90,13 +90,17 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         return obj;
     }, [objects]);
 
+    const renderableObjects = objects?.filter(g => !g.parentId)
+
     // Reuse allocated html
     const objectsRendered = useMemo<Record<number, JSX.Element> | undefined>(() => {
         if (!objects || !objectsMap) return undefined;
 
         const map: Record<number, JSX.Element> = {}
 
-        objects.forEach(e =>
+        // Only render root objects
+        // their children are handled by the parent
+        renderableObjects?.forEach(e =>
             map[e.id!] = (
                 <GameObjectRow objects={objectsMap} go={e} key={e.id} />
             )
@@ -146,7 +150,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 <div style={{ lineHeight: 1.5, }}>
 
                     {/* TODO: Allow filter to include children */}
-                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => objectsRendered![e.id!]!)}
+                    {objectsMap && renderableObjects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => objectsRendered![e.id!]!)}
 
                 </div>
             </Radio.Group>
