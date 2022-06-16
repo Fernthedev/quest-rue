@@ -12,6 +12,7 @@
 
 static ModInfo modInfo{MOD_ID, VERSION};
 
+std::thread::id mainThreadId;
 
 Logger& getLogger() {
     static Logger* logger = new Logger(ModInfo{"QuestEditor", "1.0.0"}, new LoggerOptions(false, true));
@@ -28,6 +29,9 @@ static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
 
 void scheduleFunction(std::function<void()> const& func) {
+    if (mainThreadId == std::this_thread::get_id())
+        return func();
+
     std::unique_lock<std::mutex> lock(scheduleLock);
     scheduledFunctions.emplace_back(func);
 }
@@ -40,7 +44,12 @@ MAKE_HOOK_FIND_CLASS_INSTANCE(MainMenu, "", "MainMenuViewController", "DidActiva
 
 MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", void, Il2CppObject* self) {
     Update(self);
-    // TODO: Use concurrent queue?
+    // lazy init
+    static auto mainThread = []
+    {
+        mainThreadId = std::this_thread::get_id();
+        return 0;
+    }(); // TODO: Use concurrent queue?
     if (!scheduledFunctions.empty()) {
         std::unique_lock<std::mutex> lock(scheduleLock);
         std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
