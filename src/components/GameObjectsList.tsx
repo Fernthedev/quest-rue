@@ -1,5 +1,5 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse, Divider, Loading, Radio, Spacer, Text } from "@nextui-org/react";
+import { Collapse, Divider, Input, Loading, Radio, Spacer, Text } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { isConnected, requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
@@ -73,6 +73,8 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Use Suspense?
     // const [objects, setObjects] = useState<string[] | null>(null);
     const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) // ?? song_select_json
+    const [filter, setFilter] = useState<string>("");
+
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
         if (!objects) return undefined;
 
@@ -114,13 +116,16 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 </div>
             )}
 
+            <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} />
+
             <Radio.Group onChange={(e) => {
                 console.log(`Selected ${e}`)
                 props.onSelect && props.onSelect(parseInt(e), objectsMap![parseInt(e)])
             }}>
                 <div style={{ lineHeight: 1.5, }}>
 
-                    {objectsMap && objects?.filter(g => !g.parentId)?.map(e => (
+                    {/* TODO: Allow filter to include children */}
+                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.map(e => (
                         <GameObjectRow objects={objectsMap} go={e} key={e.id} />
                     ))}
 
