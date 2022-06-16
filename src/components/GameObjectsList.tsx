@@ -1,5 +1,5 @@
 import { CubeFilled } from "@fluentui/react-icons";
-import { Collapse, Divider, Input, Loading, Radio, Spacer, Text } from "@nextui-org/react";
+import { Button, Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { isConnected, requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
@@ -73,6 +73,12 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) // ?? song_select_json
     const [filter, setFilter] = useState<string>("");
 
+    const increment = 100;
+
+    const [renderedAmount, setRenderedAmount] = useState<number>(increment);
+
+    
+
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
         if (!objects) return undefined;
 
@@ -125,12 +131,21 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 <div style={{ lineHeight: 1.5, }}>
 
                     {/* TODO: Allow filter to include children */}
-                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.map(e => (
+                    {objectsMap && objects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => (
                         <GameObjectRow objects={objectsMap} go={e} key={e.id} />
                     ))}
 
                 </div>
             </Radio.Group>
+
+            {renderedAmount < objects.length && (
+                <Button onClick={() => setRenderedAmount(a => a + increment)}> 
+
+                    <Text>
+                        Load {increment < objects.length - renderedAmount ? increment : objects.length - renderedAmount} more. {objects.length - renderedAmount} remaining
+                    </Text>
+                </Button>
+            )}
         </>
     )
 }
