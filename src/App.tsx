@@ -23,30 +23,43 @@ function App() {
         flexWrap: "wrap",
       }}>
         {/* Component data */}
-        <div className="center" style={{
+        <div style={{
           // backgroundColor: "blue"
-          flex: "2 1",
+          flex: "2 1 auto",
           backgroundColor: theme?.colors.accents0.value,
           minHeight: "100vh",
+          maxWidth: "100vw",
+
         }}>
-        <ComponentsManager />
+          <div
+            className="center"
+
+            style={{
+              minHeight: "100vh",
+              maxHeight: "100vh",
+              minWidth: "100%",
+            }}>
 
 
+            <ComponentsManager />
+
+          </div>
+        </div>
+
+
+
+        {/* Container box for scrolling */}
+        <div style={{
+          overflow: "auto",
+          overflowY: "auto",
+          flex: "1 2 auto"
+          // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
+        }}
+
+        >
+          <GameObjectsList />
+        </div>
       </div>
-
-
-
-      {/* Container box for scrolling */}
-      <div style={{
-        overflow: "auto",
-        maxHeight: "100vh",
-        maxWidth: "50%",
-        flex: "1 2"
-        // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
-      }}>
-        <GameObjectsList />
-      </div>
-    </div>
     </div >
 
   )

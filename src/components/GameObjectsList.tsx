@@ -141,7 +141,9 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
     return (
         <>
-            <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} />
+            <div className="flex justify-center">
+                <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"}/>
+            </div>
 
             <Radio.Group onChange={(e) => {
                 console.log(`Selected ${e}`)
