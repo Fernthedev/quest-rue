@@ -1,4 +1,4 @@
-import { Text } from "@nextui-org/react";
+import { Text, Input, Button } from "@nextui-org/react";
 import { useEffect } from "react";
 import { getEvents, useListenToEvent, useRequestAndResponsePacket } from "../misc/events";
 import { GetComponentsOfGameObjectResult } from "../misc/proto/qrue";
@@ -30,10 +30,38 @@ export function ComponentsManager(props: ComponentsManagerProps) {
         <>
 
             {/* FIX BIG TEXT TAKING UP ALL SPACE */}
-            <Text size="2em">{selectedObject?.name ?? "NOT FOUND"}</Text>
-            {components?.foundComponents.map(c => (
-                <Text key={c.pointer.toString()} size="1em">{JSON.stringify(c)}</Text>
-            ))}
+            <div className="grid grid-flow-row gap-12 pl-8">
+                <div>
+                <Text b h2>Buttons!</Text>
+                <div
+                    className="grid grid-flow-row
+                  grid-cols-2
+                  gap-4">
+                    {components?.foundComponents.map(c => (
+                        <Text key={c.pointer.toString()} size="1rem">{JSON.stringify(c)}</Text>
+                    ))}
+                    <Input label={"a"} clearable bordered />
+
+                    <Input label={"b"} clearable bordered />
+                    <Input label={"c"} clearable bordered />
+                    <Input label={"d"} clearable bordered />
+                    <Input label={"e"} clearable bordered />
+                    </div>
+                </div>
+                <div>
+                <Text b h2>Buttons!</Text>
+                <div
+                    className="grid grid-flow-row
+                  grid-cols-2
+                  gap-4">
+                    <Button size="sm">Some button</Button>
+                    <Button size="sm">Some button2</Button>
+                    <Button size="sm">Some button3</Button>
+                    </div>
+                </div>
+            </div>
+
+            <Text className="center" size="2rem">{selectedObject?.name ?? "NOT FOUND"}</Text>
             {/* <span style={{ fontSize:"1em" }}>{selectedObject ?? ""}</span> */}
         </>
     );

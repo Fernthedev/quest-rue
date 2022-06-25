@@ -28,16 +28,13 @@ function App() {
           flex: "2 1 auto",
           backgroundColor: theme?.colors.accents0.value,
           minHeight: "100vh",
-          maxWidth: "100vw",
-
+          maxWidth: "100%",
         }}>
           <div
-            className="center"
-
             style={{
               minHeight: "100vh",
               maxHeight: "100vh",
-              minWidth: "100%",
+              maxWidth: "80%",
             }}>
 
 
@@ -52,7 +49,8 @@ function App() {
         <div style={{
           overflow: "auto",
           overflowY: "auto",
-          flex: "1 2 auto"
+          flex: "1 2 auto",
+          minWidth: "30%"
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}
 
