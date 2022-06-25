@@ -7,7 +7,10 @@ import { GameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
 import { LazyCollapsable } from "./LazyCollapsable";
 
+import { FixedSizeTree as Tree } from 'react-vtree';
+
 import { items as song_select_json } from "../misc/test_data_in_song_select.json";
+import { NodeComponentProps } from "react-vtree/dist/es/Tree";
 
 export interface GameObjectsListProps {
 
@@ -15,54 +18,79 @@ export interface GameObjectsListProps {
 
 type GameObjectJSON = ReturnType<typeof GameObject.prototype.toObject>;
 
-interface GameObjectRowProps {
-    objects: Record<number, GameObjectJSON>,
+interface TreeData {
+    defaultHeight: number,
+    id: symbol,
     go: GameObjectJSON,
-    depth?: number
+    isOpenByDefault: boolean
 }
 
-function GameObjectRow({ objects, go, depth }: GameObjectRowProps) {
-    let childrenFactory: (() => JSX.Element) | undefined = undefined;
+type GameObjectRowProps = NodeComponentProps<TreeData>
 
-    if ((!depth || depth > 0) && go.childrenIds && go.childrenIds.length > 0) {
-        // eslint-disable-next-line react/display-name
-        childrenFactory = () => (
-            <>
-                {
-                    go?.childrenIds?.map(childId => {
-                        const child = objects[childId];
+function* treeWalker(refresh: boolean, objects: Record<number, GameObjectJSON>): Generator<TreeData | string | symbol, void, boolean> {
+    const stack: GameObjectJSON[] = Object.values(objects).filter(g => !g.parentId);
 
-                        if (!child) {
-                            console.error(`Did not find child for id ${childId}`)
-                            return undefined
-                        }
+    // Walk through the tree until we have no nodes available.
+    while (stack.length !== 0) {
+        const node = stack.pop()!;
 
+        // Here we are sending the information about the node to the Tree component
+        // and receive an information about the openness state from it. The
+        // `refresh` parameter tells us if the full update of the tree is requested;
+        // basing on it we decide to return the full node data or only the node
+        // id to update the nodes order.
+        const isOpened = yield refresh
+            ? {
+                defaultHeight: 30,
+                go: objects[node.id!],
+                id: Symbol(node.id),
+                isOpenByDefault: false,
+            }
+            : Symbol(node.id);
 
-                        return GameObjectRow({ objects: objects, go: child, depth: depth && depth-- })
-                    })
-                }
-            </>
-        );
+        // Basing on the node openness state we are deciding if we need to render
+        // the child nodes (if they exist).
+        if (node && node.childrenIds && node.childrenIds.length !== 0 && isOpened) {
+            // Since it is a stack structure, we need to put nodes we want to render
+            // first to the end of the stack.
+            for (let i = node.childrenIds.length - 1; i >= 0; i--) {
+                if (!objects[node.childrenIds[i]]) throw `Undefined child ${i} on object ${JSON.stringify(node)}`
+
+                stack.push(
+                    objects[node.childrenIds[i]]
+                );
+            }
+        }
     }
+}
+
+// Node component receives all the data we created in the `treeWalker` +
+// internal openness state (`isOpen`), function to change internal openness
+// state (`toggle`) and `style` parameter that should be added to the root div.
+function GameObjectRow({ data: { go }, toggle, isOpen }: GameObjectRowProps) {
+    const expandable = go.childrenIds !== undefined && go.childrenIds?.length > 0;
 
     return (
-        <>
-            <LazyCollapsable key={go.id} childrenFactory={childrenFactory}
-                unclickableChildren={(
-                    <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
-                        { /* The marginTop position fix is so bad */}
-                        <Radio isSquared key={go.id} size={"sm"} value={go.id!.toString()} style={{ marginTop: 10 }} label="R" />
+        <div style={{ paddingLeft: "20px" }}>
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+            }}>
+                <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
+                    { /* The marginTop position fix is so bad */}
+                    <Radio isSquared key={go.id} size={"sm"} value={go.id!.toString()} style={{ marginTop: 10 }} label="R" />
 
-                        <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+                    <CubeFilled title="GameObject" width={"2em"} height={"2em"} />
+                </div >
+                <div onClick={() => expandable && toggle()} style={{ cursor: expandable ? "pointer" : "auto" }}>
+                    <Text h4>{go.name}</Text>
+                </div>
+            </div>
 
 
-                    </div >
-                )}>
+            <Divider y={1} height={3} />
 
-                <Text h4>{go.name}</Text>
-
-            </LazyCollapsable>
-        </>
+        </div>
     );
 }
 
@@ -70,13 +98,8 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
     // const [objects, setObjects] = useState<string[] | null>(null);
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) // ?? song_select_json
-    const [filter, setFilter] = useState<string>("");
-
-    const increment = 100;
-
-    const [renderedAmount, setRenderedAmount] = useState<number>(increment);
-
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? song_select_json
+    const [filter, setFilter] = useState<string>("")
 
 
     const objectsMap: Record<number, GameObjectJSON> | undefined = useMemo(() => {
@@ -90,24 +113,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         return obj;
     }, [objects]);
 
-    const renderableObjects = objects?.filter(g => !g.parentId)
-
-    // Reuse allocated html
-    const objectsRendered = useMemo<Record<number, JSX.Element> | undefined>(() => {
-        if (!objects || !objectsMap) return undefined;
-
-        const map: Record<number, JSX.Element> = {}
-
-        // Only render root objects
-        // their children are handled by the parent
-        renderableObjects?.forEach(e =>
-            map[e.id!] = (
-                <GameObjectRow objects={objectsMap} go={e} key={e.id} />
-            )
-        )
-
-        return map;
-    }, [objects])
+    const renderableObjects = objectsMap //?.filter(g => !g.parentId && (filter === "" || g.name?.includes(filter)))
 
     // console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
 
@@ -152,19 +158,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                 <div style={{ lineHeight: 1.5, }}>
 
                     {/* TODO: Allow filter to include children */}
-                    {objectsMap && renderableObjects?.filter(g => !g.parentId && g.name!.includes(filter))?.slice(0, renderedAmount).map(e => objectsRendered![e.id!]!)}
+
+                    <Tree treeWalker={(r) => treeWalker(r, renderableObjects ?? [])} itemSize={30} height={180}>
+                        {GameObjectRow}
+                    </Tree>
 
                 </div>
             </Radio.Group>
-
-            {renderedAmount < objects.length && (
-                <Button onClick={() => setRenderedAmount(a => a + increment)}>
-
-                    <Text>
-                        Load {increment < objects.length - renderedAmount ? increment : objects.length - renderedAmount} more. {objects.length - renderedAmount} remaining
-                    </Text>
-                </Button>
-            )}
         </>
     )
 }

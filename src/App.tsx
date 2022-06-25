@@ -47,8 +47,6 @@ function App() {
 
         {/* Container box for scrolling */}
         <div style={{
-          overflow: "auto",
-          overflowY: "auto",
           flex: "1 2 auto",
           minWidth: "30%"
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
