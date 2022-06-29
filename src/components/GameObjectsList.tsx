@@ -6,6 +6,7 @@ import { getEvents, useListenToEvent } from "../misc/events";
 import { GameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
 import { LazyCollapsable } from "./LazyCollapsable";
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { FixedSizeList as List } from 'react-window';
 import { items as song_select_json } from "../misc/test_data_in_song_select.json";
@@ -56,7 +57,7 @@ function GameObjectRow(props: GameObjectRowProps) {
                             }
 
 
-                            return GameObjectRow({ ...childProp, data: {...childProp.data, go: child} });
+                            return GameObjectRow({ ...childProp, data: { ...childProp.data, go: child } });
                         })
                     }
                 </>
@@ -66,6 +67,7 @@ function GameObjectRow(props: GameObjectRowProps) {
 
     return (
         <LazyCollapsable key={go.id} childrenFactory={childrenFactory}
+            style={props.style}
             unclickableChildren={(
                 <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
                     { /* The marginTop position fix is so bad */}
@@ -128,38 +130,44 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         )
     }
 
-    if (!renderableObjects) {
-        console.log("Bad objects")
-    }
-
     return (
         <>
-            <div className="flex justify-center">
-                <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
-            </div>
-
-            <Radio.Group onChange={(e) => {
-                console.log(`Selected ${e}`)
-                getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap[parseInt(e)])
-            }}>
-                <div>
-
-
-                    <List
-                        height={950}
-                        itemSize={35}
-                        width={"100%"}
-                        itemCount={renderableObjects.length}
-                        itemData={{
-                            objects: objectsMap,
-                            renderableObjects: renderableObjects
-                        }}
-                    >
-                        {GameObjectRow}
-                    </List>
-
+            <div className="flex flex-col" style={{ height: "100%" }}>
+                <div className="flex justify-center"
+                    style={{ width: "100%" }}
+                >
+                    <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
                 </div>
-            </Radio.Group>
+
+
+
+
+
+                <div style={{ flexGrow: "2" }}>
+                    <AutoSizer>
+                        {({ height, width }) => (
+                            <Radio.Group onChange={(e) => {
+                                console.log(`Selected ${e}`)
+                                getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap[parseInt(e)])
+                            }}>
+                                <List
+                                    height={height}
+                                    itemSize={55}
+                                    width={width}
+                                    itemCount={renderableObjects.length}
+                                    itemData={{
+                                        objects: objectsMap,
+                                        renderableObjects: renderableObjects
+                                    }}
+                                >
+                                    {GameObjectRow}
+                                </List>
+                            </Radio.Group>
+                        )}
+                    </AutoSizer>
+                </div>
+
+            </div>
         </>
     )
 }

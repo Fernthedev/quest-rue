@@ -1,12 +1,13 @@
 import { ArrowDownFilled, ArrowUpFilled, FluentIconsProps } from "@fluentui/react-icons";
 import { Divider } from "@nextui-org/react";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 
 export interface TreeItemProps {
     childrenFactory?: (() => React.ReactNode) | undefined; // use a lambda to lazy load
     expanded?: boolean
     children: React.ReactNode
     unclickableChildren?: React.ReactNode,
+    style?: CSSProperties
 }
 /**
  * Collapsable component that lazy renders its children
@@ -36,28 +37,25 @@ export function LazyCollapsable(props: TreeItemProps) {
 
 
     return (
-        <>
-            <div style={{ paddingLeft: "20px", "marginTop": 10 }}>
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                }}>
-                    {props.unclickableChildren}
-                    <div onClick={toggleCollapse} style={{ cursor: expandable ? "pointer" : "auto" }}>
-                        {props.children}
-                    </div>
+        <div style={{ paddingLeft: "20px", "marginTop": 10, ...props.style }}>
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+            }}>
+                {props.unclickableChildren}
+                <div onClick={toggleCollapse} style={{ cursor: expandable ? "pointer" : "auto" }}>
+                    {props.children}
                 </div>
-
-
-                <Divider y={1} height={3} />
-                {props.childrenFactory && (
-                    <>
-
-                        {expanded && renderedAlready && props.childrenFactory && props.childrenFactory()}
-                    </>
-                )}
             </div>
 
-        </>
+
+            <Divider y={1} height={3} />
+            {props.childrenFactory && (
+                <>
+
+                    {expanded && renderedAlready && props.childrenFactory && props.childrenFactory()}
+                </>
+            )}
+        </div>
     );
 }
