@@ -25,10 +25,11 @@ function App() {
         {/* Component data */}
         <div style={{
           // backgroundColor: "blue"
-          flex: "2 1 auto",
+          flex: "2",
           backgroundColor: theme?.colors.accents0.value,
           minHeight: "100vh",
-          maxWidth: "100%",
+          minWidth: "30%",
+          maxWidth: "100%"
         }}>
           <div
             style={{
@@ -47,8 +48,8 @@ function App() {
 
         {/* Container box for scrolling */}
         <div style={{
-          flex: "1 2 auto",
-          minWidth: "30%"
+          maxWidth: "45%",
+          minWidth: "45%",
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}
 

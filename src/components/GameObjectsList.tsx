@@ -86,7 +86,7 @@ function GameObjectRow(props: GameObjectRowProps) {
 export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
-    // const [objects, setObjects] = useState<string[] | null>(null);
+
     const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? song_select_json
     const [filter, setFilter] = useState<string>("")
 
@@ -102,36 +102,34 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         return obj;
     }, [objects]);
 
-    const renderableObjects = useMemo(() => objects?.filter(g => !g.parentId && g.name!.includes(filter)), [objects])
+    {/* TODO: Allow filter to include children */ }
+    const renderableObjects = useMemo(() => objects?.filter(g => !g.parentId && g.name!.includes(filter)), [objects, filter])
 
-    // console.log(`Received objects ${Array.from(Object.entries(objectsMap ?? []).keys())}`)
 
     // Listen to game object list events
     // On connect 
     useEffectAsync(async () => {
         console.log("listening for game objects")
-        return getEvents().CONNECTED_EVENT.addListener(() => {
+        const id = getEvents().CONNECTED_EVENT.addListener(() => {
             console.log("connected after waiting, requesting objects")
             requestGameObjects();
         });
+
+        return () => {
+            getEvents().CONNECTED_EVENT.removeListener(id)
+        }
     }, [])
 
-    // TODO: Slicing
-    // if (objectsRow && objectsRow.length > 300) {
-    //     const oldObjectsRow = objectsRow;
-    //     objectsRow = [];
-
-    //     for (let i = 0; i + 300 < objectsRow.length; i++) {
-    //         objectsRow[i] = (<GameObjectRow objects={objectsMap} go={undefined} key={`DUMMY_OBJECT_PARENT_QUEST_RUE${i}`} oldObjectsRow.slice(i, i + 300) />)
-    //     }
-    // }
-
-    if (!objects) {
+    if (!objects || !objectsMap || !renderableObjects) {
         return (
             <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
                 <Loading size="xl" />
             </div>
         )
+    }
+
+    if (!renderableObjects) {
+        console.log("Bad objects")
     }
 
     return (
@@ -142,18 +140,18 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
             <Radio.Group onChange={(e) => {
                 console.log(`Selected ${e}`)
-                getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap![parseInt(e)])
+                getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap[parseInt(e)])
             }}>
-                <div style={{ lineHeight: 1.5, }}>
+                <div>
 
-                    {/* TODO: Allow filter to include children */}
+
                     <List
-                        height={150}
-                        width={"100%"}
-                        itemCount={objects.length ?? 0}
+                        height={950}
                         itemSize={35}
+                        width={"100%"}
+                        itemCount={renderableObjects.length}
                         itemData={{
-                            objects: objectsMap ?? [],
+                            objects: objectsMap,
                             renderableObjects: renderableObjects
                         }}
                     >
