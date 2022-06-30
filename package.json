@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "mockDev": "vite --mode mockDevelopment",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
@@ -43,5 +44,6 @@
     "tailwindcss": "^3.1.4",
     "typescript": "^4.5.4",
     "vite": "^2.9.6"
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }

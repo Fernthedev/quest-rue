@@ -118,7 +118,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
 
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? song_select_json
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, []) ?? import.meta.env.VITE_USE_QUEST_MOCK ? song_select_json : undefined
     const [filter, setFilter] = useState<string>("")
 
 
