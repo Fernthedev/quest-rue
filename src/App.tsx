@@ -29,6 +29,8 @@ function App() {
           backgroundColor: theme?.colors.accents0.value,
           minHeight: "100vh",
           minWidth: "30%",
+          // TODO: Fix wrapping below
+          // minWidth: "max(30%, 400px)",
           maxWidth: "100%"
         }}>
           <div
@@ -49,7 +51,7 @@ function App() {
         {/* Container box for scrolling */}
         <div style={{
           maxWidth: "45%",
-          minWidth: "45%",
+          minWidth: "35%",
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}
 
