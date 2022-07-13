@@ -2,7 +2,8 @@
 
 
 import { getEvents } from "./events";
-import { PacketWrapper, FindGameObjects } from "./proto/qrue";
+import { PacketWrapper } from "./proto/qrue";
+import { uniqueNumber } from "./utils";
 
 let socket : WebSocket;
 
@@ -15,11 +16,14 @@ export function connect(ip: string, port: number) {
     socket.onmessage = (event) => {
         const bytes: Uint8Array = event.data;
         const wrapper = PacketWrapper.deserialize(bytes);
-        console.log(wrapper.toObject());
         const packetWrapper = wrapper.toObject();
+        console.log(JSON.stringify(packetWrapper));
 
-        if(wrapper.findGameObjectResult !== undefined) {
-            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(packetWrapper.findGameObjectResult!.foundObjects!);
+        if(wrapper.getAllGameObjectsResult !== undefined) {
+            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(packetWrapper.getAllGameObjectsResult!.objects!);
+        }
+        if(wrapper.readMemoryResult !== undefined) {
+            console.log(wrapper.readMemoryResult);
         }
 
         getEvents().ALL_PACKETS.invoke(packetWrapper);
@@ -31,7 +35,7 @@ export function isConnected() {
 }
 
 export function requestGameObjects() {
-    socket.send(PacketWrapper.fromObject({ findGameObject: {queryId: 1}}).serializeBinary());
+    socket.send(PacketWrapper.fromObject({ queryResultId: uniqueNumber(),  getAllGameObjects: {}}).serializeBinary());
 }
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {

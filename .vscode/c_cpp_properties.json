@@ -9,6 +9,7 @@
             ],
             "includePath": [
                 "${workspaceFolder}/qmod/extern/includes/libil2cpp/il2cpp/libil2cpp",
+                "${workspaceFolder}/qmod/extern/includes/codegen/include",
                 "${workspaceFolder}/qmod/extern/includes",
                 "${workspaceFolder}/qmod/include",
                 "${workspaceFolder}/qmod/shared",

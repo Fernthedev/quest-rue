@@ -1,15 +1,25 @@
 #include "manager.hpp"
 #include "classutils.hpp"
 #include "main.hpp"
+#include "mem.hpp"
 
 #include <fmt/ranges.h>
 
 #include "packethandlers/socketlib_handler.hpp"
 #include "packethandlers/websocket_handler.hpp"
 
+#include "UnityEngine/Transform.hpp"
+#include "UnityEngine/Component.hpp"
+#include "UnityEngine/Object.hpp"
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
+#include "UnityEngine/Resources.hpp"
+
 #define MESSAGE_LOGGING
 
 using namespace ClassUtils;
+using namespace UnityEngine;
+using namespace UnityEngine::SceneManagement;
 
 template<class T>
 inline T& ReinterpretBytes(std::string_view bytes) {
@@ -20,6 +30,7 @@ template<class T>
 inline std::string ByteString(const T& bytes) {
     return {(char*) &bytes, sizeof(T)};
 }
+#define PtrI(p) reinterpret_cast<uint64_t>(p)
 
 Manager* Manager::GetInstance() {
     static Manager* Instance = new Manager();
@@ -33,11 +44,7 @@ void Manager::Init() {
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 }
-
-void Manager::SetObject(Il2CppObject* obj) {
-    setAndSendObject(obj, 0);
-}
-
+/*
 #pragma region sending
 void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
     if(!handler->hasConnection()) return;
@@ -91,7 +98,7 @@ void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
     handler->sendPacket(packet);
     LOG_INFO("Object set");
 }
-#pragma endregion
+#pragma endregion*/
 
 #pragma region parsing
 void Manager::processMessage(const PacketWrapper& packet) {
@@ -102,17 +109,17 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kInvokeMethod:
         invokeMethod(packet.invokemethod(), id);
         break;
-    case PacketWrapper::kLoadObject:
-        loadObject(packet.loadobject(), id);
+    case PacketWrapper::kSearchObjects:
+        searchObjects(packet.searchobjects(), id);
         break;
-    case PacketWrapper::kSearchComponents:
-        searchComponents(packet.searchcomponents(), id);
+    case PacketWrapper::kGetAllGameObjects:
+        getAllGameObjects(packet.getallgameobjects(), id);
         break;
-    case PacketWrapper::kFindGameObject:
-        findGameObjects(packet.findgameobject(), id);
+    case PacketWrapper::kGetGameObjectComponents:
+        getGameObjectComponents(packet.getgameobjectcomponents(), id);
         break;
-    case PacketWrapper::kGetComponentsOfGameObject:
-        getGameObjectComponents(packet.getcomponentsofgameobject(), id);
+    case PacketWrapper::kReadMemory:
+        readMemory(packet.readmemory(), id);
         break;
 
     default:
@@ -169,19 +176,45 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
     });
 }
 
-void Manager::loadObject(const LoadObject &packet, uint64_t id)
-{
-    auto ptr = ReinterpretBytes<Il2CppObject*>(packet.pointer());
-    setAndSendObject(ptr, id);
+ProtoScene ReadScene(Scene obj) {
+    ProtoScene protoObj;
+    protoObj.set_handle(obj.m_Handle);
+    protoObj.set_name(obj.get_name());
+    protoObj.set_isloaded(obj.get_isLoaded());
+    return protoObj;
 }
 
-void Manager::searchComponents(const SearchComponents &packet, uint64_t id)
+ProtoTransform ReadTransform(Transform* obj) {
+    ProtoTransform protoObj;
+    protoObj.set_address(PtrI(obj));
+    protoObj.set_name(obj->get_name());
+
+    protoObj.set_childcount(obj->get_childCount());
+    protoObj.set_parent(PtrI(obj->GetParent()));
+    return protoObj;
+}
+
+ProtoGameObject ReadGameObject(GameObject* obj) {
+    ProtoGameObject protoObj;
+    protoObj.set_address(PtrI(obj));
+    protoObj.set_name(obj->get_name());
+
+    protoObj.set_active(obj->get_active());
+    protoObj.set_layer(obj->get_layer());
+    if(obj->get_scene().IsValid())
+        *protoObj.mutable_scene() = ReadScene(obj->get_scene());
+    protoObj.set_tag(obj->get_tag());
+    *protoObj.mutable_transform() = ReadTransform(obj->get_transform());
+    return protoObj;
+}
+
+void Manager::searchObjects(const SearchObjects &packet, uint64_t id)
 {
     PacketWrapper wrapper;
-    SearchComponentsResult& result = *wrapper.mutable_searchcomponentsresult();
+    SearchObjectsResult& result = *wrapper.mutable_searchobjectsresult();
     wrapper.set_queryresultid(id);
 
-    std::string name = packet.componentname();
+    std::string name = packet.name();
     bool searchName = name.length() > 0;
 
     const ClassInfoMsg& componentInfo = packet.componentclass();
@@ -195,271 +228,79 @@ void Manager::searchComponents(const SearchComponents &packet, uint64_t id)
         LOG_INFO("Could not find class {}.{}", namespaceName, className);
         return;
     }
-    // ensure class is a subclass of UnityEngine.Object
-    static auto objClass = il2cpp_utils::GetClassFromName("UnityEngine", "Object");
-    if(klass && !il2cpp_functions::class_is_subclass_of(klass, objClass, false)) {
-        LOG_INFO("Class must be a subclass of Object to search");
-        return;
-    }
-    
-    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
-    auto objects = *il2cpp_utils::RunMethod<ArrayW<Il2CppObject*>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(klass));
 
-    std::span<Il2CppObject*> res = objects.ref_to();
-    std::vector<Il2CppObject*> namedObjs;
+    auto objects = Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType(klass));
+
+    std::span<Object*> res = objects.ref_to();
+    std::vector<Object*> namedObjs;
     
-    static auto nameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
     if(searchName) {
         LOG_INFO("Searching for name {}", name);
         for(auto& obj : res) {
-            if(*il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod) == name)
+            if(obj->get_name() == name)
                 namedObjs.push_back(obj);
         }
-        res = std::span<Il2CppObject*>(namedObjs);
+        res = std::span<Object*>(namedObjs);
     }
 
     for(auto& obj : res) {
-        ComponentMsg& found = *result.add_foundcomponents();
+        ProtoObject& found = *result.add_objects();
         if(!searchName)
-            name = (std::string) *il2cpp_utils::RunMethod<StringW, false>(obj, nameMethod);
+            name = obj->get_name().operator std::string();
+        found.set_address(PtrI(obj));
         found.set_name(name);
         *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(obj)));
-        found.set_pointer(ByteString(obj));
     }
-    
+
     handler->sendPacket(wrapper);
 }
 
-// TODO: Move to another file
-struct GameObjectData {
-    std::string name;
-    std::optional<std::string> sceneName;
-
-    std::optional<int32_t> parent;
-    std::optional<std::vector<int32_t>> children;
-    bool active;
-    int32_t id;
-    ArrayW<Il2CppObject *> components;
-
-    // lazy
-    GameObjectData() = default;
-    GameObjectData(GameObjectData &&) = default;
-};
-
-struct SceneWrapper {
-    int m_Handle;
-};
-
-auto GetObjectId(Il2CppObject* obj) {
-    // static auto GetInternalHandle = il2cpp_utils::FindField("UnityEngine", "Object", "m_CachedPtr");
-
-    // return CRASH_UNLESS(il2cpp_utils::GetFieldValue<void*>(obj, GetInternalHandle));
-    static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
-
-    return il2cpp_utils::RunMethodRethrow<int>(obj, GetInstanceIdMethod);
-}
-
-GameObjectData GetObjectData(Il2CppObject* mainGo)
+void Manager::getAllGameObjects(const GetAllGameObjects &packet, uint64_t id)
 {
-    static auto ComponentType = il2cpp_utils::GetSystemType(il2cpp_utils::GetClassFromName("UnityEngine", "Component"));
-    static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
-    static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
-    // static auto GetInstanceIdMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "GetInstanceID", 0);
-
-    static auto IsActiveMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_activeInHierarchy", 0);
-    static auto SceneMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_scene", 0);
-    static auto GetTransformMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "get_transform", 0);
-    static auto GetComponents = il2cpp_utils::FindMethodUnsafe("UnityEngine", "GameObject", "GetComponents", 1);
-
-    static auto SceneNameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "get_name", 0);
-    static auto SceneIsValidMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "Scene", "IsValid", 0);
-    
-    static auto ComponentGetGameObject = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Component", "get_gameObject", 0);
-
-    static auto TransformChildCountMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_childCount", 0);
-    static auto TransformGetChild = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetChild", 1);
-    static auto TransformGetSiblingIndex = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "GetSiblingIndex", 0);
-    static auto TransformGetParentMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Transform", "get_parent", 0);
-
-    auto runForChildren = [](Il2CppObject* transform, auto &&childrenCount, auto &&func) constexpr
-    {
-        for (int i = 0; i < childrenCount; ++i)
-        {
-            auto child = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, TransformGetChild, i);
-            func(child);
-        }
-    };
-
-    auto id = GetObjectId(mainGo);
-
-    auto name = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(mainGo, NameMethod);
-    auto isActive = il2cpp_utils::RunMethodRethrow<bool>(mainGo, IsActiveMethod);
-    auto transform = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(mainGo, GetTransformMethod);
-
-
-    // TODO: FIX
-    // TODO: CHECK IF GAMEOBJECT IS MARKED AS DONTDESTROYONLOAD
-    // WHICH IS MOVED OUTSIDE OF ANY SCENE
-    auto scene = il2cpp_utils::RunMethodRethrow<SceneWrapper>(mainGo, SceneMethod);
-    std::optional<std::string> sceneName;
-
-    auto sceneIsValid = il2cpp_utils::RunMethodRethrow<bool>(scene, SceneIsValidMethod);
-
-    if (sceneIsValid)
-        sceneName = (std::string)il2cpp_utils::RunMethodRethrow<StringW>(scene, SceneNameMethod);
-
-    auto parentTransform = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(transform, TransformGetParentMethod);
-    std::optional<int> parent;
-
-    if (parentTransform)
-    {
-        auto parentObj = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentTransform, ComponentGetGameObject);
-        parent = GetObjectId(parentObj);
-    }
-    int childrenCount = il2cpp_utils::RunMethodRethrow<int>(transform, TransformChildCountMethod);
-    std::vector<int32_t> children;
-    children.reserve(childrenCount);
-
-    runForChildren(
-        transform, childrenCount, [&](Il2CppObject* child) {
-            auto childGo = il2cpp_utils::RunMethodRethrow<Il2CppObject*, true>(child, ComponentGetGameObject);
-            auto childId = GetObjectId(childGo);
-            children.emplace_back(childId);
-        });
-
-    auto components = il2cpp_utils::RunMethodRethrow<ArrayW<Il2CppObject *>>(mainGo, GetComponents, ComponentType);
-
-    // DEBUGGING
-    // if (parentTransform) {
-    //     auto siblingIndex = il2cpp_utils::RunMethodRethrow<int>(transform, TransformGetSiblingIndex);
-    //     auto parentSelf = il2cpp_utils::RunMethodRethrow<Il2CppObject*>(parentTransform, TransformGetChild, siblingIndex);
-    //     auto parentSelfGO = il2cpp_utils::RunMethodRethrow<Il2CppObject *>(parentSelf, ComponentGetGameObject);
-    //     auto idParentSelf = GetObjectId(parentSelfGO);
-
-    //     LOG_INFO("My id {} | my parent's child id {}", id, idParentSelf);
-    //     CRASH_UNLESS(idParentSelf == id);
-    // }
-
-    GameObjectData goData;
-
-    goData.name = name;
-    goData.sceneName = sceneName;
-    goData.parent = parent;
-    goData.id = id;
-    goData.active = isActive;
-    goData.components = components;
-
-    if (children.size() > 0)
-    {
-        goData.children = children;
-    }
-
-    return goData;
-}
-
-void Manager::findGameObjects(const FindGameObjects &packet, uint64_t id)
-{
-    LOG_INFO("Finding all game objects");
-
-    static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
-    static auto findAllMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Resources", "FindObjectsOfTypeAll", 1);
-
-    auto objects = CRASH_UNLESS(il2cpp_utils::RunMethod<ArrayW<Il2CppObject *>, false>(nullptr, findAllMethod, il2cpp_utils::GetSystemType(GameObjectKlass)));
-
-    LOG_INFO("Found {} objects", objects.size());
-
-    // TODO: Move some stuff to async?
     PacketWrapper wrapper;
-    FindGameObjectsResult &result = *wrapper.mutable_findgameobjectresult();
+    GetAllGameObjectsResult& result = *wrapper.mutable_getallgameobjectsresult();
     wrapper.set_queryresultid(id);
-
-    result.mutable_foundobjects()->Reserve(objects.size());
-
-    auto filter = [&](auto &&go) constexpr->bool{
-        // TODO: Do filter
-        return true;
-    };
-
-    for (const auto &obj : objects)
-    {
-        auto const& goData = GetObjectData(obj);
-        if (!filter(goData))
-            continue;
-
-        auto go = result.add_foundobjects();
-        go->set_active(goData.active);
-        go->set_name(goData.name);
-        go->set_id(goData.id);
-
-        if (goData.sceneName) {
-            go->mutable_scene()->set_name(*goData.sceneName);
-        }
-
-        if (goData.parent) {
-            go->set_parentid(goData.parent.value());
-        }
-
-        if (goData.children) {
-            for(auto const& child : *goData.children) {
-                go->mutable_childrenids()->Add(child);
-            }
-        }
+    auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
+    result.mutable_objects()->Reserve(objects.Length());
+    for (const auto &obj : objects) { 
+        *result.add_objects() = ReadGameObject(obj);
     }
-
-    // validate
-    // for (auto const& [id, o]: processedObjects) {
-    //     if (!o.children)
-    //         continue;
-
-    //     for (auto const child: *o.children) {
-    //         if (processedObjects.contains(child))
-    //             continue;
-
-    //         LOG_INFO("COULD NOT FIND CHILD {} IN MAP", child);
-    //     }
-    // }
-
-    // TODO: Validate all ids are valid?
-    
-    LOG_INFO("Packet wrapper");
     handler->sendPacket(wrapper);
 }
 
-void Manager::getGameObjectComponents(const GetComponentsOfGameObject &packet, uint64_t id)
+void Manager::getGameObjectComponents(const GetGameObjectComponents &packet, uint64_t id)
 {
     PacketWrapper wrapper;
-    GetComponentsOfGameObjectResult &result = *wrapper.mutable_getcomponentsofgameobjectresult();
+    GetGameObjectComponentsResult &result = *wrapper.mutable_getgameobjectcomponentsresult();
     wrapper.set_queryresultid(id);
 
-    static auto GameObjectKlass = il2cpp_utils::GetClassFromName("UnityEngine", "GameObject");
-    static auto FindByInstanceID = il2cpp_utils::resolve_icall<Il2CppObject*, int>("UnityEngine.Object::FindObjectFromInstanceID");
-    static auto NameMethod = il2cpp_utils::FindMethodUnsafe("UnityEngine", "Object", "get_name", 0);
 
-    auto object = FindByInstanceID(packet.id()); // il2cpp_utils::RunMethodRethrow<Il2CppObject *, false>(nullptr, FindByInstanceID, packet.id());
+    for (auto const comp : reinterpret_cast<GameObject*>(packet.address())->GetComponents<Component*>()) {
+        ProtoComponent& found = *result.add_components();
 
-    if (!object || object->klass != GameObjectKlass)
-    {
-        // TODO: Return error to client
-        LOG_INFO("Object with id {} is not a game object! {}", packet.id(), object ? il2cpp_utils::ClassStandardName(object->klass) : "");
-        return;
+        found.set_address(PtrI(comp));
+        found.set_name(comp->get_name());
+        *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(comp)));
     }
 
-    auto goInfo = GetObjectData(object);
+    handler->sendPacket(wrapper);
+}
 
-    if (goInfo.components)
-    {
-        for (auto const &comp : goInfo.components)
-        {
-            ComponentMsg &found = *result.add_foundcomponents();
-
-            StringW name = il2cpp_utils::RunMethodRethrow<StringW>(comp, NameMethod);
-
-            found.set_name(name);
-            *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(comp)));
-            found.set_pointer(ByteString(comp));
-        }
+void Manager::readMemory(const ReadMemory &packet, uint64_t id)
+{
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+    ReadMemoryResult &result = *wrapper.mutable_readmemoryresult();
+    auto src = reinterpret_cast<void*>(packet.address());
+    auto size = packet.size();
+    if(mem::protect(src, size, mem::protection::read_write_execute)) {
+        result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_ERR);
+    } else {
+        result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_OK);
+        result.set_address(packet.address());
+        result.set_data(src, size);
     }
-
+    LOG_INFO("Result is {}", wrapper.DebugString());
     handler->sendPacket(wrapper);
 }
 #pragma endregion

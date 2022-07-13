@@ -5,7 +5,7 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
 export class ClassInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         namespaze?: string;
         clazz?: string;
@@ -47,7 +47,7 @@ export class ClassInfoMsg extends pb_1.Message {
         namespaze?: string;
         clazz?: string;
         generics?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
-    }): ClassInfoMsg {
+    }) {
         const message = new ClassInfoMsg({});
         if (data.namespaze != null) {
             message.namespaze = data.namespaze;
@@ -118,7 +118,7 @@ export class ClassInfoMsg extends pb_1.Message {
     }
 }
 export class StructInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         contents?: Map<number, TypeInfoMsg>;
@@ -153,7 +153,7 @@ export class StructInfoMsg extends pb_1.Message {
         contents?: {
             [key: number]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
-    }): StructInfoMsg {
+    }) {
         const message = new StructInfoMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -222,7 +222,7 @@ export class StructInfoMsg extends pb_1.Message {
     }
 }
 export class TypeInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [[1, 2, 3]];
+    #one_of_decls = [[1, 2, 3]];
     constructor(data?: any[] | ({} & (({
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: never;
@@ -283,7 +283,7 @@ export class TypeInfoMsg extends pb_1.Message {
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: ReturnType<typeof StructInfoMsg.prototype.toObject>;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }): TypeInfoMsg {
+    }) {
         const message = new TypeInfoMsg({});
         if (data.primitiveInfo != null) {
             message.primitiveInfo = data.primitiveInfo;
@@ -370,7 +370,7 @@ export namespace TypeInfoMsg {
     }
 }
 export class FieldInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -412,7 +412,7 @@ export class FieldInfoMsg extends pb_1.Message {
         name?: string;
         id?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): FieldInfoMsg {
+    }) {
         const message = new FieldInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -483,7 +483,7 @@ export class FieldInfoMsg extends pb_1.Message {
     }
 }
 export class PropertyInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         hasGet?: boolean;
@@ -558,7 +558,7 @@ export class PropertyInfoMsg extends pb_1.Message {
         hasSet?: boolean;
         setId?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): PropertyInfoMsg {
+    }) {
         const message = new PropertyInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -665,7 +665,7 @@ export class PropertyInfoMsg extends pb_1.Message {
     }
 }
 export class MethodInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -722,7 +722,7 @@ export class MethodInfoMsg extends pb_1.Message {
             [key: string]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
         returnType?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): MethodInfoMsg {
+    }) {
         const message = new MethodInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -815,7 +815,7 @@ export class MethodInfoMsg extends pb_1.Message {
     }
 }
 export class TypeDetailsMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         fields?: FieldInfoMsg[];
@@ -890,7 +890,7 @@ export class TypeDetailsMsg extends pb_1.Message {
         methods?: ReturnType<typeof MethodInfoMsg.prototype.toObject>[];
         interfaces?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
         parent?: ReturnType<typeof TypeDetailsMsg.prototype.toObject>;
-    }): TypeDetailsMsg {
+    }) {
         const message = new TypeDetailsMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -997,7 +997,7 @@ export class TypeDetailsMsg extends pb_1.Message {
     }
 }
 export class DataMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         typeInfo?: TypeInfoMsg;
         data?: Uint8Array;
@@ -1028,7 +1028,7 @@ export class DataMsg extends pb_1.Message {
     static fromObject(data: {
         typeInfo?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         data?: Uint8Array;
-    }): DataMsg {
+    }) {
         const message = new DataMsg({});
         if (data.typeInfo != null) {
             message.typeInfo = TypeInfoMsg.fromObject(data.typeInfo);
@@ -1086,224 +1086,371 @@ export class DataMsg extends pb_1.Message {
         return DataMsg.deserialize(bytes);
     }
 }
-export class ComponentMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class ProtoVector2 extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
-        name?: string;
-        classInfo?: ClassInfoMsg;
-        pointer?: Uint8Array;
+        x?: number;
+        y?: number;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
+            if ("x" in data && data.x != undefined) {
+                this.x = data.x;
+            }
+            if ("y" in data && data.y != undefined) {
+                this.y = data.y;
+            }
+        }
+    }
+    get x() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set x(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get y() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set y(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        x?: number;
+        y?: number;
+    }) {
+        const message = new ProtoVector2({});
+        if (data.x != null) {
+            message.x = data.x;
+        }
+        if (data.y != null) {
+            message.y = data.y;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            x?: number;
+            y?: number;
+        } = {};
+        if (this.x != null) {
+            data.x = this.x;
+        }
+        if (this.y != null) {
+            data.y = this.y;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.x !== undefined)
+            writer.writeFloat(1, this.x);
+        if (this.y !== undefined)
+            writer.writeFloat(2, this.y);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector2 {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector2();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.x = reader.readFloat();
+                    break;
+                case 2:
+                    message.y = reader.readFloat();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoVector2 {
+        return ProtoVector2.deserialize(bytes);
+    }
+}
+export class ProtoVector3 extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        x?: number;
+        y?: number;
+        z?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("x" in data && data.x != undefined) {
+                this.x = data.x;
+            }
+            if ("y" in data && data.y != undefined) {
+                this.y = data.y;
+            }
+            if ("z" in data && data.z != undefined) {
+                this.z = data.z;
+            }
+        }
+    }
+    get x() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set x(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get y() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set y(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get z() {
+        return pb_1.Message.getField(this, 3) as number;
+    }
+    set z(value: number) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        x?: number;
+        y?: number;
+        z?: number;
+    }) {
+        const message = new ProtoVector3({});
+        if (data.x != null) {
+            message.x = data.x;
+        }
+        if (data.y != null) {
+            message.y = data.y;
+        }
+        if (data.z != null) {
+            message.z = data.z;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            x?: number;
+            y?: number;
+            z?: number;
+        } = {};
+        if (this.x != null) {
+            data.x = this.x;
+        }
+        if (this.y != null) {
+            data.y = this.y;
+        }
+        if (this.z != null) {
+            data.z = this.z;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.x !== undefined)
+            writer.writeFloat(1, this.x);
+        if (this.y !== undefined)
+            writer.writeFloat(2, this.y);
+        if (this.z !== undefined)
+            writer.writeFloat(3, this.z);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector3 {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector3();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.x = reader.readFloat();
+                    break;
+                case 2:
+                    message.y = reader.readFloat();
+                    break;
+                case 3:
+                    message.z = reader.readFloat();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoVector3 {
+        return ProtoVector3.deserialize(bytes);
+    }
+}
+export class ProtoVector4 extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        x?: number;
+        y?: number;
+        z?: number;
+        w?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("x" in data && data.x != undefined) {
+                this.x = data.x;
+            }
+            if ("y" in data && data.y != undefined) {
+                this.y = data.y;
+            }
+            if ("z" in data && data.z != undefined) {
+                this.z = data.z;
+            }
+            if ("w" in data && data.w != undefined) {
+                this.w = data.w;
+            }
+        }
+    }
+    get x() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set x(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get y() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set y(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get z() {
+        return pb_1.Message.getField(this, 3) as number;
+    }
+    set z(value: number) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get w() {
+        return pb_1.Message.getField(this, 4) as number;
+    }
+    set w(value: number) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    static fromObject(data: {
+        x?: number;
+        y?: number;
+        z?: number;
+        w?: number;
+    }) {
+        const message = new ProtoVector4({});
+        if (data.x != null) {
+            message.x = data.x;
+        }
+        if (data.y != null) {
+            message.y = data.y;
+        }
+        if (data.z != null) {
+            message.z = data.z;
+        }
+        if (data.w != null) {
+            message.w = data.w;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            x?: number;
+            y?: number;
+            z?: number;
+            w?: number;
+        } = {};
+        if (this.x != null) {
+            data.x = this.x;
+        }
+        if (this.y != null) {
+            data.y = this.y;
+        }
+        if (this.z != null) {
+            data.z = this.z;
+        }
+        if (this.w != null) {
+            data.w = this.w;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.x !== undefined)
+            writer.writeFloat(1, this.x);
+        if (this.y !== undefined)
+            writer.writeFloat(2, this.y);
+        if (this.z !== undefined)
+            writer.writeFloat(3, this.z);
+        if (this.w !== undefined)
+            writer.writeFloat(4, this.w);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector4 {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector4();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.x = reader.readFloat();
+                    break;
+                case 2:
+                    message.y = reader.readFloat();
+                    break;
+                case 3:
+                    message.z = reader.readFloat();
+                    break;
+                case 4:
+                    message.w = reader.readFloat();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoVector4 {
+        return ProtoVector4.deserialize(bytes);
+    }
+}
+export class ProtoObject extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        name?: string;
+        classInfo?: ClassInfoMsg;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
             if ("name" in data && data.name != undefined) {
                 this.name = data.name;
             }
             if ("classInfo" in data && data.classInfo != undefined) {
                 this.classInfo = data.classInfo;
             }
-            if ("pointer" in data && data.pointer != undefined) {
-                this.pointer = data.pointer;
-            }
         }
     }
-    get name() {
-        return pb_1.Message.getField(this, 1) as string;
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
     }
-    set name(value: string) {
+    set address(value: number) {
         pb_1.Message.setField(this, 1, value);
-    }
-    get classInfo() {
-        return pb_1.Message.getWrapperField(this, ClassInfoMsg, 2) as ClassInfoMsg;
-    }
-    set classInfo(value: ClassInfoMsg) {
-        pb_1.Message.setWrapperField(this, 2, value);
-    }
-    get pointer() {
-        return pb_1.Message.getField(this, 3) as Uint8Array;
-    }
-    set pointer(value: Uint8Array) {
-        pb_1.Message.setField(this, 3, value);
-    }
-    static fromObject(data: {
-        name?: string;
-        classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-        pointer?: Uint8Array;
-    }): ComponentMsg {
-        const message = new ComponentMsg({});
-        if (data.name != null) {
-            message.name = data.name;
-        }
-        if (data.classInfo != null) {
-            message.classInfo = ClassInfoMsg.fromObject(data.classInfo);
-        }
-        if (data.pointer != null) {
-            message.pointer = data.pointer;
-        }
-        return message;
-    }
-    toObject() {
-        const data: {
-            name?: string;
-            classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-            pointer?: Uint8Array;
-        } = {};
-        if (this.name != null) {
-            data.name = this.name;
-        }
-        if (this.classInfo != null) {
-            data.classInfo = this.classInfo.toObject();
-        }
-        if (this.pointer != null) {
-            data.pointer = this.pointer;
-        }
-        return data;
-    }
-    serialize(): Uint8Array;
-    serialize(w: pb_1.BinaryWriter): void;
-    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-        const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.name === "string" && this.name.length)
-            writer.writeString(1, this.name);
-        if (this.classInfo !== undefined)
-            writer.writeMessage(2, this.classInfo, () => this.classInfo.serialize(writer));
-        if (this.pointer !== undefined)
-            writer.writeBytes(3, this.pointer);
-        if (!w)
-            return writer.getResultBuffer();
-    }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ComponentMsg {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ComponentMsg();
-        while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
-            switch (reader.getFieldNumber()) {
-                case 1:
-                    message.name = reader.readString();
-                    break;
-                case 2:
-                    reader.readMessage(message.classInfo, () => message.classInfo = ClassInfoMsg.deserialize(reader));
-                    break;
-                case 3:
-                    message.pointer = reader.readBytes();
-                    break;
-                default: reader.skipField();
-            }
-        }
-        return message;
-    }
-    serializeBinary(): Uint8Array {
-        return this.serialize();
-    }
-    static deserializeBinary(bytes: Uint8Array): ComponentMsg {
-        return ComponentMsg.deserialize(bytes);
-    }
-}
-export class Scene extends pb_1.Message {
-    #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        name?: string;
-    }) {
-        super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-        if (!Array.isArray(data) && typeof data == "object") {
-            if ("name" in data && data.name != undefined) {
-                this.name = data.name;
-            }
-        }
-    }
-    get name() {
-        return pb_1.Message.getField(this, 1) as string;
-    }
-    set name(value: string) {
-        pb_1.Message.setField(this, 1, value);
-    }
-    static fromObject(data: {
-        name?: string;
-    }): Scene {
-        const message = new Scene({});
-        if (data.name != null) {
-            message.name = data.name;
-        }
-        return message;
-    }
-    toObject() {
-        const data: {
-            name?: string;
-        } = {};
-        if (this.name != null) {
-            data.name = this.name;
-        }
-        return data;
-    }
-    serialize(): Uint8Array;
-    serialize(w: pb_1.BinaryWriter): void;
-    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-        const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.name === "string" && this.name.length)
-            writer.writeString(1, this.name);
-        if (!w)
-            return writer.getResultBuffer();
-    }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Scene {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Scene();
-        while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
-            switch (reader.getFieldNumber()) {
-                case 1:
-                    message.name = reader.readString();
-                    break;
-                default: reader.skipField();
-            }
-        }
-        return message;
-    }
-    serializeBinary(): Uint8Array {
-        return this.serialize();
-    }
-    static deserializeBinary(bytes: Uint8Array): Scene {
-        return Scene.deserialize(bytes);
-    }
-}
-export class GameObject extends pb_1.Message {
-    #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        scene?: Scene;
-        name?: string;
-        parentId?: number;
-        childrenIds?: number[];
-        active?: boolean;
-        id?: number;
-    }) {
-        super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [4], this.#one_of_decls);
-        if (!Array.isArray(data) && typeof data == "object") {
-            if ("scene" in data && data.scene != undefined) {
-                this.scene = data.scene;
-            }
-            if ("name" in data && data.name != undefined) {
-                this.name = data.name;
-            }
-            if ("parentId" in data && data.parentId != undefined) {
-                this.parentId = data.parentId;
-            }
-            if ("childrenIds" in data && data.childrenIds != undefined) {
-                this.childrenIds = data.childrenIds;
-            }
-            if ("active" in data && data.active != undefined) {
-                this.active = data.active;
-            }
-            if ("id" in data && data.id != undefined) {
-                this.id = data.id;
-            }
-        }
-    }
-    get scene() {
-        return pb_1.Message.getWrapperField(this, Scene, 1) as Scene;
-    }
-    set scene(value: Scene) {
-        pb_1.Message.setWrapperField(this, 1, value);
     }
     get name() {
         return pb_1.Message.getField(this, 2) as string;
@@ -1311,85 +1458,43 @@ export class GameObject extends pb_1.Message {
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
-    get parentId() {
-        return pb_1.Message.getField(this, 3) as number;
+    get classInfo() {
+        return pb_1.Message.getWrapperField(this, ClassInfoMsg, 3) as ClassInfoMsg;
     }
-    set parentId(value: number) {
-        pb_1.Message.setField(this, 3, value);
-    }
-    get childrenIds() {
-        return pb_1.Message.getField(this, 4) as number[];
-    }
-    set childrenIds(value: number[]) {
-        pb_1.Message.setField(this, 4, value);
-    }
-    get active() {
-        return pb_1.Message.getField(this, 5) as boolean;
-    }
-    set active(value: boolean) {
-        pb_1.Message.setField(this, 5, value);
-    }
-    get id() {
-        return pb_1.Message.getField(this, 6) as number;
-    }
-    set id(value: number) {
-        pb_1.Message.setField(this, 6, value);
+    set classInfo(value: ClassInfoMsg) {
+        pb_1.Message.setWrapperField(this, 3, value);
     }
     static fromObject(data: {
-        scene?: ReturnType<typeof Scene.prototype.toObject>;
+        address?: number;
         name?: string;
-        parentId?: number;
-        childrenIds?: number[];
-        active?: boolean;
-        id?: number;
-    }): GameObject {
-        const message = new GameObject({});
-        if (data.scene != null) {
-            message.scene = Scene.fromObject(data.scene);
+        classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
+    }) {
+        const message = new ProtoObject({});
+        if (data.address != null) {
+            message.address = data.address;
         }
         if (data.name != null) {
             message.name = data.name;
         }
-        if (data.parentId != null) {
-            message.parentId = data.parentId;
-        }
-        if (data.childrenIds != null) {
-            message.childrenIds = data.childrenIds;
-        }
-        if (data.active != null) {
-            message.active = data.active;
-        }
-        if (data.id != null) {
-            message.id = data.id;
+        if (data.classInfo != null) {
+            message.classInfo = ClassInfoMsg.fromObject(data.classInfo);
         }
         return message;
     }
     toObject() {
         const data: {
-            scene?: ReturnType<typeof Scene.prototype.toObject>;
+            address?: number;
             name?: string;
-            parentId?: number;
-            childrenIds?: number[];
-            active?: boolean;
-            id?: number;
+            classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
         } = {};
-        if (this.scene != null) {
-            data.scene = this.scene.toObject();
+        if (this.address != null) {
+            data.address = this.address;
         }
         if (this.name != null) {
             data.name = this.name;
         }
-        if (this.parentId != null) {
-            data.parentId = this.parentId;
-        }
-        if (this.childrenIds != null) {
-            data.childrenIds = this.childrenIds;
-        }
-        if (this.active != null) {
-            data.active = this.active;
-        }
-        if (this.id != null) {
-            data.id = this.id;
+        if (this.classInfo != null) {
+            data.classInfo = this.classInfo.toObject();
         }
         return data;
     }
@@ -1397,44 +1502,29 @@ export class GameObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.scene !== undefined)
-            writer.writeMessage(1, this.scene, () => this.scene.serialize(writer));
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
         if (typeof this.name === "string" && this.name.length)
             writer.writeString(2, this.name);
-        if (this.parentId !== undefined)
-            writer.writeInt32(3, this.parentId);
-        if (this.childrenIds !== undefined)
-            writer.writePackedInt32(4, this.childrenIds);
-        if (this.active !== undefined)
-            writer.writeBool(5, this.active);
-        if (this.id !== undefined)
-            writer.writeInt32(6, this.id);
+        if (this.classInfo !== undefined)
+            writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GameObject {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GameObject();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoObject {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoObject();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.scene, () => message.scene = Scene.deserialize(reader));
+                    message.address = reader.readUint64();
                     break;
                 case 2:
                     message.name = reader.readString();
                     break;
                 case 3:
-                    message.parentId = reader.readInt32();
-                    break;
-                case 4:
-                    message.childrenIds = reader.readPackedInt32();
-                    break;
-                case 5:
-                    message.active = reader.readBool();
-                    break;
-                case 6:
-                    message.id = reader.readInt32();
+                    reader.readMessage(message.classInfo, () => message.classInfo = ClassInfoMsg.deserialize(reader));
                     break;
                 default: reader.skipField();
             }
@@ -1444,12 +1534,602 @@ export class GameObject extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): GameObject {
-        return GameObject.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): ProtoObject {
+        return ProtoObject.deserialize(bytes);
+    }
+}
+export class ProtoComponent extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        name?: string;
+        gameObject?: number;
+        classInfo?: ClassInfoMsg;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("gameObject" in data && data.gameObject != undefined) {
+                this.gameObject = data.gameObject;
+            }
+            if ("classInfo" in data && data.classInfo != undefined) {
+                this.classInfo = data.classInfo;
+            }
+        }
+    }
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get name() {
+        return pb_1.Message.getField(this, 2) as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get gameObject() {
+        return pb_1.Message.getField(this, 3) as number;
+    }
+    set gameObject(value: number) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get classInfo() {
+        return pb_1.Message.getWrapperField(this, ClassInfoMsg, 4) as ClassInfoMsg;
+    }
+    set classInfo(value: ClassInfoMsg) {
+        pb_1.Message.setWrapperField(this, 4, value);
+    }
+    static fromObject(data: {
+        address?: number;
+        name?: string;
+        gameObject?: number;
+        classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
+    }) {
+        const message = new ProtoComponent({});
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.name != null) {
+            message.name = data.name;
+        }
+        if (data.gameObject != null) {
+            message.gameObject = data.gameObject;
+        }
+        if (data.classInfo != null) {
+            message.classInfo = ClassInfoMsg.fromObject(data.classInfo);
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            address?: number;
+            name?: string;
+            gameObject?: number;
+            classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
+        } = {};
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.name != null) {
+            data.name = this.name;
+        }
+        if (this.gameObject != null) {
+            data.gameObject = this.gameObject;
+        }
+        if (this.classInfo != null) {
+            data.classInfo = this.classInfo.toObject();
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
+        if (typeof this.name === "string" && this.name.length)
+            writer.writeString(2, this.name);
+        if (this.gameObject !== undefined)
+            writer.writeUint64(3, this.gameObject);
+        if (this.classInfo !== undefined)
+            writer.writeMessage(4, this.classInfo, () => this.classInfo.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoComponent {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoComponent();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.address = reader.readUint64();
+                    break;
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.gameObject = reader.readUint64();
+                    break;
+                case 4:
+                    reader.readMessage(message.classInfo, () => message.classInfo = ClassInfoMsg.deserialize(reader));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoComponent {
+        return ProtoComponent.deserialize(bytes);
+    }
+}
+export class ProtoTransform extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        name?: string;
+        childCount?: number;
+        parent?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("childCount" in data && data.childCount != undefined) {
+                this.childCount = data.childCount;
+            }
+            if ("parent" in data && data.parent != undefined) {
+                this.parent = data.parent;
+            }
+        }
+    }
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get name() {
+        return pb_1.Message.getField(this, 2) as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get childCount() {
+        return pb_1.Message.getField(this, 3) as number;
+    }
+    set childCount(value: number) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get parent() {
+        return pb_1.Message.getField(this, 4) as number;
+    }
+    set parent(value: number) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    static fromObject(data: {
+        address?: number;
+        name?: string;
+        childCount?: number;
+        parent?: number;
+    }) {
+        const message = new ProtoTransform({});
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.name != null) {
+            message.name = data.name;
+        }
+        if (data.childCount != null) {
+            message.childCount = data.childCount;
+        }
+        if (data.parent != null) {
+            message.parent = data.parent;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            address?: number;
+            name?: string;
+            childCount?: number;
+            parent?: number;
+        } = {};
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.name != null) {
+            data.name = this.name;
+        }
+        if (this.childCount != null) {
+            data.childCount = this.childCount;
+        }
+        if (this.parent != null) {
+            data.parent = this.parent;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
+        if (typeof this.name === "string" && this.name.length)
+            writer.writeString(2, this.name);
+        if (this.childCount !== undefined)
+            writer.writeInt32(3, this.childCount);
+        if (this.parent !== undefined)
+            writer.writeUint64(4, this.parent);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoTransform {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoTransform();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.address = reader.readUint64();
+                    break;
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.childCount = reader.readInt32();
+                    break;
+                case 4:
+                    message.parent = reader.readUint64();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoTransform {
+        return ProtoTransform.deserialize(bytes);
+    }
+}
+export class ProtoGameObject extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        name?: string;
+        active?: boolean;
+        layer?: number;
+        scene?: ProtoScene;
+        tag?: string;
+        transform?: ProtoTransform;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("active" in data && data.active != undefined) {
+                this.active = data.active;
+            }
+            if ("layer" in data && data.layer != undefined) {
+                this.layer = data.layer;
+            }
+            if ("scene" in data && data.scene != undefined) {
+                this.scene = data.scene;
+            }
+            if ("tag" in data && data.tag != undefined) {
+                this.tag = data.tag;
+            }
+            if ("transform" in data && data.transform != undefined) {
+                this.transform = data.transform;
+            }
+        }
+    }
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get name() {
+        return pb_1.Message.getField(this, 2) as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get active() {
+        return pb_1.Message.getField(this, 3) as boolean;
+    }
+    set active(value: boolean) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    get layer() {
+        return pb_1.Message.getField(this, 4) as number;
+    }
+    set layer(value: number) {
+        pb_1.Message.setField(this, 4, value);
+    }
+    get scene() {
+        return pb_1.Message.getWrapperField(this, ProtoScene, 5) as ProtoScene;
+    }
+    set scene(value: ProtoScene) {
+        pb_1.Message.setWrapperField(this, 5, value);
+    }
+    get tag() {
+        return pb_1.Message.getField(this, 6) as string;
+    }
+    set tag(value: string) {
+        pb_1.Message.setField(this, 6, value);
+    }
+    get transform() {
+        return pb_1.Message.getWrapperField(this, ProtoTransform, 7) as ProtoTransform;
+    }
+    set transform(value: ProtoTransform) {
+        pb_1.Message.setWrapperField(this, 7, value);
+    }
+    static fromObject(data: {
+        address?: number;
+        name?: string;
+        active?: boolean;
+        layer?: number;
+        scene?: ReturnType<typeof ProtoScene.prototype.toObject>;
+        tag?: string;
+        transform?: ReturnType<typeof ProtoTransform.prototype.toObject>;
+    }) {
+        const message = new ProtoGameObject({});
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.name != null) {
+            message.name = data.name;
+        }
+        if (data.active != null) {
+            message.active = data.active;
+        }
+        if (data.layer != null) {
+            message.layer = data.layer;
+        }
+        if (data.scene != null) {
+            message.scene = ProtoScene.fromObject(data.scene);
+        }
+        if (data.tag != null) {
+            message.tag = data.tag;
+        }
+        if (data.transform != null) {
+            message.transform = ProtoTransform.fromObject(data.transform);
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            address?: number;
+            name?: string;
+            active?: boolean;
+            layer?: number;
+            scene?: ReturnType<typeof ProtoScene.prototype.toObject>;
+            tag?: string;
+            transform?: ReturnType<typeof ProtoTransform.prototype.toObject>;
+        } = {};
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.name != null) {
+            data.name = this.name;
+        }
+        if (this.active != null) {
+            data.active = this.active;
+        }
+        if (this.layer != null) {
+            data.layer = this.layer;
+        }
+        if (this.scene != null) {
+            data.scene = this.scene.toObject();
+        }
+        if (this.tag != null) {
+            data.tag = this.tag;
+        }
+        if (this.transform != null) {
+            data.transform = this.transform.toObject();
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
+        if (typeof this.name === "string" && this.name.length)
+            writer.writeString(2, this.name);
+        if (this.active !== undefined)
+            writer.writeBool(3, this.active);
+        if (this.layer !== undefined)
+            writer.writeInt32(4, this.layer);
+        if (this.scene !== undefined)
+            writer.writeMessage(5, this.scene, () => this.scene.serialize(writer));
+        if (typeof this.tag === "string" && this.tag.length)
+            writer.writeString(6, this.tag);
+        if (this.transform !== undefined)
+            writer.writeMessage(7, this.transform, () => this.transform.serialize(writer));
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoGameObject {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoGameObject();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.address = reader.readUint64();
+                    break;
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.active = reader.readBool();
+                    break;
+                case 4:
+                    message.layer = reader.readInt32();
+                    break;
+                case 5:
+                    reader.readMessage(message.scene, () => message.scene = ProtoScene.deserialize(reader));
+                    break;
+                case 6:
+                    message.tag = reader.readString();
+                    break;
+                case 7:
+                    reader.readMessage(message.transform, () => message.transform = ProtoTransform.deserialize(reader));
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoGameObject {
+        return ProtoGameObject.deserialize(bytes);
+    }
+}
+export class ProtoScene extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        handle?: number;
+        name?: string;
+        isLoaded?: boolean;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("handle" in data && data.handle != undefined) {
+                this.handle = data.handle;
+            }
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
+            }
+            if ("isLoaded" in data && data.isLoaded != undefined) {
+                this.isLoaded = data.isLoaded;
+            }
+        }
+    }
+    get handle() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set handle(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get name() {
+        return pb_1.Message.getField(this, 2) as string;
+    }
+    set name(value: string) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get isLoaded() {
+        return pb_1.Message.getField(this, 3) as boolean;
+    }
+    set isLoaded(value: boolean) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        handle?: number;
+        name?: string;
+        isLoaded?: boolean;
+    }) {
+        const message = new ProtoScene({});
+        if (data.handle != null) {
+            message.handle = data.handle;
+        }
+        if (data.name != null) {
+            message.name = data.name;
+        }
+        if (data.isLoaded != null) {
+            message.isLoaded = data.isLoaded;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            handle?: number;
+            name?: string;
+            isLoaded?: boolean;
+        } = {};
+        if (this.handle != null) {
+            data.handle = this.handle;
+        }
+        if (this.name != null) {
+            data.name = this.name;
+        }
+        if (this.isLoaded != null) {
+            data.isLoaded = this.isLoaded;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.handle !== undefined)
+            writer.writeInt32(1, this.handle);
+        if (typeof this.name === "string" && this.name.length)
+            writer.writeString(2, this.name);
+        if (this.isLoaded !== undefined)
+            writer.writeBool(3, this.isLoaded);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoScene {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoScene();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.handle = reader.readInt32();
+                    break;
+                case 2:
+                    message.name = reader.readString();
+                    break;
+                case 3:
+                    message.isLoaded = reader.readBool();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoScene {
+        return ProtoScene.deserialize(bytes);
     }
 }
 export class InvokeMethod extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         methodId?: number;
         invokeUUID?: number;
@@ -1491,7 +2171,7 @@ export class InvokeMethod extends pb_1.Message {
         methodId?: number;
         invokeUUID?: number;
         args?: ReturnType<typeof DataMsg.prototype.toObject>[];
-    }): InvokeMethod {
+    }) {
         const message = new InvokeMethod({});
         if (data.methodId != null) {
             message.methodId = data.methodId;
@@ -1562,7 +2242,7 @@ export class InvokeMethod extends pb_1.Message {
     }
 }
 export class InvokeMethodResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         status?: InvokeMethodResult.Status;
         methodId?: number;
@@ -1626,7 +2306,7 @@ export class InvokeMethodResult extends pb_1.Message {
         invokeUUID?: number;
         result?: ReturnType<typeof DataMsg.prototype.toObject>;
         error?: string;
-    }): InvokeMethodResult {
+    }) {
         const message = new InvokeMethodResult({});
         if (data.status != null) {
             message.status = data.status;
@@ -1722,16 +2402,16 @@ export class InvokeMethodResult extends pb_1.Message {
 }
 export namespace InvokeMethodResult {
     export enum Status {
-        OK = 0,
-        ERR = 1,
+        ERR = 0,
+        OK = 1,
         NOT_FOUND = 2
     }
 }
-export class SearchComponents extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class SearchObjects extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
         componentClass?: ClassInfoMsg;
-        componentName?: string;
+        name?: string;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -1739,8 +2419,8 @@ export class SearchComponents extends pb_1.Message {
             if ("componentClass" in data && data.componentClass != undefined) {
                 this.componentClass = data.componentClass;
             }
-            if ("componentName" in data && data.componentName != undefined) {
-                this.componentName = data.componentName;
+            if ("name" in data && data.name != undefined) {
+                this.name = data.name;
             }
         }
     }
@@ -1750,35 +2430,35 @@ export class SearchComponents extends pb_1.Message {
     set componentClass(value: ClassInfoMsg) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
-    get componentName() {
+    get name() {
         return pb_1.Message.getField(this, 2) as string;
     }
-    set componentName(value: string) {
+    set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
     static fromObject(data: {
         componentClass?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-        componentName?: string;
-    }): SearchComponents {
-        const message = new SearchComponents({});
+        name?: string;
+    }) {
+        const message = new SearchObjects({});
         if (data.componentClass != null) {
             message.componentClass = ClassInfoMsg.fromObject(data.componentClass);
         }
-        if (data.componentName != null) {
-            message.componentName = data.componentName;
+        if (data.name != null) {
+            message.name = data.name;
         }
         return message;
     }
     toObject() {
         const data: {
             componentClass?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-            componentName?: string;
+            name?: string;
         } = {};
         if (this.componentClass != null) {
             data.componentClass = this.componentClass.toObject();
         }
-        if (this.componentName != null) {
-            data.componentName = this.componentName;
+        if (this.name != null) {
+            data.name = this.name;
         }
         return data;
     }
@@ -1788,13 +2468,13 @@ export class SearchComponents extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.componentClass !== undefined)
             writer.writeMessage(1, this.componentClass, () => this.componentClass.serialize(writer));
-        if (typeof this.componentName === "string" && this.componentName.length)
-            writer.writeString(2, this.componentName);
+        if (typeof this.name === "string" && this.name.length)
+            writer.writeString(2, this.name);
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchComponents {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchComponents();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchObjects {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchObjects();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
@@ -1803,7 +2483,7 @@ export class SearchComponents extends pb_1.Message {
                     reader.readMessage(message.componentClass, () => message.componentClass = ClassInfoMsg.deserialize(reader));
                     break;
                 case 2:
-                    message.componentName = reader.readString();
+                    message.name = reader.readString();
                     break;
                 default: reader.skipField();
             }
@@ -1813,44 +2493,44 @@ export class SearchComponents extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): SearchComponents {
-        return SearchComponents.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): SearchObjects {
+        return SearchObjects.deserialize(bytes);
     }
 }
-export class SearchComponentsResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class SearchObjectsResult extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
-        foundComponents?: ComponentMsg[];
+        objects?: ProtoObject[];
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("foundComponents" in data && data.foundComponents != undefined) {
-                this.foundComponents = data.foundComponents;
+            if ("objects" in data && data.objects != undefined) {
+                this.objects = data.objects;
             }
         }
     }
-    get foundComponents() {
-        return pb_1.Message.getRepeatedWrapperField(this, ComponentMsg, 1) as ComponentMsg[];
+    get objects() {
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoObject, 1) as ProtoObject[];
     }
-    set foundComponents(value: ComponentMsg[]) {
+    set objects(value: ProtoObject[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        foundComponents?: ReturnType<typeof ComponentMsg.prototype.toObject>[];
-    }): SearchComponentsResult {
-        const message = new SearchComponentsResult({});
-        if (data.foundComponents != null) {
-            message.foundComponents = data.foundComponents.map(item => ComponentMsg.fromObject(item));
+        objects?: ReturnType<typeof ProtoObject.prototype.toObject>[];
+    }) {
+        const message = new SearchObjectsResult({});
+        if (data.objects != null) {
+            message.objects = data.objects.map(item => ProtoObject.fromObject(item));
         }
         return message;
     }
     toObject() {
         const data: {
-            foundComponents?: ReturnType<typeof ComponentMsg.prototype.toObject>[];
+            objects?: ReturnType<typeof ProtoObject.prototype.toObject>[];
         } = {};
-        if (this.foundComponents != null) {
-            data.foundComponents = this.foundComponents.map((item: ComponentMsg) => item.toObject());
+        if (this.objects != null) {
+            data.objects = this.objects.map((item: ProtoObject) => item.toObject());
         }
         return data;
     }
@@ -1858,19 +2538,19 @@ export class SearchComponentsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.foundComponents !== undefined)
-            writer.writeRepeatedMessage(1, this.foundComponents, (item: ComponentMsg) => item.serialize(writer));
+        if (this.objects !== undefined)
+            writer.writeRepeatedMessage(1, this.objects, (item: ProtoObject) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchComponentsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchComponentsResult();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchObjectsResult {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchObjectsResult();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.foundComponents, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ComponentMsg.deserialize(reader), ComponentMsg));
+                    reader.readMessage(message.objects, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ProtoObject.deserialize(reader), ProtoObject));
                     break;
                 default: reader.skipField();
             }
@@ -1880,19 +2560,19 @@ export class SearchComponentsResult extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): SearchComponentsResult {
-        return SearchComponentsResult.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): SearchObjectsResult {
+        return SearchObjectsResult.deserialize(bytes);
     }
 }
-export class FindGameObjects extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class GetAllGameObjects extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {}) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") { }
     }
-    static fromObject(data: {}): FindGameObjects {
-        const message = new FindGameObjects({});
+    static fromObject(data: {}) {
+        const message = new GetAllGameObjects({});
         return message;
     }
     toObject() {
@@ -1906,8 +2586,8 @@ export class FindGameObjects extends pb_1.Message {
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): FindGameObjects {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new FindGameObjects();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetAllGameObjects {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetAllGameObjects();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
@@ -1920,44 +2600,44 @@ export class FindGameObjects extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): FindGameObjects {
-        return FindGameObjects.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): GetAllGameObjects {
+        return GetAllGameObjects.deserialize(bytes);
     }
 }
-export class FindGameObjectsResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class GetAllGameObjectsResult extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
-        foundObjects?: GameObject[];
+        objects?: ProtoGameObject[];
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("foundObjects" in data && data.foundObjects != undefined) {
-                this.foundObjects = data.foundObjects;
+            if ("objects" in data && data.objects != undefined) {
+                this.objects = data.objects;
             }
         }
     }
-    get foundObjects() {
-        return pb_1.Message.getRepeatedWrapperField(this, GameObject, 1) as GameObject[];
+    get objects() {
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoGameObject, 1) as ProtoGameObject[];
     }
-    set foundObjects(value: GameObject[]) {
+    set objects(value: ProtoGameObject[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        foundObjects?: ReturnType<typeof GameObject.prototype.toObject>[];
-    }): FindGameObjectsResult {
-        const message = new FindGameObjectsResult({});
-        if (data.foundObjects != null) {
-            message.foundObjects = data.foundObjects.map(item => GameObject.fromObject(item));
+        objects?: ReturnType<typeof ProtoGameObject.prototype.toObject>[];
+    }) {
+        const message = new GetAllGameObjectsResult({});
+        if (data.objects != null) {
+            message.objects = data.objects.map(item => ProtoGameObject.fromObject(item));
         }
         return message;
     }
     toObject() {
         const data: {
-            foundObjects?: ReturnType<typeof GameObject.prototype.toObject>[];
+            objects?: ReturnType<typeof ProtoGameObject.prototype.toObject>[];
         } = {};
-        if (this.foundObjects != null) {
-            data.foundObjects = this.foundObjects.map((item: GameObject) => item.toObject());
+        if (this.objects != null) {
+            data.objects = this.objects.map((item: ProtoGameObject) => item.toObject());
         }
         return data;
     }
@@ -1965,19 +2645,19 @@ export class FindGameObjectsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.foundObjects !== undefined)
-            writer.writeRepeatedMessage(1, this.foundObjects, (item: GameObject) => item.serialize(writer));
+        if (this.objects !== undefined)
+            writer.writeRepeatedMessage(1, this.objects, (item: ProtoGameObject) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): FindGameObjectsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new FindGameObjectsResult();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetAllGameObjectsResult {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetAllGameObjectsResult();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.foundObjects, () => pb_1.Message.addToRepeatedWrapperField(message, 1, GameObject.deserialize(reader), GameObject));
+                    reader.readMessage(message.objects, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ProtoGameObject.deserialize(reader), ProtoGameObject));
                     break;
                 default: reader.skipField();
             }
@@ -1987,178 +2667,44 @@ export class FindGameObjectsResult extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): FindGameObjectsResult {
-        return FindGameObjectsResult.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): GetAllGameObjectsResult {
+        return GetAllGameObjectsResult.deserialize(bytes);
     }
 }
-export class LoadObject extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class GetGameObjectComponents extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
-        pointer?: Uint8Array;
+        address?: number;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("pointer" in data && data.pointer != undefined) {
-                this.pointer = data.pointer;
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
             }
         }
     }
-    get pointer() {
-        return pb_1.Message.getField(this, 1) as Uint8Array;
-    }
-    set pointer(value: Uint8Array) {
-        pb_1.Message.setField(this, 1, value);
-    }
-    static fromObject(data: {
-        pointer?: Uint8Array;
-    }): LoadObject {
-        const message = new LoadObject({});
-        if (data.pointer != null) {
-            message.pointer = data.pointer;
-        }
-        return message;
-    }
-    toObject() {
-        const data: {
-            pointer?: Uint8Array;
-        } = {};
-        if (this.pointer != null) {
-            data.pointer = this.pointer;
-        }
-        return data;
-    }
-    serialize(): Uint8Array;
-    serialize(w: pb_1.BinaryWriter): void;
-    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-        const writer = w || new pb_1.BinaryWriter();
-        if (this.pointer !== undefined)
-            writer.writeBytes(1, this.pointer);
-        if (!w)
-            return writer.getResultBuffer();
-    }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): LoadObject {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new LoadObject();
-        while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
-            switch (reader.getFieldNumber()) {
-                case 1:
-                    message.pointer = reader.readBytes();
-                    break;
-                default: reader.skipField();
-            }
-        }
-        return message;
-    }
-    serializeBinary(): Uint8Array {
-        return this.serialize();
-    }
-    static deserializeBinary(bytes: Uint8Array): LoadObject {
-        return LoadObject.deserialize(bytes);
-    }
-}
-export class LoadObjectResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        object?: TypeDetailsMsg;
-    }) {
-        super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-        if (!Array.isArray(data) && typeof data == "object") {
-            if ("object" in data && data.object != undefined) {
-                this.object = data.object;
-            }
-        }
-    }
-    get object() {
-        return pb_1.Message.getWrapperField(this, TypeDetailsMsg, 1) as TypeDetailsMsg;
-    }
-    set object(value: TypeDetailsMsg) {
-        pb_1.Message.setWrapperField(this, 1, value);
-    }
-    static fromObject(data: {
-        object?: ReturnType<typeof TypeDetailsMsg.prototype.toObject>;
-    }): LoadObjectResult {
-        const message = new LoadObjectResult({});
-        if (data.object != null) {
-            message.object = TypeDetailsMsg.fromObject(data.object);
-        }
-        return message;
-    }
-    toObject() {
-        const data: {
-            object?: ReturnType<typeof TypeDetailsMsg.prototype.toObject>;
-        } = {};
-        if (this.object != null) {
-            data.object = this.object.toObject();
-        }
-        return data;
-    }
-    serialize(): Uint8Array;
-    serialize(w: pb_1.BinaryWriter): void;
-    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-        const writer = w || new pb_1.BinaryWriter();
-        if (this.object !== undefined)
-            writer.writeMessage(1, this.object, () => this.object.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
-    }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): LoadObjectResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new LoadObjectResult();
-        while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
-            switch (reader.getFieldNumber()) {
-                case 1:
-                    reader.readMessage(message.object, () => message.object = TypeDetailsMsg.deserialize(reader));
-                    break;
-                default: reader.skipField();
-            }
-        }
-        return message;
-    }
-    serializeBinary(): Uint8Array {
-        return this.serialize();
-    }
-    static deserializeBinary(bytes: Uint8Array): LoadObjectResult {
-        return LoadObjectResult.deserialize(bytes);
-    }
-}
-export class GetComponentsOfGameObject extends pb_1.Message {
-    #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        id?: number;
-    }) {
-        super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-        if (!Array.isArray(data) && typeof data == "object") {
-            if ("id" in data && data.id != undefined) {
-                this.id = data.id;
-            }
-        }
-    }
-    get id() {
+    get address() {
         return pb_1.Message.getField(this, 1) as number;
     }
-    set id(value: number) {
+    set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     static fromObject(data: {
-        id?: number;
-    }): GetComponentsOfGameObject {
-        const message = new GetComponentsOfGameObject({});
-        if (data.id != null) {
-            message.id = data.id;
+        address?: number;
+    }) {
+        const message = new GetGameObjectComponents({});
+        if (data.address != null) {
+            message.address = data.address;
         }
         return message;
     }
     toObject() {
         const data: {
-            id?: number;
+            address?: number;
         } = {};
-        if (this.id != null) {
-            data.id = this.id;
+        if (this.address != null) {
+            data.address = this.address;
         }
         return data;
     }
@@ -2166,19 +2712,19 @@ export class GetComponentsOfGameObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.id !== undefined)
-            writer.writeInt32(1, this.id);
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetComponentsOfGameObject {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetComponentsOfGameObject();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetGameObjectComponents {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetGameObjectComponents();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    message.id = reader.readInt32();
+                    message.address = reader.readUint64();
                     break;
                 default: reader.skipField();
             }
@@ -2188,44 +2734,44 @@ export class GetComponentsOfGameObject extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): GetComponentsOfGameObject {
-        return GetComponentsOfGameObject.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): GetGameObjectComponents {
+        return GetGameObjectComponents.deserialize(bytes);
     }
 }
-export class GetComponentsOfGameObjectResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+export class GetGameObjectComponentsResult extends pb_1.Message {
+    #one_of_decls = [];
     constructor(data?: any[] | {
-        foundComponents?: ComponentMsg[];
+        components?: ProtoComponent[];
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("foundComponents" in data && data.foundComponents != undefined) {
-                this.foundComponents = data.foundComponents;
+            if ("components" in data && data.components != undefined) {
+                this.components = data.components;
             }
         }
     }
-    get foundComponents() {
-        return pb_1.Message.getRepeatedWrapperField(this, ComponentMsg, 1) as ComponentMsg[];
+    get components() {
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoComponent, 1) as ProtoComponent[];
     }
-    set foundComponents(value: ComponentMsg[]) {
+    set components(value: ProtoComponent[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        foundComponents?: ReturnType<typeof ComponentMsg.prototype.toObject>[];
-    }): GetComponentsOfGameObjectResult {
-        const message = new GetComponentsOfGameObjectResult({});
-        if (data.foundComponents != null) {
-            message.foundComponents = data.foundComponents.map(item => ComponentMsg.fromObject(item));
+        components?: ReturnType<typeof ProtoComponent.prototype.toObject>[];
+    }) {
+        const message = new GetGameObjectComponentsResult({});
+        if (data.components != null) {
+            message.components = data.components.map(item => ProtoComponent.fromObject(item));
         }
         return message;
     }
     toObject() {
         const data: {
-            foundComponents?: ReturnType<typeof ComponentMsg.prototype.toObject>[];
+            components?: ReturnType<typeof ProtoComponent.prototype.toObject>[];
         } = {};
-        if (this.foundComponents != null) {
-            data.foundComponents = this.foundComponents.map((item: ComponentMsg) => item.toObject());
+        if (this.components != null) {
+            data.components = this.components.map((item: ProtoComponent) => item.toObject());
         }
         return data;
     }
@@ -2233,19 +2779,19 @@ export class GetComponentsOfGameObjectResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.foundComponents !== undefined)
-            writer.writeRepeatedMessage(1, this.foundComponents, (item: ComponentMsg) => item.serialize(writer));
+        if (this.components !== undefined)
+            writer.writeRepeatedMessage(1, this.components, (item: ProtoComponent) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetComponentsOfGameObjectResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetComponentsOfGameObjectResult();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetGameObjectComponentsResult {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetGameObjectComponentsResult();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.foundComponents, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ComponentMsg.deserialize(reader), ComponentMsg));
+                    reader.readMessage(message.components, () => pb_1.Message.addToRepeatedWrapperField(message, 1, ProtoComponent.deserialize(reader), ProtoComponent));
                     break;
                 default: reader.skipField();
             }
@@ -2255,124 +2801,333 @@ export class GetComponentsOfGameObjectResult extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): GetComponentsOfGameObjectResult {
-        return GetComponentsOfGameObjectResult.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): GetGameObjectComponentsResult {
+        return GetGameObjectComponentsResult.deserialize(bytes);
+    }
+}
+export class ReadMemory extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        size?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("size" in data && data.size != undefined) {
+                this.size = data.size;
+            }
+        }
+    }
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get size() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set size(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        address?: number;
+        size?: number;
+    }) {
+        const message = new ReadMemory({});
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.size != null) {
+            message.size = data.size;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            address?: number;
+            size?: number;
+        } = {};
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.size != null) {
+            data.size = this.size;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
+        if (this.size !== undefined)
+            writer.writeUint64(2, this.size);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ReadMemory {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ReadMemory();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.address = reader.readUint64();
+                    break;
+                case 2:
+                    message.size = reader.readUint64();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ReadMemory {
+        return ReadMemory.deserialize(bytes);
+    }
+}
+export class ReadMemoryResult extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        status?: ReadMemoryResult.Status;
+        address?: number;
+        data?: Uint8Array;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("status" in data && data.status != undefined) {
+                this.status = data.status;
+            }
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("data" in data && data.data != undefined) {
+                this.data = data.data;
+            }
+        }
+    }
+    get status() {
+        return pb_1.Message.getField(this, 1) as ReadMemoryResult.Status;
+    }
+    set status(value: ReadMemoryResult.Status) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get address() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get data() {
+        return pb_1.Message.getField(this, 3) as Uint8Array;
+    }
+    set data(value: Uint8Array) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        status?: ReadMemoryResult.Status;
+        address?: number;
+        data?: Uint8Array;
+    }) {
+        const message = new ReadMemoryResult({});
+        if (data.status != null) {
+            message.status = data.status;
+        }
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.data != null) {
+            message.data = data.data;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            status?: ReadMemoryResult.Status;
+            address?: number;
+            data?: Uint8Array;
+        } = {};
+        if (this.status != null) {
+            data.status = this.status;
+        }
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.data != null) {
+            data.data = this.data;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.status !== undefined)
+            writer.writeEnum(1, this.status);
+        if (this.address !== undefined)
+            writer.writeUint64(2, this.address);
+        if (this.data !== undefined)
+            writer.writeBytes(3, this.data);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ReadMemoryResult {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ReadMemoryResult();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.status = reader.readEnum();
+                    break;
+                case 2:
+                    message.address = reader.readUint64();
+                    break;
+                case 3:
+                    message.data = reader.readBytes();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ReadMemoryResult {
+        return ReadMemoryResult.deserialize(bytes);
+    }
+}
+export namespace ReadMemoryResult {
+    export enum Status {
+        ERR = 0,
+        OK = 1
     }
 }
 export class PacketWrapper extends pb_1.Message {
-    #one_of_decls: number[][] = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]];
+    #one_of_decls = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]];
     constructor(data?: any[] | ({
         queryResultId?: number;
     } & (({
         invokeMethod?: InvokeMethod;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: InvokeMethodResult;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: SearchComponents;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: SearchObjects;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: SearchComponentsResult;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: SearchObjectsResult;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: LoadObject;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: GetAllGameObjects;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: LoadObjectResult;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: GetAllGameObjectsResult;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: FindGameObjects;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: GetGameObjectComponents;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: FindGameObjectsResult;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: GetGameObjectComponentsResult;
+        readMemory?: never;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: GetComponentsOfGameObject;
-        getComponentsOfGameObjectResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: ReadMemory;
+        readMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
-        searchComponents?: never;
-        searchComponentsResult?: never;
-        loadObject?: never;
-        loadObjectResult?: never;
-        findGameObject?: never;
-        findGameObjectResult?: never;
-        getComponentsOfGameObject?: never;
-        getComponentsOfGameObjectResult?: GetComponentsOfGameObjectResult;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: ReadMemoryResult;
     })))) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -2386,129 +3141,129 @@ export class PacketWrapper extends pb_1.Message {
             if ("invokeMethodResult" in data && data.invokeMethodResult != undefined) {
                 this.invokeMethodResult = data.invokeMethodResult;
             }
-            if ("searchComponents" in data && data.searchComponents != undefined) {
-                this.searchComponents = data.searchComponents;
+            if ("searchObjects" in data && data.searchObjects != undefined) {
+                this.searchObjects = data.searchObjects;
             }
-            if ("searchComponentsResult" in data && data.searchComponentsResult != undefined) {
-                this.searchComponentsResult = data.searchComponentsResult;
+            if ("searchObjectsResult" in data && data.searchObjectsResult != undefined) {
+                this.searchObjectsResult = data.searchObjectsResult;
             }
-            if ("loadObject" in data && data.loadObject != undefined) {
-                this.loadObject = data.loadObject;
+            if ("getAllGameObjects" in data && data.getAllGameObjects != undefined) {
+                this.getAllGameObjects = data.getAllGameObjects;
             }
-            if ("loadObjectResult" in data && data.loadObjectResult != undefined) {
-                this.loadObjectResult = data.loadObjectResult;
+            if ("getAllGameObjectsResult" in data && data.getAllGameObjectsResult != undefined) {
+                this.getAllGameObjectsResult = data.getAllGameObjectsResult;
             }
-            if ("findGameObject" in data && data.findGameObject != undefined) {
-                this.findGameObject = data.findGameObject;
+            if ("getGameObjectComponents" in data && data.getGameObjectComponents != undefined) {
+                this.getGameObjectComponents = data.getGameObjectComponents;
             }
-            if ("findGameObjectResult" in data && data.findGameObjectResult != undefined) {
-                this.findGameObjectResult = data.findGameObjectResult;
+            if ("getGameObjectComponentsResult" in data && data.getGameObjectComponentsResult != undefined) {
+                this.getGameObjectComponentsResult = data.getGameObjectComponentsResult;
             }
-            if ("getComponentsOfGameObject" in data && data.getComponentsOfGameObject != undefined) {
-                this.getComponentsOfGameObject = data.getComponentsOfGameObject;
+            if ("readMemory" in data && data.readMemory != undefined) {
+                this.readMemory = data.readMemory;
             }
-            if ("getComponentsOfGameObjectResult" in data && data.getComponentsOfGameObjectResult != undefined) {
-                this.getComponentsOfGameObjectResult = data.getComponentsOfGameObjectResult;
+            if ("readMemoryResult" in data && data.readMemoryResult != undefined) {
+                this.readMemoryResult = data.readMemoryResult;
             }
         }
     }
     get queryResultId() {
-        return pb_1.Message.getField(this, 11) as number;
+        return pb_1.Message.getField(this, 1) as number;
     }
     set queryResultId(value: number) {
-        pb_1.Message.setField(this, 11, value);
+        pb_1.Message.setField(this, 1, value);
     }
     get invokeMethod() {
-        return pb_1.Message.getWrapperField(this, InvokeMethod, 1) as InvokeMethod;
+        return pb_1.Message.getWrapperField(this, InvokeMethod, 2) as InvokeMethod;
     }
     set invokeMethod(value: InvokeMethod) {
-        pb_1.Message.setOneofWrapperField(this, 1, this.#one_of_decls[0], value);
-    }
-    get invokeMethodResult() {
-        return pb_1.Message.getWrapperField(this, InvokeMethodResult, 2) as InvokeMethodResult;
-    }
-    set invokeMethodResult(value: InvokeMethodResult) {
         pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
-    get searchComponents() {
-        return pb_1.Message.getWrapperField(this, SearchComponents, 3) as SearchComponents;
+    get invokeMethodResult() {
+        return pb_1.Message.getWrapperField(this, InvokeMethodResult, 3) as InvokeMethodResult;
     }
-    set searchComponents(value: SearchComponents) {
+    set invokeMethodResult(value: InvokeMethodResult) {
         pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
     }
-    get searchComponentsResult() {
-        return pb_1.Message.getWrapperField(this, SearchComponentsResult, 4) as SearchComponentsResult;
+    get searchObjects() {
+        return pb_1.Message.getWrapperField(this, SearchObjects, 4) as SearchObjects;
     }
-    set searchComponentsResult(value: SearchComponentsResult) {
+    set searchObjects(value: SearchObjects) {
         pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
     }
-    get loadObject() {
-        return pb_1.Message.getWrapperField(this, LoadObject, 5) as LoadObject;
+    get searchObjectsResult() {
+        return pb_1.Message.getWrapperField(this, SearchObjectsResult, 5) as SearchObjectsResult;
     }
-    set loadObject(value: LoadObject) {
+    set searchObjectsResult(value: SearchObjectsResult) {
         pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
     }
-    get loadObjectResult() {
-        return pb_1.Message.getWrapperField(this, LoadObjectResult, 6) as LoadObjectResult;
+    get getAllGameObjects() {
+        return pb_1.Message.getWrapperField(this, GetAllGameObjects, 6) as GetAllGameObjects;
     }
-    set loadObjectResult(value: LoadObjectResult) {
+    set getAllGameObjects(value: GetAllGameObjects) {
         pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
     }
-    get findGameObject() {
-        return pb_1.Message.getWrapperField(this, FindGameObjects, 7) as FindGameObjects;
+    get getAllGameObjectsResult() {
+        return pb_1.Message.getWrapperField(this, GetAllGameObjectsResult, 7) as GetAllGameObjectsResult;
     }
-    set findGameObject(value: FindGameObjects) {
+    set getAllGameObjectsResult(value: GetAllGameObjectsResult) {
         pb_1.Message.setOneofWrapperField(this, 7, this.#one_of_decls[0], value);
     }
-    get findGameObjectResult() {
-        return pb_1.Message.getWrapperField(this, FindGameObjectsResult, 8) as FindGameObjectsResult;
+    get getGameObjectComponents() {
+        return pb_1.Message.getWrapperField(this, GetGameObjectComponents, 8) as GetGameObjectComponents;
     }
-    set findGameObjectResult(value: FindGameObjectsResult) {
+    set getGameObjectComponents(value: GetGameObjectComponents) {
         pb_1.Message.setOneofWrapperField(this, 8, this.#one_of_decls[0], value);
     }
-    get getComponentsOfGameObject() {
-        return pb_1.Message.getWrapperField(this, GetComponentsOfGameObject, 9) as GetComponentsOfGameObject;
+    get getGameObjectComponentsResult() {
+        return pb_1.Message.getWrapperField(this, GetGameObjectComponentsResult, 9) as GetGameObjectComponentsResult;
     }
-    set getComponentsOfGameObject(value: GetComponentsOfGameObject) {
+    set getGameObjectComponentsResult(value: GetGameObjectComponentsResult) {
         pb_1.Message.setOneofWrapperField(this, 9, this.#one_of_decls[0], value);
     }
-    get getComponentsOfGameObjectResult() {
-        return pb_1.Message.getWrapperField(this, GetComponentsOfGameObjectResult, 10) as GetComponentsOfGameObjectResult;
+    get readMemory() {
+        return pb_1.Message.getWrapperField(this, ReadMemory, 10) as ReadMemory;
     }
-    set getComponentsOfGameObjectResult(value: GetComponentsOfGameObjectResult) {
+    set readMemory(value: ReadMemory) {
         pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[0], value);
+    }
+    get readMemoryResult() {
+        return pb_1.Message.getWrapperField(this, ReadMemoryResult, 11) as ReadMemoryResult;
+    }
+    set readMemoryResult(value: ReadMemoryResult) {
+        pb_1.Message.setOneofWrapperField(this, 11, this.#one_of_decls[0], value);
     }
     get Packet() {
         const cases: {
-            [index: number]: "none" | "invokeMethod" | "invokeMethodResult" | "searchComponents" | "searchComponentsResult" | "loadObject" | "loadObjectResult" | "findGameObject" | "findGameObjectResult" | "getComponentsOfGameObject" | "getComponentsOfGameObjectResult";
+            [index: number]: "none" | "invokeMethod" | "invokeMethodResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult";
         } = {
             0: "none",
-            1: "invokeMethod",
-            2: "invokeMethodResult",
-            3: "searchComponents",
-            4: "searchComponentsResult",
-            5: "loadObject",
-            6: "loadObjectResult",
-            7: "findGameObject",
-            8: "findGameObjectResult",
-            9: "getComponentsOfGameObject",
-            10: "getComponentsOfGameObjectResult"
+            2: "invokeMethod",
+            3: "invokeMethodResult",
+            4: "searchObjects",
+            5: "searchObjectsResult",
+            6: "getAllGameObjects",
+            7: "getAllGameObjectsResult",
+            8: "getGameObjectComponents",
+            9: "getGameObjectComponentsResult",
+            10: "readMemory",
+            11: "readMemoryResult"
         };
-        return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])];
+        return cases[pb_1.Message.computeOneofCase(this, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11])];
     }
     static fromObject(data: {
         queryResultId?: number;
         invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
         invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
-        searchComponents?: ReturnType<typeof SearchComponents.prototype.toObject>;
-        searchComponentsResult?: ReturnType<typeof SearchComponentsResult.prototype.toObject>;
-        loadObject?: ReturnType<typeof LoadObject.prototype.toObject>;
-        loadObjectResult?: ReturnType<typeof LoadObjectResult.prototype.toObject>;
-        findGameObject?: ReturnType<typeof FindGameObjects.prototype.toObject>;
-        findGameObjectResult?: ReturnType<typeof FindGameObjectsResult.prototype.toObject>;
-        getComponentsOfGameObject?: ReturnType<typeof GetComponentsOfGameObject.prototype.toObject>;
-        getComponentsOfGameObjectResult?: ReturnType<typeof GetComponentsOfGameObjectResult.prototype.toObject>;
-    }): PacketWrapper {
+        searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
+        searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
+        getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
+        getAllGameObjectsResult?: ReturnType<typeof GetAllGameObjectsResult.prototype.toObject>;
+        getGameObjectComponents?: ReturnType<typeof GetGameObjectComponents.prototype.toObject>;
+        getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
+        readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
+        readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
+    }) {
         const message = new PacketWrapper({});
         if (data.queryResultId != null) {
             message.queryResultId = data.queryResultId;
@@ -2519,29 +3274,29 @@ export class PacketWrapper extends pb_1.Message {
         if (data.invokeMethodResult != null) {
             message.invokeMethodResult = InvokeMethodResult.fromObject(data.invokeMethodResult);
         }
-        if (data.searchComponents != null) {
-            message.searchComponents = SearchComponents.fromObject(data.searchComponents);
+        if (data.searchObjects != null) {
+            message.searchObjects = SearchObjects.fromObject(data.searchObjects);
         }
-        if (data.searchComponentsResult != null) {
-            message.searchComponentsResult = SearchComponentsResult.fromObject(data.searchComponentsResult);
+        if (data.searchObjectsResult != null) {
+            message.searchObjectsResult = SearchObjectsResult.fromObject(data.searchObjectsResult);
         }
-        if (data.loadObject != null) {
-            message.loadObject = LoadObject.fromObject(data.loadObject);
+        if (data.getAllGameObjects != null) {
+            message.getAllGameObjects = GetAllGameObjects.fromObject(data.getAllGameObjects);
         }
-        if (data.loadObjectResult != null) {
-            message.loadObjectResult = LoadObjectResult.fromObject(data.loadObjectResult);
+        if (data.getAllGameObjectsResult != null) {
+            message.getAllGameObjectsResult = GetAllGameObjectsResult.fromObject(data.getAllGameObjectsResult);
         }
-        if (data.findGameObject != null) {
-            message.findGameObject = FindGameObjects.fromObject(data.findGameObject);
+        if (data.getGameObjectComponents != null) {
+            message.getGameObjectComponents = GetGameObjectComponents.fromObject(data.getGameObjectComponents);
         }
-        if (data.findGameObjectResult != null) {
-            message.findGameObjectResult = FindGameObjectsResult.fromObject(data.findGameObjectResult);
+        if (data.getGameObjectComponentsResult != null) {
+            message.getGameObjectComponentsResult = GetGameObjectComponentsResult.fromObject(data.getGameObjectComponentsResult);
         }
-        if (data.getComponentsOfGameObject != null) {
-            message.getComponentsOfGameObject = GetComponentsOfGameObject.fromObject(data.getComponentsOfGameObject);
+        if (data.readMemory != null) {
+            message.readMemory = ReadMemory.fromObject(data.readMemory);
         }
-        if (data.getComponentsOfGameObjectResult != null) {
-            message.getComponentsOfGameObjectResult = GetComponentsOfGameObjectResult.fromObject(data.getComponentsOfGameObjectResult);
+        if (data.readMemoryResult != null) {
+            message.readMemoryResult = ReadMemoryResult.fromObject(data.readMemoryResult);
         }
         return message;
     }
@@ -2550,14 +3305,14 @@ export class PacketWrapper extends pb_1.Message {
             queryResultId?: number;
             invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
             invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
-            searchComponents?: ReturnType<typeof SearchComponents.prototype.toObject>;
-            searchComponentsResult?: ReturnType<typeof SearchComponentsResult.prototype.toObject>;
-            loadObject?: ReturnType<typeof LoadObject.prototype.toObject>;
-            loadObjectResult?: ReturnType<typeof LoadObjectResult.prototype.toObject>;
-            findGameObject?: ReturnType<typeof FindGameObjects.prototype.toObject>;
-            findGameObjectResult?: ReturnType<typeof FindGameObjectsResult.prototype.toObject>;
-            getComponentsOfGameObject?: ReturnType<typeof GetComponentsOfGameObject.prototype.toObject>;
-            getComponentsOfGameObjectResult?: ReturnType<typeof GetComponentsOfGameObjectResult.prototype.toObject>;
+            searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
+            searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
+            getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
+            getAllGameObjectsResult?: ReturnType<typeof GetAllGameObjectsResult.prototype.toObject>;
+            getGameObjectComponents?: ReturnType<typeof GetGameObjectComponents.prototype.toObject>;
+            getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
+            readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
+            readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
         } = {};
         if (this.queryResultId != null) {
             data.queryResultId = this.queryResultId;
@@ -2568,29 +3323,29 @@ export class PacketWrapper extends pb_1.Message {
         if (this.invokeMethodResult != null) {
             data.invokeMethodResult = this.invokeMethodResult.toObject();
         }
-        if (this.searchComponents != null) {
-            data.searchComponents = this.searchComponents.toObject();
+        if (this.searchObjects != null) {
+            data.searchObjects = this.searchObjects.toObject();
         }
-        if (this.searchComponentsResult != null) {
-            data.searchComponentsResult = this.searchComponentsResult.toObject();
+        if (this.searchObjectsResult != null) {
+            data.searchObjectsResult = this.searchObjectsResult.toObject();
         }
-        if (this.loadObject != null) {
-            data.loadObject = this.loadObject.toObject();
+        if (this.getAllGameObjects != null) {
+            data.getAllGameObjects = this.getAllGameObjects.toObject();
         }
-        if (this.loadObjectResult != null) {
-            data.loadObjectResult = this.loadObjectResult.toObject();
+        if (this.getAllGameObjectsResult != null) {
+            data.getAllGameObjectsResult = this.getAllGameObjectsResult.toObject();
         }
-        if (this.findGameObject != null) {
-            data.findGameObject = this.findGameObject.toObject();
+        if (this.getGameObjectComponents != null) {
+            data.getGameObjectComponents = this.getGameObjectComponents.toObject();
         }
-        if (this.findGameObjectResult != null) {
-            data.findGameObjectResult = this.findGameObjectResult.toObject();
+        if (this.getGameObjectComponentsResult != null) {
+            data.getGameObjectComponentsResult = this.getGameObjectComponentsResult.toObject();
         }
-        if (this.getComponentsOfGameObject != null) {
-            data.getComponentsOfGameObject = this.getComponentsOfGameObject.toObject();
+        if (this.readMemory != null) {
+            data.readMemory = this.readMemory.toObject();
         }
-        if (this.getComponentsOfGameObjectResult != null) {
-            data.getComponentsOfGameObjectResult = this.getComponentsOfGameObjectResult.toObject();
+        if (this.readMemoryResult != null) {
+            data.readMemoryResult = this.readMemoryResult.toObject();
         }
         return data;
     }
@@ -2599,27 +3354,27 @@ export class PacketWrapper extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.queryResultId !== undefined)
-            writer.writeUint64(11, this.queryResultId);
+            writer.writeUint64(1, this.queryResultId);
         if (this.invokeMethod !== undefined)
-            writer.writeMessage(1, this.invokeMethod, () => this.invokeMethod.serialize(writer));
+            writer.writeMessage(2, this.invokeMethod, () => this.invokeMethod.serialize(writer));
         if (this.invokeMethodResult !== undefined)
-            writer.writeMessage(2, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
-        if (this.searchComponents !== undefined)
-            writer.writeMessage(3, this.searchComponents, () => this.searchComponents.serialize(writer));
-        if (this.searchComponentsResult !== undefined)
-            writer.writeMessage(4, this.searchComponentsResult, () => this.searchComponentsResult.serialize(writer));
-        if (this.loadObject !== undefined)
-            writer.writeMessage(5, this.loadObject, () => this.loadObject.serialize(writer));
-        if (this.loadObjectResult !== undefined)
-            writer.writeMessage(6, this.loadObjectResult, () => this.loadObjectResult.serialize(writer));
-        if (this.findGameObject !== undefined)
-            writer.writeMessage(7, this.findGameObject, () => this.findGameObject.serialize(writer));
-        if (this.findGameObjectResult !== undefined)
-            writer.writeMessage(8, this.findGameObjectResult, () => this.findGameObjectResult.serialize(writer));
-        if (this.getComponentsOfGameObject !== undefined)
-            writer.writeMessage(9, this.getComponentsOfGameObject, () => this.getComponentsOfGameObject.serialize(writer));
-        if (this.getComponentsOfGameObjectResult !== undefined)
-            writer.writeMessage(10, this.getComponentsOfGameObjectResult, () => this.getComponentsOfGameObjectResult.serialize(writer));
+            writer.writeMessage(3, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
+        if (this.searchObjects !== undefined)
+            writer.writeMessage(4, this.searchObjects, () => this.searchObjects.serialize(writer));
+        if (this.searchObjectsResult !== undefined)
+            writer.writeMessage(5, this.searchObjectsResult, () => this.searchObjectsResult.serialize(writer));
+        if (this.getAllGameObjects !== undefined)
+            writer.writeMessage(6, this.getAllGameObjects, () => this.getAllGameObjects.serialize(writer));
+        if (this.getAllGameObjectsResult !== undefined)
+            writer.writeMessage(7, this.getAllGameObjectsResult, () => this.getAllGameObjectsResult.serialize(writer));
+        if (this.getGameObjectComponents !== undefined)
+            writer.writeMessage(8, this.getGameObjectComponents, () => this.getGameObjectComponents.serialize(writer));
+        if (this.getGameObjectComponentsResult !== undefined)
+            writer.writeMessage(9, this.getGameObjectComponentsResult, () => this.getGameObjectComponentsResult.serialize(writer));
+        if (this.readMemory !== undefined)
+            writer.writeMessage(10, this.readMemory, () => this.readMemory.serialize(writer));
+        if (this.readMemoryResult !== undefined)
+            writer.writeMessage(11, this.readMemoryResult, () => this.readMemoryResult.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -2629,38 +3384,38 @@ export class PacketWrapper extends pb_1.Message {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
-                case 11:
+                case 1:
                     message.queryResultId = reader.readUint64();
                     break;
-                case 1:
+                case 2:
                     reader.readMessage(message.invokeMethod, () => message.invokeMethod = InvokeMethod.deserialize(reader));
                     break;
-                case 2:
+                case 3:
                     reader.readMessage(message.invokeMethodResult, () => message.invokeMethodResult = InvokeMethodResult.deserialize(reader));
                     break;
-                case 3:
-                    reader.readMessage(message.searchComponents, () => message.searchComponents = SearchComponents.deserialize(reader));
-                    break;
                 case 4:
-                    reader.readMessage(message.searchComponentsResult, () => message.searchComponentsResult = SearchComponentsResult.deserialize(reader));
+                    reader.readMessage(message.searchObjects, () => message.searchObjects = SearchObjects.deserialize(reader));
                     break;
                 case 5:
-                    reader.readMessage(message.loadObject, () => message.loadObject = LoadObject.deserialize(reader));
+                    reader.readMessage(message.searchObjectsResult, () => message.searchObjectsResult = SearchObjectsResult.deserialize(reader));
                     break;
                 case 6:
-                    reader.readMessage(message.loadObjectResult, () => message.loadObjectResult = LoadObjectResult.deserialize(reader));
+                    reader.readMessage(message.getAllGameObjects, () => message.getAllGameObjects = GetAllGameObjects.deserialize(reader));
                     break;
                 case 7:
-                    reader.readMessage(message.findGameObject, () => message.findGameObject = FindGameObjects.deserialize(reader));
+                    reader.readMessage(message.getAllGameObjectsResult, () => message.getAllGameObjectsResult = GetAllGameObjectsResult.deserialize(reader));
                     break;
                 case 8:
-                    reader.readMessage(message.findGameObjectResult, () => message.findGameObjectResult = FindGameObjectsResult.deserialize(reader));
+                    reader.readMessage(message.getGameObjectComponents, () => message.getGameObjectComponents = GetGameObjectComponents.deserialize(reader));
                     break;
                 case 9:
-                    reader.readMessage(message.getComponentsOfGameObject, () => message.getComponentsOfGameObject = GetComponentsOfGameObject.deserialize(reader));
+                    reader.readMessage(message.getGameObjectComponentsResult, () => message.getGameObjectComponentsResult = GetGameObjectComponentsResult.deserialize(reader));
                     break;
                 case 10:
-                    reader.readMessage(message.getComponentsOfGameObjectResult, () => message.getComponentsOfGameObjectResult = GetComponentsOfGameObjectResult.deserialize(reader));
+                    reader.readMessage(message.readMemory, () => message.readMemory = ReadMemory.deserialize(reader));
+                    break;
+                case 11:
+                    reader.readMessage(message.readMemoryResult, () => message.readMemoryResult = ReadMemoryResult.deserialize(reader));
                     break;
                 default: reader.skipField();
             }

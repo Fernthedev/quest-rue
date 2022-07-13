@@ -1,6 +1,6 @@
 import { DependencyList, useEffect, useState } from "react";
 import { sendPacket } from "./commands";
-import { GameObject, PacketWrapper } from "./proto/qrue";
+import { ProtoGameObject, PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";
 
 // Singleton for all events
@@ -20,10 +20,10 @@ function buildEvents() {
         // PACKET EVENTS
         ALL_PACKETS: new EventListener<ReturnType<typeof PacketWrapper.prototype.toObject>>(),
         CONNECTED_EVENT: new EventListener<void>(),
-        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof GameObject.prototype.toObject>[]>(),
+        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof ProtoGameObject.prototype.toObject>[]>(),
 
         // INTERNAL EVENTS
-        SELECTED_GAME_OBJECT: new EventListener<ReturnType<typeof GameObject.prototype.toObject> | undefined>()
+        SELECTED_GAME_OBJECT: new EventListener<ReturnType<typeof ProtoGameObject.prototype.toObject> | undefined>()
     } as const;
 }
 

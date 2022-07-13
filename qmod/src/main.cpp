@@ -30,7 +30,7 @@ static std::mutex scheduleLock;
 
 void scheduleFunction(std::function<void()> const& func) {
     if (mainThreadId == std::this_thread::get_id())
-        return func();
+        func();
 
     std::unique_lock<std::mutex> lock(scheduleLock);
     scheduledFunctions.emplace_back(func);

@@ -81,28 +81,63 @@ message DataMsg {
     bytes data = 2;
 }
 
-message ComponentMsg {
-    string name = 1;
-    ClassInfoMsg classInfo = 2;
-    
-    bytes pointer = 3;
+message ProtoVector2 {
+    float x = 1;
+    float y = 2;
 }
 
-message Scene {
-    string name = 1;
+message ProtoVector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
 }
 
-message GameObject {
-    Scene scene = 1;     /* optional */
+message ProtoVector4 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
+
+//Unity Stuff
+message ProtoObject {
+    uint64 address = 1;
     string name = 2;
-    int32 parentId = 3;     /* optional */
-    
-    // TODO: Should we just make the receiver post-process the data to get the children? 
-    // Could save up quite a bit of bandwidth 
-    repeated int32 childrenIds = 4; /* optional */
 
-    bool active = 5;
-    int32 id = 6;
+    ClassInfoMsg classInfo = 3;
+}
+
+message ProtoComponent {
+    uint64 address = 1;
+    string name = 2;
+
+    uint64 gameObject = 3;
+    ClassInfoMsg classInfo = 4;
+}
+
+message ProtoTransform {
+    uint64 address = 1;
+    string name = 2;
+
+    int32 childCount = 3;
+    uint64 parent = 4;
+}
+
+message ProtoGameObject {
+    uint64 address = 1;
+    string name = 2;
+
+    bool active = 3;
+    int32 layer = 4;
+    ProtoScene scene = 5;
+    string tag = 6;     /* optional */
+    ProtoTransform transform = 7;
+}
+
+message ProtoScene {
+    int32 handle = 1;
+    string name = 2;
+    bool isLoaded = 3;
 }
 
 // COMMAND/QUERY PACKETS
@@ -115,8 +150,8 @@ message InvokeMethod {
 
 message InvokeMethodResult {
     enum Status {
-        OK = 0;
-        ERR = 1;
+        ERR = 0;
+        OK = 1;
         NOT_FOUND = 2;
     }
     Status status = 1;
@@ -126,54 +161,59 @@ message InvokeMethodResult {
     string error = 5; /* nullable */
 }
 
-message SearchComponents {
+message SearchObjects {
     ClassInfoMsg componentClass = 1;
-    string componentName = 2; /* nullable */
+    string name = 2; /* nullable */
 }
 
-message SearchComponentsResult {
-
-    repeated ComponentMsg foundComponents = 1;
+message SearchObjectsResult {
+    repeated ProtoObject objects = 1;
 }
 
-message FindGameObjects {
+message GetAllGameObjects {
 
 }
 
-message FindGameObjectsResult {
+message GetAllGameObjectsResult {
     // TODO: GameObject data such as hierarchy
-    repeated GameObject foundObjects = 1;
+    repeated ProtoGameObject objects = 1;
 }
 
-// ???
-message LoadObject {
-    bytes pointer = 1;
+message GetGameObjectComponents {
+    uint64 address = 1;
+}
+message GetGameObjectComponentsResult {
+    repeated ProtoComponent components = 1;
 }
 
-message LoadObjectResult {
-    TypeDetailsMsg object = 1;
+message ReadMemory {
+    uint64 address = 1;
+    uint64 size = 2;
 }
 
-message GetComponentsOfGameObject {
-    int32 id = 1;
-}
-message GetComponentsOfGameObjectResult {
-    repeated ComponentMsg foundComponents = 1;
+message ReadMemoryResult {
+    enum Status {
+        ERR = 0;
+        OK = 1;
+    }
+    Status status = 1;
+    uint64 address = 2;
+    bytes data = 3;
 }
 
 // TODO: Rename?
 message PacketWrapper {
-    uint64 queryResultId = 11;
+    uint64 queryResultId = 1;
     oneof Packet {
-        InvokeMethod invokeMethod = 1;
-        InvokeMethodResult invokeMethodResult = 2;
-        SearchComponents searchComponents = 3;
-        SearchComponentsResult searchComponentsResult = 4;
-        LoadObject loadObject = 5;
-        LoadObjectResult loadObjectResult = 6;
-        FindGameObjects findGameObject = 7;
-        FindGameObjectsResult findGameObjectResult = 8;
-        GetComponentsOfGameObject getComponentsOfGameObject = 9;
-        GetComponentsOfGameObjectResult getComponentsOfGameObjectResult = 10;
+        InvokeMethod invokeMethod = 2;
+        InvokeMethodResult invokeMethodResult = 3;
+        SearchObjects searchObjects = 4;
+        SearchObjectsResult searchObjectsResult = 5;
+        GetAllGameObjects getAllGameObjects = 6;
+        GetAllGameObjectsResult getAllGameObjectsResult = 7;
+        GetGameObjectComponents getGameObjectComponents = 8;
+        GetGameObjectComponentsResult getGameObjectComponentsResult = 9;
+        ReadMemory readMemory = 10;
+        ReadMemoryResult readMemoryResult = 11;
     }
 }

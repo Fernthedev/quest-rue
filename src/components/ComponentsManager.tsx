@@ -1,7 +1,7 @@
 import { Text, Input, Button } from "@nextui-org/react";
 import { useEffect } from "react";
 import { getEvents, useListenToEvent, useRequestAndResponsePacket } from "../misc/events";
-import { GetComponentsOfGameObjectResult } from "../misc/proto/qrue";
+import { GetGameObjectComponentsResult } from "../misc/proto/qrue";
 
 export interface ComponentsManagerProps {
 
@@ -10,15 +10,15 @@ export interface ComponentsManagerProps {
 export function ComponentsManager(props: ComponentsManagerProps) {
     const selectedObject = useListenToEvent(getEvents().SELECTED_GAME_OBJECT)
 
-    const [components, getComponents] = useRequestAndResponsePacket<GetComponentsOfGameObjectResult>([selectedObject]);
+    const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>([selectedObject]);
 
     useEffect(() => {
         if (!selectedObject) return;
 
 
         getComponents({
-            getComponentsOfGameObject: {
-                id: selectedObject.id
+            getGameObjectComponents: {
+                address: selectedObject.address
             }
         })
     }, [selectedObject]);
@@ -37,8 +37,8 @@ export function ComponentsManager(props: ComponentsManagerProps) {
                     className="grid grid-flow-row
                   grid-cols-2
                   gap-4">
-                    {components?.foundComponents.map(c => (
-                        <Text key={c.pointer.toString()} size="1rem">{JSON.stringify(c)}</Text>
+                    {components?.components.map(c => (
+                        <Text key={c.address.toString()} size="1rem">{JSON.stringify(c)}</Text>
                     ))}
                     <Input label={"a"} clearable bordered />
 
