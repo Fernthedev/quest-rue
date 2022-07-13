@@ -21,7 +21,7 @@ void WebSocketHandler::listen(const int port) {
         serverSocket->set_error_channels(log::elevel::none);
 
         serverSocket->init_asio();
-
+        serverSocket->set_reuse_addr(true);
         serverSocket->set_open_handler(bind(&WebSocketHandler::OnOpen, this, ::_1));
         serverSocket->set_close_handler(bind(&WebSocketHandler::OnClose, this, ::_1));
         serverSocket->set_message_handler(bind(&WebSocketHandler::OnMessage, this, serverSocket.get(), ::_1, ::_2));
@@ -37,8 +37,8 @@ void WebSocketHandler::listen(const int port) {
     } catch (exception const & e) {
         LOG_INFO("Server failed because: ({})!", e.what());
         stop();
-        LOG_INFO("Retrying in 30 seconds!");
-        sleep(30);
+        LOG_INFO("Retrying in 5 seconds!");
+        sleep(5);
         listen(port);
     } catch (...) {
         LOG_INFO("Server failed!");
