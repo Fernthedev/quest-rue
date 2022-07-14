@@ -5,7 +5,7 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
 export class ClassInfoMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         namespaze?: string;
         clazz?: string;
@@ -47,7 +47,7 @@ export class ClassInfoMsg extends pb_1.Message {
         namespaze?: string;
         clazz?: string;
         generics?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
-    }) {
+    }): ClassInfoMsg {
         const message = new ClassInfoMsg({});
         if (data.namespaze != null) {
             message.namespaze = data.namespaze;
@@ -118,7 +118,7 @@ export class ClassInfoMsg extends pb_1.Message {
     }
 }
 export class StructInfoMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         contents?: Map<number, TypeInfoMsg>;
@@ -153,7 +153,7 @@ export class StructInfoMsg extends pb_1.Message {
         contents?: {
             [key: number]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
-    }) {
+    }): StructInfoMsg {
         const message = new StructInfoMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -222,7 +222,7 @@ export class StructInfoMsg extends pb_1.Message {
     }
 }
 export class TypeInfoMsg extends pb_1.Message {
-    #one_of_decls = [[1, 2, 3]];
+    #one_of_decls: number[][] = [[1, 2, 3]];
     constructor(data?: any[] | ({} & (({
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: never;
@@ -283,7 +283,7 @@ export class TypeInfoMsg extends pb_1.Message {
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: ReturnType<typeof StructInfoMsg.prototype.toObject>;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }) {
+    }): TypeInfoMsg {
         const message = new TypeInfoMsg({});
         if (data.primitiveInfo != null) {
             message.primitiveInfo = data.primitiveInfo;
@@ -370,7 +370,7 @@ export namespace TypeInfoMsg {
     }
 }
 export class FieldInfoMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -412,7 +412,7 @@ export class FieldInfoMsg extends pb_1.Message {
         name?: string;
         id?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }) {
+    }): FieldInfoMsg {
         const message = new FieldInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -483,7 +483,7 @@ export class FieldInfoMsg extends pb_1.Message {
     }
 }
 export class PropertyInfoMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         name?: string;
         hasGet?: boolean;
@@ -558,7 +558,7 @@ export class PropertyInfoMsg extends pb_1.Message {
         hasSet?: boolean;
         setId?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }) {
+    }): PropertyInfoMsg {
         const message = new PropertyInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -665,7 +665,7 @@ export class PropertyInfoMsg extends pb_1.Message {
     }
 }
 export class MethodInfoMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -722,7 +722,7 @@ export class MethodInfoMsg extends pb_1.Message {
             [key: string]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
         returnType?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }) {
+    }): MethodInfoMsg {
         const message = new MethodInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -815,7 +815,7 @@ export class MethodInfoMsg extends pb_1.Message {
     }
 }
 export class TypeDetailsMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         fields?: FieldInfoMsg[];
@@ -890,7 +890,7 @@ export class TypeDetailsMsg extends pb_1.Message {
         methods?: ReturnType<typeof MethodInfoMsg.prototype.toObject>[];
         interfaces?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
         parent?: ReturnType<typeof TypeDetailsMsg.prototype.toObject>;
-    }) {
+    }): TypeDetailsMsg {
         const message = new TypeDetailsMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -997,7 +997,7 @@ export class TypeDetailsMsg extends pb_1.Message {
     }
 }
 export class DataMsg extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         typeInfo?: TypeInfoMsg;
         data?: Uint8Array;
@@ -1028,7 +1028,7 @@ export class DataMsg extends pb_1.Message {
     static fromObject(data: {
         typeInfo?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         data?: Uint8Array;
-    }) {
+    }): DataMsg {
         const message = new DataMsg({});
         if (data.typeInfo != null) {
             message.typeInfo = TypeInfoMsg.fromObject(data.typeInfo);
@@ -1087,7 +1087,7 @@ export class DataMsg extends pb_1.Message {
     }
 }
 export class ProtoVector2 extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1118,7 +1118,7 @@ export class ProtoVector2 extends pb_1.Message {
     static fromObject(data: {
         x?: number;
         y?: number;
-    }) {
+    }): ProtoVector2 {
         const message = new ProtoVector2({});
         if (data.x != null) {
             message.x = data.x;
@@ -1177,7 +1177,7 @@ export class ProtoVector2 extends pb_1.Message {
     }
 }
 export class ProtoVector3 extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1219,7 +1219,7 @@ export class ProtoVector3 extends pb_1.Message {
         x?: number;
         y?: number;
         z?: number;
-    }) {
+    }): ProtoVector3 {
         const message = new ProtoVector3({});
         if (data.x != null) {
             message.x = data.x;
@@ -1290,7 +1290,7 @@ export class ProtoVector3 extends pb_1.Message {
     }
 }
 export class ProtoVector4 extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1343,7 +1343,7 @@ export class ProtoVector4 extends pb_1.Message {
         y?: number;
         z?: number;
         w?: number;
-    }) {
+    }): ProtoVector4 {
         const message = new ProtoVector4({});
         if (data.x != null) {
             message.x = data.x;
@@ -1426,7 +1426,7 @@ export class ProtoVector4 extends pb_1.Message {
     }
 }
 export class ProtoObject extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1468,7 +1468,7 @@ export class ProtoObject extends pb_1.Message {
         address?: number;
         name?: string;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }) {
+    }): ProtoObject {
         const message = new ProtoObject({});
         if (data.address != null) {
             message.address = data.address;
@@ -1539,7 +1539,7 @@ export class ProtoObject extends pb_1.Message {
     }
 }
 export class ProtoComponent extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1592,7 +1592,7 @@ export class ProtoComponent extends pb_1.Message {
         name?: string;
         gameObject?: number;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }) {
+    }): ProtoComponent {
         const message = new ProtoComponent({});
         if (data.address != null) {
             message.address = data.address;
@@ -1675,7 +1675,7 @@ export class ProtoComponent extends pb_1.Message {
     }
 }
 export class ProtoTransform extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1728,7 +1728,7 @@ export class ProtoTransform extends pb_1.Message {
         name?: string;
         childCount?: number;
         parent?: number;
-    }) {
+    }): ProtoTransform {
         const message = new ProtoTransform({});
         if (data.address != null) {
             message.address = data.address;
@@ -1811,7 +1811,7 @@ export class ProtoTransform extends pb_1.Message {
     }
 }
 export class ProtoGameObject extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1897,7 +1897,7 @@ export class ProtoGameObject extends pb_1.Message {
         scene?: ReturnType<typeof ProtoScene.prototype.toObject>;
         tag?: string;
         transform?: ReturnType<typeof ProtoTransform.prototype.toObject>;
-    }) {
+    }): ProtoGameObject {
         const message = new ProtoGameObject({});
         if (data.address != null) {
             message.address = data.address;
@@ -2016,7 +2016,7 @@ export class ProtoGameObject extends pb_1.Message {
     }
 }
 export class ProtoScene extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         handle?: number;
         name?: string;
@@ -2058,7 +2058,7 @@ export class ProtoScene extends pb_1.Message {
         handle?: number;
         name?: string;
         isLoaded?: boolean;
-    }) {
+    }): ProtoScene {
         const message = new ProtoScene({});
         if (data.handle != null) {
             message.handle = data.handle;
@@ -2129,7 +2129,7 @@ export class ProtoScene extends pb_1.Message {
     }
 }
 export class InvokeMethod extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         methodId?: number;
         invokeUUID?: number;
@@ -2171,7 +2171,7 @@ export class InvokeMethod extends pb_1.Message {
         methodId?: number;
         invokeUUID?: number;
         args?: ReturnType<typeof DataMsg.prototype.toObject>[];
-    }) {
+    }): InvokeMethod {
         const message = new InvokeMethod({});
         if (data.methodId != null) {
             message.methodId = data.methodId;
@@ -2242,7 +2242,7 @@ export class InvokeMethod extends pb_1.Message {
     }
 }
 export class InvokeMethodResult extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         status?: InvokeMethodResult.Status;
         methodId?: number;
@@ -2306,7 +2306,7 @@ export class InvokeMethodResult extends pb_1.Message {
         invokeUUID?: number;
         result?: ReturnType<typeof DataMsg.prototype.toObject>;
         error?: string;
-    }) {
+    }): InvokeMethodResult {
         const message = new InvokeMethodResult({});
         if (data.status != null) {
             message.status = data.status;
@@ -2408,7 +2408,7 @@ export namespace InvokeMethodResult {
     }
 }
 export class SearchObjects extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         componentClass?: ClassInfoMsg;
         name?: string;
@@ -2439,7 +2439,7 @@ export class SearchObjects extends pb_1.Message {
     static fromObject(data: {
         componentClass?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
         name?: string;
-    }) {
+    }): SearchObjects {
         const message = new SearchObjects({});
         if (data.componentClass != null) {
             message.componentClass = ClassInfoMsg.fromObject(data.componentClass);
@@ -2498,7 +2498,7 @@ export class SearchObjects extends pb_1.Message {
     }
 }
 export class SearchObjectsResult extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         objects?: ProtoObject[];
     }) {
@@ -2518,7 +2518,7 @@ export class SearchObjectsResult extends pb_1.Message {
     }
     static fromObject(data: {
         objects?: ReturnType<typeof ProtoObject.prototype.toObject>[];
-    }) {
+    }): SearchObjectsResult {
         const message = new SearchObjectsResult({});
         if (data.objects != null) {
             message.objects = data.objects.map(item => ProtoObject.fromObject(item));
@@ -2565,13 +2565,13 @@ export class SearchObjectsResult extends pb_1.Message {
     }
 }
 export class GetAllGameObjects extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {}) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") { }
     }
-    static fromObject(data: {}) {
+    static fromObject(data: {}): GetAllGameObjects {
         const message = new GetAllGameObjects({});
         return message;
     }
@@ -2605,7 +2605,7 @@ export class GetAllGameObjects extends pb_1.Message {
     }
 }
 export class GetAllGameObjectsResult extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         objects?: ProtoGameObject[];
     }) {
@@ -2625,7 +2625,7 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     }
     static fromObject(data: {
         objects?: ReturnType<typeof ProtoGameObject.prototype.toObject>[];
-    }) {
+    }): GetAllGameObjectsResult {
         const message = new GetAllGameObjectsResult({});
         if (data.objects != null) {
             message.objects = data.objects.map(item => ProtoGameObject.fromObject(item));
@@ -2672,7 +2672,7 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     }
 }
 export class GetGameObjectComponents extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
     }) {
@@ -2692,7 +2692,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     }
     static fromObject(data: {
         address?: number;
-    }) {
+    }): GetGameObjectComponents {
         const message = new GetGameObjectComponents({});
         if (data.address != null) {
             message.address = data.address;
@@ -2739,7 +2739,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     }
 }
 export class GetGameObjectComponentsResult extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         components?: ProtoComponent[];
     }) {
@@ -2759,7 +2759,7 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     }
     static fromObject(data: {
         components?: ReturnType<typeof ProtoComponent.prototype.toObject>[];
-    }) {
+    }): GetGameObjectComponentsResult {
         const message = new GetGameObjectComponentsResult({});
         if (data.components != null) {
             message.components = data.components.map(item => ProtoComponent.fromObject(item));
@@ -2806,7 +2806,7 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     }
 }
 export class ReadMemory extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         address?: number;
         size?: number;
@@ -2837,7 +2837,7 @@ export class ReadMemory extends pb_1.Message {
     static fromObject(data: {
         address?: number;
         size?: number;
-    }) {
+    }): ReadMemory {
         const message = new ReadMemory({});
         if (data.address != null) {
             message.address = data.address;
@@ -2896,7 +2896,7 @@ export class ReadMemory extends pb_1.Message {
     }
 }
 export class ReadMemoryResult extends pb_1.Message {
-    #one_of_decls = [];
+    #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         status?: ReadMemoryResult.Status;
         address?: number;
@@ -2938,7 +2938,7 @@ export class ReadMemoryResult extends pb_1.Message {
         status?: ReadMemoryResult.Status;
         address?: number;
         data?: Uint8Array;
-    }) {
+    }): ReadMemoryResult {
         const message = new ReadMemoryResult({});
         if (data.status != null) {
             message.status = data.status;
@@ -3015,7 +3015,7 @@ export namespace ReadMemoryResult {
     }
 }
 export class PacketWrapper extends pb_1.Message {
-    #one_of_decls = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]];
+    #one_of_decls: number[][] = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]];
     constructor(data?: any[] | ({
         queryResultId?: number;
     } & (({
@@ -3263,7 +3263,7 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
         readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
         readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
-    }) {
+    }): PacketWrapper {
         const message = new PacketWrapper({});
         if (data.queryResultId != null) {
             message.queryResultId = data.queryResultId;

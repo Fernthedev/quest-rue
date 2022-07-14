@@ -29,11 +29,9 @@ function buildEvents() {
 
 export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
 
-export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(deps?: DependencyList, once = false): [T | undefined, (p: P) => void] {
+export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(once = false): [T | undefined, (p: P) => void] {
     const [val, setValue] = useState<T | undefined>(undefined)
     const [expectedQueryID, setExpectedQueryID] = useState<number | undefined>(undefined)
-
-    const fixedDeps = deps ? [expectedQueryID, ...deps] : undefined;
 
     useEffect(() => {
         const listener = getEvents().ALL_PACKETS;
@@ -52,7 +50,7 @@ export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = Packet
             listener.removeListener(callback)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, fixedDeps)
+    }, [expectedQueryID])
 
     return [val, (p: P) => {
         const randomId = uniqueNumber();
