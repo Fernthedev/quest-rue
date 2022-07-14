@@ -2,17 +2,27 @@
 #include "objectdump.hpp"
 #include "classutils.hpp"
 #include "manager.hpp"
+#include "MainThreadRunner.hpp"
+
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/SceneManagement/SceneManager.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
+#include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
+#include "UnityEngine/Events/UnityAction_2.hpp"
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/utils.h"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
+#include "custom-types/shared/register.hpp"
+
 #include <filesystem>
 
 static ModInfo modInfo{MOD_ID, VERSION};
 
-std::thread::id mainThreadId;
+// MainThreadRunner.cpp
+extern std::thread::id mainThreadId;
 
 Logger& getLogger() {
     static Logger* logger = new Logger(ModInfo{"QuestEditor", "1.0.0"}, new LoggerOptions(false, true));
@@ -25,59 +35,9 @@ std::string_view GetDataPath() {
     return s;
 }
 
-static std::vector<std::function<void()>> scheduledFunctions{};
-static std::mutex scheduleLock;
-
-void scheduleFunction(std::function<void()> const& func) {
-    if (mainThreadId == std::this_thread::get_id())
-        func();
-
-    std::unique_lock<std::mutex> lock(scheduleLock);
-    scheduledFunctions.emplace_back(func);
-}
-
-// Hooks
-MAKE_HOOK_FIND_CLASS_INSTANCE(MainMenu, "", "MainMenuViewController", "DidActivate", void, Il2CppObject* self, bool a1, bool a2, bool a3) {
-    MainMenu(self, a1, a2, a3);
-    // logHierarchy(GetDataPath() + "mainmenu.txt");
-}
-
-MAKE_HOOK_FIND_CLASS_INSTANCE(Update, "", "HMMainThreadDispatcher", "Update", void, Il2CppObject* self) {
-    Update(self);
-    // lazy init
-    static auto mainThread = []
-    {
-        mainThreadId = std::this_thread::get_id();
-        return 0;
-    }(); // TODO: Use concurrent queue?
-    if (!scheduledFunctions.empty()) {
-        std::unique_lock<std::mutex> lock(scheduleLock);
-        std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
-        scheduledFunctions = {};
-        lock.unlock();
-
-        for (auto const& function : functions) {
-            LOG_INFO("Running scheduled function on main thread");
-            function();
-        }
-    }
-}
-
-void setupLog();
-
-namespace Paper::Logger {
-    bool IsInited();
-    void Init(std::string_view logPath, LoggerConfig const &config);
-}
-
 extern "C" void setup(ModInfo& info) {
     Paper::Logger::RegisterFileContextId("QuestEditor");
     Paper::Logger::RegisterFileContextId("SocketLib");
-
-    if (!Paper::Logger::IsInited()) {
-        std::string path = fmt::format("/sdcard/Android/data/{}/files/logs/paper", Modloader::getApplicationId());
-        Paper::Logger::Init(path, Paper::LoggerConfig());
-    }
 
     info.id = MOD_ID;
     info.version = VERSION;
@@ -94,12 +54,29 @@ extern "C" void load()
     LOG_INFO("Installing hooks...");
     il2cpp_functions::Init();
 
+    custom_types::Register::AutoRegister();
+
+    mainThreadId = std::this_thread::get_id();
+
     LOG_INFO("Initializing connection manager");
     Manager::GetInstance()->Init();
 
-    auto logger = getLogger().WithContext("load");
-    // Install hooks
-    INSTALL_HOOK(logger, Update);
-    // INSTALL_HOOK(logger, MainMenu);
-    getLogger().info("Installed all hooks!");
+    std::function<void(UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode)> onSceneChanged = [](UnityEngine::SceneManagement::Scene scene, ::UnityEngine::SceneManagement::LoadSceneMode)
+    {
+        static bool loaded;
+        if (!scene.IsValid() || loaded)
+            return;
+
+        loaded = true;
+
+        IL2CPP_CATCH_HANDLER(
+            auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
+            UnityEngine::Object::DontDestroyOnLoad(go);
+            go->AddComponent<QRUE::MainThreadRunner *>();
+        )
+    };
+
+    auto delegate = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_2<::UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode> *>(onSceneChanged);
+
+    UnityEngine::SceneManagement::SceneManager::add_sceneLoaded(delegate);
 }
