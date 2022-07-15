@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { sendPacket } from "./commands";
 import { ProtoGameObject, PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";
@@ -31,18 +31,22 @@ export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
 
 export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(once = false): [T | undefined, (p: P) => void] {
     const [val, setValue] = useState<T | undefined>(undefined)
-    const [expectedQueryID, setExpectedQueryID] = useState<number | undefined>(undefined)
 
+    // We use reference here since it's not necessary to call it "state", that is handled by `val`
+    const expectedQueryID: MutableRefObject<number | undefined> = useRef<number | undefined>(undefined)
+
+    // Create the listener 
     useEffect(() => {
         const listener = getEvents().ALL_PACKETS;
         const callback = listener.addListener((v) => {
-            if (expectedQueryID && v.queryResultId === expectedQueryID) {
+            if (expectedQueryID && v.queryResultId === expectedQueryID.current) {
                 const packet = Object.values(v).find(e => e !== expectedQueryID)!
 
                 if (!packet) throw "Packet is undefined why!"
 
                 setValue(packet as T)
-                setExpectedQueryID(undefined)
+                
+                expectedQueryID.current = undefined;
             }
         }, once)
 
@@ -50,16 +54,17 @@ export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = Packet
             listener.removeListener(callback)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [expectedQueryID])
+    }, [])
 
+    // Return the state and a callback for invoking reads
     return [val, (p: P) => {
         const randomId = uniqueNumber();
-        setExpectedQueryID(randomId)
+        expectedQueryID.current = randomId;
         sendPacket(PacketWrapper.fromObject({queryResultId: randomId, ...p}));
     }];
 }
 
-export function useListenToEvent<T>(listener: EventListener<T>, deps?: DependencyList, once = false) : T | undefined {
+export function useListenToEvent<T>(listener: EventListener<T>, once = false) : T | undefined {
     const [val, setValue] = useState<T | undefined>(undefined)
 
     useEffect(() => {
@@ -71,7 +76,7 @@ export function useListenToEvent<T>(listener: EventListener<T>, deps?: Dependenc
             listener.removeListener(callback)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
+    }, [])
 
     return val;
 }
