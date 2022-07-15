@@ -201,6 +201,21 @@ message ReadMemoryResult {
     bytes data = 3;
 }
 
+message WriteMemory {
+    uint64 address = 1;
+    bytes data = 2;
+}
+
+message WriteMemoryResult {
+    enum Status {
+        ERR = 0;
+        OK = 1;
+    }
+    Status status = 1;
+    uint64 address = 2;
+    uint64 size = 3;
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -215,5 +230,7 @@ message PacketWrapper {
         GetGameObjectComponentsResult getGameObjectComponentsResult = 9;
         ReadMemory readMemory = 10;
         ReadMemoryResult readMemoryResult = 11;
+        WriteMemory writeMemory = 12;
+        WriteMemoryResult writeMemoryResult = 13;
     }
 }

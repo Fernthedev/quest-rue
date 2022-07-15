@@ -5,7 +5,7 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
 export class ClassInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         namespaze?: string;
         clazz?: string;
@@ -47,7 +47,7 @@ export class ClassInfoMsg extends pb_1.Message {
         namespaze?: string;
         clazz?: string;
         generics?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
-    }): ClassInfoMsg {
+    }) {
         const message = new ClassInfoMsg({});
         if (data.namespaze != null) {
             message.namespaze = data.namespaze;
@@ -118,7 +118,7 @@ export class ClassInfoMsg extends pb_1.Message {
     }
 }
 export class StructInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         contents?: Map<number, TypeInfoMsg>;
@@ -153,7 +153,7 @@ export class StructInfoMsg extends pb_1.Message {
         contents?: {
             [key: number]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
-    }): StructInfoMsg {
+    }) {
         const message = new StructInfoMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -222,7 +222,7 @@ export class StructInfoMsg extends pb_1.Message {
     }
 }
 export class TypeInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [[1, 2, 3]];
+    #one_of_decls = [[1, 2, 3]];
     constructor(data?: any[] | ({} & (({
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: never;
@@ -283,7 +283,7 @@ export class TypeInfoMsg extends pb_1.Message {
         primitiveInfo?: TypeInfoMsg.Primitive;
         structInfo?: ReturnType<typeof StructInfoMsg.prototype.toObject>;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }): TypeInfoMsg {
+    }) {
         const message = new TypeInfoMsg({});
         if (data.primitiveInfo != null) {
             message.primitiveInfo = data.primitiveInfo;
@@ -370,7 +370,7 @@ export namespace TypeInfoMsg {
     }
 }
 export class FieldInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -412,7 +412,7 @@ export class FieldInfoMsg extends pb_1.Message {
         name?: string;
         id?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): FieldInfoMsg {
+    }) {
         const message = new FieldInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -483,7 +483,7 @@ export class FieldInfoMsg extends pb_1.Message {
     }
 }
 export class PropertyInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         hasGet?: boolean;
@@ -558,7 +558,7 @@ export class PropertyInfoMsg extends pb_1.Message {
         hasSet?: boolean;
         setId?: number;
         type?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): PropertyInfoMsg {
+    }) {
         const message = new PropertyInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -665,7 +665,7 @@ export class PropertyInfoMsg extends pb_1.Message {
     }
 }
 export class MethodInfoMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         name?: string;
         id?: number;
@@ -722,7 +722,7 @@ export class MethodInfoMsg extends pb_1.Message {
             [key: string]: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         };
         returnType?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
-    }): MethodInfoMsg {
+    }) {
         const message = new MethodInfoMsg({});
         if (data.name != null) {
             message.name = data.name;
@@ -815,7 +815,7 @@ export class MethodInfoMsg extends pb_1.Message {
     }
 }
 export class TypeDetailsMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         clazz?: ClassInfoMsg;
         fields?: FieldInfoMsg[];
@@ -890,7 +890,7 @@ export class TypeDetailsMsg extends pb_1.Message {
         methods?: ReturnType<typeof MethodInfoMsg.prototype.toObject>[];
         interfaces?: ReturnType<typeof ClassInfoMsg.prototype.toObject>[];
         parent?: ReturnType<typeof TypeDetailsMsg.prototype.toObject>;
-    }): TypeDetailsMsg {
+    }) {
         const message = new TypeDetailsMsg({});
         if (data.clazz != null) {
             message.clazz = ClassInfoMsg.fromObject(data.clazz);
@@ -997,7 +997,7 @@ export class TypeDetailsMsg extends pb_1.Message {
     }
 }
 export class DataMsg extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         typeInfo?: TypeInfoMsg;
         data?: Uint8Array;
@@ -1028,7 +1028,7 @@ export class DataMsg extends pb_1.Message {
     static fromObject(data: {
         typeInfo?: ReturnType<typeof TypeInfoMsg.prototype.toObject>;
         data?: Uint8Array;
-    }): DataMsg {
+    }) {
         const message = new DataMsg({});
         if (data.typeInfo != null) {
             message.typeInfo = TypeInfoMsg.fromObject(data.typeInfo);
@@ -1087,7 +1087,7 @@ export class DataMsg extends pb_1.Message {
     }
 }
 export class ProtoVector2 extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1118,7 +1118,7 @@ export class ProtoVector2 extends pb_1.Message {
     static fromObject(data: {
         x?: number;
         y?: number;
-    }): ProtoVector2 {
+    }) {
         const message = new ProtoVector2({});
         if (data.x != null) {
             message.x = data.x;
@@ -1177,7 +1177,7 @@ export class ProtoVector2 extends pb_1.Message {
     }
 }
 export class ProtoVector3 extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1219,7 +1219,7 @@ export class ProtoVector3 extends pb_1.Message {
         x?: number;
         y?: number;
         z?: number;
-    }): ProtoVector3 {
+    }) {
         const message = new ProtoVector3({});
         if (data.x != null) {
             message.x = data.x;
@@ -1290,7 +1290,7 @@ export class ProtoVector3 extends pb_1.Message {
     }
 }
 export class ProtoVector4 extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         x?: number;
         y?: number;
@@ -1343,7 +1343,7 @@ export class ProtoVector4 extends pb_1.Message {
         y?: number;
         z?: number;
         w?: number;
-    }): ProtoVector4 {
+    }) {
         const message = new ProtoVector4({});
         if (data.x != null) {
             message.x = data.x;
@@ -1426,7 +1426,7 @@ export class ProtoVector4 extends pb_1.Message {
     }
 }
 export class ProtoObject extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1468,7 +1468,7 @@ export class ProtoObject extends pb_1.Message {
         address?: number;
         name?: string;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }): ProtoObject {
+    }) {
         const message = new ProtoObject({});
         if (data.address != null) {
             message.address = data.address;
@@ -1539,7 +1539,7 @@ export class ProtoObject extends pb_1.Message {
     }
 }
 export class ProtoComponent extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1592,7 +1592,7 @@ export class ProtoComponent extends pb_1.Message {
         name?: string;
         gameObject?: number;
         classInfo?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
-    }): ProtoComponent {
+    }) {
         const message = new ProtoComponent({});
         if (data.address != null) {
             message.address = data.address;
@@ -1675,7 +1675,7 @@ export class ProtoComponent extends pb_1.Message {
     }
 }
 export class ProtoTransform extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1728,7 +1728,7 @@ export class ProtoTransform extends pb_1.Message {
         name?: string;
         childCount?: number;
         parent?: number;
-    }): ProtoTransform {
+    }) {
         const message = new ProtoTransform({});
         if (data.address != null) {
             message.address = data.address;
@@ -1811,7 +1811,7 @@ export class ProtoTransform extends pb_1.Message {
     }
 }
 export class ProtoGameObject extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
         name?: string;
@@ -1897,7 +1897,7 @@ export class ProtoGameObject extends pb_1.Message {
         scene?: ReturnType<typeof ProtoScene.prototype.toObject>;
         tag?: string;
         transform?: ReturnType<typeof ProtoTransform.prototype.toObject>;
-    }): ProtoGameObject {
+    }) {
         const message = new ProtoGameObject({});
         if (data.address != null) {
             message.address = data.address;
@@ -2016,7 +2016,7 @@ export class ProtoGameObject extends pb_1.Message {
     }
 }
 export class ProtoScene extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         handle?: number;
         name?: string;
@@ -2058,7 +2058,7 @@ export class ProtoScene extends pb_1.Message {
         handle?: number;
         name?: string;
         isLoaded?: boolean;
-    }): ProtoScene {
+    }) {
         const message = new ProtoScene({});
         if (data.handle != null) {
             message.handle = data.handle;
@@ -2129,7 +2129,7 @@ export class ProtoScene extends pb_1.Message {
     }
 }
 export class InvokeMethod extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         methodId?: number;
         invokeUUID?: number;
@@ -2171,7 +2171,7 @@ export class InvokeMethod extends pb_1.Message {
         methodId?: number;
         invokeUUID?: number;
         args?: ReturnType<typeof DataMsg.prototype.toObject>[];
-    }): InvokeMethod {
+    }) {
         const message = new InvokeMethod({});
         if (data.methodId != null) {
             message.methodId = data.methodId;
@@ -2242,7 +2242,7 @@ export class InvokeMethod extends pb_1.Message {
     }
 }
 export class InvokeMethodResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         status?: InvokeMethodResult.Status;
         methodId?: number;
@@ -2306,7 +2306,7 @@ export class InvokeMethodResult extends pb_1.Message {
         invokeUUID?: number;
         result?: ReturnType<typeof DataMsg.prototype.toObject>;
         error?: string;
-    }): InvokeMethodResult {
+    }) {
         const message = new InvokeMethodResult({});
         if (data.status != null) {
             message.status = data.status;
@@ -2408,7 +2408,7 @@ export namespace InvokeMethodResult {
     }
 }
 export class SearchObjects extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         componentClass?: ClassInfoMsg;
         name?: string;
@@ -2439,7 +2439,7 @@ export class SearchObjects extends pb_1.Message {
     static fromObject(data: {
         componentClass?: ReturnType<typeof ClassInfoMsg.prototype.toObject>;
         name?: string;
-    }): SearchObjects {
+    }) {
         const message = new SearchObjects({});
         if (data.componentClass != null) {
             message.componentClass = ClassInfoMsg.fromObject(data.componentClass);
@@ -2498,7 +2498,7 @@ export class SearchObjects extends pb_1.Message {
     }
 }
 export class SearchObjectsResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         objects?: ProtoObject[];
     }) {
@@ -2518,7 +2518,7 @@ export class SearchObjectsResult extends pb_1.Message {
     }
     static fromObject(data: {
         objects?: ReturnType<typeof ProtoObject.prototype.toObject>[];
-    }): SearchObjectsResult {
+    }) {
         const message = new SearchObjectsResult({});
         if (data.objects != null) {
             message.objects = data.objects.map(item => ProtoObject.fromObject(item));
@@ -2565,13 +2565,13 @@ export class SearchObjectsResult extends pb_1.Message {
     }
 }
 export class GetAllGameObjects extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {}) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") { }
     }
-    static fromObject(data: {}): GetAllGameObjects {
+    static fromObject(data: {}) {
         const message = new GetAllGameObjects({});
         return message;
     }
@@ -2605,7 +2605,7 @@ export class GetAllGameObjects extends pb_1.Message {
     }
 }
 export class GetAllGameObjectsResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         objects?: ProtoGameObject[];
     }) {
@@ -2625,7 +2625,7 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     }
     static fromObject(data: {
         objects?: ReturnType<typeof ProtoGameObject.prototype.toObject>[];
-    }): GetAllGameObjectsResult {
+    }) {
         const message = new GetAllGameObjectsResult({});
         if (data.objects != null) {
             message.objects = data.objects.map(item => ProtoGameObject.fromObject(item));
@@ -2672,7 +2672,7 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     }
 }
 export class GetGameObjectComponents extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
     }) {
@@ -2692,7 +2692,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     }
     static fromObject(data: {
         address?: number;
-    }): GetGameObjectComponents {
+    }) {
         const message = new GetGameObjectComponents({});
         if (data.address != null) {
             message.address = data.address;
@@ -2739,7 +2739,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     }
 }
 export class GetGameObjectComponentsResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         components?: ProtoComponent[];
     }) {
@@ -2759,7 +2759,7 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     }
     static fromObject(data: {
         components?: ReturnType<typeof ProtoComponent.prototype.toObject>[];
-    }): GetGameObjectComponentsResult {
+    }) {
         const message = new GetGameObjectComponentsResult({});
         if (data.components != null) {
             message.components = data.components.map(item => ProtoComponent.fromObject(item));
@@ -2806,7 +2806,7 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     }
 }
 export class ReadMemory extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         address?: number;
         size?: number;
@@ -2837,7 +2837,7 @@ export class ReadMemory extends pb_1.Message {
     static fromObject(data: {
         address?: number;
         size?: number;
-    }): ReadMemory {
+    }) {
         const message = new ReadMemory({});
         if (data.address != null) {
             message.address = data.address;
@@ -2896,7 +2896,7 @@ export class ReadMemory extends pb_1.Message {
     }
 }
 export class ReadMemoryResult extends pb_1.Message {
-    #one_of_decls: number[][] = [];
+    #one_of_decls = [];
     constructor(data?: any[] | {
         status?: ReadMemoryResult.Status;
         address?: number;
@@ -2938,7 +2938,7 @@ export class ReadMemoryResult extends pb_1.Message {
         status?: ReadMemoryResult.Status;
         address?: number;
         data?: Uint8Array;
-    }): ReadMemoryResult {
+    }) {
         const message = new ReadMemoryResult({});
         if (data.status != null) {
             message.status = data.status;
@@ -3014,8 +3014,217 @@ export namespace ReadMemoryResult {
         OK = 1
     }
 }
+export class WriteMemory extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        address?: number;
+        data?: Uint8Array;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("data" in data && data.data != undefined) {
+                this.data = data.data;
+            }
+        }
+    }
+    get address() {
+        return pb_1.Message.getField(this, 1) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get data() {
+        return pb_1.Message.getField(this, 2) as Uint8Array;
+    }
+    set data(value: Uint8Array) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        address?: number;
+        data?: Uint8Array;
+    }) {
+        const message = new WriteMemory({});
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.data != null) {
+            message.data = data.data;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            address?: number;
+            data?: Uint8Array;
+        } = {};
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.data != null) {
+            data.data = this.data;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.address !== undefined)
+            writer.writeUint64(1, this.address);
+        if (this.data !== undefined)
+            writer.writeBytes(2, this.data);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): WriteMemory {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new WriteMemory();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.address = reader.readUint64();
+                    break;
+                case 2:
+                    message.data = reader.readBytes();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): WriteMemory {
+        return WriteMemory.deserialize(bytes);
+    }
+}
+export class WriteMemoryResult extends pb_1.Message {
+    #one_of_decls = [];
+    constructor(data?: any[] | {
+        status?: WriteMemoryResult.Status;
+        address?: number;
+        size?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("status" in data && data.status != undefined) {
+                this.status = data.status;
+            }
+            if ("address" in data && data.address != undefined) {
+                this.address = data.address;
+            }
+            if ("size" in data && data.size != undefined) {
+                this.size = data.size;
+            }
+        }
+    }
+    get status() {
+        return pb_1.Message.getField(this, 1) as WriteMemoryResult.Status;
+    }
+    set status(value: WriteMemoryResult.Status) {
+        pb_1.Message.setField(this, 1, value);
+    }
+    get address() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set address(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    get size() {
+        return pb_1.Message.getField(this, 3) as number;
+    }
+    set size(value: number) {
+        pb_1.Message.setField(this, 3, value);
+    }
+    static fromObject(data: {
+        status?: WriteMemoryResult.Status;
+        address?: number;
+        size?: number;
+    }) {
+        const message = new WriteMemoryResult({});
+        if (data.status != null) {
+            message.status = data.status;
+        }
+        if (data.address != null) {
+            message.address = data.address;
+        }
+        if (data.size != null) {
+            message.size = data.size;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            status?: WriteMemoryResult.Status;
+            address?: number;
+            size?: number;
+        } = {};
+        if (this.status != null) {
+            data.status = this.status;
+        }
+        if (this.address != null) {
+            data.address = this.address;
+        }
+        if (this.size != null) {
+            data.size = this.size;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.status !== undefined)
+            writer.writeEnum(1, this.status);
+        if (this.address !== undefined)
+            writer.writeUint64(2, this.address);
+        if (this.size !== undefined)
+            writer.writeUint64(3, this.size);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): WriteMemoryResult {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new WriteMemoryResult();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    message.status = reader.readEnum();
+                    break;
+                case 2:
+                    message.address = reader.readUint64();
+                    break;
+                case 3:
+                    message.size = reader.readUint64();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): WriteMemoryResult {
+        return WriteMemoryResult.deserialize(bytes);
+    }
+}
+export namespace WriteMemoryResult {
+    export enum Status {
+        ERR = 0,
+        OK = 1
+    }
+}
 export class PacketWrapper extends pb_1.Message {
-    #one_of_decls: number[][] = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]];
+    #one_of_decls = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]];
     constructor(data?: any[] | ({
         queryResultId?: number;
     } & (({
@@ -3029,6 +3238,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: InvokeMethodResult;
@@ -3040,6 +3251,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3051,6 +3264,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3062,6 +3277,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3073,6 +3290,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3084,6 +3303,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3095,6 +3316,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3106,6 +3329,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: GetGameObjectComponentsResult;
         readMemory?: never;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3117,6 +3342,8 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: ReadMemory;
         readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
     } | {
         invokeMethod?: never;
         invokeMethodResult?: never;
@@ -3128,6 +3355,34 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: never;
         readMemory?: never;
         readMemoryResult?: ReadMemoryResult;
+        writeMemory?: never;
+        writeMemoryResult?: never;
+    } | {
+        invokeMethod?: never;
+        invokeMethodResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
+        writeMemory?: WriteMemory;
+        writeMemoryResult?: never;
+    } | {
+        invokeMethod?: never;
+        invokeMethodResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: WriteMemoryResult;
     })))) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -3164,6 +3419,12 @@ export class PacketWrapper extends pb_1.Message {
             }
             if ("readMemoryResult" in data && data.readMemoryResult != undefined) {
                 this.readMemoryResult = data.readMemoryResult;
+            }
+            if ("writeMemory" in data && data.writeMemory != undefined) {
+                this.writeMemory = data.writeMemory;
+            }
+            if ("writeMemoryResult" in data && data.writeMemoryResult != undefined) {
+                this.writeMemoryResult = data.writeMemoryResult;
             }
         }
     }
@@ -3233,9 +3494,21 @@ export class PacketWrapper extends pb_1.Message {
     set readMemoryResult(value: ReadMemoryResult) {
         pb_1.Message.setOneofWrapperField(this, 11, this.#one_of_decls[0], value);
     }
+    get writeMemory() {
+        return pb_1.Message.getWrapperField(this, WriteMemory, 12) as WriteMemory;
+    }
+    set writeMemory(value: WriteMemory) {
+        pb_1.Message.setOneofWrapperField(this, 12, this.#one_of_decls[0], value);
+    }
+    get writeMemoryResult() {
+        return pb_1.Message.getWrapperField(this, WriteMemoryResult, 13) as WriteMemoryResult;
+    }
+    set writeMemoryResult(value: WriteMemoryResult) {
+        pb_1.Message.setOneofWrapperField(this, 13, this.#one_of_decls[0], value);
+    }
     get Packet() {
         const cases: {
-            [index: number]: "none" | "invokeMethod" | "invokeMethodResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult";
+            [index: number]: "none" | "invokeMethod" | "invokeMethodResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult" | "writeMemory" | "writeMemoryResult";
         } = {
             0: "none",
             2: "invokeMethod",
@@ -3247,9 +3520,11 @@ export class PacketWrapper extends pb_1.Message {
             8: "getGameObjectComponents",
             9: "getGameObjectComponentsResult",
             10: "readMemory",
-            11: "readMemoryResult"
+            11: "readMemoryResult",
+            12: "writeMemory",
+            13: "writeMemoryResult"
         };
-        return cases[pb_1.Message.computeOneofCase(this, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11])];
+        return cases[pb_1.Message.computeOneofCase(this, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])];
     }
     static fromObject(data: {
         queryResultId?: number;
@@ -3263,7 +3538,9 @@ export class PacketWrapper extends pb_1.Message {
         getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
         readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
         readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
-    }): PacketWrapper {
+        writeMemory?: ReturnType<typeof WriteMemory.prototype.toObject>;
+        writeMemoryResult?: ReturnType<typeof WriteMemoryResult.prototype.toObject>;
+    }) {
         const message = new PacketWrapper({});
         if (data.queryResultId != null) {
             message.queryResultId = data.queryResultId;
@@ -3298,6 +3575,12 @@ export class PacketWrapper extends pb_1.Message {
         if (data.readMemoryResult != null) {
             message.readMemoryResult = ReadMemoryResult.fromObject(data.readMemoryResult);
         }
+        if (data.writeMemory != null) {
+            message.writeMemory = WriteMemory.fromObject(data.writeMemory);
+        }
+        if (data.writeMemoryResult != null) {
+            message.writeMemoryResult = WriteMemoryResult.fromObject(data.writeMemoryResult);
+        }
         return message;
     }
     toObject() {
@@ -3313,6 +3596,8 @@ export class PacketWrapper extends pb_1.Message {
             getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
             readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
             readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
+            writeMemory?: ReturnType<typeof WriteMemory.prototype.toObject>;
+            writeMemoryResult?: ReturnType<typeof WriteMemoryResult.prototype.toObject>;
         } = {};
         if (this.queryResultId != null) {
             data.queryResultId = this.queryResultId;
@@ -3347,6 +3632,12 @@ export class PacketWrapper extends pb_1.Message {
         if (this.readMemoryResult != null) {
             data.readMemoryResult = this.readMemoryResult.toObject();
         }
+        if (this.writeMemory != null) {
+            data.writeMemory = this.writeMemory.toObject();
+        }
+        if (this.writeMemoryResult != null) {
+            data.writeMemoryResult = this.writeMemoryResult.toObject();
+        }
         return data;
     }
     serialize(): Uint8Array;
@@ -3375,6 +3666,10 @@ export class PacketWrapper extends pb_1.Message {
             writer.writeMessage(10, this.readMemory, () => this.readMemory.serialize(writer));
         if (this.readMemoryResult !== undefined)
             writer.writeMessage(11, this.readMemoryResult, () => this.readMemoryResult.serialize(writer));
+        if (this.writeMemory !== undefined)
+            writer.writeMessage(12, this.writeMemory, () => this.writeMemory.serialize(writer));
+        if (this.writeMemoryResult !== undefined)
+            writer.writeMessage(13, this.writeMemoryResult, () => this.writeMemoryResult.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -3416,6 +3711,12 @@ export class PacketWrapper extends pb_1.Message {
                     break;
                 case 11:
                     reader.readMessage(message.readMemoryResult, () => message.readMemoryResult = ReadMemoryResult.deserialize(reader));
+                    break;
+                case 12:
+                    reader.readMessage(message.writeMemory, () => message.writeMemory = WriteMemory.deserialize(reader));
+                    break;
+                case 13:
+                    reader.readMessage(message.writeMemoryResult, () => message.writeMemoryResult = WriteMemoryResult.deserialize(reader));
                     break;
                 default: reader.skipField();
             }

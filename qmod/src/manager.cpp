@@ -121,6 +121,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kReadMemory:
         readMemory(packet.readmemory(), id);
         break;
+    case PacketWrapper::kWriteMemory:
+        writeMemory(packet.writememory(), id);
+        break;
 
     default:
         LOG_INFO("Invalid packet type! {}", packet.Packet_case());
@@ -291,14 +294,34 @@ void Manager::readMemory(const ReadMemory &packet, uint64_t id)
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
     ReadMemoryResult &result = *wrapper.mutable_readmemoryresult();
+    result.set_address(packet.address());
     auto src = reinterpret_cast<void*>(packet.address());
     auto size = packet.size();
     if(mem::protect(src, size, mem::protection::read_write_execute)) {
         result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_ERR);
     } else {
         result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_OK);
-        result.set_address(packet.address());
         result.set_data(src, size);
+    }
+    LOG_INFO("Result is {}", wrapper.DebugString());
+    handler->sendPacket(wrapper);
+}
+
+void Manager::writeMemory(const WriteMemory &packet, uint64_t id)
+{
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+    WriteMemoryResult &result = *wrapper.mutable_writememoryresult();
+    result.set_address(packet.address());
+    auto dst = reinterpret_cast<void*>(packet.address());
+    auto src = packet.data().data();
+    auto size = packet.data().size();
+    if(mem::protect(dst, size, mem::protection::read_write_execute)) {
+        result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_ERR);
+    } else {
+        result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_OK);
+        result.set_size(size);
+        memcpy(dst, src, size);
     }
     LOG_INFO("Result is {}", wrapper.DebugString());
     handler->sendPacket(wrapper);

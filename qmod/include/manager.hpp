@@ -15,6 +15,7 @@ class Manager {
     void getAllGameObjects(const GetAllGameObjects& packet, uint64_t id);
     void getGameObjectComponents(const GetGameObjectComponents& packet, uint64_t id);
     void readMemory(const ReadMemory &packet, uint64_t id);
+    void writeMemory(const WriteMemory &packet, uint64_t id);
 
     // separating seems difficult
     void setAndSendObject(class Il2CppObject* object, uint64_t id);

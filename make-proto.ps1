@@ -1,7 +1,7 @@
 # Use VCPKG protobuf for consistency 
 & "$ENV:VCPKG_ROOT\installed\x64-windows\tools\protobuf\protoc.exe" --proto_path=./protos --ts_out=./src/misc/proto ./protos/qrue.proto
 if (Test-Path ".\qmod\protobuf\") {
-    del ./qmod/protobuf -Confirm -Recurse
+    del ./qmod/protobuf -Recurse
 }
 mkdir ./qmod/protobuf
 # & protoc -I="..\protos" --cpp_out="protobuf" ..\protos\qrue.proto
