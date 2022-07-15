@@ -8,6 +8,8 @@ import { uniqueNumber } from "./utils";
 let socket : WebSocket;
 
 export function connect(ip: string, port: number) {
+    if (import.meta.env.VITE_USE_QUEST_MOCK) return;
+
     socket = new WebSocket("ws://" + ip + ":" + port);
     socket.binaryType = "arraybuffer";
     socket.onopen = (event) => {
@@ -31,13 +33,17 @@ export function connect(ip: string, port: number) {
 }
 
 export function isConnected() {
+    if (import.meta.env.VITE_USE_QUEST_MOCK) true;
+
     return socket.readyState == WebSocket.OPEN;
 }
 
 export function requestGameObjects() {
-    socket.send(PacketWrapper.fromObject({ queryResultId: uniqueNumber(),  getAllGameObjects: {}}).serializeBinary());
+    sendPacket(PacketWrapper.fromObject({ queryResultId: uniqueNumber(),  getAllGameObjects: {}}));
 }
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
+    if (import.meta.env.VITE_USE_QUEST_MOCK) return;
+
     socket.send(p.serializeBinary())
 }

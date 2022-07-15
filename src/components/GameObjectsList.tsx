@@ -1,11 +1,13 @@
 import { ArrowDownFilled, ArrowUpFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
 import { Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
 import { ProtoGameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
 import AutoSizer from 'react-virtualized-auto-sizer';
+
+import { items as main_menu_json } from "../misc/test_data_in_main_menu.json";
 
 import { FixedSizeTree as Tree } from 'react-vtree';
 
@@ -111,7 +113,12 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
 
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT)
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT) ?? (import.meta.env.VITE_USE_QUEST_MOCK ? main_menu_json : undefined)
+
+    useEffect(() => {
+        console.log(JSON.stringify(objects))
+    }, [objects])
+
     const [filter, setFilter] = useState<string>("")
 
     const objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined = useMemo(() => {
