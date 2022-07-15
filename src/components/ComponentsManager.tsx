@@ -1,5 +1,4 @@
 import { Text, Input, Button, useInput } from "@nextui-org/react";
-import { useRef } from "react";
 import { useEffect } from "react";
 import { getEvents, useListenToEvent, useRequestAndResponsePacket } from "../misc/events";
 import { GetGameObjectComponentsResult, ReadMemoryResult } from "../misc/proto/qrue";

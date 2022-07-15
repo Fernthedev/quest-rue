@@ -1,16 +1,14 @@
 import { ArrowDownFilled, ArrowUpFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
-import { Button, Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
-import { CSSProperties, useEffect, useMemo, useState } from "react";
-import { isConnected, requestGameObjects } from "../misc/commands";
+import { Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
+import { useMemo, useState } from "react";
+import { requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
 import { ProtoGameObject } from "../misc/proto/qrue";
 import { useEffectAsync } from "../misc/utils";
-import { LazyCollapsable } from "./LazyCollapsable";
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { FixedSizeTree as Tree } from 'react-vtree';
 
-import { items as song_select_json } from "../misc/test_data_in_song_select.json";
 import { NodeComponentProps } from "react-vtree/dist/es/Tree";
 
 export interface GameObjectsListProps {
@@ -31,19 +29,22 @@ interface TreeData {
 type GameObjectRowProps = NodeComponentProps<TreeData>
 
 function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, symbol]>, childrenMap: Record<number, number[]>): Generator<TreeData | string | symbol, void, boolean> {
+    const getObject = (id: number) => objects[id][0]
+    
     const stack: [GameObjectJSON, symbol][] = Object.values(objects).filter(g => !g[0].transform!.parent);
     // Walk through the tree until we have no nodes available.
     while (stack.length !== 0) {
         const node = stack.pop()!;
         const go = node[0]
+        const goSymbol = node[1]
         
         let nestingLevel = 0;
-        let parent = go.transform!.parent;
+        let parent = go.transform?.parent;
         while (parent) {
-            parent = objects[parent][0]?.transform!.parent;
+            parent = getObject(parent)?.transform?.parent;
             nestingLevel++;
         }
-        const children = childrenMap[go.transform!.address];
+        const children = childrenMap[go.transform!.address!];
         // Here we are sending the information about the node to the Tree component
         // and receive an information about the openness state from it. The
         // `refresh` parameter tells us if the full update of the tree is requested;
@@ -58,7 +59,7 @@ function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, 
                 isOpenByDefault: false,
                 nestingLevel
             }
-            : node[1];
+            : goSymbol;
         
         // Basing on the node openness state we are deciding if we need to render
         // the child nodes (if they exist).
@@ -110,7 +111,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
 
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT, [])
+    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT)
     const [filter, setFilter] = useState<string>("")
 
     const objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined = useMemo(() => {
@@ -118,28 +119,37 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
         const obj: Record<number, [GameObjectJSON, symbol]> = {}
         objects?.forEach(o => {
-            obj[o.transform!.address] = [o, Symbol(o.transform!.address)];
+            obj[o.transform!.address!] = [o, Symbol(o.transform!.address)];
         });
 
         return obj;
     }, [objects]);
     const childrenMap: Record<number, number[]> | undefined = useMemo(() => {
         if (!objects) return undefined;
-        const obj: Record<number, number[]> = {}
+        const tempChildMap: Record<number, number[]> = {}
         objects?.forEach(o => {
-            if(!obj[o.transform!.address])
-                obj[o.transform!.address] = []
-            if(o.transform!.parent) {
-                if(!obj[o.transform!.parent])
-                    obj[o.transform!.parent] = []
-                obj[o.transform!.parent].push(o.transform!.address)
+            // ignore the error messages!
+            const address = o.transform?.address;
+
+            if (!address) return;
+
+            if (!tempChildMap[address])
+                tempChildMap[address] = []
+            
+            const parent = o.transform?.parent;
+            
+            if(parent) {
+                if (!tempChildMap[parent])
+                    tempChildMap[parent] = []
+                tempChildMap[parent].push(address)
             }
         });
 
-        return obj;
+        return tempChildMap;
     }, [objects]);
+
     {/* TODO: Allow filter to include children */ }
-    const renderableObjects = useMemo(() => objects?.filter(g => !g.transform!.parent && g.name!.includes(filter)), [objects, filter])
+    const renderableObjects = useMemo(() => objects?.filter(g => !g.transform?.parent && g.name?.includes(filter)), [objects, filter])
 
 
     // Listen to game object list events
@@ -156,7 +166,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         }
     }, [])
 
-    if (!objects || !objectsMap || !renderableObjects) {
+    if (!objects || !objectsMap || !renderableObjects || !childrenMap) {
         return (
             <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
                 <Loading size="xl" />
