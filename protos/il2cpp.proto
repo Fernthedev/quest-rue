@@ -13,7 +13,7 @@ message ProtoClassInfo {
 message ProtoStructInfo {
     ProtoClassInfo clazz = 1;
 
-    map<int32, TypeInfoMsg> fieldOffsets = 2;
+    map<int32, ProtoTypeInfo> fieldOffsets = 2;
 }
 
 message ProtoTypeInfo {

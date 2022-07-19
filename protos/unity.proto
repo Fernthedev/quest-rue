@@ -25,7 +25,7 @@ message ProtoObject {
     uint64 address = 1;
     string name = 2;
 
-    ProtoClassSimpleData classInfo = 3;
+    ProtoClassInfo classInfo = 3;
 }
 
 message ProtoComponent {
@@ -34,7 +34,7 @@ message ProtoComponent {
 
     uint64 gameObject = 3;
     // TODO: TRANSFORM
-    ProtoClassSimpleData classInfo = 4;
+    ProtoClassInfo classInfo = 4;
 }
 
 message ProtoTransform {
