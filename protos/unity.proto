@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+import "il2cpp.proto";
+
+message ProtoVector2 {
+    float x = 1;
+    float y = 2;
+}
+
+message ProtoVector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message ProtoVector4 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
+
+//Unity Stuff
+message ProtoObject {
+    uint64 address = 1;
+    string name = 2;
+
+    ProtoClassSimpleData classInfo = 3;
+}
+
+message ProtoComponent {
+    uint64 address = 1;
+    string name = 2;
+
+    uint64 gameObject = 3;
+    // TODO: TRANSFORM
+    ProtoClassSimpleData classInfo = 4;
+}
+
+message ProtoTransform {
+    uint64 address = 1;
+    string name = 2;
+
+    int32 childCount = 3;
+    uint64 parent = 4;
+}
+
+message ProtoGameObject {
+    uint64 address = 1;
+    string name = 2;
+
+    bool active = 3;
+    int32 layer = 4;
+    ProtoScene scene = 5;
+    string tag = 6;     /* optional */
+    ProtoTransform transform = 7;
+}
+
+message ProtoScene {
+    int32 handle = 1;
+    string name = 2;
+    bool isLoaded = 3;
+}
