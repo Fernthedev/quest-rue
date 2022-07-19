@@ -65,8 +65,8 @@ Il2CppClass* ClassUtils::GetParent(Il2CppClass* klass) {
     return il2cpp_functions::class_get_parent(klass);
 }
 
-TypeInfoMsg ClassUtils::GetTypeInfo(const Il2CppType* type) {
-    TypeInfoMsg info;
+ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppType* type) {
+    ProtoTypeInfo info;
     auto* klass = il2cpp_functions::class_from_il2cpp_type(type);
 
     if(!typeIsValuetype(type))
@@ -75,25 +75,25 @@ TypeInfoMsg ClassUtils::GetTypeInfo(const Il2CppType* type) {
         // TODO: might want to expand the primitive types specified
         switch(type->type) {
         case IL2CPP_TYPE_BOOLEAN:
-            info.set_primitiveinfo(TypeInfoMsg::BOOLEAN);
+            info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
             break;
         case IL2CPP_TYPE_CHAR:
-            info.set_primitiveinfo(TypeInfoMsg::CHAR);
+            info.set_primitiveinfo(ProtoTypeInfo::CHAR);
             break;
         case IL2CPP_TYPE_I4:
-            info.set_primitiveinfo(TypeInfoMsg::INT);
+            info.set_primitiveinfo(ProtoTypeInfo::INT);
             break;
         case IL2CPP_TYPE_I8:
-            info.set_primitiveinfo(TypeInfoMsg::LONG);
+            info.set_primitiveinfo(ProtoTypeInfo::LONG);
             break;
         case IL2CPP_TYPE_R4:
-            info.set_primitiveinfo(TypeInfoMsg::FLOAT);
+            info.set_primitiveinfo(ProtoTypeInfo::FLOAT);
             break;
         case IL2CPP_TYPE_R8:
-            info.set_primitiveinfo(TypeInfoMsg::DOUBLE);
+            info.set_primitiveinfo(ProtoTypeInfo::DOUBLE);
             break;
         case IL2CPP_TYPE_STRING:
-            info.set_primitiveinfo(TypeInfoMsg::STRING);
+            info.set_primitiveinfo(ProtoTypeInfo::STRING);
             break;
         
         default:
@@ -104,8 +104,8 @@ TypeInfoMsg ClassUtils::GetTypeInfo(const Il2CppType* type) {
     return info;
 }
 
-ClassInfoMsg ClassUtils::GetClassInfo(const Il2CppType* classType) {
-    ClassInfoMsg classInfo;
+ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppType* classType) {
+    ProtoClassInfo classInfo;
     auto* klass = il2cpp_functions::class_from_il2cpp_type(classType);
 
     classInfo.set_namespaze(il2cpp_functions::class_get_namespace(klass));
@@ -114,13 +114,13 @@ ClassInfoMsg ClassUtils::GetClassInfo(const Il2CppType* classType) {
     return classInfo;
 }
 
-StructInfoMsg ClassUtils::GetStructInfo(const Il2CppType* structType) {
-    StructInfoMsg structInfo;
+ProtoStructInfo ClassUtils::GetStructInfo(const Il2CppType* structType) {
+    ProtoStructInfo structInfo;
     auto* klass = il2cpp_functions::class_from_il2cpp_type(structType);
 
     *structInfo.mutable_clazz() = GetClassInfo(structType);
     for(auto& field : GetFields(klass)) {
-        structInfo.mutable_contents()->insert({field->offset, GetTypeInfo(field->type)});
+        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(field->type)});
     }
     return structInfo;
 }

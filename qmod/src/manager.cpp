@@ -133,13 +133,11 @@ void Manager::processMessage(const PacketWrapper& packet) {
 
 void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
 {
-    uint64_t id = packet.invokeuuid();
     int methodIdx = packet.methodid();
 
     if(methodIdx >= methods.size() || methodIdx < 0) {
         PacketWrapper wrapper;
         InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-        result.set_invokeuuid(id);
         result.set_methodid(methodIdx);
         result.set_status(InvokeMethodResult::NOT_FOUND);
         handler->sendPacket(wrapper);
@@ -147,7 +145,7 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
     }
     
     auto method = methods[methodIdx];
-    scheduleFunction([this, packet, methodIdx, id] {
+    scheduleFunction([this, packet, methodIdx] {
         // TODO: type checking?
         int argNum = packet.args_size();
         void* args[argNum];
@@ -161,7 +159,6 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
 
         PacketWrapper wrapper;
         InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-        result.set_invokeuuid(id);
         result.set_methodid(methodIdx);
 
         if(!err.empty()) {
@@ -172,7 +169,7 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
         }
 
         result.set_status(InvokeMethodResult::OK);
-        DataMsg& data = *result.mutable_result();
+        ProtoDataPayload& data = *result.mutable_result();
         *data.mutable_typeinfo() = methods[methodIdx].ReturnTypeInfo();
         data.set_data(res.GetAsString());
         handler->sendPacket(wrapper);
@@ -220,7 +217,7 @@ void Manager::searchObjects(const SearchObjects &packet, uint64_t id)
     std::string name = packet.name();
     bool searchName = name.length() > 0;
 
-    const ClassInfoMsg& componentInfo = packet.componentclass();
+    const ProtoClassInfo& componentInfo = packet.componentclass();
     std::string namespaceName = componentInfo.namespaze();
     if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
         namespaceName = "";

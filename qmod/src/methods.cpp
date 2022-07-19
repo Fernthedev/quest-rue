@@ -198,20 +198,20 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
     return nullptr;
 }
 
-TypeInfoMsg Method::ReturnTypeInfo() const {
+ProtoTypeInfo Method::ReturnTypeInfo() const {
     return ClassUtils::GetTypeInfo(returnType);
 }
 
-FieldInfoMsg Method::GetFieldInfo(uint64_t id) const {
-    FieldInfoMsg info;
+ProtoFieldInfo Method::GetFieldInfo(uint64_t id) const {
+    ProtoFieldInfo info;
     info.set_name(name);
     info.set_id(id);
     *info.mutable_type() = ReturnTypeInfo();
     return info;
 }
 
-PropertyInfoMsg Method::GetPropertyInfo(uint64_t id, bool get, bool set) const {
-    PropertyInfoMsg info;
+ProtoPropertyInfo Method::GetPropertyInfo(uint64_t id, bool get, bool set) const {
+    ProtoPropertyInfo info;
     info.set_name(name);
     info.set_hasget(get);
     info.set_getid(id);
@@ -221,8 +221,8 @@ PropertyInfoMsg Method::GetPropertyInfo(uint64_t id, bool get, bool set) const {
     return info;
 }
 
-MethodInfoMsg Method::GetMethodInfo(uint64_t id) const {
-    MethodInfoMsg info;
+ProtoMethodInfo Method::GetMethodInfo(uint64_t id) const {
+    ProtoMethodInfo info;
     info.set_name(name);
     info.set_id(id);
     for(int i = 0; i < paramNames.size(); i++) {

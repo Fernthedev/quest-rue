@@ -39,9 +39,9 @@ class Method {
     Method(Il2CppObject* obj, FieldInfo* field, bool set);
     RetWrapper Run(void** args, std::string& error, bool derefReferences = true) const;
 
-    TypeInfoMsg ReturnTypeInfo() const;
+    ProtoTypeInfo ReturnTypeInfo() const;
 
-    FieldInfoMsg GetFieldInfo(uint64_t id) const;
-    PropertyInfoMsg GetPropertyInfo(uint64_t id, bool get, bool set) const;
-    MethodInfoMsg GetMethodInfo(uint64_t id) const;
+    ProtoFieldInfo GetFieldInfo(uint64_t id) const;
+    ProtoPropertyInfo GetPropertyInfo(uint64_t id, bool get, bool set) const;
+    ProtoMethodInfo GetMethodInfo(uint64_t id) const;
 };
