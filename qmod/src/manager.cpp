@@ -131,12 +131,13 @@ void Manager::processMessage(const PacketWrapper& packet) {
     // });
 }
 
-void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
+void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
 {
     int methodIdx = packet.methodid();
 
     if(methodIdx >= methods.size() || methodIdx < 0) {
         PacketWrapper wrapper;
+        wrapper.set_queryresultid(queryId);
         InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
         result.set_methodid(methodIdx);
         result.set_status(InvokeMethodResult::NOT_FOUND);
@@ -158,6 +159,7 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t e)
         auto res = methods[methodIdx].Run(args, err);
 
         PacketWrapper wrapper;
+        wrapper.set_queryresultid(queryId);
         InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
         result.set_methodid(methodIdx);
 
