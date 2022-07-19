@@ -4,17 +4,16 @@ syntax = "proto3";
 // may change in future!
 
 // Type Identification
-message ProtoClassSimpleData {
+message ProtoClassInfo {
     string namespaze = 1;
     string clazz = 2;
-    repeated ProtoClassSimpleData generics = 3;
+    repeated ProtoClassInfo generics = 3;
 }
 
-message ProtoStructData {
-    ProtoClassSimpleData clazz = 1;
+message ProtoStructInfo {
+    ProtoClassInfo clazz = 1;
 
-    map<int32, ProtoTypeInfo> contents = 2;
-
+    map<int32, TypeInfoMsg> fieldOffsets = 2;
 }
 
 message ProtoTypeInfo {
@@ -32,8 +31,8 @@ message ProtoTypeInfo {
     }
     oneof Info {
         Primitive primitiveInfo = 1;
-        ProtoStructData structInfo = 2;
-        ProtoClassSimpleData classInfo = 3;
+        ProtoStructInfo structInfo = 2;
+        ProtoClassInfo classInfo = 3;
     }
 }
 
@@ -62,15 +61,15 @@ message ProtoMethodInfo {
 }
 
 /// Contains the class data in its entirety
-// NOT APPLICABLE PRIMITIVES
+// NOT APPLICABLE TO PRIMITIVES
 message ProtoClassDetails {
-    ProtoClassSimpleData typeInfo = 1;
+    ProtoClassInfo clazz = 1;
 
     repeated ProtoFieldInfo fields = 2;
     repeated ProtoPropertyInfo properties = 3;
     repeated ProtoMethodInfo methods = 4;
     
-    repeated ProtoClassSimpleData interfaces = 5; /* nullable */
+    repeated ProtoClassInfo interfaces = 5; /* nullable */
 
     ProtoClassDetails parent = 6; /* nullable */
 }
