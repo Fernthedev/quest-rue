@@ -4,12 +4,12 @@
  * source: il2cpp.proto
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
-export class ProtoClassSimpleData extends pb_1.Message {
+export class ProtoClassInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         namespaze?: string;
         clazz?: string;
-        generics?: ProtoClassSimpleData[];
+        generics?: ProtoClassInfo[];
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
@@ -38,17 +38,17 @@ export class ProtoClassSimpleData extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get generics() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassSimpleData, 3) as ProtoClassSimpleData[];
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo[];
     }
-    set generics(value: ProtoClassSimpleData[]) {
+    set generics(value: ProtoClassInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 3, value);
     }
     static fromObject(data: {
         namespaze?: string;
         clazz?: string;
-        generics?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>[];
-    }): ProtoClassSimpleData {
-        const message = new ProtoClassSimpleData({});
+        generics?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
+    }): ProtoClassInfo {
+        const message = new ProtoClassInfo({});
         if (data.namespaze != null) {
             message.namespaze = data.namespaze;
         }
@@ -56,7 +56,7 @@ export class ProtoClassSimpleData extends pb_1.Message {
             message.clazz = data.clazz;
         }
         if (data.generics != null) {
-            message.generics = data.generics.map(item => ProtoClassSimpleData.fromObject(item));
+            message.generics = data.generics.map(item => ProtoClassInfo.fromObject(item));
         }
         return message;
     }
@@ -64,7 +64,7 @@ export class ProtoClassSimpleData extends pb_1.Message {
         const data: {
             namespaze?: string;
             clazz?: string;
-            generics?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>[];
+            generics?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
         } = {};
         if (this.namespaze != null) {
             data.namespaze = this.namespaze;
@@ -73,7 +73,7 @@ export class ProtoClassSimpleData extends pb_1.Message {
             data.clazz = this.clazz;
         }
         if (this.generics != null) {
-            data.generics = this.generics.map((item: ProtoClassSimpleData) => item.toObject());
+            data.generics = this.generics.map((item: ProtoClassInfo) => item.toObject());
         }
         return data;
     }
@@ -86,12 +86,12 @@ export class ProtoClassSimpleData extends pb_1.Message {
         if (typeof this.clazz === "string" && this.clazz.length)
             writer.writeString(2, this.clazz);
         if (this.generics !== undefined)
-            writer.writeRepeatedMessage(3, this.generics, (item: ProtoClassSimpleData) => item.serialize(writer));
+            writer.writeRepeatedMessage(3, this.generics, (item: ProtoClassInfo) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoClassSimpleData {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoClassSimpleData();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoClassInfo {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoClassInfo();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
@@ -103,7 +103,7 @@ export class ProtoClassSimpleData extends pb_1.Message {
                     message.clazz = reader.readString();
                     break;
                 case 3:
-                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoClassSimpleData.deserialize(reader), ProtoClassSimpleData));
+                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoClassInfo.deserialize(reader), ProtoClassInfo));
                     break;
                 default: reader.skipField();
             }
@@ -113,15 +113,15 @@ export class ProtoClassSimpleData extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): ProtoClassSimpleData {
-        return ProtoClassSimpleData.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): ProtoClassInfo {
+        return ProtoClassInfo.deserialize(bytes);
     }
 }
-export class ProtoStructData extends pb_1.Message {
+export class ProtoStructInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
-        clazz?: ProtoClassSimpleData;
-        contents?: Map<number, ProtoTypeInfo>;
+        clazz?: ProtoClassInfo;
+        fieldOffsets?: Map<number, ProtoTypeInfo>;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -129,52 +129,52 @@ export class ProtoStructData extends pb_1.Message {
             if ("clazz" in data && data.clazz != undefined) {
                 this.clazz = data.clazz;
             }
-            if ("contents" in data && data.contents != undefined) {
-                this.contents = data.contents;
+            if ("fieldOffsets" in data && data.fieldOffsets != undefined) {
+                this.fieldOffsets = data.fieldOffsets;
             }
         }
-        if (!this.contents)
-            this.contents = new Map();
+        if (!this.fieldOffsets)
+            this.fieldOffsets = new Map();
     }
     get clazz() {
-        return pb_1.Message.getWrapperField(this, ProtoClassSimpleData, 1) as ProtoClassSimpleData;
+        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 1) as ProtoClassInfo;
     }
-    set clazz(value: ProtoClassSimpleData) {
+    set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
-    get contents() {
+    get fieldOffsets() {
         return pb_1.Message.getField(this, 2) as any as Map<number, ProtoTypeInfo>;
     }
-    set contents(value: Map<number, ProtoTypeInfo>) {
+    set fieldOffsets(value: Map<number, ProtoTypeInfo>) {
         pb_1.Message.setField(this, 2, value as any);
     }
     static fromObject(data: {
-        clazz?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>;
-        contents?: {
+        clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
+        fieldOffsets?: {
             [key: number]: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
         };
-    }): ProtoStructData {
-        const message = new ProtoStructData({});
+    }): ProtoStructInfo {
+        const message = new ProtoStructInfo({});
         if (data.clazz != null) {
-            message.clazz = ProtoClassSimpleData.fromObject(data.clazz);
+            message.clazz = ProtoClassInfo.fromObject(data.clazz);
         }
-        if (typeof data.contents == "object") {
-            message.contents = new Map(Object.entries(data.contents).map(([key, value]) => [Number(key), ProtoTypeInfo.fromObject(value)]));
+        if (typeof data.fieldOffsets == "object") {
+            message.fieldOffsets = new Map(Object.entries(data.fieldOffsets).map(([key, value]) => [Number(key), ProtoTypeInfo.fromObject(value)]));
         }
         return message;
     }
     toObject() {
         const data: {
-            clazz?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>;
-            contents?: {
+            clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
+            fieldOffsets?: {
                 [key: number]: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
             };
         } = {};
         if (this.clazz != null) {
             data.clazz = this.clazz.toObject();
         }
-        if (this.contents.size > 0) {
-            data.contents = Object.fromEntries(Array.from(this.contents).map(([key, value]) => [key, value.toObject()]));
+        if (this.fieldOffsets.size > 0) {
+            data.fieldOffsets = Object.fromEntries(Array.from(this.fieldOffsets).map(([key, value]) => [key, value.toObject()]));
         }
         return data;
     }
@@ -184,8 +184,8 @@ export class ProtoStructData extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.clazz !== undefined)
             writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
-        for (const [key, value] of this.contents) {
-            writer.writeMessage(2, this.contents, () => {
+        for (const [key, value] of this.fieldOffsets) {
+            writer.writeMessage(2, this.fieldOffsets, () => {
                 writer.writeInt32(1, key);
                 writer.writeMessage(2, value, () => value.serialize(writer));
             });
@@ -193,17 +193,17 @@ export class ProtoStructData extends pb_1.Message {
         if (!w)
             return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoStructData {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoStructData();
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoStructInfo {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoStructInfo();
         while (reader.nextField()) {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.clazz, () => message.clazz = ProtoClassSimpleData.deserialize(reader));
+                    reader.readMessage(message.clazz, () => message.clazz = ProtoClassInfo.deserialize(reader));
                     break;
                 case 2:
-                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.contents as any, reader, reader.readInt32, () => {
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fieldOffsets as any, reader, reader.readInt32, () => {
                         let value;
                         reader.readMessage(message, () => value = ProtoTypeInfo.deserialize(reader));
                         return value;
@@ -217,8 +217,8 @@ export class ProtoStructData extends pb_1.Message {
     serializeBinary(): Uint8Array {
         return this.serialize();
     }
-    static deserializeBinary(bytes: Uint8Array): ProtoStructData {
-        return ProtoStructData.deserialize(bytes);
+    static deserializeBinary(bytes: Uint8Array): ProtoStructInfo {
+        return ProtoStructInfo.deserialize(bytes);
     }
 }
 export class ProtoTypeInfo extends pb_1.Message {
@@ -229,12 +229,12 @@ export class ProtoTypeInfo extends pb_1.Message {
         classInfo?: never;
     } | {
         primitiveInfo?: never;
-        structInfo?: ProtoStructData;
+        structInfo?: ProtoStructInfo;
         classInfo?: never;
     } | {
         primitiveInfo?: never;
         structInfo?: never;
-        classInfo?: ProtoClassSimpleData;
+        classInfo?: ProtoClassInfo;
     })))) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -257,15 +257,15 @@ export class ProtoTypeInfo extends pb_1.Message {
         pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
     }
     get structInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoStructData, 2) as ProtoStructData;
+        return pb_1.Message.getWrapperField(this, ProtoStructInfo, 2) as ProtoStructInfo;
     }
-    set structInfo(value: ProtoStructData) {
+    set structInfo(value: ProtoStructInfo) {
         pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoClassSimpleData, 3) as ProtoClassSimpleData;
+        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo;
     }
-    set classInfo(value: ProtoClassSimpleData) {
+    set classInfo(value: ProtoClassInfo) {
         pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
     }
     get Info() {
@@ -281,26 +281,26 @@ export class ProtoTypeInfo extends pb_1.Message {
     }
     static fromObject(data: {
         primitiveInfo?: ProtoTypeInfo.Primitive;
-        structInfo?: ReturnType<typeof ProtoStructData.prototype.toObject>;
-        classInfo?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>;
+        structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
+        classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
     }): ProtoTypeInfo {
         const message = new ProtoTypeInfo({});
         if (data.primitiveInfo != null) {
             message.primitiveInfo = data.primitiveInfo;
         }
         if (data.structInfo != null) {
-            message.structInfo = ProtoStructData.fromObject(data.structInfo);
+            message.structInfo = ProtoStructInfo.fromObject(data.structInfo);
         }
         if (data.classInfo != null) {
-            message.classInfo = ProtoClassSimpleData.fromObject(data.classInfo);
+            message.classInfo = ProtoClassInfo.fromObject(data.classInfo);
         }
         return message;
     }
     toObject() {
         const data: {
             primitiveInfo?: ProtoTypeInfo.Primitive;
-            structInfo?: ReturnType<typeof ProtoStructData.prototype.toObject>;
-            classInfo?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>;
+            structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
+            classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
         } = {};
         if (this.primitiveInfo != null) {
             data.primitiveInfo = this.primitiveInfo;
@@ -336,10 +336,10 @@ export class ProtoTypeInfo extends pb_1.Message {
                     message.primitiveInfo = reader.readEnum();
                     break;
                 case 2:
-                    reader.readMessage(message.structInfo, () => message.structInfo = ProtoStructData.deserialize(reader));
+                    reader.readMessage(message.structInfo, () => message.structInfo = ProtoStructInfo.deserialize(reader));
                     break;
                 case 3:
-                    reader.readMessage(message.classInfo, () => message.classInfo = ProtoClassSimpleData.deserialize(reader));
+                    reader.readMessage(message.classInfo, () => message.classInfo = ProtoClassInfo.deserialize(reader));
                     break;
                 default: reader.skipField();
             }
@@ -815,18 +815,18 @@ export class ProtoMethodInfo extends pb_1.Message {
 export class ProtoClassDetails extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
-        typeInfo?: ProtoTypeInfo;
+        clazz?: ProtoClassInfo;
         fields?: ProtoFieldInfo[];
         properties?: ProtoPropertyInfo[];
         methods?: ProtoMethodInfo[];
-        interfaces?: ProtoClassSimpleData[];
+        interfaces?: ProtoClassInfo[];
         parent?: ProtoClassDetails;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 3, 4, 5], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("typeInfo" in data && data.typeInfo != undefined) {
-                this.typeInfo = data.typeInfo;
+            if ("clazz" in data && data.clazz != undefined) {
+                this.clazz = data.clazz;
             }
             if ("fields" in data && data.fields != undefined) {
                 this.fields = data.fields;
@@ -845,10 +845,10 @@ export class ProtoClassDetails extends pb_1.Message {
             }
         }
     }
-    get typeInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 1) as ProtoTypeInfo;
+    get clazz() {
+        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 1) as ProtoClassInfo;
     }
-    set typeInfo(value: ProtoTypeInfo) {
+    set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
     get fields() {
@@ -870,9 +870,9 @@ export class ProtoClassDetails extends pb_1.Message {
         pb_1.Message.setRepeatedWrapperField(this, 4, value);
     }
     get interfaces() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassSimpleData, 5) as ProtoClassSimpleData[];
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassInfo, 5) as ProtoClassInfo[];
     }
-    set interfaces(value: ProtoClassSimpleData[]) {
+    set interfaces(value: ProtoClassInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 5, value);
     }
     get parent() {
@@ -882,16 +882,16 @@ export class ProtoClassDetails extends pb_1.Message {
         pb_1.Message.setWrapperField(this, 6, value);
     }
     static fromObject(data: {
-        typeInfo?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+        clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
         fields?: ReturnType<typeof ProtoFieldInfo.prototype.toObject>[];
         properties?: ReturnType<typeof ProtoPropertyInfo.prototype.toObject>[];
         methods?: ReturnType<typeof ProtoMethodInfo.prototype.toObject>[];
-        interfaces?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>[];
+        interfaces?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
         parent?: ReturnType<typeof ProtoClassDetails.prototype.toObject>;
     }): ProtoClassDetails {
         const message = new ProtoClassDetails({});
-        if (data.typeInfo != null) {
-            message.typeInfo = ProtoTypeInfo.fromObject(data.typeInfo);
+        if (data.clazz != null) {
+            message.clazz = ProtoClassInfo.fromObject(data.clazz);
         }
         if (data.fields != null) {
             message.fields = data.fields.map(item => ProtoFieldInfo.fromObject(item));
@@ -903,7 +903,7 @@ export class ProtoClassDetails extends pb_1.Message {
             message.methods = data.methods.map(item => ProtoMethodInfo.fromObject(item));
         }
         if (data.interfaces != null) {
-            message.interfaces = data.interfaces.map(item => ProtoClassSimpleData.fromObject(item));
+            message.interfaces = data.interfaces.map(item => ProtoClassInfo.fromObject(item));
         }
         if (data.parent != null) {
             message.parent = ProtoClassDetails.fromObject(data.parent);
@@ -912,15 +912,15 @@ export class ProtoClassDetails extends pb_1.Message {
     }
     toObject() {
         const data: {
-            typeInfo?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+            clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             fields?: ReturnType<typeof ProtoFieldInfo.prototype.toObject>[];
             properties?: ReturnType<typeof ProtoPropertyInfo.prototype.toObject>[];
             methods?: ReturnType<typeof ProtoMethodInfo.prototype.toObject>[];
-            interfaces?: ReturnType<typeof ProtoClassSimpleData.prototype.toObject>[];
+            interfaces?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
             parent?: ReturnType<typeof ProtoClassDetails.prototype.toObject>;
         } = {};
-        if (this.typeInfo != null) {
-            data.typeInfo = this.typeInfo.toObject();
+        if (this.clazz != null) {
+            data.clazz = this.clazz.toObject();
         }
         if (this.fields != null) {
             data.fields = this.fields.map((item: ProtoFieldInfo) => item.toObject());
@@ -932,7 +932,7 @@ export class ProtoClassDetails extends pb_1.Message {
             data.methods = this.methods.map((item: ProtoMethodInfo) => item.toObject());
         }
         if (this.interfaces != null) {
-            data.interfaces = this.interfaces.map((item: ProtoClassSimpleData) => item.toObject());
+            data.interfaces = this.interfaces.map((item: ProtoClassInfo) => item.toObject());
         }
         if (this.parent != null) {
             data.parent = this.parent.toObject();
@@ -943,8 +943,8 @@ export class ProtoClassDetails extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.typeInfo !== undefined)
-            writer.writeMessage(1, this.typeInfo, () => this.typeInfo.serialize(writer));
+        if (this.clazz !== undefined)
+            writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
         if (this.fields !== undefined)
             writer.writeRepeatedMessage(2, this.fields, (item: ProtoFieldInfo) => item.serialize(writer));
         if (this.properties !== undefined)
@@ -952,7 +952,7 @@ export class ProtoClassDetails extends pb_1.Message {
         if (this.methods !== undefined)
             writer.writeRepeatedMessage(4, this.methods, (item: ProtoMethodInfo) => item.serialize(writer));
         if (this.interfaces !== undefined)
-            writer.writeRepeatedMessage(5, this.interfaces, (item: ProtoClassSimpleData) => item.serialize(writer));
+            writer.writeRepeatedMessage(5, this.interfaces, (item: ProtoClassInfo) => item.serialize(writer));
         if (this.parent !== undefined)
             writer.writeMessage(6, this.parent, () => this.parent.serialize(writer));
         if (!w)
@@ -965,7 +965,7 @@ export class ProtoClassDetails extends pb_1.Message {
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.typeInfo, () => message.typeInfo = ProtoTypeInfo.deserialize(reader));
+                    reader.readMessage(message.clazz, () => message.clazz = ProtoClassInfo.deserialize(reader));
                     break;
                 case 2:
                     reader.readMessage(message.fields, () => pb_1.Message.addToRepeatedWrapperField(message, 2, ProtoFieldInfo.deserialize(reader), ProtoFieldInfo));
@@ -977,7 +977,7 @@ export class ProtoClassDetails extends pb_1.Message {
                     reader.readMessage(message.methods, () => pb_1.Message.addToRepeatedWrapperField(message, 4, ProtoMethodInfo.deserialize(reader), ProtoMethodInfo));
                     break;
                 case 5:
-                    reader.readMessage(message.interfaces, () => pb_1.Message.addToRepeatedWrapperField(message, 5, ProtoClassSimpleData.deserialize(reader), ProtoClassSimpleData));
+                    reader.readMessage(message.interfaces, () => pb_1.Message.addToRepeatedWrapperField(message, 5, ProtoClassInfo.deserialize(reader), ProtoClassInfo));
                     break;
                 case 6:
                     reader.readMessage(message.parent, () => message.parent = ProtoClassDetails.deserialize(reader));

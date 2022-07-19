@@ -349,7 +349,7 @@ export class ProtoObject extends pb_1.Message {
     constructor(data?: any[] | {
         address?: number;
         name?: string;
-        classInfo?: dependency_1.ProtoClassSimpleData;
+        classInfo?: dependency_1.ProtoClassInfo;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -378,15 +378,15 @@ export class ProtoObject extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassSimpleData, 3) as dependency_1.ProtoClassSimpleData;
+        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 3) as dependency_1.ProtoClassInfo;
     }
-    set classInfo(value: dependency_1.ProtoClassSimpleData) {
+    set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 3, value);
     }
     static fromObject(data: {
         address?: number;
         name?: string;
-        classInfo?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+        classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
     }): ProtoObject {
         const message = new ProtoObject({});
         if (data.address != null) {
@@ -396,7 +396,7 @@ export class ProtoObject extends pb_1.Message {
             message.name = data.name;
         }
         if (data.classInfo != null) {
-            message.classInfo = dependency_1.ProtoClassSimpleData.fromObject(data.classInfo);
+            message.classInfo = dependency_1.ProtoClassInfo.fromObject(data.classInfo);
         }
         return message;
     }
@@ -404,7 +404,7 @@ export class ProtoObject extends pb_1.Message {
         const data: {
             address?: number;
             name?: string;
-            classInfo?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+            classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
         } = {};
         if (this.address != null) {
             data.address = this.address;
@@ -443,7 +443,7 @@ export class ProtoObject extends pb_1.Message {
                     message.name = reader.readString();
                     break;
                 case 3:
-                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassSimpleData.deserialize(reader));
+                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassInfo.deserialize(reader));
                     break;
                 default: reader.skipField();
             }
@@ -463,7 +463,7 @@ export class ProtoComponent extends pb_1.Message {
         address?: number;
         name?: string;
         gameObject?: number;
-        classInfo?: dependency_1.ProtoClassSimpleData;
+        classInfo?: dependency_1.ProtoClassInfo;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -501,16 +501,16 @@ export class ProtoComponent extends pb_1.Message {
         pb_1.Message.setField(this, 3, value);
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassSimpleData, 4) as dependency_1.ProtoClassSimpleData;
+        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 4) as dependency_1.ProtoClassInfo;
     }
-    set classInfo(value: dependency_1.ProtoClassSimpleData) {
+    set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 4, value);
     }
     static fromObject(data: {
         address?: number;
         name?: string;
         gameObject?: number;
-        classInfo?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+        classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
     }): ProtoComponent {
         const message = new ProtoComponent({});
         if (data.address != null) {
@@ -523,7 +523,7 @@ export class ProtoComponent extends pb_1.Message {
             message.gameObject = data.gameObject;
         }
         if (data.classInfo != null) {
-            message.classInfo = dependency_1.ProtoClassSimpleData.fromObject(data.classInfo);
+            message.classInfo = dependency_1.ProtoClassInfo.fromObject(data.classInfo);
         }
         return message;
     }
@@ -532,7 +532,7 @@ export class ProtoComponent extends pb_1.Message {
             address?: number;
             name?: string;
             gameObject?: number;
-            classInfo?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+            classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
         } = {};
         if (this.address != null) {
             data.address = this.address;
@@ -579,7 +579,7 @@ export class ProtoComponent extends pb_1.Message {
                     message.gameObject = reader.readUint64();
                     break;
                 case 4:
-                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassSimpleData.deserialize(reader));
+                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassInfo.deserialize(reader));
                     break;
                 default: reader.skipField();
             }

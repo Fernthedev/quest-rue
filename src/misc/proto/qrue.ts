@@ -242,7 +242,7 @@ export namespace InvokeMethodResult {
 export class SearchObjects extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
-        componentClass?: dependency_1.ProtoClassSimpleData;
+        componentClass?: dependency_1.ProtoClassInfo;
         name?: string;
     }) {
         super();
@@ -257,9 +257,9 @@ export class SearchObjects extends pb_1.Message {
         }
     }
     get componentClass() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassSimpleData, 1) as dependency_1.ProtoClassSimpleData;
+        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 1) as dependency_1.ProtoClassInfo;
     }
-    set componentClass(value: dependency_1.ProtoClassSimpleData) {
+    set componentClass(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
     get name() {
@@ -269,12 +269,12 @@ export class SearchObjects extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     static fromObject(data: {
-        componentClass?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+        componentClass?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
         name?: string;
     }): SearchObjects {
         const message = new SearchObjects({});
         if (data.componentClass != null) {
-            message.componentClass = dependency_1.ProtoClassSimpleData.fromObject(data.componentClass);
+            message.componentClass = dependency_1.ProtoClassInfo.fromObject(data.componentClass);
         }
         if (data.name != null) {
             message.name = data.name;
@@ -283,7 +283,7 @@ export class SearchObjects extends pb_1.Message {
     }
     toObject() {
         const data: {
-            componentClass?: ReturnType<typeof dependency_1.ProtoClassSimpleData.prototype.toObject>;
+            componentClass?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
             name?: string;
         } = {};
         if (this.componentClass != null) {
@@ -312,7 +312,7 @@ export class SearchObjects extends pb_1.Message {
                 break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.componentClass, () => message.componentClass = dependency_1.ProtoClassSimpleData.deserialize(reader));
+                    reader.readMessage(message.componentClass, () => message.componentClass = dependency_1.ProtoClassInfo.deserialize(reader));
                     break;
                 case 2:
                     message.name = reader.readString();
