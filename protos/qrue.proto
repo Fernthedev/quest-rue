@@ -21,7 +21,6 @@ message InvokeMethodResult {
     }
     Status status = 1;
     uint64 methodId = 2;
-    uint64 invokeUUID = 3;
     ProtoDataPayload result = 4;
     string error = 5; /* nullable */
 }
