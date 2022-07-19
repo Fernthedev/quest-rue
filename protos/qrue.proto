@@ -4,24 +4,20 @@ syntax = "proto3";
 // may change in future!
 
 // Type Identification
-message ClassInfoMsg {
+message ClassSimpleData {
     string namespaze = 1;
     string clazz = 2;
-    repeated ClassInfoMsg generics = 3;
+    repeated ClassSimpleData generics = 3;
 }
 
-message StructInfoMsg {
-    ClassInfoMsg clazz = 1;
+message StructData {
+    ClassSimpleData clazz = 1;
 
     map<int32, TypeInfoMsg> contents = 2;
+
 }
 
-message TypeInfoMsg {
-    enum Type {
-        PRIMITIVE = 0;
-        STRUCT = 1;
-        CLASS = 2;
-    }
+message TypeInfo {
     enum Primitive {
         BOOLEAN = 0;
         CHAR = 1;
@@ -30,53 +26,57 @@ message TypeInfoMsg {
         FLOAT = 4;
         DOUBLE = 5;
         STRING = 6;
+        LIST = 7;
+        ARRAY = 8;
     }
     oneof Info {
         Primitive primitiveInfo = 1;
-        StructInfoMsg structInfo = 2;
-        ClassInfoMsg classInfo = 3;
+        StructData structInfo = 2;
+        ClassSimpleData classInfo = 3;
     }
 }
 
 // Type Details
-message FieldInfoMsg {
+message FieldInfo {
     string name = 1;
     uint64 id = 2;
-    TypeInfoMsg type = 3;
+    TypeInfo type = 3;
 }
 
-message PropertyInfoMsg {
+message PropertyInfo {
     string name = 1;
     bool hasGet = 2;
     uint64 getId = 3;
     bool hasSet = 4;
     uint64 setId = 5;
-    TypeInfoMsg type = 6;
+    TypeInfo type = 6;
 }
 
-message MethodInfoMsg {
+message MethodInfo {
     string name = 1;
     uint64 id = 2;
 
     map<string, TypeInfoMsg> args = 3;
-    TypeInfoMsg returnType = 4;
+    TypeInfo returnType = 4;
 }
 
-message TypeDetailsMsg {
-    ClassInfoMsg clazz = 1;
+/// Contains the class data in its entirety
+// NOT APPLICABLE TO STRUCTS OR PRIMITIVES
+message ClassDetails {
+    ClassSimpleData clazz = 1;
 
-    repeated FieldInfoMsg fields = 2;
-    repeated PropertyInfoMsg properties = 3;
-    repeated MethodInfoMsg methods = 4;
+    repeated FieldInfo fields = 2;
+    repeated PropertyInfo properties = 3;
+    repeated MethodInfo methods = 4;
     
-    repeated ClassInfoMsg interfaces = 5; /* nullable */
+    repeated ClassSimpleData interfaces = 5; /* nullable */
 
-    TypeDetailsMsg parent = 6; /* nullable */
+    ClassDetails parent = 6; /* nullable */
 }
 
 // Data Sending
-message DataMsg {
-    TypeInfoMsg typeInfo = 1; /* nullable */
+message DataPayload {
+    TypeInfo typeInfo = 1; /* nullable */
 
     bytes data = 2;
 }
@@ -104,7 +104,7 @@ message ProtoObject {
     uint64 address = 1;
     string name = 2;
 
-    ClassInfoMsg classInfo = 3;
+    ClassSimpleData classInfo = 3;
 }
 
 message ProtoComponent {
@@ -112,7 +112,8 @@ message ProtoComponent {
     string name = 2;
 
     uint64 gameObject = 3;
-    ClassInfoMsg classInfo = 4;
+    // TODO: TRANSFORM
+    ClassSimpleData classInfo = 4;
 }
 
 message ProtoTransform {
@@ -144,8 +145,7 @@ message ProtoScene {
 
 message InvokeMethod {
     uint64 methodId = 1;
-    uint64 invokeUUID = 2;
-    repeated DataMsg args = 3;
+    repeated DataPayload args = 2;
 }
 
 message InvokeMethodResult {
@@ -157,12 +157,12 @@ message InvokeMethodResult {
     Status status = 1;
     uint64 methodId = 2;
     uint64 invokeUUID = 3;
-    DataMsg result = 4;
+    DataPayload result = 4;
     string error = 5; /* nullable */
 }
 
 message SearchObjects {
-    ClassInfoMsg componentClass = 1;
+    ClassSimpleData componentClass = 1;
     string name = 2; /* nullable */
 }
 
