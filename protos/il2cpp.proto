@@ -45,11 +45,10 @@ message ProtoFieldInfo {
 
 message ProtoPropertyInfo {
     string name = 1;
-    bool hasGet = 2;
-    uint64 getId = 3;
-    bool hasSet = 4;
-    uint64 setId = 5;
-    ProtoTypeInfo type = 6;
+    uint64 getterId = 2; /* nullable */
+    uint64 setterId = 3; /* nullable */
+    uint64 backingFieldId = 4; /* nullable */
+    ProtoTypeInfo type = 5;
 }
 
 message ProtoMethodInfo {

@@ -484,10 +484,9 @@ export class ProtoPropertyInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         name?: string;
-        hasGet?: boolean;
-        getId?: number;
-        hasSet?: boolean;
-        setId?: number;
+        getterId?: number;
+        setterId?: number;
+        backingFieldId?: number;
         type?: ProtoTypeInfo;
     }) {
         super();
@@ -496,17 +495,14 @@ export class ProtoPropertyInfo extends pb_1.Message {
             if ("name" in data && data.name != undefined) {
                 this.name = data.name;
             }
-            if ("hasGet" in data && data.hasGet != undefined) {
-                this.hasGet = data.hasGet;
+            if ("getterId" in data && data.getterId != undefined) {
+                this.getterId = data.getterId;
             }
-            if ("getId" in data && data.getId != undefined) {
-                this.getId = data.getId;
+            if ("setterId" in data && data.setterId != undefined) {
+                this.setterId = data.setterId;
             }
-            if ("hasSet" in data && data.hasSet != undefined) {
-                this.hasSet = data.hasSet;
-            }
-            if ("setId" in data && data.setId != undefined) {
-                this.setId = data.setId;
+            if ("backingFieldId" in data && data.backingFieldId != undefined) {
+                this.backingFieldId = data.backingFieldId;
             }
             if ("type" in data && data.type != undefined) {
                 this.type = data.type;
@@ -519,59 +515,49 @@ export class ProtoPropertyInfo extends pb_1.Message {
     set name(value: string) {
         pb_1.Message.setField(this, 1, value);
     }
-    get hasGet() {
-        return pb_1.Message.getField(this, 2) as boolean;
+    get getterId() {
+        return pb_1.Message.getField(this, 2) as number;
     }
-    set hasGet(value: boolean) {
+    set getterId(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
-    get getId() {
+    get setterId() {
         return pb_1.Message.getField(this, 3) as number;
     }
-    set getId(value: number) {
+    set setterId(value: number) {
         pb_1.Message.setField(this, 3, value);
     }
-    get hasSet() {
-        return pb_1.Message.getField(this, 4) as boolean;
+    get backingFieldId() {
+        return pb_1.Message.getField(this, 4) as number;
     }
-    set hasSet(value: boolean) {
+    set backingFieldId(value: number) {
         pb_1.Message.setField(this, 4, value);
     }
-    get setId() {
-        return pb_1.Message.getField(this, 5) as number;
-    }
-    set setId(value: number) {
-        pb_1.Message.setField(this, 5, value);
-    }
     get type() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 6) as ProtoTypeInfo;
+        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 5) as ProtoTypeInfo;
     }
     set type(value: ProtoTypeInfo) {
-        pb_1.Message.setWrapperField(this, 6, value);
+        pb_1.Message.setWrapperField(this, 5, value);
     }
     static fromObject(data: {
         name?: string;
-        hasGet?: boolean;
-        getId?: number;
-        hasSet?: boolean;
-        setId?: number;
+        getterId?: number;
+        setterId?: number;
+        backingFieldId?: number;
         type?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
     }): ProtoPropertyInfo {
         const message = new ProtoPropertyInfo({});
         if (data.name != null) {
             message.name = data.name;
         }
-        if (data.hasGet != null) {
-            message.hasGet = data.hasGet;
+        if (data.getterId != null) {
+            message.getterId = data.getterId;
         }
-        if (data.getId != null) {
-            message.getId = data.getId;
+        if (data.setterId != null) {
+            message.setterId = data.setterId;
         }
-        if (data.hasSet != null) {
-            message.hasSet = data.hasSet;
-        }
-        if (data.setId != null) {
-            message.setId = data.setId;
+        if (data.backingFieldId != null) {
+            message.backingFieldId = data.backingFieldId;
         }
         if (data.type != null) {
             message.type = ProtoTypeInfo.fromObject(data.type);
@@ -581,26 +567,22 @@ export class ProtoPropertyInfo extends pb_1.Message {
     toObject() {
         const data: {
             name?: string;
-            hasGet?: boolean;
-            getId?: number;
-            hasSet?: boolean;
-            setId?: number;
+            getterId?: number;
+            setterId?: number;
+            backingFieldId?: number;
             type?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
         } = {};
         if (this.name != null) {
             data.name = this.name;
         }
-        if (this.hasGet != null) {
-            data.hasGet = this.hasGet;
+        if (this.getterId != null) {
+            data.getterId = this.getterId;
         }
-        if (this.getId != null) {
-            data.getId = this.getId;
+        if (this.setterId != null) {
+            data.setterId = this.setterId;
         }
-        if (this.hasSet != null) {
-            data.hasSet = this.hasSet;
-        }
-        if (this.setId != null) {
-            data.setId = this.setId;
+        if (this.backingFieldId != null) {
+            data.backingFieldId = this.backingFieldId;
         }
         if (this.type != null) {
             data.type = this.type.toObject();
@@ -613,16 +595,14 @@ export class ProtoPropertyInfo extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (typeof this.name === "string" && this.name.length)
             writer.writeString(1, this.name);
-        if (this.hasGet !== undefined)
-            writer.writeBool(2, this.hasGet);
-        if (this.getId !== undefined)
-            writer.writeUint64(3, this.getId);
-        if (this.hasSet !== undefined)
-            writer.writeBool(4, this.hasSet);
-        if (this.setId !== undefined)
-            writer.writeUint64(5, this.setId);
+        if (this.getterId !== undefined)
+            writer.writeUint64(2, this.getterId);
+        if (this.setterId !== undefined)
+            writer.writeUint64(3, this.setterId);
+        if (this.backingFieldId !== undefined)
+            writer.writeUint64(4, this.backingFieldId);
         if (this.type !== undefined)
-            writer.writeMessage(6, this.type, () => this.type.serialize(writer));
+            writer.writeMessage(5, this.type, () => this.type.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -636,18 +616,15 @@ export class ProtoPropertyInfo extends pb_1.Message {
                     message.name = reader.readString();
                     break;
                 case 2:
-                    message.hasGet = reader.readBool();
+                    message.getterId = reader.readUint64();
                     break;
                 case 3:
-                    message.getId = reader.readUint64();
+                    message.setterId = reader.readUint64();
                     break;
                 case 4:
-                    message.hasSet = reader.readBool();
+                    message.backingFieldId = reader.readUint64();
                     break;
                 case 5:
-                    message.setId = reader.readUint64();
-                    break;
-                case 6:
                     reader.readMessage(message.type, () => message.type = ProtoTypeInfo.deserialize(reader));
                     break;
                 default: reader.skipField();

@@ -80,6 +80,38 @@ message WriteMemoryResult {
     uint64 size = 3;
 }
 
+message GetClassDetails {
+    // TODO: Struct?
+    ProtoClassInfo classInfo = 1;
+}
+
+message GetClassDetailsResult {
+    // TODO: Struct?
+    ProtoClassDetails classDetails = 1;
+}
+
+message ReadClassDetails {
+    uint64 address = 1;
+    ProtoClassInfo classInfo = 2;
+
+    /* nullable */
+    repeated ProtoFieldInfo fields = 3;
+    /* nullable */
+    repeated ProtoPropertyInfo properties = 4;
+}
+
+message ReadClassDetailsResult {
+    uint64 address = 1;
+    ProtoClassInfo classInfo = 2;
+
+    /* nullable */
+    map<uint64, bytes> fieldValues = 3;
+
+    /* nullable */
+    map<uint64, bytes> propertyValues = 4;
+
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -96,5 +128,9 @@ message PacketWrapper {
         ReadMemoryResult readMemoryResult = 11;
         WriteMemory writeMemory = 12;
         WriteMemoryResult writeMemoryResult = 13;
+        GetClassDetails getClassDetails = 14;
+        GetClassDetailsResult getClassDetailsResult = 15;
+        ReadClassDetails readClassDetails = 16;
+        ReadClassDetailsResult readClassDetailsResult = 17;
     }
 }
