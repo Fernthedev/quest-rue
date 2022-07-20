@@ -90,7 +90,7 @@ message GetClassDetailsResult {
     ProtoClassDetails classDetails = 1;
 }
 
-message ReadClassDetails {
+message ReadInstanceDetails {
     uint64 address = 1;
     ProtoClassInfo classInfo = 2;
 
@@ -100,7 +100,7 @@ message ReadClassDetails {
     repeated ProtoPropertyInfo properties = 4;
 }
 
-message ReadClassDetailsResult {
+message ReadInstanceDetailsResult {
     uint64 address = 1;
     ProtoClassInfo classInfo = 2;
 
@@ -130,7 +130,7 @@ message PacketWrapper {
         WriteMemoryResult writeMemoryResult = 13;
         GetClassDetails getClassDetails = 14;
         GetClassDetailsResult getClassDetailsResult = 15;
-        ReadClassDetails readClassDetails = 16;
-        ReadClassDetailsResult readClassDetailsResult = 17;
+        ReadInstanceDetails readInstanceDetails = 16;
+        ReadInstanceDetailsResult readInstanceDetailsResult = 17;
     }
 }

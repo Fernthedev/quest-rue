@@ -15,6 +15,9 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/Resources.hpp"
 
+#include "sombrero/shared/linq.hpp"
+#include "sombrero/shared/linq_functional.hpp"
+
 #define MESSAGE_LOGGING
 
 using namespace ClassUtils;
@@ -124,9 +127,14 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kWriteMemory:
         writeMemory(packet.writememory(), id);
         break;
+    case PacketWrapper::kGetClassDetails:
+        getClassDetails(packet.getclassdetails(), id);
+        break;
+    case PacketWrapper::kReadInstanceDetails:
+        ReadInstanceDetails(packet.ReadInstanceDetails(), id);
+        break;
 
-    default:
-        LOG_INFO("Invalid packet type! {}", packet.Packet_case());
+    default: LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
     // });
 }
@@ -146,7 +154,8 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
     }
     
     auto method = methods[methodIdx];
-    scheduleFunction([this, packet, methodIdx] {
+    scheduleFunction([this, packet, methodIdx, queryId]
+                     {
         // TODO: type checking?
         int argNum = packet.args_size();
         void* args[argNum];
@@ -174,8 +183,7 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
         ProtoDataPayload& data = *result.mutable_result();
         *data.mutable_typeinfo() = methods[methodIdx].ReturnTypeInfo();
         data.set_data(res.GetAsString());
-        handler->sendPacket(wrapper);
-    });
+        handler->sendPacket(wrapper); });
 }
 
 ProtoScene ReadScene(Scene obj) {
@@ -325,4 +333,95 @@ void Manager::writeMemory(const WriteMemory &packet, uint64_t id)
     LOG_INFO("Result is {}", wrapper.DebugString());
     handler->sendPacket(wrapper);
 }
+
+void SaturateProtoTypeInfo(Il2CppClass *clazz, ProtoTypeInfo* type) {
+    // TODO: Structs and primitives
+
+}
+
+void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
+{
+    using namespace Sombrero;
+
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    auto result = wrapper.mutable_getclassdetailsresult();
+
+    auto const &classInfo = packet.classinfo();
+    auto clazz = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
+
+    if (!clazz) {
+        LOG_INFO("COULD NOT FIND CLASS {}::{}", classInfo.namespaze(), classInfo.clazz());
+        handler->sendPacket(wrapper);
+        return;
+    }
+
+    auto protoClassInfo = [&](Il2CppClass *clazz, ProtoClassInfo * classInfo) constexpr
+    {
+        // TODO: Generics
+        classInfo->set_namespaze(clazz->namespaze);
+        classInfo->set_clazz(clazz->name);
+        return classInfo;
+    };
+
+    auto parseClazz = clazz;
+    auto parzeClassProto = result->mutable_classdetails();
+
+    // Use a while loop instead of recursive 
+    // method to improve stack allocations
+    while (parseClazz != nullptr)
+    {
+        protoClassInfo(parseClazz, parzeClassProto->mutable_clazz());
+        auto fields = ClassUtils::GetFields(parseClazz);
+        auto props = ClassUtils::GetProperties(parseClazz);
+        auto interfaces = ClassUtils::GetInterfaces(parseClazz);
+
+        auto methods = ClassUtils::GetMethods(parseClazz);
+
+        for (auto i : interfaces) {
+            protoClassInfo(i, parzeClassProto->add_interfaces());
+        }
+
+        for (auto const &m : methods)
+        {
+            auto methodProto = parzeClassProto->add_methods();
+            methodProto->set_name(m->name);
+            methodProto->set_id(PtrI(m));
+            // TODO: FINISH
+            // methodProto->set_args()
+            // methodProto->set_returnType()
+        }
+
+        for (auto f : fields) {
+            auto fProto = parzeClassProto->add_fields();
+            fProto->set_name(f->name);
+            fProto->set_id(PtrI(f));
+            SaturateProtoTypeInfo(il2cpp_utils::GetFieldClass(f), fProto->mutable_type());
+        }
+
+        for (auto p : props) {
+            auto pProto = parzeClassProto->add_properties();
+            pProto->set_name(p->name);
+            if (p->get)
+                pProto->set_getterid(PtrI(p->get));
+            
+            if (p->set)
+                pProto->set_setterid(PtrI(p->set));
+
+                //TODO: BACKING FIELD
+            SaturateProtoTypeInfo(pProto->mutable_type());
+        }
+
+
+        parseClazz = ClassUtils::GetParent(parseClazz);
+        if (parseClazz)
+            parzeClassProto = parzeClassProto->mutable_parent();
+    }
+}
+
+void Manager::readInstanceDetails(const ReadInstanceDetails &packet, uint64_t id) {
+
+}
+
 #pragma endregion
