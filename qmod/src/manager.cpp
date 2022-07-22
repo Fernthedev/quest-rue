@@ -131,7 +131,7 @@ void Manager::processMessage(const PacketWrapper& packet) {
         getClassDetails(packet.getclassdetails(), id);
         break;
     case PacketWrapper::kReadInstanceDetails:
-        ReadInstanceDetails(packet.ReadInstanceDetails(), id);
+        readInstanceDetails(packet.readinstancedetails(), id);
         break;
 
     default: LOG_INFO("Invalid packet type! {}", packet.Packet_case());
@@ -259,7 +259,7 @@ void Manager::searchObjects(const SearchObjects &packet, uint64_t id)
             name = obj->get_name().operator std::string();
         found.set_address(PtrI(obj));
         found.set_name(name);
-        *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(obj)));
+        *found.mutable_classinfo() = GetClassInfo(classofinst(obj));
     }
 
     handler->sendPacket(wrapper);
@@ -290,7 +290,7 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents &packet, uin
 
         found.set_address(PtrI(comp));
         found.set_name(comp->get_name());
-        *found.mutable_classinfo() = GetClassInfo(il2cpp_functions::class_get_type(classofinst(comp)));
+        *found.mutable_classinfo() = GetClassInfo(classofinst(comp));
     }
 
     handler->sendPacket(wrapper);
@@ -334,10 +334,6 @@ void Manager::writeMemory(const WriteMemory &packet, uint64_t id)
     handler->sendPacket(wrapper);
 }
 
-void SaturateProtoTypeInfo(Il2CppClass *clazz, ProtoTypeInfo* type) {
-    // TODO: Structs and primitives
-
-}
 
 void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
 {
@@ -357,14 +353,6 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
         return;
     }
 
-    auto protoClassInfo = [&](Il2CppClass *clazz, ProtoClassInfo * classInfo) constexpr
-    {
-        // TODO: Generics
-        classInfo->set_namespaze(clazz->namespaze);
-        classInfo->set_clazz(clazz->name);
-        return classInfo;
-    };
-
     auto parseClazz = clazz;
     auto parzeClassProto = result->mutable_classdetails();
 
@@ -372,7 +360,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
     // method to improve stack allocations
     while (parseClazz != nullptr)
     {
-        protoClassInfo(parseClazz, parzeClassProto->mutable_clazz());
+        *parzeClassProto->mutable_clazz() = ClassUtils::GetClassInfo(parseClazz);
         auto fields = ClassUtils::GetFields(parseClazz);
         auto props = ClassUtils::GetProperties(parseClazz);
         auto interfaces = ClassUtils::GetInterfaces(parseClazz);
@@ -380,7 +368,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
         auto methods = ClassUtils::GetMethods(parseClazz);
 
         for (auto i : interfaces) {
-            protoClassInfo(i, parzeClassProto->add_interfaces());
+            *parzeClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
         }
 
         for (auto const &m : methods)
@@ -388,16 +376,19 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
             auto methodProto = parzeClassProto->add_methods();
             methodProto->set_name(m->name);
             methodProto->set_id(PtrI(m));
-            // TODO: FINISH
-            // methodProto->set_args()
-            // methodProto->set_returnType()
+
+            auto& params = *methodProto->mutable_args();
+            for (auto const &p : ClassUtils::GetMethodParameters(m)) {
+                params[p.name] = ClassUtils::GetTypeInfo(p.parameter_type);
+            }
+            *methodProto->mutable_returntype() = ClassUtils::GetTypeInfo(m->return_type);
         }
 
         for (auto f : fields) {
             auto fProto = parzeClassProto->add_fields();
             fProto->set_name(f->name);
             fProto->set_id(PtrI(f));
-            SaturateProtoTypeInfo(il2cpp_utils::GetFieldClass(f), fProto->mutable_type());
+            *fProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::GetFieldClass(f));
         }
 
         for (auto p : props) {
@@ -409,8 +400,10 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
             if (p->set)
                 pProto->set_setterid(PtrI(p->set));
 
-                //TODO: BACKING FIELD
-            SaturateProtoTypeInfo(pProto->mutable_type());
+            auto ptr = p->set ?: p->get;
+            
+            // TODO: BACKING FIELD
+            *pProto->mutable_type() = ClassUtils::GetTypeInfo(ptr->return_type);
         }
 
 
@@ -418,6 +411,8 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
         if (parseClazz)
             parzeClassProto = parzeClassProto->mutable_parent();
     }
+
+    handler->sendPacket(wrapper);
 }
 
 void Manager::readInstanceDetails(const ReadInstanceDetails &packet, uint64_t id) {

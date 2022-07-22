@@ -12,6 +12,7 @@
 #include "fmt/format.h"
 
 #define typeIsValuetype(type) il2cpp_functions::class_from_il2cpp_type(type)->valuetype
+#define klassIsValuetype(type) type->valuetype
 
 static inline auto PaperQLogger = Paper::Logger::WithContext<"QuestEditor", false>();
 

@@ -1,11 +1,13 @@
 #include "main.hpp"
 #include "classutils.hpp"
 
+#include <span>
+
 using namespace ClassUtils;
 using namespace il2cpp_utils;
 
 // field_get_value, field_set_value
-std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass* klass) {
+std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass const* klass) {
     std::vector<FieldInfo*> ret;
     // only a single pointer since fields are stored as values
     FieldInfo* iter = nullptr; // needs to be explicitly set to nullptr
@@ -16,7 +18,7 @@ std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass* klass) {
     return ret;
 }
 
-std::vector<const MethodInfo*> ClassUtils::GetPropMethods(PropertyInfo* prop) {
+std::vector<const MethodInfo*> ClassUtils::GetPropMethods(PropertyInfo const* prop) {
     std::vector<const MethodInfo*> ret{};
     if(auto m = il2cpp_functions::property_get_get_method(prop))
         ret.push_back(m);
@@ -25,7 +27,7 @@ std::vector<const MethodInfo*> ClassUtils::GetPropMethods(PropertyInfo* prop) {
     return ret;
 }
 
-std::vector<PropertyInfo*> ClassUtils::GetProperties(Il2CppClass* klass) {
+std::vector<PropertyInfo*> ClassUtils::GetProperties(Il2CppClass const* klass) {
     std::vector<PropertyInfo*> ret;
     // only a single pointer since properties are stored as values
     PropertyInfo* iter = nullptr;
@@ -36,7 +38,7 @@ std::vector<PropertyInfo*> ClassUtils::GetProperties(Il2CppClass* klass) {
     return ret;
 }
 
-std::vector<MethodInfo*> ClassUtils::GetMethods(Il2CppClass* klass) {
+std::vector<MethodInfo*> ClassUtils::GetMethods(Il2CppClass const* klass) {
     std::vector<MethodInfo*> ret;
     // double pointer because methods are stored as pointers
     MethodInfo** iter = nullptr;
@@ -47,7 +49,7 @@ std::vector<MethodInfo*> ClassUtils::GetMethods(Il2CppClass* klass) {
     return ret;
 }
 
-std::vector<Il2CppClass*> ClassUtils::GetInterfaces(Il2CppClass* klass) {
+std::vector<Il2CppClass*> ClassUtils::GetInterfaces(Il2CppClass const* klass) {
     std::vector<Il2CppClass*> ret;
     // double pointer because classes are stored as pointers
     Il2CppClass** iter = nullptr;
@@ -61,19 +63,20 @@ std::vector<Il2CppClass*> ClassUtils::GetInterfaces(Il2CppClass* klass) {
 // TODO: genericcontext->genericinst->argv = generic type array (argc count)
 // requires generally switching to type instead of class, which should be done anyway
 
-Il2CppClass* ClassUtils::GetParent(Il2CppClass* klass) {
+Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
     return il2cpp_functions::class_get_parent(klass);
 }
 
-ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppType* type) {
+ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass)
+{
     ProtoTypeInfo info;
-    auto* klass = il2cpp_functions::class_from_il2cpp_type(type);
 
-    if(!typeIsValuetype(type))
-        *info.mutable_classinfo() = GetClassInfo(type);
+    if (!klassIsValuetype(klass))
+        *info.mutable_classinfo() = GetClassInfo(klass);
     else {
         // TODO: might want to expand the primitive types specified
-        switch(type->type) {
+        switch (il2cpp_utils::ExtractType(klass)->type)
+        {
         case IL2CPP_TYPE_BOOLEAN:
             info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
             break;
@@ -97,16 +100,15 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppType* type) {
             break;
         
         default:
-            *info.mutable_structinfo() = GetStructInfo(type);
+            *info.mutable_structinfo() = GetStructInfo(klass);
             break;
         }
     }
     return info;
 }
 
-ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppType* classType) {
+ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppClass* klass) {
     ProtoClassInfo classInfo;
-    auto* klass = il2cpp_functions::class_from_il2cpp_type(classType);
 
     classInfo.set_namespaze(il2cpp_functions::class_get_namespace(klass));
     classInfo.set_clazz(il2cpp_functions::class_get_name(klass));
@@ -114,11 +116,16 @@ ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppType* classType) {
     return classInfo;
 }
 
-ProtoStructInfo ClassUtils::GetStructInfo(const Il2CppType* structType) {
-    ProtoStructInfo structInfo;
-    auto* klass = il2cpp_functions::class_from_il2cpp_type(structType);
 
-    *structInfo.mutable_clazz() = GetClassInfo(structType);
+std::span<ParameterInfo const> ClassUtils::GetMethodParameters(MethodInfo const *method){
+    return std::span(method->parameters, method->parameters + method->parameters_count);
+}
+
+ProtoStructInfo ClassUtils::GetStructInfo(const Il2CppClass const* klass)
+{
+    ProtoStructInfo structInfo;
+
+    *structInfo.mutable_clazz() = GetClassInfo(klass);
     for(auto& field : GetFields(klass)) {
         structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(field->type)});
     }
