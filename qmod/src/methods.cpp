@@ -199,7 +199,7 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
 }
 
 ProtoTypeInfo Method::ReturnTypeInfo() const {
-    return ClassUtils::GetTypeInfo(returnType);
+    return ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(returnType)));
 }
 
 ProtoFieldInfo Method::GetFieldInfo(uint64_t id) const {
@@ -213,10 +213,8 @@ ProtoFieldInfo Method::GetFieldInfo(uint64_t id) const {
 ProtoPropertyInfo Method::GetPropertyInfo(uint64_t id, bool get, bool set) const {
     ProtoPropertyInfo info;
     info.set_name(name);
-    info.set_hasget(get);
-    info.set_getid(id);
-    info.set_hasset(set);
-    info.set_setid(get ? id + 1 : id);
+    info.set_getterid(id);
+    info.set_setterid(get ? id + 1 : id);
     *info.mutable_type() = ReturnTypeInfo();
     return info;
 }
@@ -226,7 +224,7 @@ ProtoMethodInfo Method::GetMethodInfo(uint64_t id) const {
     info.set_name(name);
     info.set_id(id);
     for(int i = 0; i < paramNames.size(); i++) {
-        info.mutable_args()->insert({paramNames[i], ClassUtils::GetTypeInfo(paramTypes[i])});
+        info.mutable_args()->insert({paramNames[i], ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType *> (paramTypes[i])))});
     }
     *info.mutable_returntype() = ReturnTypeInfo();
     return info;

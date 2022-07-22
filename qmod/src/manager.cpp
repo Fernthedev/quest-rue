@@ -353,6 +353,11 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
         return;
     }
 
+    // DAMN IT I DID ALL THIS WORK WITHOUT REALIZING METALIT
+    // ALREADY DID ALL THE HARD WORK IN METHODS.CPP AND CLASSUTILS.CPP
+    // someone else can rewrite this
+    // - Fern
+
     auto parseClazz = clazz;
     auto parzeClassProto = result->mutable_classdetails();
 
@@ -379,9 +384,9 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
 
             auto& params = *methodProto->mutable_args();
             for (auto const &p : ClassUtils::GetMethodParameters(m)) {
-                params[p.name] = ClassUtils::GetTypeInfo(p.parameter_type);
+                params[p.name] = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(p.parameter_type)));
             }
-            *methodProto->mutable_returntype() = ClassUtils::GetTypeInfo(m->return_type);
+            *methodProto->mutable_returntype() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(m->return_type)));
         }
 
         for (auto f : fields) {
@@ -403,7 +408,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
             auto ptr = p->set ?: p->get;
             
             // TODO: BACKING FIELD
-            *pProto->mutable_type() = ClassUtils::GetTypeInfo(ptr->return_type);
+            *pProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType *>(ptr->return_type)));
         }
 
 

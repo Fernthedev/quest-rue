@@ -17,9 +17,9 @@ namespace ClassUtils
 
     Il2CppClass *GetParent(Il2CppClass const*klass);
 
-    ProtoTypeInfo GetTypeInfo(const Il2CppClass const*type);
-    ProtoClassInfo GetClassInfo(const Il2CppClass const*classType);
-    ProtoStructInfo GetStructInfo(const Il2CppClass const*structType);
+    ProtoTypeInfo GetTypeInfo(Il2CppClass const*type);
+    ProtoClassInfo GetClassInfo(Il2CppClass const*classType);
+    ProtoStructInfo GetStructInfo(Il2CppClass const*structType);
 }
 
 #define classofinst(instance) il2cpp_functions::object_get_class(instance)
