@@ -16,6 +16,7 @@
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
 #include "custom-types/shared/register.hpp"
+#include "custom-types/shared/delegate.hpp"
 
 #include <filesystem>
 
@@ -76,7 +77,7 @@ extern "C" void load()
         )
     };
 
-    auto delegate = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_2<::UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode> *>(onSceneChanged);
+    auto delegate = custom_types::MakeDelegate<UnityEngine::Events::UnityAction_2<::UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode> *>(onSceneChanged);
 
     UnityEngine::SceneManagement::SceneManager::add_sceneLoaded(delegate);
 }
