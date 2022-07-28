@@ -13,8 +13,7 @@ std::thread::id mainThreadId;
 static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
 
-void scheduleFunction(std::function<void()> const &func)
-{
+void scheduleFunction(std::function<void()> const &func) {
     if (mainThreadId == std::this_thread::get_id())
         func();
 
@@ -23,16 +22,14 @@ void scheduleFunction(std::function<void()> const &func)
 }
 
 void MainThreadRunner::Update() {
-    if (!scheduledFunctions.empty())
-    {
-        LOG_INFO("Running scheduled function on main thread");
+    if (!scheduledFunctions.empty()) {
+        LOG_INFO("Running scheduled functions on main thread");
         std::unique_lock<std::mutex> lock(scheduleLock);
         std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
         scheduledFunctions.clear();
         lock.unlock();
 
-        for (auto const &function : functions)
-        {
+        for (auto const &function : functions) {
             function();
         }
     }

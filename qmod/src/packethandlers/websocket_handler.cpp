@@ -46,7 +46,7 @@ void WebSocketHandler::listen(const int port) {
 }
 
 void WebSocketHandler::stop() {
-    if(!serverSocket){
+    if(!serverSocket) {
         connections.clear();
         return;
     }

@@ -32,7 +32,6 @@ class Manager {
     // todo
     std::vector<SafePtr<Il2CppObject>> storedResults;
 
-
     public:
     void Init();
 

@@ -22,14 +22,12 @@
 
 static ModInfo modInfo{MOD_ID, VERSION};
 
-// MainThreadRunner.cpp
-extern std::thread::id mainThreadId;
+using namespace UnityEngine;
 
 Logger& getLogger() {
-    static Logger* logger = new Logger(ModInfo{"QuestEditor", "1.0.0"}, new LoggerOptions(false, true));
+    static Logger* logger = new Logger(modInfo, new LoggerOptions(false, true));
     return *logger;
 }
-
 
 std::string_view GetDataPath() {
     static std::string s(getDataDir(modInfo));
@@ -47,11 +45,11 @@ extern "C" void setup(ModInfo& info) {
     auto dataPath = GetDataPath();
     if (!direxists(dataPath))
         mkpath(dataPath);
+    
     LOG_INFO("Completed setup!");
 }
 
-extern "C" void load()
-{
+extern "C" void load() {
     LOG_INFO("Installing hooks...");
     il2cpp_functions::Init();
 
@@ -62,8 +60,7 @@ extern "C" void load()
     LOG_INFO("Initializing connection manager");
     Manager::GetInstance()->Init();
 
-    std::function<void(UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode)> onSceneChanged = [](UnityEngine::SceneManagement::Scene scene, ::UnityEngine::SceneManagement::LoadSceneMode)
-    {
+    auto onSceneChanged = *[](SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
         static bool loaded;
         if (!scene.IsValid() || loaded)
             return;
@@ -73,11 +70,11 @@ extern "C" void load()
         IL2CPP_CATCH_HANDLER(
             auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
             UnityEngine::Object::DontDestroyOnLoad(go);
-            go->AddComponent<QRUE::MainThreadRunner *>();
+            go->AddComponent<QRUE::MainThreadRunner*>();
         )
     };
 
-    auto delegate = custom_types::MakeDelegate<UnityEngine::Events::UnityAction_2<::UnityEngine::SceneManagement::Scene, ::UnityEngine::SceneManagement::LoadSceneMode> *>(onSceneChanged);
+    auto delegate = il2cpp_utils::MakeDelegate<Events::UnityAction_2<SceneManagement::Scene, SceneManagement::LoadSceneMode>*>(nullptr, onSceneChanged);
 
-    UnityEngine::SceneManagement::SceneManager::add_sceneLoaded(delegate);
+    SceneManagement::SceneManager::add_sceneLoaded(delegate);
 }

@@ -33,6 +33,7 @@ template<class T>
 inline std::string ByteString(const T& bytes) {
     return {(char*) &bytes, sizeof(T)};
 }
+
 #define PtrI(p) reinterpret_cast<uint64_t>(p)
 
 Manager* Manager::GetInstance() {
@@ -47,61 +48,6 @@ void Manager::Init() {
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 }
-/*
-#pragma region sending
-void Manager::setAndSendObject(Il2CppObject* obj, uint64_t id) {
-    if(!handler->hasConnection()) return;
-    if(!obj) return;
-
-    object = obj;
-    methods.clear();
-
-    auto* klass = classofinst(object);
-
-    if(cachedClasses.contains(klass)) {
-        LOG_INFO("Sending cached class");
-        handler->sendPacket(cachedClasses.at(klass));
-        return;
-    }
-
-    LOG_INFO("Adding class to cache");
-    PacketWrapper& packet = cachedClasses.insert({klass, {}}).first->second;
-    LoadObjectResult& result = *packet.mutable_loadobjectresult();
-    packet.set_queryresultid(id);
-    TypeDetailsMsg* packetObject = result.mutable_object();
-    
-    while(klass) {
-        *packetObject->mutable_clazz() = GetClassInfo(il2cpp_functions::class_get_type(klass));
-
-        for(auto const& iKlass : GetInterfaces(klass))
-            *packetObject->add_interfaces() = GetClassInfo(il2cpp_functions::class_get_type(iKlass));
-
-        for(auto const& fieldInfo : GetFields(klass)) {
-            methods.emplace_back(Method(object, fieldInfo, false));
-            methods.emplace_back(Method(object, fieldInfo, true));
-
-            auto const& fakeMethodSet = methods.back();
-            *packetObject->add_fields() = fakeMethodSet.GetFieldInfo(methods.size() - 2);
-        }
-
-        // all property get/set methods are contained in the methods
-        // TODO: get the properties and match them to their methods somehow
-        for(auto const& methodInfo : GetMethods(klass)) {
-            methods.emplace_back(Method(object, methodInfo));
-
-            auto const& method = methods.back();
-            *packetObject->add_methods() = method.GetMethodInfo(methods.size() - 1);
-        }
-
-        klass = GetParent(klass);
-        if(klass)
-            packetObject = packetObject->mutable_parent();
-    }
-
-    handler->sendPacket(packet);
-    LOG_INFO("Object set");
-}
-#pragma endregion*/
 
 #pragma region parsing
 void Manager::processMessage(const PacketWrapper& packet) {
@@ -133,14 +79,13 @@ void Manager::processMessage(const PacketWrapper& packet) {
     case PacketWrapper::kReadInstanceDetails:
         readInstanceDetails(packet.readinstancedetails(), id);
         break;
-
-    default: LOG_INFO("Invalid packet type! {}", packet.Packet_case());
+    default:
+        LOG_INFO("Invalid packet type! {}", packet.Packet_case());
     }
     // });
 }
 
-void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
-{
+void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     int methodIdx = packet.methodid();
 
     if(methodIdx >= methods.size() || methodIdx < 0) {
@@ -154,8 +99,7 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
     }
     
     auto method = methods[methodIdx];
-    scheduleFunction([this, packet, methodIdx, queryId]
-                     {
+    scheduleFunction([this, packet, methodIdx, queryId] {
         // TODO: type checking?
         int argNum = packet.args_size();
         void* args[argNum];
@@ -183,7 +127,8 @@ void Manager::invokeMethod(const InvokeMethod &packet, uint64_t queryId)
         ProtoDataPayload& data = *result.mutable_result();
         *data.mutable_typeinfo() = methods[methodIdx].ReturnTypeInfo();
         data.set_data(res.GetAsString());
-        handler->sendPacket(wrapper); });
+        handler->sendPacket(wrapper);
+    });
 }
 
 ProtoScene ReadScene(Scene obj) {
@@ -218,8 +163,7 @@ ProtoGameObject ReadGameObject(GameObject* obj) {
     return protoObj;
 }
 
-void Manager::searchObjects(const SearchObjects &packet, uint64_t id)
-{
+void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
     PacketWrapper wrapper;
     SearchObjectsResult& result = *wrapper.mutable_searchobjectsresult();
     wrapper.set_queryresultid(id);
@@ -265,27 +209,24 @@ void Manager::searchObjects(const SearchObjects &packet, uint64_t id)
     handler->sendPacket(wrapper);
 }
 
-void Manager::getAllGameObjects(const GetAllGameObjects &packet, uint64_t id)
-{
+void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
     PacketWrapper wrapper;
     GetAllGameObjectsResult& result = *wrapper.mutable_getallgameobjectsresult();
     wrapper.set_queryresultid(id);
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
     result.mutable_objects()->Reserve(objects.Length());
-    for (const auto &obj : objects) { 
+    for (const auto& obj : objects) { 
         *result.add_objects() = ReadGameObject(obj);
     }
     handler->sendPacket(wrapper);
 }
 
-void Manager::getGameObjectComponents(const GetGameObjectComponents &packet, uint64_t id)
-{
+void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uint64_t id) {
     PacketWrapper wrapper;
-    GetGameObjectComponentsResult &result = *wrapper.mutable_getgameobjectcomponentsresult();
+    GetGameObjectComponentsResult& result = *wrapper.mutable_getgameobjectcomponentsresult();
     wrapper.set_queryresultid(id);
 
-
-    for (auto const comp : reinterpret_cast<GameObject*>(packet.address())->GetComponents<Component*>()) {
+    for (const auto comp : reinterpret_cast<GameObject*>(packet.address())->GetComponents<Component*>()) {
         ProtoComponent& found = *result.add_components();
 
         found.set_address(PtrI(comp));
@@ -296,11 +237,10 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents &packet, uin
     handler->sendPacket(wrapper);
 }
 
-void Manager::readMemory(const ReadMemory &packet, uint64_t id)
-{
+void Manager::readMemory(const ReadMemory& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
-    ReadMemoryResult &result = *wrapper.mutable_readmemoryresult();
+    ReadMemoryResult& result = *wrapper.mutable_readmemoryresult();
     result.set_address(packet.address());
     auto src = reinterpret_cast<void*>(packet.address());
     auto size = packet.size();
@@ -314,11 +254,10 @@ void Manager::readMemory(const ReadMemory &packet, uint64_t id)
     handler->sendPacket(wrapper);
 }
 
-void Manager::writeMemory(const WriteMemory &packet, uint64_t id)
-{
+void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
-    WriteMemoryResult &result = *wrapper.mutable_writememoryresult();
+    WriteMemoryResult& result = *wrapper.mutable_writememoryresult();
     result.set_address(packet.address());
     auto dst = reinterpret_cast<void*>(packet.address());
     auto src = packet.data().data();
@@ -335,8 +274,7 @@ void Manager::writeMemory(const WriteMemory &packet, uint64_t id)
 }
 
 
-void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
-{
+void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     using namespace Sombrero;
 
     PacketWrapper wrapper;
@@ -344,7 +282,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
 
     auto result = wrapper.mutable_getclassdetailsresult();
 
-    auto const &classInfo = packet.classinfo();
+    const auto& classInfo = packet.classinfo();
     auto clazz = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
 
     if (!clazz) {
@@ -363,8 +301,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
 
     // Use a while loop instead of recursive 
     // method to improve stack allocations
-    while (parseClazz != nullptr)
-    {
+    while (parseClazz != nullptr) {
         *parzeClassProto->mutable_clazz() = ClassUtils::GetClassInfo(parseClazz);
         auto fields = ClassUtils::GetFields(parseClazz);
         auto props = ClassUtils::GetProperties(parseClazz);
@@ -376,14 +313,13 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
             *parzeClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
         }
 
-        for (auto const &m : methods)
-        {
+        for (const auto& m : methods) {
             auto methodProto = parzeClassProto->add_methods();
             methodProto->set_name(m->name);
             methodProto->set_id(PtrI(m));
 
             auto& params = *methodProto->mutable_args();
-            for (auto const &p : ClassUtils::GetMethodParameters(m)) {
+            for (const auto& p : ClassUtils::GetMethodParameters(m)) {
                 params[p.name] = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(p.parameter_type)));
             }
             *methodProto->mutable_returntype() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(m->return_type)));
@@ -408,9 +344,8 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
             auto ptr = p->set ?: p->get;
             
             // TODO: BACKING FIELD
-            *pProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType *>(ptr->return_type)));
+            *pProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(ptr->return_type)));
         }
-
 
         parseClazz = ClassUtils::GetParent(parseClazz);
         if (parseClazz)
@@ -420,7 +355,7 @@ void Manager::getClassDetails(const GetClassDetails &packet, uint64_t id)
     handler->sendPacket(wrapper);
 }
 
-void Manager::readInstanceDetails(const ReadInstanceDetails &packet, uint64_t id) {
+void Manager::readInstanceDetails(const ReadInstanceDetails& packet, uint64_t id) {
 
 }
 

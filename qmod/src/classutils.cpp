@@ -67,16 +67,14 @@ Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
     return il2cpp_functions::class_get_parent(const_cast<Il2CppClass *>(klass));
 }
 
-ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass)
-{
+ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
     ProtoTypeInfo info;
 
     if (!klassIsValuetype(klass))
         *info.mutable_classinfo() = GetClassInfo(klass);
     else {
         // TODO: might want to expand the primitive types specified
-        switch (il2cpp_utils::ExtractType(const_cast<Il2CppClass*>(klass))->type)
-        {
+        switch (klass->byval_arg.type) {
         case IL2CPP_TYPE_BOOLEAN:
             info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
             break;
@@ -117,17 +115,16 @@ ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppClass* klass) {
 }
 
 
-std::span<ParameterInfo const> ClassUtils::GetMethodParameters(MethodInfo const *method){
+std::span<ParameterInfo const> ClassUtils::GetMethodParameters(MethodInfo const *method) {
     return std::span(method->parameters, method->parameters + method->parameters_count);
 }
 
-ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass)
-{
+ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass) {
     ProtoStructInfo structInfo;
 
     *structInfo.mutable_clazz() = GetClassInfo(klass);
     for(auto& field : GetFields(klass)) {
-        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType *> (field->type)))});
+        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(il2cpp_functions::class_from_il2cpp_type(field->type))});
     }
     return structInfo;
 }

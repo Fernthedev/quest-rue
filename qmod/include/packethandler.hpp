@@ -19,5 +19,4 @@ class PacketHandler {
 
     protected:
         ReceivePacketFunc onReceivePacket = nullptr;
-
 };
