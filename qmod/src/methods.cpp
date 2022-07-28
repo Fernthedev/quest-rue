@@ -110,44 +110,21 @@ size_t fieldTypeSize(const Il2CppType* type) {
     }
 }
 
-Method::Method(Il2CppObject* obj, MethodInfo* m) {
-    object = obj;
-    method = m;
-    for(int i = 0; i < method->parameters_count; i++) {
-        auto param = method->parameters[i];
-        paramTypes.emplace_back(param.parameter_type);
-        paramNames.emplace_back(param.name);
-    }
-    returnType = method->return_type;
-    name = method->name;
-}
-
-// treat fields like properties w/ get/set methods
-Method::Method(Il2CppObject* obj, FieldInfo* f, bool s) {
-    object = obj;
-    field = f;
-    set = s;
-    auto type = field->type;
-    paramTypes.emplace_back(type);
-    paramNames.emplace_back(field->name);
-    returnType = type;//set ? IL2CPP_TYPE_VOID : type;
-    name = field->name;
-}
-
 // array of arguments:
 // pointers to whatever data is stored, whether it be value or reference
 // so int*, Vector3*, Il2CppObject**
 // alternatively can send single pointers to everything with derefReferences set to false
 // in which case the handling of value / reference types needs to be done before the call
 // so int*, Vector3*, Il2CppObject*
-RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) const {
-    if(method) {
-        LOG_INFO("Running method {}", name);
+
+namespace MethodUtils {
+    RetWrapper Run(MethodInfo* method, Il2CppObject* object, void** args, std::string& error, bool derefReferences) {
+        LOG_INFO("Running method {}", method->name);
 
         // deref reference types when running a method as it expects direct pointers to them
         if(derefReferences) {
-            for(int i = 0; i < paramTypes.size(); i++) {
-                if(!typeIsValuetype(paramTypes[i]))
+            for(int i = 0; i < method->parameters_count; i++) {
+                if(!typeIsValuetype(method->parameters[i].parameter_type))
                     args[i] = *(void**) args[i];
             }
         }
@@ -156,76 +133,84 @@ RetWrapper Method::Run(void** args, std::string& error, bool derefReferences) co
         auto ret = il2cpp_functions::runtime_invoke(method, object, args, &ex);
         
         if(ex) {
-            LOG_INFO("{}: Failed with exception: {}", name, il2cpp_utils::ExceptionToString(ex));
+            LOG_INFO("{}: Failed with exception: {}", method->name, il2cpp_utils::ExceptionToString(ex));
             error = il2cpp_utils::ExceptionToString(ex);
+            return {};
+        }
+        if(method->return_type->type == IL2CPP_TYPE_VOID) {
+            LOG_INFO("void return");
             return {};
         }
 
         LOG_INFO("Returning");
-        size_t size = fieldTypeSize(returnType);
+        size_t size = fieldTypeSize(method->return_type);
         void* ownedRet = malloc(size);
         // ret is a boxed value type, so a pointer to the data with a bit of metatada or something
         // so we unbox it to get the raw pointer to the data, and copy that data so it is the value we return
-        if(ret && typeIsValuetype(returnType)) {
+        if(ret && typeIsValuetype(method->return_type)) {
             memcpy(ownedRet, il2cpp_functions::object_unbox(ret), size);
             il2cpp_functions::GC_free(ret);
         // ret is a pointer to a reference type, so we want to have that pointer as the value we return
         } else
             memcpy(ownedRet, &ret, size);
         return RetWrapper(ownedRet, size);
-    } else if(field) {
-        if(set) {
-            LOG_INFO("Setting field {}", name);
-            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType));
+    }
 
-            // deref reference types here as well since it expects the same as if it were running a method
-            if(typeIsValuetype(returnType) || !derefReferences)
-                il2cpp_functions::field_set_value(object, field, *args);
-            else
-                il2cpp_functions::field_set_value(object, field, *(void**) *args);
-            return {};
-        } else {
-            LOG_INFO("Getting field {}", name);
-            LOG_INFO("Field type: {} = {}", returnType->type, typeName(returnType));
-
-            // in the case of either a value type or not, the value we want will be copied to what we return
-            size_t size = fieldTypeSize(returnType);
-            void* ret = malloc(size);
-            il2cpp_functions::field_get_value(object, field, ret);
-            return RetWrapper(ret, size);
+    ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property) {
+        ProtoPropertyInfo info;
+        info.set_name(property->name);
+        if (auto getter = property->get) {
+            info.set_getterid(asInt(getter));
+            *info.mutable_type() = ClassUtils::GetTypeInfo(getter->return_type);
         }
+        if (auto setter = property->set) {
+            info.set_setterid(asInt(setter));
+            *info.mutable_type() = ClassUtils::GetTypeInfo(setter->parameters->parameter_type);
+        }
+        return info;
     }
-    return nullptr;
-}
 
-ProtoTypeInfo Method::ReturnTypeInfo() const {
-    return ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(returnType)));
-}
-
-ProtoFieldInfo Method::GetFieldInfo(uint64_t id) const {
-    ProtoFieldInfo info;
-    info.set_name(name);
-    info.set_id(id);
-    *info.mutable_type() = ReturnTypeInfo();
-    return info;
-}
-
-ProtoPropertyInfo Method::GetPropertyInfo(uint64_t id, bool get, bool set) const {
-    ProtoPropertyInfo info;
-    info.set_name(name);
-    info.set_getterid(id);
-    info.set_setterid(get ? id + 1 : id);
-    *info.mutable_type() = ReturnTypeInfo();
-    return info;
-}
-
-ProtoMethodInfo Method::GetMethodInfo(uint64_t id) const {
-    ProtoMethodInfo info;
-    info.set_name(name);
-    info.set_id(id);
-    for(int i = 0; i < paramNames.size(); i++) {
-        info.mutable_args()->insert({paramNames[i], ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType *> (paramTypes[i])))});
+    ProtoMethodInfo GetMethodInfo(MethodInfo* method) {
+        ProtoMethodInfo info;
+        info.set_name(method->name);
+        info.set_id(asInt(method));
+        for(int i = 0; i < method->parameters_count; i++) {
+            auto param = method->parameters[i];
+            info.mutable_args()->insert({param.name, ClassUtils::GetTypeInfo(param.parameter_type)});
+        }
+        *info.mutable_returntype() = ClassUtils::GetTypeInfo(method->return_type);
+        return info;
     }
-    *info.mutable_returntype() = ReturnTypeInfo();
-    return info;
+}
+
+namespace FieldUtils {
+    RetWrapper Get(FieldInfo* field, Il2CppObject* object, std::string& error) {
+        LOG_INFO("Getting field {}", field->name);
+        LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
+
+        // in the case of either a value type or not, the value we want will be copied to what we return
+        size_t size = fieldTypeSize(field->type);
+        void* ret = malloc(size);
+        il2cpp_functions::field_get_value(object, field, ret);
+        return RetWrapper(ret, size);
+    }
+
+    void Set(FieldInfo* field, Il2CppObject* object, void** args, std::string& error, bool derefReferences) {
+        LOG_INFO("Setting field {}", field->name);
+        LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
+
+        // deref reference types here as well since it expects the same as if it were running a method
+        if(typeIsValuetype(field->type) || !derefReferences)
+            il2cpp_functions::field_set_value(object, field, *args);
+        else
+            il2cpp_functions::field_set_value(object, field, *(void**) *args);
+    }
+
+    ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
+        ProtoFieldInfo info;
+        info.set_name(field->name);
+        info.set_id(asInt(field));
+        *info.mutable_type() = ClassUtils::GetTypeInfo(field->type);
+        return info;
+    }
 }

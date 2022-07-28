@@ -96,6 +96,9 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
         case IL2CPP_TYPE_STRING:
             info.set_primitiveinfo(ProtoTypeInfo::STRING);
             break;
+        case IL2CPP_TYPE_VOID:
+            info.set_primitiveinfo(ProtoTypeInfo::VOID);
+            break;
         
         default:
             *info.mutable_structinfo() = GetStructInfo(klass);
@@ -124,7 +127,7 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass) {
 
     *structInfo.mutable_clazz() = GetClassInfo(klass);
     for(auto& field : GetFields(klass)) {
-        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(il2cpp_functions::class_from_il2cpp_type(field->type))});
+        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(field->type)});
     }
     return structInfo;
 }

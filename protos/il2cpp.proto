@@ -17,7 +17,7 @@ message ProtoStructInfo {
 }
 
 message ProtoTypeInfo {
-    enum Primitive {
+    enum Primitive { // TODO: maybe add more primitives
         BOOLEAN = 0;
         CHAR = 1;
         INT = 2;
@@ -25,9 +25,8 @@ message ProtoTypeInfo {
         FLOAT = 4;
         DOUBLE = 5;
         STRING = 6;
-        LIST = 7;
-        ARRAY = 8;
-        UNKNOWN = 9;
+        VOID = 7;
+        UNKNOWN = 8;
     }
     oneof Info {
         Primitive primitiveInfo = 1;
@@ -37,6 +36,7 @@ message ProtoTypeInfo {
 }
 
 // Type Details
+// id = pointer address of info
 message ProtoFieldInfo {
     string name = 1;
     uint64 id = 2;

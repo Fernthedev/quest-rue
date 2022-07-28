@@ -21,27 +21,16 @@ struct RetWrapper {
     std::string GetAsString() const { return {(char*) val, valSize}; }
 };
 
-class Method {
-    private:
-    const Il2CppType* returnType;
-    std::vector<const Il2CppType*> paramTypes;
+namespace MethodUtils {
+    RetWrapper Run(MethodInfo* method, Il2CppObject* object, void** args, std::string& error, bool derefReferences = true);
 
-    std::string name;
-    std::vector<std::string> paramNames;
-    
-    Il2CppObject* object = nullptr;
-    MethodInfo* method = nullptr;
-    FieldInfo* field = nullptr;
-    bool set; // set or get for field
-
-    public:
-    Method(Il2CppObject* obj, MethodInfo* method);
-    Method(Il2CppObject* obj, FieldInfo* field, bool set);
-    RetWrapper Run(void** args, std::string& error, bool derefReferences = true) const;
-
-    ProtoTypeInfo ReturnTypeInfo() const;
-
-    ProtoFieldInfo GetFieldInfo(uint64_t id) const;
-    ProtoPropertyInfo GetPropertyInfo(uint64_t id, bool get, bool set) const;
-    ProtoMethodInfo GetMethodInfo(uint64_t id) const;
+    ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property);
+    ProtoMethodInfo GetMethodInfo(MethodInfo* method);
 };
+
+namespace FieldUtils {
+    RetWrapper Get(FieldInfo* field, Il2CppObject* object, std::string& error);
+    void Set(FieldInfo* field, Il2CppObject* object, void** args, std::string& error, bool derefReferences = true);
+
+    ProtoFieldInfo GetFieldInfo(FieldInfo* field);
+}

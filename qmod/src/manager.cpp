@@ -34,8 +34,6 @@ inline std::string ByteString(const T& bytes) {
     return {(char*) &bytes, sizeof(T)};
 }
 
-#define PtrI(p) reinterpret_cast<uint64_t>(p)
-
 Manager* Manager::GetInstance() {
     static Manager* Instance = new Manager();
     return Instance;
@@ -51,84 +49,73 @@ void Manager::Init() {
 
 #pragma region parsing
 void Manager::processMessage(const PacketWrapper& packet) {
-    // scheduleFunction([=, this]{
-    auto id = packet.queryresultid();
-    LOG_INFO("Packet is {}", packet.DebugString());
-    switch(packet.Packet_case()) {
-    case PacketWrapper::kInvokeMethod:
-        invokeMethod(packet.invokemethod(), id);
-        break;
-    case PacketWrapper::kSearchObjects:
-        searchObjects(packet.searchobjects(), id);
-        break;
-    case PacketWrapper::kGetAllGameObjects:
-        getAllGameObjects(packet.getallgameobjects(), id);
-        break;
-    case PacketWrapper::kGetGameObjectComponents:
-        getGameObjectComponents(packet.getgameobjectcomponents(), id);
-        break;
-    case PacketWrapper::kReadMemory:
-        readMemory(packet.readmemory(), id);
-        break;
-    case PacketWrapper::kWriteMemory:
-        writeMemory(packet.writememory(), id);
-        break;
-    case PacketWrapper::kGetClassDetails:
-        getClassDetails(packet.getclassdetails(), id);
-        break;
-    case PacketWrapper::kReadInstanceDetails:
-        readInstanceDetails(packet.readinstancedetails(), id);
-        break;
-    default:
-        LOG_INFO("Invalid packet type! {}", packet.Packet_case());
-    }
-    // });
+    scheduleFunction([this, packet]{
+        auto id = packet.queryresultid();
+        LOG_INFO("Packet is {}", packet.DebugString());
+
+        switch(packet.Packet_case()) {
+        case PacketWrapper::kInvokeMethod:
+            invokeMethod(packet.invokemethod(), id);
+            break;
+        case PacketWrapper::kSearchObjects:
+            searchObjects(packet.searchobjects(), id);
+            break;
+        case PacketWrapper::kGetAllGameObjects:
+            getAllGameObjects(packet.getallgameobjects(), id);
+            break;
+        case PacketWrapper::kGetGameObjectComponents:
+            getGameObjectComponents(packet.getgameobjectcomponents(), id);
+            break;
+        case PacketWrapper::kReadMemory:
+            readMemory(packet.readmemory(), id);
+            break;
+        case PacketWrapper::kWriteMemory:
+            writeMemory(packet.writememory(), id);
+            break;
+        case PacketWrapper::kGetClassDetails:
+            getClassDetails(packet.getclassdetails(), id);
+            break;
+        case PacketWrapper::kReadInstanceDetails:
+            readInstanceDetails(packet.readinstancedetails(), id);
+            break;
+        default:
+            LOG_INFO("Invalid packet type! {}", packet.Packet_case());
+        }
+    });
 }
 
 void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
-    int methodIdx = packet.methodid();
+    auto method = asPtr(MethodInfo, packet.methodid());
+    auto object = asPtr(Il2CppObject, packet.objectaddress());
+    
+    // TODO: type checking?
+    int argNum = packet.args_size();
+    void* args[argNum];
+    for(int i = 0; i < argNum; i++) {
+        // for protobuf here, the string is effectively a pointer to the bytes
+        args[i] = ReinterpretBytes<void*>(packet.args(i).data());
+    }
+    
+    std::string err = "";
+    auto res = MethodUtils::Run(method, object, args, err);
 
-    if(methodIdx >= methods.size() || methodIdx < 0) {
-        PacketWrapper wrapper;
-        wrapper.set_queryresultid(queryId);
-        InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-        result.set_methodid(methodIdx);
-        result.set_status(InvokeMethodResult::NOT_FOUND);
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+    InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
+    result.set_methodid(asInt(method));
+
+    if(!err.empty()) {
+        result.set_status(InvokeMethodResult::ERR);
+        result.set_error(err);
         handler->sendPacket(wrapper);
         return;
     }
-    
-    auto method = methods[methodIdx];
-    scheduleFunction([this, packet, methodIdx, queryId] {
-        // TODO: type checking?
-        int argNum = packet.args_size();
-        void* args[argNum];
-        for(int i = 0; i < argNum; i++) {
-            // for protobuf here, the string is effectively a pointer to the bytes
-            args[i] = ReinterpretBytes<void*>(packet.args(i).data());
-        }
-        
-        std::string err = "";
-        auto res = methods[methodIdx].Run(args, err);
 
-        PacketWrapper wrapper;
-        wrapper.set_queryresultid(queryId);
-        InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-        result.set_methodid(methodIdx);
-
-        if(!err.empty()) {
-            result.set_status(InvokeMethodResult::ERR);
-            result.set_error(err);
-            handler->sendPacket(wrapper);
-            return;
-        }
-
-        result.set_status(InvokeMethodResult::OK);
-        ProtoDataPayload& data = *result.mutable_result();
-        *data.mutable_typeinfo() = methods[methodIdx].ReturnTypeInfo();
-        data.set_data(res.GetAsString());
-        handler->sendPacket(wrapper);
-    });
+    result.set_status(InvokeMethodResult::OK);
+    ProtoDataPayload& data = *result.mutable_result();
+    *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(method->return_type);
+    data.set_data(res.GetAsString());
+    handler->sendPacket(wrapper);
 }
 
 ProtoScene ReadScene(Scene obj) {
@@ -141,17 +128,17 @@ ProtoScene ReadScene(Scene obj) {
 
 ProtoTransform ReadTransform(Transform* obj) {
     ProtoTransform protoObj;
-    protoObj.set_address(PtrI(obj));
+    protoObj.set_address(asInt(obj));
     protoObj.set_name(obj->get_name());
 
     protoObj.set_childcount(obj->get_childCount());
-    protoObj.set_parent(PtrI(obj->GetParent()));
+    protoObj.set_parent(asInt(obj->GetParent()));
     return protoObj;
 }
 
 ProtoGameObject ReadGameObject(GameObject* obj) {
     ProtoGameObject protoObj;
-    protoObj.set_address(PtrI(obj));
+    protoObj.set_address(asInt(obj));
     protoObj.set_name(obj->get_name());
 
     protoObj.set_active(obj->get_active());
@@ -201,7 +188,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
         ProtoObject& found = *result.add_objects();
         if(!searchName)
             name = obj->get_name().operator std::string();
-        found.set_address(PtrI(obj));
+        found.set_address(asInt(obj));
         found.set_name(name);
         *found.mutable_classinfo() = GetClassInfo(classofinst(obj));
     }
@@ -229,7 +216,7 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
     for (const auto comp : reinterpret_cast<GameObject*>(packet.address())->GetComponents<Component*>()) {
         ProtoComponent& found = *result.add_components();
 
-        found.set_address(PtrI(comp));
+        found.set_address(asInt(comp));
         found.set_name(comp->get_name());
         *found.mutable_classinfo() = GetClassInfo(classofinst(comp));
     }
@@ -286,70 +273,34 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     auto clazz = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
 
     if (!clazz) {
-        LOG_INFO("COULD NOT FIND CLASS {}::{}", classInfo.namespaze(), classInfo.clazz());
+        LOG_INFO("Could not find class {}::{}", classInfo.namespaze(), classInfo.clazz());
         handler->sendPacket(wrapper);
         return;
     }
 
-    // DAMN IT I DID ALL THIS WORK WITHOUT REALIZING METALIT
-    // ALREADY DID ALL THE HARD WORK IN METHODS.CPP AND CLASSUTILS.CPP
-    // someone else can rewrite this
-    // - Fern
+    auto currentClass = clazz;
+    auto currentClassProto = result->mutable_classdetails();
 
-    auto parseClazz = clazz;
-    auto parzeClassProto = result->mutable_classdetails();
-
-    // Use a while loop instead of recursive 
+    // Use a while loop instead of recursive
     // method to improve stack allocations
-    while (parseClazz != nullptr) {
-        *parzeClassProto->mutable_clazz() = ClassUtils::GetClassInfo(parseClazz);
-        auto fields = ClassUtils::GetFields(parseClazz);
-        auto props = ClassUtils::GetProperties(parseClazz);
-        auto interfaces = ClassUtils::GetInterfaces(parseClazz);
+    while (currentClass != nullptr) {
+        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(currentClass);
 
-        auto methods = ClassUtils::GetMethods(parseClazz);
+        for (auto i : ClassUtils::GetInterfaces(currentClass))
+            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
 
-        for (auto i : interfaces) {
-            *parzeClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
-        }
+        for (const auto& m : ClassUtils::GetMethods(currentClass))
+            *currentClassProto->add_methods() = MethodUtils::GetMethodInfo(m);
 
-        for (const auto& m : methods) {
-            auto methodProto = parzeClassProto->add_methods();
-            methodProto->set_name(m->name);
-            methodProto->set_id(PtrI(m));
+        for (auto p : ClassUtils::GetProperties(currentClass))
+            *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
 
-            auto& params = *methodProto->mutable_args();
-            for (const auto& p : ClassUtils::GetMethodParameters(m)) {
-                params[p.name] = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(p.parameter_type)));
-            }
-            *methodProto->mutable_returntype() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(m->return_type)));
-        }
+        for (auto f : ClassUtils::GetFields(currentClass))
+            *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
 
-        for (auto f : fields) {
-            auto fProto = parzeClassProto->add_fields();
-            fProto->set_name(f->name);
-            fProto->set_id(PtrI(f));
-            *fProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::GetFieldClass(f));
-        }
-
-        for (auto p : props) {
-            auto pProto = parzeClassProto->add_properties();
-            pProto->set_name(p->name);
-            if (p->get)
-                pProto->set_getterid(PtrI(p->get));
-            
-            if (p->set)
-                pProto->set_setterid(PtrI(p->set));
-
-            auto ptr = p->set ?: p->get;
-            
-            // TODO: BACKING FIELD
-            *pProto->mutable_type() = ClassUtils::GetTypeInfo(il2cpp_utils::ExtractClass(const_cast<Il2CppType*>(ptr->return_type)));
-        }
-
-        parseClazz = ClassUtils::GetParent(parseClazz);
-        if (parseClazz)
-            parzeClassProto = parzeClassProto->mutable_parent();
+        currentClass = ClassUtils::GetParent(currentClass);
+        if (currentClass)
+            currentClassProto = currentClassProto->mutable_parent();
     }
 
     handler->sendPacket(wrapper);

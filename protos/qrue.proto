@@ -10,19 +10,19 @@ import "unity.proto";
 
 message InvokeMethod {
     uint64 methodId = 1;
-    repeated ProtoDataPayload args = 2;
+    uint64 objectAddress = 2;
+    repeated ProtoDataPayload args = 3;
 }
 
 message InvokeMethodResult {
     enum Status {
         ERR = 0;
         OK = 1;
-        NOT_FOUND = 2;
     }
     Status status = 1;
     uint64 methodId = 2;
-    ProtoDataPayload result = 4;
-    string error = 5; /* nullable */
+    ProtoDataPayload result = 3;
+    string error = 4; /* nullable */
 }
 
 message SearchObjects {

@@ -16,6 +16,9 @@ namespace ClassUtils {
     Il2CppClass* GetParent(Il2CppClass const* klass);
 
     ProtoTypeInfo GetTypeInfo(Il2CppClass const* type);
+    inline ProtoTypeInfo GetTypeInfo(Il2CppType const* type) {
+        return GetTypeInfo(il2cpp_functions::class_from_il2cpp_type(type));
+    }
     ProtoClassInfo GetClassInfo(Il2CppClass const* classType);
     ProtoStructInfo GetStructInfo(Il2CppClass const* structType);
 }
