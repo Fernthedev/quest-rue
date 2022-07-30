@@ -10,13 +10,17 @@ export class InvokeMethod extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         methodId?: number;
+        objectAddress?: number;
         args?: dependency_1.ProtoDataPayload[];
     }) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
             if ("methodId" in data && data.methodId != undefined) {
                 this.methodId = data.methodId;
+            }
+            if ("objectAddress" in data && data.objectAddress != undefined) {
+                this.objectAddress = data.objectAddress;
             }
             if ("args" in data && data.args != undefined) {
                 this.args = data.args;
@@ -29,19 +33,29 @@ export class InvokeMethod extends pb_1.Message {
     set methodId(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
+    get objectAddress() {
+        return pb_1.Message.getField(this, 2) as number;
+    }
+    set objectAddress(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
     get args() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoDataPayload, 2) as dependency_1.ProtoDataPayload[];
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload[];
     }
     set args(value: dependency_1.ProtoDataPayload[]) {
-        pb_1.Message.setRepeatedWrapperField(this, 2, value);
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
     }
     static fromObject(data: {
         methodId?: number;
+        objectAddress?: number;
         args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
     }): InvokeMethod {
         const message = new InvokeMethod({});
         if (data.methodId != null) {
             message.methodId = data.methodId;
+        }
+        if (data.objectAddress != null) {
+            message.objectAddress = data.objectAddress;
         }
         if (data.args != null) {
             message.args = data.args.map(item => dependency_1.ProtoDataPayload.fromObject(item));
@@ -51,10 +65,14 @@ export class InvokeMethod extends pb_1.Message {
     toObject() {
         const data: {
             methodId?: number;
+            objectAddress?: number;
             args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
         } = {};
         if (this.methodId != null) {
             data.methodId = this.methodId;
+        }
+        if (this.objectAddress != null) {
+            data.objectAddress = this.objectAddress;
         }
         if (this.args != null) {
             data.args = this.args.map((item: dependency_1.ProtoDataPayload) => item.toObject());
@@ -67,8 +85,10 @@ export class InvokeMethod extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.methodId !== undefined)
             writer.writeUint64(1, this.methodId);
+        if (this.objectAddress !== undefined)
+            writer.writeUint64(2, this.objectAddress);
         if (this.args !== undefined)
-            writer.writeRepeatedMessage(2, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
+            writer.writeRepeatedMessage(3, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -82,7 +102,10 @@ export class InvokeMethod extends pb_1.Message {
                     message.methodId = reader.readUint64();
                     break;
                 case 2:
-                    reader.readMessage(message.args, () => pb_1.Message.addToRepeatedWrapperField(message, 2, dependency_1.ProtoDataPayload.deserialize(reader), dependency_1.ProtoDataPayload));
+                    message.objectAddress = reader.readUint64();
+                    break;
+                case 3:
+                    reader.readMessage(message.args, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_1.ProtoDataPayload.deserialize(reader), dependency_1.ProtoDataPayload));
                     break;
                 default: reader.skipField();
             }
@@ -134,16 +157,16 @@ export class InvokeMethodResult extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get result() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoDataPayload, 4) as dependency_1.ProtoDataPayload;
+        return pb_1.Message.getWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload;
     }
     set result(value: dependency_1.ProtoDataPayload) {
-        pb_1.Message.setWrapperField(this, 4, value);
+        pb_1.Message.setWrapperField(this, 3, value);
     }
     get error() {
-        return pb_1.Message.getField(this, 5) as string;
+        return pb_1.Message.getField(this, 4) as string;
     }
     set error(value: string) {
-        pb_1.Message.setField(this, 5, value);
+        pb_1.Message.setField(this, 4, value);
     }
     static fromObject(data: {
         status?: InvokeMethodResult.Status;
@@ -196,9 +219,9 @@ export class InvokeMethodResult extends pb_1.Message {
         if (this.methodId !== undefined)
             writer.writeUint64(2, this.methodId);
         if (this.result !== undefined)
-            writer.writeMessage(4, this.result, () => this.result.serialize(writer));
+            writer.writeMessage(3, this.result, () => this.result.serialize(writer));
         if (typeof this.error === "string" && this.error.length)
-            writer.writeString(5, this.error);
+            writer.writeString(4, this.error);
         if (!w)
             return writer.getResultBuffer();
     }
@@ -214,10 +237,10 @@ export class InvokeMethodResult extends pb_1.Message {
                 case 2:
                     message.methodId = reader.readUint64();
                     break;
-                case 4:
+                case 3:
                     reader.readMessage(message.result, () => message.result = dependency_1.ProtoDataPayload.deserialize(reader));
                     break;
-                case 5:
+                case 4:
                     message.error = reader.readString();
                     break;
                 default: reader.skipField();
@@ -235,8 +258,7 @@ export class InvokeMethodResult extends pb_1.Message {
 export namespace InvokeMethodResult {
     export enum Status {
         ERR = 0,
-        OK = 1,
-        NOT_FOUND = 2
+        OK = 1
     }
 }
 export class SearchObjects extends pb_1.Message {
