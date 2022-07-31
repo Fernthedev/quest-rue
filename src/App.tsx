@@ -2,6 +2,7 @@ import './App.css'
 import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from './components/GameObjectsList'
 import { ComponentsManager } from './components/ComponentsManager'
+import { Tabs } from './components/Tabs'
 
 function App() {
   const objects = ["GameCore", "Something", "Plant", "Really long name", "Gaming", "Mom", "Moo", "Cow", "Beep", "Beep", "Boat dog", "fern"] // .slice(0, 3)
@@ -15,26 +16,17 @@ function App() {
   return (
     <div className="App">
       {/* Object list */}
-      <div style={{
-        display: "flex",
-        flexWrap: "wrap",
-      }}>
+      <div className="flex">
         {/* Component data */}
-        <div style={{
+        <div className="flex flex-col w-full" style={{
           // backgroundColor: "blue"
           flex: "2",
           backgroundColor: theme?.colors.accents0.value,
-          minHeight: "100vh",
-          minWidth: "30%",
-          // TODO: Fix wrapping below
-          // minWidth: "max(30%, 400px)",
-          maxWidth: "100%"
+          minHeight: "100vh"
         }}>
-          <div style={{
-            minHeight: "100vh",
-            maxHeight: "100vh",
-            maxWidth: "80%",
-          }}>
+          <Tabs tabs={[ "Tab 1", "Tab 2", "Tab 3", "Tab 4" ]} selected={1}></Tabs>
+
+          <div className="h-full w-full px-5">
 
             {/* TODO: Use client side routing for components */}
             <ComponentsManager />
