@@ -32,14 +32,14 @@ type GameObjectRowProps = NodeComponentProps<TreeData>
 
 function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, symbol]>, childrenMap: Record<number, number[]>): Generator<TreeData | string | symbol, void, boolean> {
     const getObject = (id: number) => objects[id][0]
-    
+
     const stack: [GameObjectJSON, symbol][] = Object.values(objects).filter(g => !g[0].transform!.parent);
     // Walk through the tree until we have no nodes available.
     while (stack.length !== 0) {
         const node = stack.pop()!;
         const go = node[0]
         const goSymbol = node[1]
-        
+
         let nestingLevel = 0;
         let parent = go.transform?.parent;
         while (parent) {
@@ -62,7 +62,7 @@ function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, 
                 nestingLevel
             }
             : goSymbol;
-        
+
         // Basing on the node openness state we are deciding if we need to render
         // the child nodes (if they exist).
         if (node && children.length > 0 && isOpened) {
@@ -143,13 +143,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
             if (!tempChildMap[address])
                 tempChildMap[address] = []
-            
+
             const parent = o.transform?.parent;
-            
-            if(parent) {
+
+            if (parent) {
                 if (!tempChildMap[parent])
                     tempChildMap[parent] = []
-                
+
                 tempChildMap[parent].push(address)
             }
         });

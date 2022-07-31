@@ -1,8 +1,6 @@
 import './App.css'
 import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from './components/GameObjectsList'
-import { ReactNode, useEffect, useState } from 'react'
-import { getEvents, useRequestAndResponsePacket } from './misc/events'
 import { ComponentsManager } from './components/ComponentsManager'
 
 function App() {
@@ -38,6 +36,7 @@ function App() {
             maxWidth: "80%",
           }}>
 
+            {/* TODO: Use client side routing for components */}
             <ComponentsManager />
 
           </div>
