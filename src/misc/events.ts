@@ -29,6 +29,12 @@ function buildEvents() {
 
 export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
 
+/**
+ * A hook that returns the value of a packet with a response
+ * Essentially, it gives both the current state and a function to send a packet
+ * When the packet is sent, it is given a unique id
+ * When a packet with the same query ID is received, it updates the state
+ */
 export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(once = false): [T | undefined, (p: P) => void] {
     const [val, setValue] = useState<T | undefined>(undefined)
 
@@ -64,6 +70,13 @@ export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = Packet
     }];
 }
 
+/**
+ * Hook that listens to a packet and updates the state based on it
+ * 
+ * @param listener The event to listen to
+ * @param once only update once when a packet is received
+ * @returns The current state value
+ */
 export function useListenToEvent<T>(listener: EventListener<T>, once = false) : T | undefined {
     const [val, setValue] = useState<T | undefined>(undefined)
 
