@@ -5,18 +5,28 @@ export interface TabsProps {
     selected: number
 }
 
+interface TabProps {
+    name: string,
+    selected: boolean
+}
+
+function Tab(props: TabProps) {
+    const activeClass = props.selected ? "tab-active" : "";
+
+    return (
+        <a className={`tab tab-lifted ${activeClass}`}>{props.name}</a>
+    )
+}
+
 export function Tabs(props: TabsProps) {
-    const tabs = []
-    for(let i = 0; i < props.tabs.length; i++) {
-        const name = (i === props.selected) ? "tab tab-lifted tab-active" : "tab tab-lifted"
-        tabs.push(<a className={name}>{ props.tabs[i] }</a>)
-    }
     return (
         <>
             <div className="tabs pt-2">
-                {tabs}
+                {props.tabs.map((n, i) => (
+                    <Tab key={n} name={n} selected={i === props.selected} />
+                ))}
             </div>
-            <Divider height={2}></Divider>
+            <Divider height={2} />
         </>
     )
 }
