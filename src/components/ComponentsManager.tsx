@@ -9,6 +9,7 @@ export interface ComponentsManagerProps {
 }
 
 export function ComponentsManager(props: ComponentsManagerProps) {
+    // TODO: Grab this from useParams
     const selectedObject = useListenToEvent(getEvents().SELECTED_GAME_OBJECT)
 
     const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>();
