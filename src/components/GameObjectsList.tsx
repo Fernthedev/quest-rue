@@ -1,9 +1,9 @@
-import { ArrowDownFilled, ArrowUpFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
+import { ChevronLeftFilled, ChevronDownFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
 import { Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { requestGameObjects } from "../misc/commands";
 import { getEvents, useListenToEvent } from "../misc/events";
-import { ProtoGameObject } from "../misc/proto/qrue";
+import { ProtoGameObject } from "../misc/proto/unity";
 import { useEffectAsync } from "../misc/utils";
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -79,26 +79,24 @@ function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, 
 function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen, style }: GameObjectRowProps) {
     const arrowProps: FluentIconsProps = { width: "1.5em", height: "1.5em" }
 
-    const arrow = hasChildren &&
-        isOpen ? ArrowUpFilled(arrowProps) : ArrowDownFilled(arrowProps)
+    const arrow = isOpen ? ChevronDownFilled(arrowProps) : ChevronLeftFilled(arrowProps)
 
     return (
         <div style={{ paddingLeft: `calc(20px * ${nestingLevel + 1})`, ...style }}>
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-            }}>
-                <div style={{ display: "flex", flex: "row", justifyContent: "center" }}>
-                    { /* The marginTop position fix is so bad */}
-                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} style={{ marginTop: 10 }} label="R" />
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label="R" />
 
-                    {hasChildren && arrow}
                     <CubeFilled title="GameObject" width={"2rem"} height={"2rem"} />
-                </div >
-                <div onClick={() => hasChildren && toggle()} style={{ cursor: hasChildren ? "pointer" : "auto" }}>
+                </div>
+                {/* minWidth is necessary for the text to handle overflow properly */}
+                <div onClick={() => hasChildren && toggle()} style={{ cursor: hasChildren ? "pointer" : "auto", minWidth: 0 }}>
 
-                    <Text h4>{go.name}</Text>
+                    <Text h4 style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{go.name}</Text>
                     {/* <Text h4>Expandable {expandable ? "true" : "false"} C {String(go?.childrenIds?.length ?? "no")}</Text> */}
+                </div>
+                <div style={{ display: "flex", flex: 1, justifyContent: "right", paddingRight: "10px" }}>
+                    {hasChildren && arrow}
                 </div>
             </div>
 
@@ -131,9 +129,12 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
         return obj;
     }, [objects]);
+
     const childrenMap: Record<number, number[]> | undefined = useMemo(() => {
         if (!objects) return undefined;
+
         const tempChildMap: Record<number, number[]> = {}
+
         objects?.forEach(o => {
             // ignore the error messages!
             const address = o.transform?.address;
@@ -148,6 +149,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             if(parent) {
                 if (!tempChildMap[parent])
                     tempChildMap[parent] = []
+                
                 tempChildMap[parent].push(address)
             }
         });
@@ -183,10 +185,10 @@ export default function GameObjectsList(props: GameObjectsListProps) {
 
     return (
         <div className="flex flex-col" style={{ height: "100%" }}>
-            <div className="flex justify-center"
-                style={{ width: "100%" }}
-            >
+            <div className="flex justify-center" style={{ width: "100%", height: "7em" }}>
+
                 <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
+
             </div>
 
             <div style={{ flexGrow: "2", height: "100%" }}>
@@ -195,11 +197,10 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                         <Radio.Group onChange={(e) => {
                             console.log(`Selected ${e}`);
                             getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap[parseInt(e)][0]);
-                        } }>
+                        }}>
                             <Tree treeWalker={(r) => treeWalker(r, objectsMap, childrenMap)} itemSize={55} height={height} width={"100%"}>
                                 {GameObjectRow}
                             </Tree>
-
                         </Radio.Group>
                     )}
                 </AutoSizer>

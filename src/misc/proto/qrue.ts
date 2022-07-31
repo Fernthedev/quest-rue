@@ -28,13 +28,13 @@ export class InvokeMethod extends pb_1.Message {
         }
     }
     get methodId() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set methodId(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get objectAddress() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set objectAddress(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -83,11 +83,11 @@ export class InvokeMethod extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.methodId !== undefined)
+        if (this.methodId != 0)
             writer.writeUint64(1, this.methodId);
-        if (this.objectAddress !== undefined)
+        if (this.objectAddress != 0)
             writer.writeUint64(2, this.objectAddress);
-        if (this.args !== undefined)
+        if (this.args.length)
             writer.writeRepeatedMessage(3, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -145,13 +145,13 @@ export class InvokeMethodResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getField(this, 1) as InvokeMethodResult.Status;
+        return pb_1.Message.getFieldWithDefault(this, 1, InvokeMethodResult.Status.ERR) as InvokeMethodResult.Status;
     }
     set status(value: InvokeMethodResult.Status) {
         pb_1.Message.setField(this, 1, value);
     }
     get methodId() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set methodId(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -162,8 +162,11 @@ export class InvokeMethodResult extends pb_1.Message {
     set result(value: dependency_1.ProtoDataPayload) {
         pb_1.Message.setWrapperField(this, 3, value);
     }
+    get has_result() {
+        return pb_1.Message.getField(this, 3) != null;
+    }
     get error() {
-        return pb_1.Message.getField(this, 4) as string;
+        return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
     }
     set error(value: string) {
         pb_1.Message.setField(this, 4, value);
@@ -214,13 +217,13 @@ export class InvokeMethodResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.status !== undefined)
+        if (this.status != InvokeMethodResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.methodId !== undefined)
+        if (this.methodId != 0)
             writer.writeUint64(2, this.methodId);
-        if (this.result !== undefined)
+        if (this.has_result)
             writer.writeMessage(3, this.result, () => this.result.serialize(writer));
-        if (typeof this.error === "string" && this.error.length)
+        if (this.error.length)
             writer.writeString(4, this.error);
         if (!w)
             return writer.getResultBuffer();
@@ -284,8 +287,11 @@ export class SearchObjects extends pb_1.Message {
     set componentClass(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_componentClass() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
@@ -320,9 +326,9 @@ export class SearchObjects extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.componentClass !== undefined)
+        if (this.has_componentClass)
             writer.writeMessage(1, this.componentClass, () => this.componentClass.serialize(writer));
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
         if (!w)
             return writer.getResultBuffer();
@@ -392,7 +398,7 @@ export class SearchObjectsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.objects !== undefined)
+        if (this.objects.length)
             writer.writeRepeatedMessage(1, this.objects, (item: dependency_2.ProtoObject) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -499,7 +505,7 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.objects !== undefined)
+        if (this.objects.length)
             writer.writeRepeatedMessage(1, this.objects, (item: dependency_2.ProtoGameObject) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -539,7 +545,7 @@ export class GetGameObjectComponents extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
@@ -566,7 +572,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
         if (!w)
             return writer.getResultBuffer();
@@ -633,7 +639,7 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.components !== undefined)
+        if (this.components.length)
             writer.writeRepeatedMessage(1, this.components, (item: dependency_2.ProtoComponent) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -677,13 +683,13 @@ export class ReadMemory extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get size() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set size(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -718,9 +724,9 @@ export class ReadMemory extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (this.size !== undefined)
+        if (this.size != 0)
             writer.writeUint64(2, this.size);
         if (!w)
             return writer.getResultBuffer();
@@ -771,19 +777,19 @@ export class ReadMemoryResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getField(this, 1) as ReadMemoryResult.Status;
+        return pb_1.Message.getFieldWithDefault(this, 1, ReadMemoryResult.Status.ERR) as ReadMemoryResult.Status;
     }
     set status(value: ReadMemoryResult.Status) {
         pb_1.Message.setField(this, 1, value);
     }
     get address() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
     get data() {
-        return pb_1.Message.getField(this, 3) as Uint8Array;
+        return pb_1.Message.getFieldWithDefault(this, 3, new Uint8Array()) as Uint8Array;
     }
     set data(value: Uint8Array) {
         pb_1.Message.setField(this, 3, value);
@@ -826,11 +832,11 @@ export class ReadMemoryResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.status !== undefined)
+        if (this.status != ReadMemoryResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(2, this.address);
-        if (this.data !== undefined)
+        if (this.data.length)
             writer.writeBytes(3, this.data);
         if (!w)
             return writer.getResultBuffer();
@@ -886,13 +892,13 @@ export class WriteMemory extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get data() {
-        return pb_1.Message.getField(this, 2) as Uint8Array;
+        return pb_1.Message.getFieldWithDefault(this, 2, new Uint8Array()) as Uint8Array;
     }
     set data(value: Uint8Array) {
         pb_1.Message.setField(this, 2, value);
@@ -927,9 +933,9 @@ export class WriteMemory extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (this.data !== undefined)
+        if (this.data.length)
             writer.writeBytes(2, this.data);
         if (!w)
             return writer.getResultBuffer();
@@ -980,19 +986,19 @@ export class WriteMemoryResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getField(this, 1) as WriteMemoryResult.Status;
+        return pb_1.Message.getFieldWithDefault(this, 1, WriteMemoryResult.Status.ERR) as WriteMemoryResult.Status;
     }
     set status(value: WriteMemoryResult.Status) {
         pb_1.Message.setField(this, 1, value);
     }
     get address() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
     get size() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set size(value: number) {
         pb_1.Message.setField(this, 3, value);
@@ -1035,11 +1041,11 @@ export class WriteMemoryResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.status !== undefined)
+        if (this.status != WriteMemoryResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(2, this.address);
-        if (this.size !== undefined)
+        if (this.size != 0)
             writer.writeUint64(3, this.size);
         if (!w)
             return writer.getResultBuffer();
@@ -1096,6 +1102,9 @@ export class GetClassDetails extends pb_1.Message {
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     static fromObject(data: {
         classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
     }): GetClassDetails {
@@ -1118,7 +1127,7 @@ export class GetClassDetails extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(1, this.classInfo, () => this.classInfo.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -1163,6 +1172,9 @@ export class GetClassDetailsResult extends pb_1.Message {
     set classDetails(value: dependency_1.ProtoClassDetails) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_classDetails() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     static fromObject(data: {
         classDetails?: ReturnType<typeof dependency_1.ProtoClassDetails.prototype.toObject>;
     }): GetClassDetailsResult {
@@ -1185,7 +1197,7 @@ export class GetClassDetailsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.classDetails !== undefined)
+        if (this.has_classDetails)
             writer.writeMessage(1, this.classDetails, () => this.classDetails.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -1237,7 +1249,7 @@ export class ReadInstanceDetails extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
@@ -1247,6 +1259,9 @@ export class ReadInstanceDetails extends pb_1.Message {
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 2, value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 2) != null;
     }
     get fields() {
         return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoFieldInfo, 3) as dependency_1.ProtoFieldInfo[];
@@ -1306,13 +1321,13 @@ export class ReadInstanceDetails extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(2, this.classInfo, () => this.classInfo.serialize(writer));
-        if (this.fields !== undefined)
+        if (this.fields.length)
             writer.writeRepeatedMessage(3, this.fields, (item: dependency_1.ProtoFieldInfo) => item.serialize(writer));
-        if (this.properties !== undefined)
+        if (this.properties.length)
             writer.writeRepeatedMessage(4, this.properties, (item: dependency_1.ProtoPropertyInfo) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -1377,7 +1392,7 @@ export class ReadInstanceDetailsResult extends pb_1.Message {
             this.propertyValues = new Map();
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
@@ -1387,6 +1402,9 @@ export class ReadInstanceDetailsResult extends pb_1.Message {
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 2, value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 2) != null;
     }
     get fieldValues() {
         return pb_1.Message.getField(this, 3) as any as Map<number, Uint8Array>;
@@ -1454,9 +1472,9 @@ export class ReadInstanceDetailsResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(2, this.classInfo, () => this.classInfo.serialize(writer));
         for (const [key, value] of this.fieldValues) {
             writer.writeMessage(3, this.fieldValues, () => {
@@ -1837,7 +1855,7 @@ export class PacketWrapper extends pb_1.Message {
         }
     }
     get queryResultId() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set queryResultId(value: number) {
         pb_1.Message.setField(this, 1, value);
@@ -1848,11 +1866,17 @@ export class PacketWrapper extends pb_1.Message {
     set invokeMethod(value: InvokeMethod) {
         pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
+    get has_invokeMethod() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
     get invokeMethodResult() {
         return pb_1.Message.getWrapperField(this, InvokeMethodResult, 3) as InvokeMethodResult;
     }
     set invokeMethodResult(value: InvokeMethodResult) {
         pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
+    }
+    get has_invokeMethodResult() {
+        return pb_1.Message.getField(this, 3) != null;
     }
     get searchObjects() {
         return pb_1.Message.getWrapperField(this, SearchObjects, 4) as SearchObjects;
@@ -1860,11 +1884,17 @@ export class PacketWrapper extends pb_1.Message {
     set searchObjects(value: SearchObjects) {
         pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
     }
+    get has_searchObjects() {
+        return pb_1.Message.getField(this, 4) != null;
+    }
     get searchObjectsResult() {
         return pb_1.Message.getWrapperField(this, SearchObjectsResult, 5) as SearchObjectsResult;
     }
     set searchObjectsResult(value: SearchObjectsResult) {
         pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
+    }
+    get has_searchObjectsResult() {
+        return pb_1.Message.getField(this, 5) != null;
     }
     get getAllGameObjects() {
         return pb_1.Message.getWrapperField(this, GetAllGameObjects, 6) as GetAllGameObjects;
@@ -1872,11 +1902,17 @@ export class PacketWrapper extends pb_1.Message {
     set getAllGameObjects(value: GetAllGameObjects) {
         pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
     }
+    get has_getAllGameObjects() {
+        return pb_1.Message.getField(this, 6) != null;
+    }
     get getAllGameObjectsResult() {
         return pb_1.Message.getWrapperField(this, GetAllGameObjectsResult, 7) as GetAllGameObjectsResult;
     }
     set getAllGameObjectsResult(value: GetAllGameObjectsResult) {
         pb_1.Message.setOneofWrapperField(this, 7, this.#one_of_decls[0], value);
+    }
+    get has_getAllGameObjectsResult() {
+        return pb_1.Message.getField(this, 7) != null;
     }
     get getGameObjectComponents() {
         return pb_1.Message.getWrapperField(this, GetGameObjectComponents, 8) as GetGameObjectComponents;
@@ -1884,11 +1920,17 @@ export class PacketWrapper extends pb_1.Message {
     set getGameObjectComponents(value: GetGameObjectComponents) {
         pb_1.Message.setOneofWrapperField(this, 8, this.#one_of_decls[0], value);
     }
+    get has_getGameObjectComponents() {
+        return pb_1.Message.getField(this, 8) != null;
+    }
     get getGameObjectComponentsResult() {
         return pb_1.Message.getWrapperField(this, GetGameObjectComponentsResult, 9) as GetGameObjectComponentsResult;
     }
     set getGameObjectComponentsResult(value: GetGameObjectComponentsResult) {
         pb_1.Message.setOneofWrapperField(this, 9, this.#one_of_decls[0], value);
+    }
+    get has_getGameObjectComponentsResult() {
+        return pb_1.Message.getField(this, 9) != null;
     }
     get readMemory() {
         return pb_1.Message.getWrapperField(this, ReadMemory, 10) as ReadMemory;
@@ -1896,11 +1938,17 @@ export class PacketWrapper extends pb_1.Message {
     set readMemory(value: ReadMemory) {
         pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[0], value);
     }
+    get has_readMemory() {
+        return pb_1.Message.getField(this, 10) != null;
+    }
     get readMemoryResult() {
         return pb_1.Message.getWrapperField(this, ReadMemoryResult, 11) as ReadMemoryResult;
     }
     set readMemoryResult(value: ReadMemoryResult) {
         pb_1.Message.setOneofWrapperField(this, 11, this.#one_of_decls[0], value);
+    }
+    get has_readMemoryResult() {
+        return pb_1.Message.getField(this, 11) != null;
     }
     get writeMemory() {
         return pb_1.Message.getWrapperField(this, WriteMemory, 12) as WriteMemory;
@@ -1908,11 +1956,17 @@ export class PacketWrapper extends pb_1.Message {
     set writeMemory(value: WriteMemory) {
         pb_1.Message.setOneofWrapperField(this, 12, this.#one_of_decls[0], value);
     }
+    get has_writeMemory() {
+        return pb_1.Message.getField(this, 12) != null;
+    }
     get writeMemoryResult() {
         return pb_1.Message.getWrapperField(this, WriteMemoryResult, 13) as WriteMemoryResult;
     }
     set writeMemoryResult(value: WriteMemoryResult) {
         pb_1.Message.setOneofWrapperField(this, 13, this.#one_of_decls[0], value);
+    }
+    get has_writeMemoryResult() {
+        return pb_1.Message.getField(this, 13) != null;
     }
     get getClassDetails() {
         return pb_1.Message.getWrapperField(this, GetClassDetails, 14) as GetClassDetails;
@@ -1920,11 +1974,17 @@ export class PacketWrapper extends pb_1.Message {
     set getClassDetails(value: GetClassDetails) {
         pb_1.Message.setOneofWrapperField(this, 14, this.#one_of_decls[0], value);
     }
+    get has_getClassDetails() {
+        return pb_1.Message.getField(this, 14) != null;
+    }
     get getClassDetailsResult() {
         return pb_1.Message.getWrapperField(this, GetClassDetailsResult, 15) as GetClassDetailsResult;
     }
     set getClassDetailsResult(value: GetClassDetailsResult) {
         pb_1.Message.setOneofWrapperField(this, 15, this.#one_of_decls[0], value);
+    }
+    get has_getClassDetailsResult() {
+        return pb_1.Message.getField(this, 15) != null;
     }
     get readInstanceDetails() {
         return pb_1.Message.getWrapperField(this, ReadInstanceDetails, 16) as ReadInstanceDetails;
@@ -1932,11 +1992,17 @@ export class PacketWrapper extends pb_1.Message {
     set readInstanceDetails(value: ReadInstanceDetails) {
         pb_1.Message.setOneofWrapperField(this, 16, this.#one_of_decls[0], value);
     }
+    get has_readInstanceDetails() {
+        return pb_1.Message.getField(this, 16) != null;
+    }
     get readInstanceDetailsResult() {
         return pb_1.Message.getWrapperField(this, ReadInstanceDetailsResult, 17) as ReadInstanceDetailsResult;
     }
     set readInstanceDetailsResult(value: ReadInstanceDetailsResult) {
         pb_1.Message.setOneofWrapperField(this, 17, this.#one_of_decls[0], value);
+    }
+    get has_readInstanceDetailsResult() {
+        return pb_1.Message.getField(this, 17) != null;
     }
     get Packet() {
         const cases: {
@@ -2112,39 +2178,39 @@ export class PacketWrapper extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.queryResultId !== undefined)
+        if (this.queryResultId != 0)
             writer.writeUint64(1, this.queryResultId);
-        if (this.invokeMethod !== undefined)
+        if (this.has_invokeMethod)
             writer.writeMessage(2, this.invokeMethod, () => this.invokeMethod.serialize(writer));
-        if (this.invokeMethodResult !== undefined)
+        if (this.has_invokeMethodResult)
             writer.writeMessage(3, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
-        if (this.searchObjects !== undefined)
+        if (this.has_searchObjects)
             writer.writeMessage(4, this.searchObjects, () => this.searchObjects.serialize(writer));
-        if (this.searchObjectsResult !== undefined)
+        if (this.has_searchObjectsResult)
             writer.writeMessage(5, this.searchObjectsResult, () => this.searchObjectsResult.serialize(writer));
-        if (this.getAllGameObjects !== undefined)
+        if (this.has_getAllGameObjects)
             writer.writeMessage(6, this.getAllGameObjects, () => this.getAllGameObjects.serialize(writer));
-        if (this.getAllGameObjectsResult !== undefined)
+        if (this.has_getAllGameObjectsResult)
             writer.writeMessage(7, this.getAllGameObjectsResult, () => this.getAllGameObjectsResult.serialize(writer));
-        if (this.getGameObjectComponents !== undefined)
+        if (this.has_getGameObjectComponents)
             writer.writeMessage(8, this.getGameObjectComponents, () => this.getGameObjectComponents.serialize(writer));
-        if (this.getGameObjectComponentsResult !== undefined)
+        if (this.has_getGameObjectComponentsResult)
             writer.writeMessage(9, this.getGameObjectComponentsResult, () => this.getGameObjectComponentsResult.serialize(writer));
-        if (this.readMemory !== undefined)
+        if (this.has_readMemory)
             writer.writeMessage(10, this.readMemory, () => this.readMemory.serialize(writer));
-        if (this.readMemoryResult !== undefined)
+        if (this.has_readMemoryResult)
             writer.writeMessage(11, this.readMemoryResult, () => this.readMemoryResult.serialize(writer));
-        if (this.writeMemory !== undefined)
+        if (this.has_writeMemory)
             writer.writeMessage(12, this.writeMemory, () => this.writeMemory.serialize(writer));
-        if (this.writeMemoryResult !== undefined)
+        if (this.has_writeMemoryResult)
             writer.writeMessage(13, this.writeMemoryResult, () => this.writeMemoryResult.serialize(writer));
-        if (this.getClassDetails !== undefined)
+        if (this.has_getClassDetails)
             writer.writeMessage(14, this.getClassDetails, () => this.getClassDetails.serialize(writer));
-        if (this.getClassDetailsResult !== undefined)
+        if (this.has_getClassDetailsResult)
             writer.writeMessage(15, this.getClassDetailsResult, () => this.getClassDetailsResult.serialize(writer));
-        if (this.readInstanceDetails !== undefined)
+        if (this.has_readInstanceDetails)
             writer.writeMessage(16, this.readInstanceDetails, () => this.readInstanceDetails.serialize(writer));
-        if (this.readInstanceDetailsResult !== undefined)
+        if (this.has_readInstanceDetailsResult)
             writer.writeMessage(17, this.readInstanceDetailsResult, () => this.readInstanceDetailsResult.serialize(writer));
         if (!w)
             return writer.getResultBuffer();

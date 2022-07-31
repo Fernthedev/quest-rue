@@ -1,6 +1,3 @@
-
-
-
 import { getEvents } from "./events";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";

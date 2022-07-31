@@ -1,6 +1,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { sendPacket } from "./commands";
-import { ProtoGameObject, PacketWrapper } from "./proto/qrue";
+import { PacketWrapper } from "./proto/qrue";
+import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 
 // Singleton for all events

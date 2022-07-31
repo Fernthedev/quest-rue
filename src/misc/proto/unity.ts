@@ -23,13 +23,13 @@ export class ProtoVector2 extends pb_1.Message {
         }
     }
     get x() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set x(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get y() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set y(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -64,9 +64,9 @@ export class ProtoVector2 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x !== undefined)
+        if (this.x != 0)
             writer.writeFloat(1, this.x);
-        if (this.y !== undefined)
+        if (this.y != 0)
             writer.writeFloat(2, this.y);
         if (!w)
             return writer.getResultBuffer();
@@ -117,19 +117,19 @@ export class ProtoVector3 extends pb_1.Message {
         }
     }
     get x() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set x(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get y() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set y(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
     get z() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set z(value: number) {
         pb_1.Message.setField(this, 3, value);
@@ -172,11 +172,11 @@ export class ProtoVector3 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x !== undefined)
+        if (this.x != 0)
             writer.writeFloat(1, this.x);
-        if (this.y !== undefined)
+        if (this.y != 0)
             writer.writeFloat(2, this.y);
-        if (this.z !== undefined)
+        if (this.z != 0)
             writer.writeFloat(3, this.z);
         if (!w)
             return writer.getResultBuffer();
@@ -234,25 +234,25 @@ export class ProtoVector4 extends pb_1.Message {
         }
     }
     get x() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set x(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get y() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set y(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
     get z() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set z(value: number) {
         pb_1.Message.setField(this, 3, value);
     }
     get w() {
-        return pb_1.Message.getField(this, 4) as number;
+        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
     }
     set w(value: number) {
         pb_1.Message.setField(this, 4, value);
@@ -303,13 +303,13 @@ export class ProtoVector4 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x !== undefined)
+        if (this.x != 0)
             writer.writeFloat(1, this.x);
-        if (this.y !== undefined)
+        if (this.y != 0)
             writer.writeFloat(2, this.y);
-        if (this.z !== undefined)
+        if (this.z != 0)
             writer.writeFloat(3, this.z);
-        if (this.w !== undefined)
+        if (this.w != 0)
             writer.writeFloat(4, this.w);
         if (!w)
             return writer.getResultBuffer();
@@ -366,13 +366,13 @@ export class ProtoObject extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
@@ -382,6 +382,9 @@ export class ProtoObject extends pb_1.Message {
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 3, value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 3) != null;
     }
     static fromObject(data: {
         address?: number;
@@ -421,11 +424,11 @@ export class ProtoObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -483,19 +486,19 @@ export class ProtoComponent extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
     get gameObject() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set gameObject(value: number) {
         pb_1.Message.setField(this, 3, value);
@@ -505,6 +508,9 @@ export class ProtoComponent extends pb_1.Message {
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 4, value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 4) != null;
     }
     static fromObject(data: {
         address?: number;
@@ -552,13 +558,13 @@ export class ProtoComponent extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
-        if (this.gameObject !== undefined)
+        if (this.gameObject != 0)
             writer.writeUint64(3, this.gameObject);
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(4, this.classInfo, () => this.classInfo.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -619,25 +625,25 @@ export class ProtoTransform extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
     get childCount() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set childCount(value: number) {
         pb_1.Message.setField(this, 3, value);
     }
     get parent() {
-        return pb_1.Message.getField(this, 4) as number;
+        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
     }
     set parent(value: number) {
         pb_1.Message.setField(this, 4, value);
@@ -688,13 +694,13 @@ export class ProtoTransform extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
-        if (this.childCount !== undefined)
+        if (this.childCount != 0)
             writer.writeInt32(3, this.childCount);
-        if (this.parent !== undefined)
+        if (this.parent != 0)
             writer.writeUint64(4, this.parent);
         if (!w)
             return writer.getResultBuffer();
@@ -767,25 +773,25 @@ export class ProtoGameObject extends pb_1.Message {
         }
     }
     get address() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
     get active() {
-        return pb_1.Message.getField(this, 3) as boolean;
+        return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
     }
     set active(value: boolean) {
         pb_1.Message.setField(this, 3, value);
     }
     get layer() {
-        return pb_1.Message.getField(this, 4) as number;
+        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
     }
     set layer(value: number) {
         pb_1.Message.setField(this, 4, value);
@@ -796,8 +802,11 @@ export class ProtoGameObject extends pb_1.Message {
     set scene(value: ProtoScene) {
         pb_1.Message.setWrapperField(this, 5, value);
     }
+    get has_scene() {
+        return pb_1.Message.getField(this, 5) != null;
+    }
     get tag() {
-        return pb_1.Message.getField(this, 6) as string;
+        return pb_1.Message.getFieldWithDefault(this, 6, "") as string;
     }
     set tag(value: string) {
         pb_1.Message.setField(this, 6, value);
@@ -807,6 +816,9 @@ export class ProtoGameObject extends pb_1.Message {
     }
     set transform(value: ProtoTransform) {
         pb_1.Message.setWrapperField(this, 7, value);
+    }
+    get has_transform() {
+        return pb_1.Message.getField(this, 7) != null;
     }
     static fromObject(data: {
         address?: number;
@@ -878,19 +890,19 @@ export class ProtoGameObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address !== undefined)
+        if (this.address != 0)
             writer.writeUint64(1, this.address);
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
-        if (this.active !== undefined)
+        if (this.active != false)
             writer.writeBool(3, this.active);
-        if (this.layer !== undefined)
+        if (this.layer != 0)
             writer.writeInt32(4, this.layer);
-        if (this.scene !== undefined)
+        if (this.has_scene)
             writer.writeMessage(5, this.scene, () => this.scene.serialize(writer));
-        if (typeof this.tag === "string" && this.tag.length)
+        if (this.tag.length)
             writer.writeString(6, this.tag);
-        if (this.transform !== undefined)
+        if (this.has_transform)
             writer.writeMessage(7, this.transform, () => this.transform.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -956,19 +968,19 @@ export class ProtoScene extends pb_1.Message {
         }
     }
     get handle() {
-        return pb_1.Message.getField(this, 1) as number;
+        return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
     }
     set handle(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
     get name() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 2, value);
     }
     get isLoaded() {
-        return pb_1.Message.getField(this, 3) as boolean;
+        return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
     }
     set isLoaded(value: boolean) {
         pb_1.Message.setField(this, 3, value);
@@ -1011,11 +1023,11 @@ export class ProtoScene extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.handle !== undefined)
+        if (this.handle != 0)
             writer.writeInt32(1, this.handle);
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(2, this.name);
-        if (this.isLoaded !== undefined)
+        if (this.isLoaded != false)
             writer.writeBool(3, this.isLoaded);
         if (!w)
             return writer.getResultBuffer();

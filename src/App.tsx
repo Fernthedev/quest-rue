@@ -3,7 +3,6 @@ import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from './components/GameObjectsList'
 import { ReactNode, useEffect, useState } from 'react'
 import { getEvents, useRequestAndResponsePacket } from './misc/events'
-import { GetComponentsOfGameObjectResult } from './misc/proto/qrue'
 import { ComponentsManager } from './components/ComponentsManager'
 
 function App() {
@@ -33,30 +32,26 @@ function App() {
           // minWidth: "max(30%, 400px)",
           maxWidth: "100%"
         }}>
-          <div
-            style={{
-              minHeight: "100vh",
-              maxHeight: "100vh",
-              maxWidth: "80%",
-            }}>
-
+          <div style={{
+            minHeight: "100vh",
+            maxHeight: "100vh",
+            maxWidth: "80%",
+          }}>
 
             <ComponentsManager />
 
           </div>
         </div>
 
-
-
         {/* Container box for scrolling */}
         <div style={{
-          maxWidth: "45%",
-          minWidth: "35%",
+          maxWidth: "40%",
+          minWidth: "30%",
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
-        }}
+        }}>
 
-        >
           <GameObjectsList />
+
         </div>
       </div>
     </div >

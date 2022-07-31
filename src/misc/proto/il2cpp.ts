@@ -26,13 +26,13 @@ export class ProtoClassInfo extends pb_1.Message {
         }
     }
     get namespaze() {
-        return pb_1.Message.getField(this, 1) as string;
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
     set namespaze(value: string) {
         pb_1.Message.setField(this, 1, value);
     }
     get clazz() {
-        return pb_1.Message.getField(this, 2) as string;
+        return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
     }
     set clazz(value: string) {
         pb_1.Message.setField(this, 2, value);
@@ -81,11 +81,11 @@ export class ProtoClassInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.namespaze === "string" && this.namespaze.length)
+        if (this.namespaze.length)
             writer.writeString(1, this.namespaze);
-        if (typeof this.clazz === "string" && this.clazz.length)
+        if (this.clazz.length)
             writer.writeString(2, this.clazz);
-        if (this.generics !== undefined)
+        if (this.generics.length)
             writer.writeRepeatedMessage(3, this.generics, (item: ProtoClassInfo) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -142,6 +142,9 @@ export class ProtoStructInfo extends pb_1.Message {
     set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_clazz() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     get fieldOffsets() {
         return pb_1.Message.getField(this, 2) as any as Map<number, ProtoTypeInfo>;
     }
@@ -182,7 +185,7 @@ export class ProtoStructInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.clazz !== undefined)
+        if (this.has_clazz)
             writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
         for (const [key, value] of this.fieldOffsets) {
             writer.writeMessage(2, this.fieldOffsets, () => {
@@ -251,10 +254,13 @@ export class ProtoTypeInfo extends pb_1.Message {
         }
     }
     get primitiveInfo() {
-        return pb_1.Message.getField(this, 1) as ProtoTypeInfo.Primitive;
+        return pb_1.Message.getFieldWithDefault(this, 1, ProtoTypeInfo.Primitive.BOOLEAN) as ProtoTypeInfo.Primitive;
     }
     set primitiveInfo(value: ProtoTypeInfo.Primitive) {
         pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+    }
+    get has_primitiveInfo() {
+        return pb_1.Message.getField(this, 1) != null;
     }
     get structInfo() {
         return pb_1.Message.getWrapperField(this, ProtoStructInfo, 2) as ProtoStructInfo;
@@ -262,11 +268,17 @@ export class ProtoTypeInfo extends pb_1.Message {
     set structInfo(value: ProtoStructInfo) {
         pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
+    get has_structInfo() {
+        return pb_1.Message.getField(this, 2) != null;
+    }
     get classInfo() {
         return pb_1.Message.getWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo;
     }
     set classInfo(value: ProtoClassInfo) {
         pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 3) != null;
     }
     get Info() {
         const cases: {
@@ -317,11 +329,11 @@ export class ProtoTypeInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.primitiveInfo !== undefined)
+        if (this.has_primitiveInfo)
             writer.writeEnum(1, this.primitiveInfo);
-        if (this.structInfo !== undefined)
+        if (this.has_structInfo)
             writer.writeMessage(2, this.structInfo, () => this.structInfo.serialize(writer));
-        if (this.classInfo !== undefined)
+        if (this.has_classInfo)
             writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -388,13 +400,13 @@ export class ProtoFieldInfo extends pb_1.Message {
         }
     }
     get name() {
-        return pb_1.Message.getField(this, 1) as string;
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 1, value);
     }
     get id() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set id(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -404,6 +416,9 @@ export class ProtoFieldInfo extends pb_1.Message {
     }
     set type(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 3, value);
+    }
+    get has_type() {
+        return pb_1.Message.getField(this, 3) != null;
     }
     static fromObject(data: {
         name?: string;
@@ -443,11 +458,11 @@ export class ProtoFieldInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(1, this.name);
-        if (this.id !== undefined)
+        if (this.id != 0)
             writer.writeUint64(2, this.id);
-        if (this.type !== undefined)
+        if (this.has_type)
             writer.writeMessage(3, this.type, () => this.type.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -509,25 +524,25 @@ export class ProtoPropertyInfo extends pb_1.Message {
         }
     }
     get name() {
-        return pb_1.Message.getField(this, 1) as string;
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 1, value);
     }
     get getterId() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set getterId(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
     get setterId() {
-        return pb_1.Message.getField(this, 3) as number;
+        return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
     }
     set setterId(value: number) {
         pb_1.Message.setField(this, 3, value);
     }
     get backingFieldId() {
-        return pb_1.Message.getField(this, 4) as number;
+        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
     }
     set backingFieldId(value: number) {
         pb_1.Message.setField(this, 4, value);
@@ -537,6 +552,9 @@ export class ProtoPropertyInfo extends pb_1.Message {
     }
     set type(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 5, value);
+    }
+    get has_type() {
+        return pb_1.Message.getField(this, 5) != null;
     }
     static fromObject(data: {
         name?: string;
@@ -592,15 +610,15 @@ export class ProtoPropertyInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(1, this.name);
-        if (this.getterId !== undefined)
+        if (this.getterId != 0)
             writer.writeUint64(2, this.getterId);
-        if (this.setterId !== undefined)
+        if (this.setterId != 0)
             writer.writeUint64(3, this.setterId);
-        if (this.backingFieldId !== undefined)
+        if (this.backingFieldId != 0)
             writer.writeUint64(4, this.backingFieldId);
-        if (this.type !== undefined)
+        if (this.has_type)
             writer.writeMessage(5, this.type, () => this.type.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -666,13 +684,13 @@ export class ProtoMethodInfo extends pb_1.Message {
             this.args = new Map();
     }
     get name() {
-        return pb_1.Message.getField(this, 1) as string;
+        return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
     }
     set name(value: string) {
         pb_1.Message.setField(this, 1, value);
     }
     get id() {
-        return pb_1.Message.getField(this, 2) as number;
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
     }
     set id(value: number) {
         pb_1.Message.setField(this, 2, value);
@@ -688,6 +706,9 @@ export class ProtoMethodInfo extends pb_1.Message {
     }
     set returnType(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 4, value);
+    }
+    get has_returnType() {
+        return pb_1.Message.getField(this, 4) != null;
     }
     static fromObject(data: {
         name?: string;
@@ -739,9 +760,9 @@ export class ProtoMethodInfo extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (typeof this.name === "string" && this.name.length)
+        if (this.name.length)
             writer.writeString(1, this.name);
-        if (this.id !== undefined)
+        if (this.id != 0)
             writer.writeUint64(2, this.id);
         for (const [key, value] of this.args) {
             writer.writeMessage(3, this.args, () => {
@@ -749,7 +770,7 @@ export class ProtoMethodInfo extends pb_1.Message {
                 writer.writeMessage(2, value, () => value.serialize(writer));
             });
         }
-        if (this.returnType !== undefined)
+        if (this.has_returnType)
             writer.writeMessage(4, this.returnType, () => this.returnType.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -827,6 +848,9 @@ export class ProtoClassDetails extends pb_1.Message {
     set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_clazz() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     get fields() {
         return pb_1.Message.getRepeatedWrapperField(this, ProtoFieldInfo, 2) as ProtoFieldInfo[];
     }
@@ -856,6 +880,9 @@ export class ProtoClassDetails extends pb_1.Message {
     }
     set parent(value: ProtoClassDetails) {
         pb_1.Message.setWrapperField(this, 6, value);
+    }
+    get has_parent() {
+        return pb_1.Message.getField(this, 6) != null;
     }
     static fromObject(data: {
         clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
@@ -919,17 +946,17 @@ export class ProtoClassDetails extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.clazz !== undefined)
+        if (this.has_clazz)
             writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
-        if (this.fields !== undefined)
+        if (this.fields.length)
             writer.writeRepeatedMessage(2, this.fields, (item: ProtoFieldInfo) => item.serialize(writer));
-        if (this.properties !== undefined)
+        if (this.properties.length)
             writer.writeRepeatedMessage(3, this.properties, (item: ProtoPropertyInfo) => item.serialize(writer));
-        if (this.methods !== undefined)
+        if (this.methods.length)
             writer.writeRepeatedMessage(4, this.methods, (item: ProtoMethodInfo) => item.serialize(writer));
-        if (this.interfaces !== undefined)
+        if (this.interfaces.length)
             writer.writeRepeatedMessage(5, this.interfaces, (item: ProtoClassInfo) => item.serialize(writer));
-        if (this.parent !== undefined)
+        if (this.has_parent)
             writer.writeMessage(6, this.parent, () => this.parent.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
@@ -993,8 +1020,11 @@ export class ProtoDataPayload extends pb_1.Message {
     set typeInfo(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
+    get has_typeInfo() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
     get data() {
-        return pb_1.Message.getField(this, 2) as Uint8Array;
+        return pb_1.Message.getFieldWithDefault(this, 2, new Uint8Array()) as Uint8Array;
     }
     set data(value: Uint8Array) {
         pb_1.Message.setField(this, 2, value);
@@ -1029,9 +1059,9 @@ export class ProtoDataPayload extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.typeInfo !== undefined)
+        if (this.has_typeInfo)
             writer.writeMessage(1, this.typeInfo, () => this.typeInfo.serialize(writer));
-        if (this.data !== undefined)
+        if (this.data.length)
             writer.writeBytes(2, this.data);
         if (!w)
             return writer.getResultBuffer();
