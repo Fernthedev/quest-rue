@@ -32,7 +32,7 @@ function SceneViewer() {
 
             {/* TODO: Use client side routing for components */}
             <Routes>
-              <Route path={"components/:componentAddress"} element={<ComponentsManager />} />
+              <Route path={"components/:gameObjectAddress"} element={<ComponentsManager />} />
             </Routes>
 
           </div>
