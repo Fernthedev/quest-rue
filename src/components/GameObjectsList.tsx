@@ -2,22 +2,19 @@ import { ChevronLeftFilled, ChevronDownFilled, CubeFilled, FluentIconsProps } fr
 import { Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { requestGameObjects } from "../misc/commands";
-import { getEvents, useListenToEvent } from "../misc/events";
+import { GameObjectJSON, getEvents, useListenToEvent } from "../misc/events";
 import { ProtoGameObject } from "../misc/proto/unity";
 import { useEffectAsync } from "../misc/utils";
 import AutoSizer from 'react-virtualized-auto-sizer';
 
-import { items as main_menu_json } from "../misc/test_data_in_main_menu.json";
-
 import { FixedSizeTree as Tree } from 'react-vtree';
 
 import { NodeComponentProps } from "react-vtree/dist/es/Tree";
+import { useNavigate } from "react-router-dom";
 
 export interface GameObjectsListProps {
-
+    objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined
 }
-
-type GameObjectJSON = ReturnType<typeof ProtoGameObject.prototype.toObject>;
 
 interface TreeData {
     defaultHeight: number,
@@ -107,35 +104,20 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
     );
 }
 
-export default function GameObjectsList(props: GameObjectsListProps) {
+export default function GameObjectsList({objectsMap}: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
-
-    const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT) ?? (import.meta.env.VITE_USE_QUEST_MOCK ? main_menu_json : undefined)
-
-    useEffect(() => {
-        console.log(JSON.stringify(objects))
-    }, [objects])
+    const navigate = useNavigate()
 
     const [filter, setFilter] = useState<string>("")
 
-    const objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined = useMemo(() => {
-        if (!objects) return undefined;
-
-        const obj: Record<number, [GameObjectJSON, symbol]> = {}
-        objects?.forEach(o => {
-            obj[o.transform!.address!] = [o, Symbol(o.transform!.address)];
-        });
-
-        return obj;
-    }, [objects]);
-
     const childrenMap: Record<number, number[]> | undefined = useMemo(() => {
-        if (!objects) return undefined;
+        if (!objectsMap) return undefined;
 
         const tempChildMap: Record<number, number[]> = {}
 
-        objects?.forEach(o => {
+        Object.values(objectsMap).forEach(pair => {
+            const o = pair[0];
             // ignore the error messages!
             const address = o.transform?.address;
 
@@ -155,10 +137,10 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         });
 
         return tempChildMap;
-    }, [objects]);
+    }, [objectsMap]);
 
     {/* TODO: Allow filter to include children */ }
-    const renderableObjects = useMemo(() => objects?.filter(g => !g.transform?.parent && g.name?.includes(filter)), [objects, filter])
+    const renderableObjects = useMemo(() => objectsMap && Object.values(objectsMap).filter(g => !g[0].transform?.parent && g[0].name?.includes(filter)), [objectsMap, filter])
 
 
     // Listen to game object list events
@@ -175,7 +157,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         }
     }, [])
 
-    if (!objects || !objectsMap || !renderableObjects || !childrenMap) {
+    if (!objectsMap || !renderableObjects || !childrenMap) {
         return (
             <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
                 <Loading size="xl" />
@@ -194,9 +176,11 @@ export default function GameObjectsList(props: GameObjectsListProps) {
             <div style={{ flexGrow: "2", height: "100%" }}>
                 <AutoSizer disableWidth>
                     {({ height, width }) => (
+                        // TODO: Make selected based on url params
                         <Radio.Group onChange={(e) => {
                             console.log(`Selected ${e}`);
-                            getEvents().SELECTED_GAME_OBJECT.invoke(objectsMap[parseInt(e)][0]);
+                            // TODO: make this a function that takes a GameObjectJSON, this is extremely error prone
+                            navigate(`components/${objectsMap[parseInt(e)][0].transform?.address}`)
                         }}>
                             <Tree treeWalker={(r) => treeWalker(r, objectsMap, childrenMap)} itemSize={55} height={height} width={"100%"}>
                                 {GameObjectRow}

@@ -7,7 +7,7 @@ export default function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Navigate to={"/sceneViewer"} replace />} />
-                <Route path="/sceneViewer" element={<SceneViewer />} />
+                <Route path="/sceneViewer/*" element={<SceneViewer />} />
             </Routes>
         </BrowserRouter>
     )

@@ -1,16 +1,22 @@
 import { Text, Divider, useInput } from "@nextui-org/react";
-import { useEffect } from "react";
-import { getEvents, useListenToEvent, useRequestAndResponsePacket } from "../misc/events";
+import { useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { GameObjectJSON, useRequestAndResponsePacket } from "../misc/events";
 import { GetGameObjectComponentsResult, ReadMemoryResult } from "../misc/proto/qrue";
 import { DataCell, DataCellType } from "./DataCell"
 
 export interface ComponentsManagerProps {
-
+    objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined
 }
 
-export function ComponentsManager(props: ComponentsManagerProps) {
+type ComponentsManagerParams = {
+    gameObjectAddress: string | undefined;
+}
+
+export function ComponentsManager({ objectsMap }: ComponentsManagerProps) {
     // TODO: Grab this from useParams
-    const selectedObject = useListenToEvent(getEvents().SELECTED_GAME_OBJECT)
+    const params = useParams<ComponentsManagerParams>();
+    const selectedObject = useMemo(() => params.gameObjectAddress && objectsMap ? objectsMap[parseInt(params.gameObjectAddress)][0] : undefined, [objectsMap, params.gameObjectAddress]);
 
     const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>();
     const [addressData, getAddressData] = useRequestAndResponsePacket<ReadMemoryResult>()
@@ -19,6 +25,8 @@ export function ComponentsManager(props: ComponentsManagerProps) {
         if (!selectedObject)
             return;
 
+        console.log(`Got selected object ${selectedObject.address}`)
+        
         getComponents({
             getGameObjectComponents: {
                 address: selectedObject.address

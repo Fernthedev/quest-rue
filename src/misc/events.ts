@@ -4,6 +4,8 @@ import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 
+export type GameObjectJSON = ReturnType<typeof ProtoGameObject.prototype.toObject>;
+
 // Singleton for all events
 // Lazily initialized
 let Events: ReturnType<typeof buildEvents> | undefined = undefined
@@ -21,10 +23,7 @@ function buildEvents() {
         // PACKET EVENTS
         ALL_PACKETS: new EventListener<ReturnType<typeof PacketWrapper.prototype.toObject>>(),
         CONNECTED_EVENT: new EventListener<void>(),
-        GAMEOBJECTS_LIST_EVENT: new EventListener<ReturnType<typeof ProtoGameObject.prototype.toObject>[]>(),
-
-        // INTERNAL EVENTS
-        SELECTED_GAME_OBJECT: new EventListener<ReturnType<typeof ProtoGameObject.prototype.toObject> | undefined>()
+        GAMEOBJECTS_LIST_EVENT: new EventListener<GameObjectJSON[]>(),
     } as const;
 }
 
