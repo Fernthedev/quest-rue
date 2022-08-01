@@ -44,7 +44,7 @@ function foo<T extends InterfacePacket<R>, R>(value: T) {
  * When the packet is sent, it is given a unique id
  * When a packet with the same query ID is received, it updates the state
  */
-export function useRequestAndResponsePacket<T extends Message, P extends PacketTypes[0] = PacketTypes[0], R = T["toObject"]>(once = false): [R | undefined, (p: P) => void] {
+export function useRequestAndResponsePacket<T extends Message, P extends PacketTypes[0] = PacketTypes[0], R = ReturnType<T["toObject"]>>(once = false): [R | undefined, (p: P) => void] {
     const [val, setValue] = useState<R | undefined>(undefined)
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
@@ -60,7 +60,7 @@ export function useRequestAndResponsePacket<T extends Message, P extends PacketT
                 if (!packet) throw "Packet is undefined why!"
 
                 setValue(packet as R)
-                
+
                 expectedQueryID.current = undefined;
             }
         }, once)
@@ -75,7 +75,7 @@ export function useRequestAndResponsePacket<T extends Message, P extends PacketT
     return [val, (p: P) => {
         const randomId = uniqueNumber();
         expectedQueryID.current = randomId;
-        sendPacket(PacketWrapper.fromObject({queryResultId: randomId, ...p}));
+        sendPacket(PacketWrapper.fromObject({ queryResultId: randomId, ...p }));
     }];
 }
 
@@ -86,7 +86,7 @@ export function useRequestAndResponsePacket<T extends Message, P extends PacketT
  * @param once only update once when a packet is received
  * @returns The current state value
  */
-export function useListenToEvent<T>(listener: EventListener<T>, once = false) : T | undefined {
+export function useListenToEvent<T>(listener: EventListener<T>, once = false): T | undefined {
     const [val, setValue] = useState<T | undefined>(undefined)
 
     useEffect(() => {
@@ -97,7 +97,7 @@ export function useListenToEvent<T>(listener: EventListener<T>, once = false) : 
         return () => {
             listener.removeListener(callback)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return val;
@@ -118,7 +118,7 @@ export class EventListener<T> {
                 this.removeListener(callback)
             };
 
-            this.otherListeners[index] = [onceWrapper, callback] 
+            this.otherListeners[index] = [onceWrapper, callback]
             return onceWrapper;
         } else {
             this.otherListeners[index] = [callback, undefined]
@@ -130,8 +130,8 @@ export class EventListener<T> {
         const index = this.otherListeners.findIndex(e => e && (e[0] === callback || (e[1] && e[1] === callback)))
         if (index >= 0) this.otherListeners[index] = undefined;
     }
-    
-    invoke(value: T) { 
+
+    invoke(value: T) {
         this.otherListeners.forEach(callback => {
             if (!callback) return;
 
