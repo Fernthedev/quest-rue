@@ -1,6 +1,6 @@
 import { PlayFilled, TextboxFilled, WrenchFilled } from "@fluentui/react-icons";
 import { Button, Input, useTheme } from "@nextui-org/react";
-import { ProtoTypeInfo, ProtoStructInfo, ProtoClassInfo } from "../misc/proto/il2cpp"
+import { ProtoTypeInfo, ProtoStructInfo, ProtoClassInfo, ProtoFieldInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp"
 
 function PrimitiveInputCell(type: ProtoTypeInfo.Primitive) {
     let inputType
@@ -31,9 +31,9 @@ function StructInputCell(info: ProtoStructInfo) {
     const name = info.clazz.namespaze + " :: " + info.clazz.clazz
     const { theme } = useTheme();
 
-    const content = []
+    const content: Array<JSX.Element> = []
     for (let field of info.fieldOffsets) {
-        content.push(InputCell({ type: field[1] }))
+        content.push(FieldDataCell(field[1]))
     }
 
     return (
@@ -71,6 +71,8 @@ function InputCell(props: InputCellProps) {
     }
 }
 
+const iconProps = { style:{ width: "20px", height: "20px" } }
+
 export enum DataCellType {
     Method,
     Field,
@@ -84,8 +86,6 @@ export interface DataCellProps {
 }
 
 export function DataCell(props: DataCellProps) {
-    const iconProps = { style:{ width: "20px", height: "20px" } }
-
     let icon
     switch (props.type) {
         case DataCellType.Method:
@@ -119,13 +119,25 @@ export function DataCell(props: DataCellProps) {
                     },
                     fieldOffsets: {
                         0: {
-                            primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            name: "x",
+                            id: 2398198,
+                            type: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            }
                         },
                         4: {
-                            primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            name: "y",
+                            id: 2345265,
+                            type: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            }
                         },
                         8: {
-                            primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            name: "z",
+                            id: 4235564,
+                            type: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.FLOAT
+                            }
                         }
                     }
                 }
@@ -146,6 +158,36 @@ export function DataCell(props: DataCellProps) {
     return (
         <div className="flex grow basis-0 items-center gap-3" style={{ minWidth: "25em", maxWidth: "40em" }}>
             {icon}
+            <div className="flex flex-col">
+                {name}
+                <InputCell type={typeInfo}></InputCell>
+            </div>
+        </div>
+    )
+}
+
+export function FieldDataCell(fieldInfo : ProtoFieldInfo) {
+    const name = fieldInfo.name
+    const typeInfo = fieldInfo.type
+
+    return (
+        <div className="flex grow basis-0 items-center gap-3" key={name} style={{ minWidth: "25em", maxWidth: "40em" }}>
+            {TextboxFilled(iconProps)}
+            <div className="flex flex-col">
+                {name}
+                <InputCell type={typeInfo}></InputCell>
+            </div>
+        </div>
+    )
+}
+
+export function PropertyDataCell(propInfo : ProtoPropertyInfo) {
+    const name = propInfo.name
+    const typeInfo = propInfo.type
+
+    return (
+        <div className="flex grow basis-0 items-center gap-3" key={name} style={{ minWidth: "25em", maxWidth: "40em" }}>
+            {WrenchFilled(iconProps)}
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo}></InputCell>

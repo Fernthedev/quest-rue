@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* there's probably a better way to do this and at least a better place to put it */
+div.xs-collapse > div[role="button"] {
+  padding: var(--nextui-space-xs) 0;
+}

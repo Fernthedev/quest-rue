@@ -82,7 +82,7 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
         <div style={{ paddingLeft: `calc(20px * ${nestingLevel + 1})`, ...style }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label="R" />
+                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} />
 
                     <CubeFilled title="GameObject" width={"2rem"} height={"2rem"} />
                 </div>
