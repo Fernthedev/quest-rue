@@ -300,7 +300,7 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-
+// TODO: generics
 void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     using namespace Sombrero;
 
@@ -324,6 +324,7 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     // Use a while loop instead of recursive
     // method to improve stack allocations
     while (currentClass != nullptr) {
+        LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(clazz), il2cpp_functions::class_get_name(clazz));
         *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(currentClass);
 
         for (auto i : ClassUtils::GetInterfaces(currentClass))

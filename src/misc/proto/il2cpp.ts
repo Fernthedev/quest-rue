@@ -374,8 +374,9 @@ export namespace ProtoTypeInfo {
         FLOAT = 4,
         DOUBLE = 5,
         STRING = 6,
-        VOID = 7,
-        UNKNOWN = 8
+        PTR = 7,
+        VOID = 8,
+        UNKNOWN = 9
     }
 }
 export class ProtoFieldInfo extends pb_1.Message {

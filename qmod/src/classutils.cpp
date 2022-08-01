@@ -13,7 +13,7 @@ std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass const* klass) {
     // only a single pointer since fields are stored as values
     FieldInfo* iter = nullptr; // needs to be explicitly set to nullptr
     while(il2cpp_functions::class_get_fields(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(iter)
+        if(iter && (iter->type->attrs & FIELD_ATTRIBUTE_STATIC) == 0)
             ret.push_back(iter);
     }
     return ret;
@@ -65,17 +65,19 @@ std::vector<Il2CppClass*> ClassUtils::GetInterfaces(Il2CppClass const* klass) {
 // requires generally switching to type instead of class, which should be done anyway
 
 Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
-    return il2cpp_functions::class_get_parent(const_cast<Il2CppClass *>(klass));
+    return il2cpp_functions::class_get_parent(const_cast<Il2CppClass*>(klass));
 }
 
-ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
+ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     ProtoTypeInfo info;
+    LOG_INFO("Getting type info {}::{}", il2cpp_functions::class_get_namespace(classoftype(type)), il2cpp_functions::class_get_name(classoftype(type)));
+    LOG_INFO("Type enum {}", type->type);
 
-    if (!klassIsValuetype(klass))
-        *info.mutable_classinfo() = GetClassInfo(klass);
+    if (!typeIsValuetype(type))
+        *info.mutable_classinfo() = GetClassInfo(classoftype(type));
     else {
-        // TODO: might want to expand the primitive types specified
-        switch (klass->byval_arg.type) {
+        // TODO: make some of these more correct
+        switch (type->type) {
         case IL2CPP_TYPE_BOOLEAN:
             info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
             break;
@@ -83,9 +85,13 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
             info.set_primitiveinfo(ProtoTypeInfo::CHAR);
             break;
         case IL2CPP_TYPE_I4:
+        case IL2CPP_TYPE_U4:
             info.set_primitiveinfo(ProtoTypeInfo::INT);
             break;
+        case IL2CPP_TYPE_I:
+        case IL2CPP_TYPE_U:
         case IL2CPP_TYPE_I8:
+        case IL2CPP_TYPE_U8:
             info.set_primitiveinfo(ProtoTypeInfo::LONG);
             break;
         case IL2CPP_TYPE_R4:
@@ -100,9 +106,15 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
         case IL2CPP_TYPE_VOID:
             info.set_primitiveinfo(ProtoTypeInfo::VOID);
             break;
-        
+        case IL2CPP_TYPE_PTR:
+            info.set_primitiveinfo(ProtoTypeInfo::PTR);
+            break;
+        case IL2CPP_TYPE_VALUETYPE:
+            if(classoftype(type)->enumtype)
+                return GetTypeInfo(&classoftype(type)->element_class->byval_arg);
+            // don't break for non enums
         default:
-            *info.mutable_structinfo() = GetStructInfo(klass);
+            *info.mutable_structinfo() = GetStructInfo(classoftype(type));
             break;
         }
     }
@@ -111,24 +123,22 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(const Il2CppClass *klass) {
 
 ProtoClassInfo ClassUtils::GetClassInfo(const Il2CppClass* klass) {
     ProtoClassInfo classInfo;
+    LOG_INFO("Getting class info");
 
-    classInfo.set_namespaze(il2cpp_functions::class_get_namespace(const_cast<Il2CppClass *>(klass)));
-    classInfo.set_clazz(il2cpp_functions::class_get_name(const_cast<Il2CppClass *>(klass)));
+    classInfo.set_namespaze(il2cpp_functions::class_get_namespace(const_cast<Il2CppClass*>(klass)));
+    classInfo.set_clazz(il2cpp_functions::class_get_name(const_cast<Il2CppClass*>(klass)));
     // TODO: generics
     return classInfo;
 }
 
-
-std::span<ParameterInfo const> ClassUtils::GetMethodParameters(MethodInfo const *method) {
-    return std::span(method->parameters, method->parameters + method->parameters_count);
-}
-
 ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass) {
     ProtoStructInfo structInfo;
+    LOG_INFO("Getting struct info");
 
     *structInfo.mutable_clazz() = GetClassInfo(klass);
     for(auto& field : GetFields(klass)) {
         structInfo.mutable_fieldoffsets()->insert({field->offset, FieldUtils::GetFieldInfo(field)});
     }
+    LOG_INFO("Got struct info");
     return structInfo;
 }

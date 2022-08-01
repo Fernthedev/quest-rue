@@ -11,16 +11,16 @@ namespace ClassUtils {
     std::vector<MethodInfo*> GetMethods(Il2CppClass const* klass);
 
     std::vector<Il2CppClass*> GetInterfaces(Il2CppClass const* klass);
-    std::span<ParameterInfo const> GetMethodParameters(MethodInfo const * method);
 
     Il2CppClass* GetParent(Il2CppClass const* klass);
 
-    ProtoTypeInfo GetTypeInfo(Il2CppClass const* type);
-    inline ProtoTypeInfo GetTypeInfo(Il2CppType const* type) {
-        return GetTypeInfo(il2cpp_functions::class_from_il2cpp_type(type));
+    ProtoTypeInfo GetTypeInfo(Il2CppType const* type);
+    inline ProtoTypeInfo GetTypeInfo(Il2CppClass* klass) {
+        return GetTypeInfo(il2cpp_functions::class_get_type(klass));
     }
     ProtoClassInfo GetClassInfo(Il2CppClass const* classType);
     ProtoStructInfo GetStructInfo(Il2CppClass const* structType);
 }
 
 #define classofinst(instance) il2cpp_functions::object_get_class(instance)
+#define classoftype(instance) il2cpp_functions::class_from_il2cpp_type(instance)

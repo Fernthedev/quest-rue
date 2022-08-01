@@ -1892,54 +1892,12 @@ export class PacketWrapper extends pb_1.Message {
     constructor(data?: any[] | ({
         queryResultId?: number;
     } & (({
-        invokeMethod?: InvokeMethod;
-        invokeMethodResult?: never;
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        readInstanceDetails?: never;
-        readInstanceDetailsResult?: never;
-    } | {
-        invokeMethod?: never;
-        invokeMethodResult?: InvokeMethodResult;
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        readInstanceDetails?: never;
-        readInstanceDetailsResult?: never;
-    } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: SetField;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -1955,12 +1913,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: SetFieldResult;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -1976,12 +1934,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: GetField;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -1997,12 +1955,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: GetFieldResult;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2018,12 +1976,54 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: InvokeMethod;
+        invokeMethodResult?: never;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
+        getClassDetails?: never;
+        getClassDetailsResult?: never;
+        readInstanceDetails?: never;
+        readInstanceDetailsResult?: never;
+    } | {
+        setField?: never;
+        setFieldResult?: never;
+        getField?: never;
+        getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: InvokeMethodResult;
+        searchObjects?: never;
+        searchObjectsResult?: never;
+        getAllGameObjects?: never;
+        getAllGameObjectsResult?: never;
+        getGameObjectComponents?: never;
+        getGameObjectComponentsResult?: never;
+        readMemory?: never;
+        readMemoryResult?: never;
+        writeMemory?: never;
+        writeMemoryResult?: never;
+        getClassDetails?: never;
+        getClassDetailsResult?: never;
+        readInstanceDetails?: never;
+        readInstanceDetailsResult?: never;
+    } | {
+        setField?: never;
+        setFieldResult?: never;
+        getField?: never;
+        getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: SearchObjects;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2039,12 +2039,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: SearchObjectsResult;
         getAllGameObjects?: never;
@@ -2060,12 +2060,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: GetAllGameObjects;
@@ -2081,12 +2081,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2102,12 +2102,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2123,12 +2123,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2144,12 +2144,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2165,12 +2165,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2186,12 +2186,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2207,12 +2207,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2228,12 +2228,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2249,12 +2249,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2270,12 +2270,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: never;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2291,12 +2291,12 @@ export class PacketWrapper extends pb_1.Message {
         readInstanceDetails?: ReadInstanceDetails;
         readInstanceDetailsResult?: never;
     } | {
-        invokeMethod?: never;
-        invokeMethodResult?: never;
         setField?: never;
         setFieldResult?: never;
         getField?: never;
         getFieldResult?: never;
+        invokeMethod?: never;
+        invokeMethodResult?: never;
         searchObjects?: never;
         searchObjectsResult?: never;
         getAllGameObjects?: never;
@@ -2318,12 +2318,6 @@ export class PacketWrapper extends pb_1.Message {
             if ("queryResultId" in data && data.queryResultId != undefined) {
                 this.queryResultId = data.queryResultId;
             }
-            if ("invokeMethod" in data && data.invokeMethod != undefined) {
-                this.invokeMethod = data.invokeMethod;
-            }
-            if ("invokeMethodResult" in data && data.invokeMethodResult != undefined) {
-                this.invokeMethodResult = data.invokeMethodResult;
-            }
             if ("setField" in data && data.setField != undefined) {
                 this.setField = data.setField;
             }
@@ -2335,6 +2329,12 @@ export class PacketWrapper extends pb_1.Message {
             }
             if ("getFieldResult" in data && data.getFieldResult != undefined) {
                 this.getFieldResult = data.getFieldResult;
+            }
+            if ("invokeMethod" in data && data.invokeMethod != undefined) {
+                this.invokeMethod = data.invokeMethod;
+            }
+            if ("invokeMethodResult" in data && data.invokeMethodResult != undefined) {
+                this.invokeMethodResult = data.invokeMethodResult;
             }
             if ("searchObjects" in data && data.searchObjects != undefined) {
                 this.searchObjects = data.searchObjects;
@@ -2386,58 +2386,58 @@ export class PacketWrapper extends pb_1.Message {
     set queryResultId(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
-    get invokeMethod() {
-        return pb_1.Message.getWrapperField(this, InvokeMethod, 2) as InvokeMethod;
-    }
-    set invokeMethod(value: InvokeMethod) {
-        pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
-    }
-    get has_invokeMethod() {
-        return pb_1.Message.getField(this, 2) != null;
-    }
-    get invokeMethodResult() {
-        return pb_1.Message.getWrapperField(this, InvokeMethodResult, 3) as InvokeMethodResult;
-    }
-    set invokeMethodResult(value: InvokeMethodResult) {
-        pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
-    }
-    get has_invokeMethodResult() {
-        return pb_1.Message.getField(this, 3) != null;
-    }
     get setField() {
-        return pb_1.Message.getWrapperField(this, SetField, 4) as SetField;
+        return pb_1.Message.getWrapperField(this, SetField, 2) as SetField;
     }
     set setField(value: SetField) {
-        pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
     get has_setField() {
-        return pb_1.Message.getField(this, 4) != null;
+        return pb_1.Message.getField(this, 2) != null;
     }
     get setFieldResult() {
-        return pb_1.Message.getWrapperField(this, SetFieldResult, 5) as SetFieldResult;
+        return pb_1.Message.getWrapperField(this, SetFieldResult, 3) as SetFieldResult;
     }
     set setFieldResult(value: SetFieldResult) {
-        pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
     }
     get has_setFieldResult() {
-        return pb_1.Message.getField(this, 5) != null;
+        return pb_1.Message.getField(this, 3) != null;
     }
     get getField() {
-        return pb_1.Message.getWrapperField(this, GetField, 6) as GetField;
+        return pb_1.Message.getWrapperField(this, GetField, 4) as GetField;
     }
     set getField(value: GetField) {
-        pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
     }
     get has_getField() {
-        return pb_1.Message.getField(this, 6) != null;
+        return pb_1.Message.getField(this, 4) != null;
     }
     get getFieldResult() {
-        return pb_1.Message.getWrapperField(this, GetFieldResult, 7) as GetFieldResult;
+        return pb_1.Message.getWrapperField(this, GetFieldResult, 5) as GetFieldResult;
     }
     set getFieldResult(value: GetFieldResult) {
-        pb_1.Message.setOneofWrapperField(this, 7, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
     }
     get has_getFieldResult() {
+        return pb_1.Message.getField(this, 5) != null;
+    }
+    get invokeMethod() {
+        return pb_1.Message.getWrapperField(this, InvokeMethod, 6) as InvokeMethod;
+    }
+    set invokeMethod(value: InvokeMethod) {
+        pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
+    }
+    get has_invokeMethod() {
+        return pb_1.Message.getField(this, 6) != null;
+    }
+    get invokeMethodResult() {
+        return pb_1.Message.getWrapperField(this, InvokeMethodResult, 7) as InvokeMethodResult;
+    }
+    set invokeMethodResult(value: InvokeMethodResult) {
+        pb_1.Message.setOneofWrapperField(this, 7, this.#one_of_decls[0], value);
+    }
+    get has_invokeMethodResult() {
         return pb_1.Message.getField(this, 7) != null;
     }
     get searchObjects() {
@@ -2568,15 +2568,15 @@ export class PacketWrapper extends pb_1.Message {
     }
     get Packet() {
         const cases: {
-            [index: number]: "none" | "invokeMethod" | "invokeMethodResult" | "setField" | "setFieldResult" | "getField" | "getFieldResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult" | "writeMemory" | "writeMemoryResult" | "getClassDetails" | "getClassDetailsResult" | "readInstanceDetails" | "readInstanceDetailsResult";
+            [index: number]: "none" | "setField" | "setFieldResult" | "getField" | "getFieldResult" | "invokeMethod" | "invokeMethodResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult" | "writeMemory" | "writeMemoryResult" | "getClassDetails" | "getClassDetailsResult" | "readInstanceDetails" | "readInstanceDetailsResult";
         } = {
             0: "none",
-            2: "invokeMethod",
-            3: "invokeMethodResult",
-            4: "setField",
-            5: "setFieldResult",
-            6: "getField",
-            7: "getFieldResult",
+            2: "setField",
+            3: "setFieldResult",
+            4: "getField",
+            5: "getFieldResult",
+            6: "invokeMethod",
+            7: "invokeMethodResult",
             8: "searchObjects",
             9: "searchObjectsResult",
             10: "getAllGameObjects",
@@ -2596,12 +2596,12 @@ export class PacketWrapper extends pb_1.Message {
     }
     static fromObject(data: {
         queryResultId?: number;
-        invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
-        invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
         setField?: ReturnType<typeof SetField.prototype.toObject>;
         setFieldResult?: ReturnType<typeof SetFieldResult.prototype.toObject>;
         getField?: ReturnType<typeof GetField.prototype.toObject>;
         getFieldResult?: ReturnType<typeof GetFieldResult.prototype.toObject>;
+        invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
+        invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
         searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
         searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
         getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
@@ -2621,12 +2621,6 @@ export class PacketWrapper extends pb_1.Message {
         if (data.queryResultId != null) {
             message.queryResultId = data.queryResultId;
         }
-        if (data.invokeMethod != null) {
-            message.invokeMethod = InvokeMethod.fromObject(data.invokeMethod);
-        }
-        if (data.invokeMethodResult != null) {
-            message.invokeMethodResult = InvokeMethodResult.fromObject(data.invokeMethodResult);
-        }
         if (data.setField != null) {
             message.setField = SetField.fromObject(data.setField);
         }
@@ -2638,6 +2632,12 @@ export class PacketWrapper extends pb_1.Message {
         }
         if (data.getFieldResult != null) {
             message.getFieldResult = GetFieldResult.fromObject(data.getFieldResult);
+        }
+        if (data.invokeMethod != null) {
+            message.invokeMethod = InvokeMethod.fromObject(data.invokeMethod);
+        }
+        if (data.invokeMethodResult != null) {
+            message.invokeMethodResult = InvokeMethodResult.fromObject(data.invokeMethodResult);
         }
         if (data.searchObjects != null) {
             message.searchObjects = SearchObjects.fromObject(data.searchObjects);
@@ -2686,12 +2686,12 @@ export class PacketWrapper extends pb_1.Message {
     toObject() {
         const data: {
             queryResultId?: number;
-            invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
-            invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
             setField?: ReturnType<typeof SetField.prototype.toObject>;
             setFieldResult?: ReturnType<typeof SetFieldResult.prototype.toObject>;
             getField?: ReturnType<typeof GetField.prototype.toObject>;
             getFieldResult?: ReturnType<typeof GetFieldResult.prototype.toObject>;
+            invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
+            invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
             searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
             searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
             getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
@@ -2710,12 +2710,6 @@ export class PacketWrapper extends pb_1.Message {
         if (this.queryResultId != null) {
             data.queryResultId = this.queryResultId;
         }
-        if (this.invokeMethod != null) {
-            data.invokeMethod = this.invokeMethod.toObject();
-        }
-        if (this.invokeMethodResult != null) {
-            data.invokeMethodResult = this.invokeMethodResult.toObject();
-        }
         if (this.setField != null) {
             data.setField = this.setField.toObject();
         }
@@ -2727,6 +2721,12 @@ export class PacketWrapper extends pb_1.Message {
         }
         if (this.getFieldResult != null) {
             data.getFieldResult = this.getFieldResult.toObject();
+        }
+        if (this.invokeMethod != null) {
+            data.invokeMethod = this.invokeMethod.toObject();
+        }
+        if (this.invokeMethodResult != null) {
+            data.invokeMethodResult = this.invokeMethodResult.toObject();
         }
         if (this.searchObjects != null) {
             data.searchObjects = this.searchObjects.toObject();
@@ -2778,18 +2778,18 @@ export class PacketWrapper extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.queryResultId != 0)
             writer.writeUint64(1, this.queryResultId);
-        if (this.has_invokeMethod)
-            writer.writeMessage(2, this.invokeMethod, () => this.invokeMethod.serialize(writer));
-        if (this.has_invokeMethodResult)
-            writer.writeMessage(3, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
         if (this.has_setField)
-            writer.writeMessage(4, this.setField, () => this.setField.serialize(writer));
+            writer.writeMessage(2, this.setField, () => this.setField.serialize(writer));
         if (this.has_setFieldResult)
-            writer.writeMessage(5, this.setFieldResult, () => this.setFieldResult.serialize(writer));
+            writer.writeMessage(3, this.setFieldResult, () => this.setFieldResult.serialize(writer));
         if (this.has_getField)
-            writer.writeMessage(6, this.getField, () => this.getField.serialize(writer));
+            writer.writeMessage(4, this.getField, () => this.getField.serialize(writer));
         if (this.has_getFieldResult)
-            writer.writeMessage(7, this.getFieldResult, () => this.getFieldResult.serialize(writer));
+            writer.writeMessage(5, this.getFieldResult, () => this.getFieldResult.serialize(writer));
+        if (this.has_invokeMethod)
+            writer.writeMessage(6, this.invokeMethod, () => this.invokeMethod.serialize(writer));
+        if (this.has_invokeMethodResult)
+            writer.writeMessage(7, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
         if (this.has_searchObjects)
             writer.writeMessage(8, this.searchObjects, () => this.searchObjects.serialize(writer));
         if (this.has_searchObjectsResult)
@@ -2831,22 +2831,22 @@ export class PacketWrapper extends pb_1.Message {
                     message.queryResultId = reader.readUint64();
                     break;
                 case 2:
-                    reader.readMessage(message.invokeMethod, () => message.invokeMethod = InvokeMethod.deserialize(reader));
-                    break;
-                case 3:
-                    reader.readMessage(message.invokeMethodResult, () => message.invokeMethodResult = InvokeMethodResult.deserialize(reader));
-                    break;
-                case 4:
                     reader.readMessage(message.setField, () => message.setField = SetField.deserialize(reader));
                     break;
-                case 5:
+                case 3:
                     reader.readMessage(message.setFieldResult, () => message.setFieldResult = SetFieldResult.deserialize(reader));
                     break;
-                case 6:
+                case 4:
                     reader.readMessage(message.getField, () => message.getField = GetField.deserialize(reader));
                     break;
-                case 7:
+                case 5:
                     reader.readMessage(message.getFieldResult, () => message.getFieldResult = GetFieldResult.deserialize(reader));
+                    break;
+                case 6:
+                    reader.readMessage(message.invokeMethod, () => message.invokeMethod = InvokeMethod.deserialize(reader));
+                    break;
+                case 7:
+                    reader.readMessage(message.invokeMethodResult, () => message.invokeMethodResult = InvokeMethodResult.deserialize(reader));
                     break;
                 case 8:
                     reader.readMessage(message.searchObjects, () => message.searchObjects = SearchObjects.deserialize(reader));
