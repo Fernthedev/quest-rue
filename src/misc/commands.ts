@@ -15,8 +15,8 @@ export function connect(ip: string, port: number) {
     socket.onmessage = (event) => {
         const bytes: Uint8Array = event.data;
         const wrapper = PacketWrapper.deserialize(bytes);
-        const packetWrapper = wrapper;
-        // console.log(JSON.stringify(packetWrapper.toObject()));
+        const packetWrapper = wrapper.toObject();
+        console.log(JSON.stringify(packetWrapper));
 
         if(wrapper.getAllGameObjectsResult !== undefined) {
             getEvents().GAMEOBJECTS_LIST_EVENT.invoke(packetWrapper.getAllGameObjectsResult!.objects!);
@@ -40,7 +40,6 @@ export function requestGameObjects() {
 }
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
-    console.log(`Sending packet ${p.Packet}`)
     if (import.meta.env.VITE_USE_QUEST_MOCK) return;
 
     socket.send(p.serializeBinary())
