@@ -1,3 +1,4 @@
+import { Message } from "google-protobuf";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { sendPacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
@@ -32,14 +33,22 @@ function buildEvents() {
 
 export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
 
+interface InterfacePacket<T> extends Message {
+    toObject(): T
+}
+
+function foo<T extends InterfacePacket<R>, R>(value: T) {
+    return typeof value.toObject
+}
+
 /**
  * A hook that returns the value of a packet with a response
  * Essentially, it gives both the current state and a function to send a packet
  * When the packet is sent, it is given a unique id
  * When a packet with the same query ID is received, it updates the state
  */
-export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = PacketTypes[0]>(once = false): [T | undefined, (p: P) => void] {
-    const [val, setValue] = useState<T | undefined>(undefined)
+export function useRequestAndResponsePacket<T extends Message, P extends PacketTypes[0] = PacketTypes[0], R = T["toObject"]>(once = false): [R | undefined, (p: P) => void] {
+    const [val, setValue] = useState<R | undefined>(undefined)
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
     const expectedQueryID: MutableRefObject<number | undefined> = useRef<number | undefined>(undefined)
@@ -53,7 +62,7 @@ export function useRequestAndResponsePacket<T, P extends PacketTypes[0] = Packet
 
                 if (!packet) throw "Packet is undefined why!"
 
-                setValue(packet as T)
+                setValue(packet as R)
                 
                 expectedQueryID.current = undefined;
             }
