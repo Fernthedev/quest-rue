@@ -10,6 +10,8 @@ class Manager {
     private:
     
     void processMessage(const PacketWrapper& packet);
+    void setField(const SetField& packet, uint64_t id);
+    void getField(const GetField& packet, uint64_t id);
     void invokeMethod(const InvokeMethod& packet, uint64_t id);
     void searchObjects(const SearchObjects& packet, uint64_t id);
     void getAllGameObjects(const GetAllGameObjects& packet, uint64_t id);

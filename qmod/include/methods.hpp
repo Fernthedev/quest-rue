@@ -29,8 +29,8 @@ namespace MethodUtils {
 };
 
 namespace FieldUtils {
-    RetWrapper Get(FieldInfo* field, Il2CppObject* object, std::string& error);
-    void Set(FieldInfo* field, Il2CppObject* object, void** args, std::string& error, bool derefReferences = true);
+    RetWrapper Get(FieldInfo* field, Il2CppObject* object);
+    void Set(FieldInfo* field, Il2CppObject* object, void** args, bool derefReferences = true);
 
     ProtoFieldInfo GetFieldInfo(FieldInfo* field);
 }

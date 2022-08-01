@@ -8,6 +8,26 @@ import "unity.proto";
 
 // COMMAND/QUERY PACKETS
 
+message SetField {
+    uint64 fieldId = 1;
+    uint64 objectAddress = 2;
+    ProtoDataPayload value = 3;
+}
+
+message SetFieldResult {
+    uint64 fieldId = 1;
+}
+
+message GetField {
+    uint64 fieldId = 1;
+    uint64 objectAddress = 2;
+}
+
+message GetFieldResult {
+    uint64 fieldId = 1;
+    ProtoDataPayload value = 2;
+}
+
 message InvokeMethod {
     uint64 methodId = 1;
     uint64 objectAddress = 2;
@@ -116,21 +136,25 @@ message ReadInstanceDetailsResult {
 message PacketWrapper {
     uint64 queryResultId = 1;
     oneof Packet {
-        InvokeMethod invokeMethod = 2;
-        InvokeMethodResult invokeMethodResult = 3;
-        SearchObjects searchObjects = 4;
-        SearchObjectsResult searchObjectsResult = 5;
-        GetAllGameObjects getAllGameObjects = 6;
-        GetAllGameObjectsResult getAllGameObjectsResult = 7;
-        GetGameObjectComponents getGameObjectComponents = 8;
-        GetGameObjectComponentsResult getGameObjectComponentsResult = 9;
-        ReadMemory readMemory = 10;
-        ReadMemoryResult readMemoryResult = 11;
-        WriteMemory writeMemory = 12;
-        WriteMemoryResult writeMemoryResult = 13;
-        GetClassDetails getClassDetails = 14;
-        GetClassDetailsResult getClassDetailsResult = 15;
-        ReadInstanceDetails readInstanceDetails = 16;
-        ReadInstanceDetailsResult readInstanceDetailsResult = 17;
+        SetField setField = 2;
+        SetFieldResult setFieldResult = 3;
+        GetField getField = 4;
+        GetFieldResult getFieldResult = 5;
+        InvokeMethod invokeMethod = 6;
+        InvokeMethodResult invokeMethodResult = 7;
+        SearchObjects searchObjects = 8;
+        SearchObjectsResult searchObjectsResult = 9;
+        GetAllGameObjects getAllGameObjects = 10;
+        GetAllGameObjectsResult getAllGameObjectsResult = 11;
+        GetGameObjectComponents getGameObjectComponents = 12;
+        GetGameObjectComponentsResult getGameObjectComponentsResult = 13;
+        ReadMemory readMemory = 14;
+        ReadMemoryResult readMemoryResult = 15;
+        WriteMemory writeMemory = 16;
+        WriteMemoryResult writeMemoryResult = 17;
+        GetClassDetails getClassDetails = 18;
+        GetClassDetailsResult getClassDetailsResult = 19;
+        ReadInstanceDetails readInstanceDetails = 20;
+        ReadInstanceDetailsResult readInstanceDetailsResult = 21;
     }
 }

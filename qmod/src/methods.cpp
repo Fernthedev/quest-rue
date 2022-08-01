@@ -184,7 +184,7 @@ namespace MethodUtils {
 }
 
 namespace FieldUtils {
-    RetWrapper Get(FieldInfo* field, Il2CppObject* object, std::string& error) {
+    RetWrapper Get(FieldInfo* field, Il2CppObject* object) {
         LOG_INFO("Getting field {}", field->name);
         LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
 
@@ -195,7 +195,7 @@ namespace FieldUtils {
         return RetWrapper(ret, size);
     }
 
-    void Set(FieldInfo* field, Il2CppObject* object, void** args, std::string& error, bool derefReferences) {
+    void Set(FieldInfo* field, Il2CppObject* object, void** args, bool derefReferences) {
         LOG_INFO("Setting field {}", field->name);
         LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
 

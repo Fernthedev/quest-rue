@@ -121,7 +121,7 @@ export class ProtoStructInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
         clazz?: ProtoClassInfo;
-        fieldOffsets?: Map<number, ProtoTypeInfo>;
+        fieldOffsets?: Map<number, ProtoFieldInfo>;
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -146,15 +146,15 @@ export class ProtoStructInfo extends pb_1.Message {
         return pb_1.Message.getField(this, 1) != null;
     }
     get fieldOffsets() {
-        return pb_1.Message.getField(this, 2) as any as Map<number, ProtoTypeInfo>;
+        return pb_1.Message.getField(this, 2) as any as Map<number, ProtoFieldInfo>;
     }
-    set fieldOffsets(value: Map<number, ProtoTypeInfo>) {
+    set fieldOffsets(value: Map<number, ProtoFieldInfo>) {
         pb_1.Message.setField(this, 2, value as any);
     }
     static fromObject(data: {
         clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
         fieldOffsets?: {
-            [key: number]: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+            [key: number]: ReturnType<typeof ProtoFieldInfo.prototype.toObject>;
         };
     }): ProtoStructInfo {
         const message = new ProtoStructInfo({});
@@ -162,7 +162,7 @@ export class ProtoStructInfo extends pb_1.Message {
             message.clazz = ProtoClassInfo.fromObject(data.clazz);
         }
         if (typeof data.fieldOffsets == "object") {
-            message.fieldOffsets = new Map(Object.entries(data.fieldOffsets).map(([key, value]) => [Number(key), ProtoTypeInfo.fromObject(value)]));
+            message.fieldOffsets = new Map(Object.entries(data.fieldOffsets).map(([key, value]) => [Number(key), ProtoFieldInfo.fromObject(value)]));
         }
         return message;
     }
@@ -170,7 +170,7 @@ export class ProtoStructInfo extends pb_1.Message {
         const data: {
             clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             fieldOffsets?: {
-                [key: number]: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+                [key: number]: ReturnType<typeof ProtoFieldInfo.prototype.toObject>;
             };
         } = {};
         if (this.clazz != null) {
@@ -208,7 +208,7 @@ export class ProtoStructInfo extends pb_1.Message {
                 case 2:
                     reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fieldOffsets as any, reader, reader.readInt32, () => {
                         let value;
-                        reader.readMessage(message, () => value = ProtoTypeInfo.deserialize(reader));
+                        reader.readMessage(message, () => value = ProtoFieldInfo.deserialize(reader));
                         return value;
                     }));
                     break;

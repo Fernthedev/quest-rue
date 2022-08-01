@@ -57,6 +57,12 @@ void Manager::processMessage(const PacketWrapper& packet) {
         case PacketWrapper::kInvokeMethod:
             invokeMethod(packet.invokemethod(), id);
             break;
+        case PacketWrapper::kSetField:
+            setField(packet.setfield(), id);
+            break;
+        case PacketWrapper::kGetField:
+            getField(packet.getfield(), id);
+            break;
         case PacketWrapper::kSearchObjects:
             searchObjects(packet.searchobjects(), id);
             break;
@@ -82,6 +88,40 @@ void Manager::processMessage(const PacketWrapper& packet) {
             LOG_INFO("Invalid packet type! {}", packet.Packet_case());
         }
     });
+}
+
+void Manager::setField(const SetField& packet, uint64_t queryId) {
+    auto field = asPtr(FieldInfo, packet.fieldid());
+    auto object = asPtr(Il2CppObject, packet.objectaddress());
+
+    auto value = ReinterpretBytes<void*>(packet.value().data());
+
+    FieldUtils::Set(field, object, &value);
+
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+    SetFieldResult& result = *wrapper.mutable_setfieldresult();
+    result.set_fieldid(asInt(field));
+
+    handler->sendPacket(wrapper);
+}
+
+void Manager::getField(const GetField& packet, uint64_t queryId) {
+    auto field = asPtr(FieldInfo, packet.fieldid());
+    auto object = asPtr(Il2CppObject, packet.objectaddress());
+
+    auto res = FieldUtils::Get(field, object);
+
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+    GetFieldResult& result = *wrapper.mutable_getfieldresult();
+    result.set_fieldid(asInt(field));
+
+    ProtoDataPayload& data = *result.mutable_value();
+    *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(field->type);
+    data.set_data(res.GetAsString());
+
+    handler->sendPacket(wrapper);
 }
 
 void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {

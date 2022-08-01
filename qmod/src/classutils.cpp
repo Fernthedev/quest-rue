@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "classutils.hpp"
+#include "methods.hpp"
 
 #include <span>
 
@@ -127,7 +128,7 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass) {
 
     *structInfo.mutable_clazz() = GetClassInfo(klass);
     for(auto& field : GetFields(klass)) {
-        structInfo.mutable_fieldoffsets()->insert({field->offset, GetTypeInfo(field->type)});
+        structInfo.mutable_fieldoffsets()->insert({field->offset, FieldUtils::GetFieldInfo(field)});
     }
     return structInfo;
 }
