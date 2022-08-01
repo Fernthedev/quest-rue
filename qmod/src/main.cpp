@@ -24,7 +24,21 @@ static ModInfo modInfo{MOD_ID, VERSION};
 
 using namespace UnityEngine;
 
-Logger& getLogger() {
+void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
+    static bool loaded;
+    if (!scene.IsValid() || loaded)
+        return;
+
+    loaded = true;
+
+    IL2CPP_CATCH_HANDLER(
+        auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
+        UnityEngine::Object::DontDestroyOnLoad(go);
+        go->AddComponent<QRUE::MainThreadRunner *>();)
+}
+
+Logger &getLogger()
+{
     static Logger* logger = new Logger(modInfo, new LoggerOptions(false, true));
     return *logger;
 }
@@ -60,21 +74,9 @@ extern "C" void load() {
     LOG_INFO("Initializing connection manager");
     Manager::GetInstance()->Init();
 
-    auto onSceneChanged = *[](SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
-        static bool loaded;
-        if (!scene.IsValid() || loaded)
-            return;
+    std::function<void(SceneManagement::Scene scene, SceneManagement::LoadSceneMode)> onSceneChanged = onSceneLoad;
 
-        loaded = true;
-
-        IL2CPP_CATCH_HANDLER(
-            auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
-            UnityEngine::Object::DontDestroyOnLoad(go);
-            go->AddComponent<QRUE::MainThreadRunner*>();
-        )
-    };
-
-    auto delegate = il2cpp_utils::MakeDelegate<Events::UnityAction_2<SceneManagement::Scene, SceneManagement::LoadSceneMode>*>(nullptr, onSceneChanged);
+    auto delegate = custom_types::MakeDelegate<Events::UnityAction_2<SceneManagement::Scene, SceneManagement::LoadSceneMode>*>(onSceneChanged);
 
     SceneManagement::SceneManager::add_sceneLoaded(delegate);
 }
