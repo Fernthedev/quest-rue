@@ -1,5 +1,6 @@
 import { PlayFilled, TextboxFilled, WrenchFilled } from "@fluentui/react-icons";
 import { Button, Input, useTheme } from "@nextui-org/react";
+import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoStructInfo, ProtoClassInfo, ProtoFieldInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp"
 
 function PrimitiveInputCell(type: ProtoTypeInfo.Primitive) {
@@ -22,19 +23,16 @@ function PrimitiveInputCell(type: ProtoTypeInfo.Primitive) {
     }
     return (
         <div>
-            <Input clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }}></Input>
+            <Input clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }} />
         </div>
     )
 }
 
-function StructInputCell(info: ProtoStructInfo) {
-    const name = info.clazz.namespaze + " :: " + info.clazz.clazz
+function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
+    const name = info?.clazz?.namespaze + " :: " + info?.clazz?.clazz
     const { theme } = useTheme();
 
-    const content: Array<JSX.Element> = []
-    for (let field of info.fieldOffsets) {
-        content.push(FieldDataCell(field[1]))
-    }
+    const content = Object.values(info?.fieldOffsets ?? {}).map(field => FieldDataCell(field))
 
     return (
         <div className="dropdown">
@@ -46,7 +44,7 @@ function StructInputCell(info: ProtoStructInfo) {
     )
 }
 
-function ClassInputCell(info: ProtoClassInfo) {
+function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
     return (
         <div>
             <Input readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
@@ -55,20 +53,20 @@ function ClassInputCell(info: ProtoClassInfo) {
 }
 
 interface InputCellProps {
-    type: ProtoTypeInfo
+    type: PacketJSON<ProtoTypeInfo>
 }
 
 function InputCell(props: InputCellProps) {
-    switch (props.type.Info) {
-        case "primitiveInfo":
-            return PrimitiveInputCell(props.type.primitiveInfo)
-        case "structInfo":
-            return StructInputCell(props.type.structInfo)
-        case "classInfo":
-            return ClassInputCell(props.type.classInfo)
-        default:
-            throw "Input not defined for data type"
-    }
+    if (props.type.primitiveInfo)
+        return PrimitiveInputCell(props.type.primitiveInfo)
+    if (props.type.structInfo)
+        return StructInputCell(props.type.structInfo)
+    if (props.type.classInfo)
+        return ClassInputCell(props.type.classInfo)
+
+    
+    throw "Input not defined for data type"
+
 }
 
 const iconProps = { style:{ width: "20px", height: "20px" } }
@@ -101,17 +99,18 @@ export function DataCell(props: DataCellProps) {
             throw "Icon not defined for component data type"
     }
 
-    let typeInfo
-    let name
+    let typeInfo: PacketJSON<ProtoTypeInfo>
+    let name: string
+
     switch (props.type) {
         case DataCellType.Method:
-            typeInfo = ProtoTypeInfo.fromObject({
+            typeInfo = {
                 primitiveInfo: ProtoTypeInfo.Primitive.INT
-            })
+            }
             name = "method with parameters, idk unfinished"
             break
         case DataCellType.Field:
-            typeInfo = ProtoTypeInfo.fromObject({
+            typeInfo = {
                 structInfo: {
                     clazz: {
                         namespaze: "UnityEngine",
@@ -141,16 +140,16 @@ export function DataCell(props: DataCellProps) {
                         }
                     }
                 }
-            })
+            }
             name = "some vector field or whatnot"
             break
         case DataCellType.Property:
-            typeInfo = ProtoTypeInfo.fromObject({
+            typeInfo = {
                 classInfo: {
                     namespaze: "UnityEngine",
                     clazz: "GameObject"
                 }
-            })
+            }
             name = "property but no input cuz pointer"
             break
     }
@@ -160,13 +159,13 @@ export function DataCell(props: DataCellProps) {
             {icon}
             <div className="flex flex-col">
                 {name}
-                <InputCell type={typeInfo}></InputCell>
+                <InputCell type={typeInfo} />
             </div>
         </div>
     )
 }
 
-export function FieldDataCell(fieldInfo : ProtoFieldInfo) {
+export function FieldDataCell(fieldInfo: PacketJSON<ProtoFieldInfo>) {
     const name = fieldInfo.name
     const typeInfo = fieldInfo.type
 
@@ -175,13 +174,13 @@ export function FieldDataCell(fieldInfo : ProtoFieldInfo) {
             {TextboxFilled(iconProps)}
             <div className="flex flex-col">
                 {name}
-                <InputCell type={typeInfo}></InputCell>
+                <InputCell type={typeInfo!} />
             </div>
         </div>
     )
 }
 
-export function PropertyDataCell(propInfo : ProtoPropertyInfo) {
+export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
     const name = propInfo.name
     const typeInfo = propInfo.type
 
@@ -190,7 +189,7 @@ export function PropertyDataCell(propInfo : ProtoPropertyInfo) {
             {WrenchFilled(iconProps)}
             <div className="flex flex-col">
                 {name}
-                <InputCell type={typeInfo}></InputCell>
+                <InputCell type={typeInfo!} />
             </div>
         </div>
     )

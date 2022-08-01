@@ -6,6 +6,9 @@ import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 
 export type GameObjectJSON = ReturnType<typeof ProtoGameObject.prototype.toObject>;
+export type PacketWrapperCustomJSON = ReturnType<typeof PacketWrapper.prototype.toObject> & {
+    packetType: typeof PacketWrapper.prototype.Packet
+};
 
 // Singleton for all events
 // Lazily initialized
@@ -22,21 +25,14 @@ export function getEvents() {
 function buildEvents() {
     return {
         // PACKET EVENTS
-        ALL_PACKETS: new EventListener<ReturnType<typeof PacketWrapper.prototype.toObject>>(),
+        ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
         CONNECTED_EVENT: new EventListener<void>(),
         GAMEOBJECTS_LIST_EVENT: new EventListener<GameObjectJSON[]>(),
     } as const;
 }
 
 export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
-
-interface InterfacePacket<T> extends Message {
-    toObject(): T
-}
-
-function foo<T extends InterfacePacket<R>, R>(value: T) {
-    return typeof value.toObject
-}
+export type PacketJSON<T extends Message> = ReturnType<T["toObject"]>
 
 /**
  * A hook that returns the value of a packet with a response
@@ -55,7 +51,7 @@ export function useRequestAndResponsePacket<T extends Message, P extends PacketT
         const listener = getEvents().ALL_PACKETS;
         const callback = listener.addListener((v) => {
             if (expectedQueryID && v.queryResultId === expectedQueryID.current) {
-                const packet = Object.values(v).find(e => e !== expectedQueryID)!
+                const packet = (v as Record<string, unknown>)[v.packetType];
 
                 if (!packet) throw "Packet is undefined why!"
 

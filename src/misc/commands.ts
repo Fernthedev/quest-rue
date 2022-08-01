@@ -25,7 +25,10 @@ export function connect(ip: string, port: number) {
             console.log(wrapper.readMemoryResult);
         }
 
-        getEvents().ALL_PACKETS.invoke(packetWrapper);
+        getEvents().ALL_PACKETS.invoke({
+            ...packetWrapper,
+            packetType: wrapper.Packet
+        });
     };
 }
 

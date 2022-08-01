@@ -1,17 +1,17 @@
 import { FieldDataCell, PropertyDataCell } from "./DataCell"
 import { ProtoClassInfo, ProtoClassDetails } from "../misc/proto/il2cpp"
 import { Collapse, Divider, Loading } from "@nextui-org/react"
-import { GetClassDetailsResult, PacketWrapper } from "../misc/proto/qrue"
-import { useRequestAndResponsePacket } from "../misc/events"
-import { useEffect, useMemo } from "react"
+import { GetClassDetailsResult } from "../misc/proto/qrue"
+import { PacketJSON, useRequestAndResponsePacket } from "../misc/events"
+import { useEffect } from "react"
 import { useParams } from "react-router-dom";
 
-function AllDetails(details: ProtoClassDetails) {
-    const fields = details.fields.map(field => FieldDataCell(field))
+function AllDetails(details: PacketJSON<ProtoClassDetails>) {
+    const fields = details?.fields?.map(field => FieldDataCell(field))
     
-    const props = details.properties.map(prop => PropertyDataCell(prop))
+    const props = details?.properties?.map(prop => PropertyDataCell(prop))
 
-    const name = details.clazz.namespaze + " :: " + details.clazz.clazz
+    const name = details?.clazz?.namespaze + " :: " + details?.clazz?.clazz
     
     return (
         <div key={name}>
@@ -26,14 +26,14 @@ function AllDetails(details: ProtoClassDetails) {
     )
 }
 
-function GetAllDetails(details?: ProtoClassDetails) {
+function GetAllDetails(details?: PacketJSON<ProtoClassDetails>) {
     if (!details) return undefined
 
-    const ret = []
+    const ret: ReturnType<typeof AllDetails>[] = []
 
     ret.push(AllDetails(details))
-    while (details.has_parent) {
-        details = details.parent
+    while (details?.parent) {
+        details = details?.parent;
         ret.push(AllDetails(details))
     }
     return ret
@@ -41,20 +41,20 @@ function GetAllDetails(details?: ProtoClassDetails) {
 
 const helpers: TypeHelper[] = []
 
-type TypeHelper = (details: ProtoClassDetails) => JSX.Element | undefined
+type TypeHelper = (details: PacketJSON<ProtoClassDetails>) => JSX.Element | undefined
 
 export function RegisterHelper(helper: TypeHelper) {
     helpers.push(helper)
 }
 
-function GetHelpers(details?: ProtoClassDetails) {
+function GetHelpers(details?: PacketJSON<ProtoClassDetails>) {
     if (!details) return undefined
 
     return helpers.map(helper => helper(details)).filter(component => component !== undefined);
 }
 
 export interface TypeManagerProps {
-    info: ProtoClassInfo
+    info: PacketJSON<ProtoClassInfo>
 }
 
 type TypeManagerParams = {

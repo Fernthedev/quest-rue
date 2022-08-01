@@ -1,4 +1,4 @@
-import { CubeFilled, DeveloperBoardFilled, FlagFilled, FlagPrideFilled, FlashOnFilled, FStopFilled } from "@fluentui/react-icons";
+import { CubeFilled, DeveloperBoardFilled, FlagFilled, FlagPrideFilled, FlashFilled, FStopFilled } from "@fluentui/react-icons";
 import { Card, Container, Row, Spacer, Text } from "@nextui-org/react";
 
 export enum ComponentDataType {
@@ -29,7 +29,7 @@ export function ComponentDataCard(props: ComponentDataCardProps) {
             icon = FlagPrideFilled({ height: iconSize, width: iconSize }) // why not 
             break;
         case ComponentDataType.ACTION:
-            icon = FlashOnFilled({ height: iconSize, width: iconSize })
+            icon = FlashFilled({ height: iconSize, width: iconSize })
             break;
         default:
             throw "Icon not defined for component data type"

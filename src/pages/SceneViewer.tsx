@@ -5,7 +5,7 @@ import { ComponentsManager } from '../components/ComponentsManager'
 import { Tabs } from '../components/Tabs'
 import { Route, Routes } from 'react-router-dom'
 import { useEffect, useMemo } from 'react'
-import { useListenToEvent, getEvents, GameObjectJSON } from '../misc/events'
+import { useListenToEvent, getEvents, GameObjectJSON, PacketJSON } from '../misc/events'
 import { items as main_menu_json } from "../misc/test_data_in_main_menu.json";
 import { TypeManager } from '../components/TypeManager'
 import { ProtoClassInfo } from "../misc/proto/il2cpp"
@@ -31,10 +31,10 @@ function SceneViewer() {
     return obj;
   }, [objects]);
 
-  const tempInfo = ProtoClassInfo.fromObject({
+  const tempInfo: PacketJSON<ProtoClassInfo> = {
     namespaze: "UnityEngine",
     clazz: "GameObject"
-  })
+  }
 
   // future reference
   // 100vh means 100% of the view height
@@ -58,7 +58,7 @@ function SceneViewer() {
 
             {/* TODO: Use client side routing for components */}
             <Routes>
-              <Route path={"/components/:gameObjectAddress"} element={<TypeManager info={tempInfo} />} />
+              <Route path={"components/:gameObjectAddress"} element={<TypeManager info={tempInfo} />} />
             </Routes>
 
           </div>
