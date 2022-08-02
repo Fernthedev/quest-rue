@@ -25,7 +25,7 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
             break;
     }
     return (
-        <Input clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }} />
+        <Input aria-label={type.toString()} label={type.toString()} clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }} />
     )
 }
 
@@ -47,7 +47,7 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
 
 function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
     return (
-        <Input readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
+        <Input aria-label={info.clazz} label={info.clazz} readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
     )
 }
 

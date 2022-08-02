@@ -82,7 +82,7 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
         <div style={{ paddingLeft: `calc(20px * ${nestingLevel + 1})`, ...style }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} />
+                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label={go.transform!.address?.toString()} aria-label={go.transform!.address?.toString()} />
 
                     <CubeFilled title="GameObject" width={"2rem"} height={"2rem"} />
                 </div>
@@ -169,7 +169,7 @@ export default function GameObjectsList({objectsMap}: GameObjectsListProps) {
         <div className="flex flex-col" style={{ height: "100%" }}>
             <div className="flex justify-center" style={{ width: "100%", height: "7em" }}>
 
-                <Input label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
+                <Input label="Search" aria-label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
 
             </div>
 
@@ -177,7 +177,10 @@ export default function GameObjectsList({objectsMap}: GameObjectsListProps) {
                 <AutoSizer disableWidth>
                     {({ height, width }) => (
                         // TODO: Make selected based on url params
-                        <Radio.Group onChange={(e) => {
+                        <Radio.Group
+                            aria-label={"GameObjectList"} label={"GameObjectList"}
+
+                            onChange={(e) => {
                             console.log(`Selected ${e}`);
                             // TODO: make this a function that takes a GameObjectJSON, this is extremely error prone
                             navigate(`components/${objectsMap[parseInt(e)][0].transform?.address}`)
