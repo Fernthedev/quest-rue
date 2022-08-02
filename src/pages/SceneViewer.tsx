@@ -31,11 +31,6 @@ function SceneViewer() {
     return obj;
   }, [objects]);
 
-  const tempInfo: PacketJSON<ProtoClassInfo> = {
-    namespaze: "UnityEngine",
-    clazz: "GameObject"
-  }
-
   // future reference
   // 100vh means 100% of the view height
 
@@ -58,7 +53,7 @@ function SceneViewer() {
 
             {/* TODO: Use client side routing for components */}
             <Routes>
-              <Route path={"components/:gameObjectAddress"} element={<TypeManager info={tempInfo} />} />
+              <Route path={"components/:gameObjectAddress"} element={<TypeManager objectsMap={objectsMap} />} />
             </Routes>
 
           </div>

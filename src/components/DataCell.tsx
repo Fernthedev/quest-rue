@@ -57,14 +57,15 @@ interface InputCellProps {
 }
 
 function InputCell(props: InputCellProps) {
-    if (props.type.primitiveInfo)
+    if (props.type.primitiveInfo !== undefined)
         return PrimitiveInputCell(props.type.primitiveInfo)
-    if (props.type.structInfo)
+    if (props.type.structInfo !== undefined)
         return StructInputCell(props.type.structInfo)
-    if (props.type.classInfo)
+    if (props.type.classInfo !== undefined)
         return ClassInputCell(props.type.classInfo)
 
-    
+    console.error("Input not defined")
+    console.error(JSON.stringify(props.type))
     throw "Input not defined for data type"
 
 }
@@ -84,7 +85,7 @@ export interface DataCellProps {
 }
 
 export function DataCell(props: DataCellProps) {
-    let icon
+    let icon: JSX.Element
     switch (props.type) {
         case DataCellType.Method:
             icon = PlayFilled(iconProps)
@@ -152,6 +153,8 @@ export function DataCell(props: DataCellProps) {
             }
             name = "property but no input cuz pointer"
             break
+        default: 
+            throw "Property not found"
     }
 
     return (

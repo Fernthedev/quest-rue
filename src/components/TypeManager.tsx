@@ -1,9 +1,9 @@
 import { FieldDataCell, PropertyDataCell } from "./DataCell"
 import { ProtoClassInfo, ProtoClassDetails } from "../misc/proto/il2cpp"
 import { Collapse, Divider, Loading } from "@nextui-org/react"
-import { GetClassDetailsResult } from "../misc/proto/qrue"
-import { PacketJSON, useRequestAndResponsePacket } from "../misc/events"
-import { useEffect } from "react"
+import { GetClassDetailsResult, GetGameObjectComponentsResult } from "../misc/proto/qrue"
+import { GameObjectJSON, PacketJSON, useRequestAndResponsePacket } from "../misc/events"
+import { useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom";
 
 function AllDetails(details: PacketJSON<ProtoClassDetails>) {
@@ -54,32 +54,50 @@ function GetHelpers(details?: PacketJSON<ProtoClassDetails>) {
 }
 
 export interface TypeManagerProps {
-    info: PacketJSON<ProtoClassInfo>
+    objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined
 }
 
 type TypeManagerParams = {
     gameObjectAddress?: string
 }
 
-export function TypeManager(props: TypeManagerProps) {
-    const [ classDetails, getClassDetails ] = useRequestAndResponsePacket<GetClassDetailsResult>()
+export function TypeManager({ objectsMap }: TypeManagerProps) {
     const params = useParams<TypeManagerParams>();
+    const [ classDetails, getClassDetails ] = useRequestAndResponsePacket<GetClassDetailsResult>()
+
+    const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>();    
+    const selectedObject = useMemo(() => params.gameObjectAddress && objectsMap ? objectsMap[parseInt(params.gameObjectAddress)][0] : undefined, [objectsMap, params.gameObjectAddress]);
 
     // get class details each time the info changes
     useEffect(() => {
-        if (!props.info) return
+        if (!selectedObject)
+            return;
+
+        console.log(`Got selected object ${selectedObject.address}`)
+
+        getComponents({
+            getGameObjectComponents: {
+                address: selectedObject.address
+            }
+        })
+    }, [selectedObject]);
+    
+    const comp = components?.components && components.components[0];
+
+    useEffect(() => {
+        if (!selectedObject || !components) return
 
         getClassDetails({
             getClassDetails: {
-                classInfo: props.info
+                classInfo: comp?.classInfo
             }
         })
-    }, [props.info])
+    }, [components])
     
     if (!classDetails) {
         return (
             <div className="flex flex-col items-center justify-center w-full h-full">
-                <h3 className="text-center">Requesting details for {props.info.namespaze + " :: " + props.info.clazz} at {params.gameObjectAddress}</h3>
+                <h3 className="text-center">Requesting details for {comp?.classInfo?.namespaze + " :: " + comp?.classInfo?.clazz} at {params.gameObjectAddress}</h3>
                 <Loading size="xl" />
             </div>
         )

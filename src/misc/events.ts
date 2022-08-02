@@ -50,7 +50,7 @@ export function useRequestAndResponsePacket<T extends Message, P extends PacketT
     useEffect(() => {
         const listener = getEvents().ALL_PACKETS;
         const callback = listener.addListener((v) => {
-            if (expectedQueryID && v.queryResultId === expectedQueryID.current) {
+            if (expectedQueryID.current && v.queryResultId === expectedQueryID.current) {
                 const packet = (v as Record<string, unknown>)[v.packetType];
 
                 if (!packet) throw "Packet is undefined why!"
