@@ -6,19 +6,24 @@ import { GameObjectJSON, PacketJSON, useRequestAndResponsePacket } from "../misc
 import { useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom";
 
-function AllDetails(details: PacketJSON<ProtoClassDetails>) {
-    const fields = details?.fields?.map(field => FieldDataCell(field))
-    
-    const props = details?.properties?.map(prop => PropertyDataCell(prop))
 
+
+function AllDetails(details: PacketJSON<ProtoClassDetails>) {
     const name = details?.clazz?.namespaze + " :: " + details?.clazz?.clazz
-    
+    const key = `${details?.clazz?.namespaze}${details?.clazz?.clazz}${details?.clazz?.generics}`
+
+    const fields = details?.fields?.map(field => <FieldDataCell key={ field.id} {...field} />)
+
+    const props = details?.properties?.map(prop => (<PropertyDataCell key={`${prop.getterId}${prop.setterId}`} {...prop} />))
+
+
+
     return (
-        <div key={name}>
+        <div key={key}>
             <Collapse className="xs-collapse" title={name}>
                 <div className="flex flex-row flex-wrap items-center gap-3 p-1">
                     {fields}
-                    <Divider height={2}/>
+                    <Divider height={2} />
                     {props}
                 </div>
             </Collapse>
@@ -29,12 +34,13 @@ function AllDetails(details: PacketJSON<ProtoClassDetails>) {
 function GetAllDetails(details?: PacketJSON<ProtoClassDetails>) {
     if (!details) return undefined
 
-    const ret: ReturnType<typeof AllDetails>[] = []
+    const ret: JSX.Element[] = []
 
-    ret.push(AllDetails(details))
+    const id = (d: typeof details) => `${d?.clazz?.namespaze}${d?.clazz?.clazz}${d?.clazz?.generics}`
+    ret.push(<AllDetails key={id(details)} {...details} />)
     while (details?.parent) {
         details = details?.parent;
-        ret.push(AllDetails(details))
+        ret.push(<AllDetails key={id(details)} {...details} />)
     }
     return ret
 }
@@ -63,9 +69,9 @@ type TypeManagerParams = {
 
 export function TypeManager({ objectsMap }: TypeManagerProps) {
     const params = useParams<TypeManagerParams>();
-    const [ classDetails, getClassDetails ] = useRequestAndResponsePacket<GetClassDetailsResult>()
+    const [classDetails, getClassDetails] = useRequestAndResponsePacket<GetClassDetailsResult>()
 
-    const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>();    
+    const [components, getComponents] = useRequestAndResponsePacket<GetGameObjectComponentsResult>();
     const selectedObject = useMemo(() => params.gameObjectAddress && objectsMap ? objectsMap[parseInt(params.gameObjectAddress)][0] : undefined, [objectsMap, params.gameObjectAddress]);
 
     // get class details each time the info changes
@@ -81,7 +87,7 @@ export function TypeManager({ objectsMap }: TypeManagerProps) {
             }
         })
     }, [selectedObject]);
-    
+
     const comp = components?.components && components.components[0];
 
     useEffect(() => {
@@ -93,7 +99,7 @@ export function TypeManager({ objectsMap }: TypeManagerProps) {
             }
         })
     }, [components])
-    
+
     if (!classDetails) {
         return (
             <div className="flex flex-col items-center justify-center w-full h-full">
@@ -102,7 +108,7 @@ export function TypeManager({ objectsMap }: TypeManagerProps) {
             </div>
         )
     }
-    
+
     return (
         <div className="flex flex-col" style={{ maxHeight: "100%", marginTop: "-1px" }}>
             {GetHelpers(classDetails?.classDetails)}

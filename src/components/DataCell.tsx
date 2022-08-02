@@ -3,8 +3,11 @@ import { Button, Input, useTheme } from "@nextui-org/react";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoStructInfo, ProtoClassInfo, ProtoFieldInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp"
 
-function PrimitiveInputCell(type: ProtoTypeInfo.Primitive) {
-    let inputType
+interface PrimitiveInputCellProps {
+    type: ProtoTypeInfo.Primitive
+}
+function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
+    let inputType: string
     switch (type) {
         case ProtoTypeInfo.Primitive.BOOLEAN:
         case ProtoTypeInfo.Primitive.CHAR:
@@ -22,9 +25,7 @@ function PrimitiveInputCell(type: ProtoTypeInfo.Primitive) {
             break;
     }
     return (
-        <div>
-            <Input clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }} />
-        </div>
+        <Input clearable bordered type={inputType} size="sm" width="20em" css={{ bg: "black" }} />
     )
 }
 
@@ -32,7 +33,7 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
     const name = info?.clazz?.namespaze + " :: " + info?.clazz?.clazz
     const { theme } = useTheme();
 
-    const content = Object.values(info?.fieldOffsets ?? {}).map(field => FieldDataCell(field))
+    const content = Object.values(info!.fieldOffsets!).map(field => <FieldDataCell {...field} key={field.id} />)
 
     return (
         <div className="dropdown">
@@ -46,9 +47,7 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
 
 function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
     return (
-        <div>
-            <Input readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
-        </div>
+        <Input readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
     )
 }
 
@@ -58,11 +57,11 @@ interface InputCellProps {
 
 function InputCell(props: InputCellProps) {
     if (props.type.primitiveInfo !== undefined)
-        return PrimitiveInputCell(props.type.primitiveInfo)
+        return <PrimitiveInputCell type={props.type.primitiveInfo} />
     if (props.type.structInfo !== undefined)
-        return StructInputCell(props.type.structInfo)
+        return <StructInputCell {...props.type.structInfo} />
     if (props.type.classInfo !== undefined)
-        return ClassInputCell(props.type.classInfo)
+        return <ClassInputCell {...props.type.classInfo} />
 
     console.error("Input not defined")
     console.error(JSON.stringify(props.type))
@@ -173,7 +172,7 @@ export function FieldDataCell(fieldInfo: PacketJSON<ProtoFieldInfo>) {
     const typeInfo = fieldInfo.type
 
     return (
-        <div className="flex grow basis-0 items-center gap-3" key={name} style={{ minWidth: "25em", maxWidth: "40em" }}>
+        <div className="flex grow basis-0 items-center gap-3" style={{ minWidth: "25em", maxWidth: "40em" }}>
             {TextboxFilled(iconProps)}
             <div className="flex flex-col">
                 {name}
@@ -188,7 +187,7 @@ export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
     const typeInfo = propInfo.type
 
     return (
-        <div className="flex grow basis-0 items-center gap-3" key={name} style={{ minWidth: "25em", maxWidth: "40em" }}>
+        <div className="flex grow basis-0 items-center gap-3" style={{ minWidth: "25em", maxWidth: "40em" }}>
             {WrenchFilled(iconProps)}
             <div className="flex flex-col">
                 {name}

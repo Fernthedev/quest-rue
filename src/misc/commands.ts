@@ -16,7 +16,7 @@ export function connect(ip: string, port: number) {
         const bytes: Uint8Array = event.data;
         const wrapper = PacketWrapper.deserialize(bytes);
         const packetWrapper = wrapper.toObject();
-        console.log(JSON.stringify(packetWrapper));
+        // console.log(JSON.stringify(packetWrapper));
 
         if(wrapper.getAllGameObjectsResult !== undefined) {
             getEvents().GAMEOBJECTS_LIST_EVENT.invoke(packetWrapper.getAllGameObjectsResult!.objects!);
