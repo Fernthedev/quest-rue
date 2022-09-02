@@ -1,4 +1,5 @@
 import { getEvents } from "./events";
+import { handleGameObjects } from "./handlers/gameobject";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";
 
@@ -12,14 +13,20 @@ export function connect(ip: string, port: number) {
     socket.onopen = (event) => {
         getEvents().CONNECTED_EVENT.invoke();
     };
+    socket.onclose = event => {
+        getEvents().DISCONNECTED_EVENT.invoke(event);
+    }
+    socket.onerror = (event) => {
+        getEvents().ERROR_EVENT.invoke(event)
+    }
     socket.onmessage = (event) => {
         const bytes: Uint8Array = event.data;
         const wrapper = PacketWrapper.deserialize(bytes);
         const packetWrapper = wrapper.toObject();
         // console.log(JSON.stringify(packetWrapper));
 
-        if(wrapper.getAllGameObjectsResult !== undefined) {
-            getEvents().GAMEOBJECTS_LIST_EVENT.invoke(packetWrapper.getAllGameObjectsResult!.objects!);
+        if (packetWrapper.getAllGameObjectsResult) {
+            handleGameObjects(packetWrapper.getAllGameObjectsResult)
         }
         if(wrapper.readMemoryResult !== undefined) {
             console.log(wrapper.readMemoryResult);

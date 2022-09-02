@@ -5,6 +5,8 @@ import { GetClassDetailsResult, GetGameObjectComponentsResult } from "../misc/pr
 import { GameObjectJSON, PacketJSON, useRequestAndResponsePacket } from "../misc/events"
 import { useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom";
+import { useSnapshot } from "valtio"
+import { gameObjectsStore } from "../misc/handlers/gameobject"
 
 
 
@@ -60,14 +62,16 @@ function GetHelpers(details?: PacketJSON<ProtoClassDetails>) {
 }
 
 export interface TypeManagerProps {
-    objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined
+
 }
 
 type TypeManagerParams = {
     gameObjectAddress?: string
 }
 
-export function TypeManager({ objectsMap }: TypeManagerProps) {
+export function TypeManager(props: TypeManagerProps) {
+    const {objectsMap} = useSnapshot(gameObjectsStore)
+
     const params = useParams<TypeManagerParams>();
     const [classDetails, getClassDetails] = useRequestAndResponsePacket<GetClassDetailsResult>()
 
@@ -91,14 +95,14 @@ export function TypeManager({ objectsMap }: TypeManagerProps) {
     const comp = components?.components && components.components[0];
 
     useEffect(() => {
-        if (!selectedObject || !components) return
+        if (!comp) return
 
         getClassDetails({
             getClassDetails: {
                 classInfo: comp?.classInfo
             }
         })
-    }, [components])
+    }, [comp])
 
     if (!classDetails) {
         return (

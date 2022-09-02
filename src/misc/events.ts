@@ -27,7 +27,8 @@ function buildEvents() {
         // PACKET EVENTS
         ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
         CONNECTED_EVENT: new EventListener<void>(),
-        GAMEOBJECTS_LIST_EVENT: new EventListener<GameObjectJSON[]>(),
+        DISCONNECTED_EVENT: new EventListener<CloseEvent>(),
+        ERROR_EVENT: new EventListener<Event>(),
     } as const;
 }
 

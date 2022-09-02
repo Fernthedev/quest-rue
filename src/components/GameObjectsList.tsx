@@ -11,9 +11,11 @@ import { FixedSizeTree as Tree } from 'react-vtree';
 
 import { NodeComponentProps } from "react-vtree/dist/es/Tree";
 import { useNavigate } from "react-router-dom";
+import { useSnapshot } from "valtio";
+import { gameObjectsStore } from "../misc/handlers/gameobject";
 
 export interface GameObjectsListProps {
-    objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined
+
 }
 
 interface TreeData {
@@ -27,10 +29,10 @@ interface TreeData {
 
 type GameObjectRowProps = NodeComponentProps<TreeData>
 
-function* treeWalker(refresh: boolean, objects: Record<number, [GameObjectJSON, symbol]>, childrenMap: Record<number, number[]>): Generator<TreeData | string | symbol, void, boolean> {
+function* treeWalker(refresh: boolean, objects: Record<number, readonly [GameObjectJSON, symbol]>, childrenMap: Record<number, readonly number[]>): Generator<TreeData | string | symbol, void, boolean> {
     const getObject = (id: number) => objects[id][0]
 
-    const stack: [GameObjectJSON, symbol][] = Object.values(objects).filter(g => !g[0].transform!.parent);
+    const stack: (readonly [GameObjectJSON, symbol])[] = Object.values(objects).filter(g => !g[0].transform!.parent);
     // Walk through the tree until we have no nodes available.
     while (stack.length !== 0) {
         const node = stack.pop()!;
@@ -104,40 +106,14 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
     );
 }
 
-export default function GameObjectsList({objectsMap}: GameObjectsListProps) {
+export default function GameObjectsList(props: GameObjectsListProps) {
     // TODO: Clean
     // TODO: Use Suspense?
     const navigate = useNavigate()
 
+    const { objectsMap, childrenMap } = useSnapshot(gameObjectsStore);
+
     const [filter, setFilter] = useState<string>("")
-
-    const childrenMap: Record<number, number[]> | undefined = useMemo(() => {
-        if (!objectsMap) return undefined;
-
-        const tempChildMap: Record<number, number[]> = {}
-
-        Object.values(objectsMap).forEach(pair => {
-            const o = pair[0];
-            // ignore the error messages!
-            const address = o.transform?.address;
-
-            if (!address) return;
-
-            if (!tempChildMap[address])
-                tempChildMap[address] = []
-
-            const parent = o.transform?.parent;
-
-            if (parent) {
-                if (!tempChildMap[parent])
-                    tempChildMap[parent] = []
-
-                tempChildMap[parent].push(address)
-            }
-        });
-
-        return tempChildMap;
-    }, [objectsMap]);
 
     {/* TODO: Allow filter to include children */ }
     const renderableObjects = useMemo(() => objectsMap && Object.values(objectsMap).filter(g => !g[0].transform?.parent && g[0].name?.includes(filter)), [objectsMap, filter])

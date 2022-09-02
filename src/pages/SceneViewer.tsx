@@ -13,24 +13,6 @@ import { ProtoClassInfo } from "../misc/proto/il2cpp"
 function SceneViewer() {
   const { theme } = useTheme();
 
-  const objects = useListenToEvent(getEvents().GAMEOBJECTS_LIST_EVENT) ?? (import.meta.env.VITE_USE_QUEST_MOCK ? main_menu_json : undefined)
-
-  // useEffect(() => {
-  //   console.log(JSON.stringify(objects))
-  // }, [objects])
-
-
-  const objectsMap: Record<number, [GameObjectJSON, symbol]> | undefined = useMemo(() => {
-    if (!objects) return undefined;
-
-    const obj: Record<number, [GameObjectJSON, symbol]> = {}
-    objects?.forEach(o => {
-      obj[o.transform!.address!] = [o, Symbol(o.transform!.address)];
-    });
-
-    return obj;
-  }, [objects]);
-
   // future reference
   // 100vh means 100% of the view height
 
@@ -53,7 +35,7 @@ function SceneViewer() {
 
             {/* TODO: Use client side routing for components */}
             <Routes>
-              <Route path={"components/:gameObjectAddress"} element={<TypeManager objectsMap={objectsMap} />} />
+              <Route path={"components/:gameObjectAddress"} element={<TypeManager />} />
             </Routes>
 
           </div>
@@ -66,7 +48,7 @@ function SceneViewer() {
           // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
         }}>
 
-          <GameObjectsList objectsMap={objectsMap} />
+          <GameObjectsList />
 
         </div>
       </div>
