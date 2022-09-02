@@ -2,18 +2,12 @@ import React from 'react'
 import { createRoot } from 'react-dom/client';
 import './index.css'
 import App from './App'
-import { createTheme, NextUIProvider, useTheme } from '@nextui-org/react'
-
-import useDarkMode from 'use-dark-mode';
 
 import { initializeEvents } from './misc/events';
 import { setupDev } from './misc/dev';
 
 initializeEvents()
 setupDev()
-
-// TODO: Figure this out
-// const darkMode = useDarkMode(true);
 
 
 const container = document.getElementById('root');

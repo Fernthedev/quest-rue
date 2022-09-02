@@ -1,6 +1,6 @@
 import { createTheme, NextUIProvider } from "@nextui-org/react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import useDarkMode from "use-dark-mode";
+// import useDarkMode from "use-dark-mode";
 import { connect } from "./misc/commands";
 import SceneViewer from "./pages/SceneViewer";
 

@@ -1,6 +1,6 @@
 import { ChevronLeftFilled, ChevronDownFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
 import { Divider, Input, Loading, Radio, Text, useInput } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { requestGameObjects } from "../misc/commands";
 import { GameObjectJSON, getEvents, useEffectOnEvent } from "../misc/events";
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -153,7 +153,7 @@ export default function GameObjectsList() {
 
             <div style={{ flexGrow: "2", height: "100%" }}>
                 <AutoSizer disableWidth>
-                    {({ height, width }) => (
+                    {({ height }) => (
                         // TODO: Make selected based on url params
                         <Radio.Group
                             onChange={(e) => {
