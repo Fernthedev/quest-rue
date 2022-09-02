@@ -80,7 +80,7 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
         <div style={{ paddingLeft: `calc(20px * ${nestingLevel + 1})`, ...style }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label={go.transform!.address?.toString()} />
+                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label={go.transform!.address?.toString()} aria-label={go.transform!.address?.toString()} />
 
                     <CubeFilled title="GameObject" width={"2rem"} height={"2rem"} />
                 </div>
@@ -156,6 +156,8 @@ export default function GameObjectsList() {
                     {({ height }) => (
                         // TODO: Make selected based on url params
                         <Radio.Group
+                            aria-label={"GameObjectList"}
+                            
                             onChange={(e) => {
                             console.log(`Selected ${e}`);
                             // TODO: make this a function that takes a GameObjectJSON, this is extremely error prone
