@@ -1,10 +1,8 @@
 import { ChevronLeftFilled, ChevronDownFilled, CubeFilled, FluentIconsProps } from "@fluentui/react-icons";
-import { Divider, Input, Loading, Radio, Text } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import { Divider, Input, Loading, Radio, Text, useInput } from "@nextui-org/react";
+import { useMemo, useState } from "react";
 import { requestGameObjects } from "../misc/commands";
-import { GameObjectJSON, getEvents, useListenToEvent } from "../misc/events";
-import { ProtoGameObject } from "../misc/proto/unity";
-import { useEffectAsync } from "../misc/utils";
+import { GameObjectJSON, getEvents, useEffectOnEvent } from "../misc/events";
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { FixedSizeTree as Tree } from 'react-vtree';
@@ -13,10 +11,6 @@ import { NodeComponentProps } from "react-vtree/dist/es/Tree";
 import { useNavigate } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
-
-export interface GameObjectsListProps {
-
-}
 
 interface TreeData {
     defaultHeight: number,
@@ -29,10 +23,12 @@ interface TreeData {
 
 type GameObjectRowProps = NodeComponentProps<TreeData>
 
-function* treeWalker(refresh: boolean, objects: Record<number, readonly [GameObjectJSON, symbol]>, childrenMap: Record<number, readonly number[]>): Generator<TreeData | string | symbol, void, boolean> {
+function* treeWalker(refresh: boolean, objects: Record<number, readonly [GameObjectJSON, symbol]>, rootObjects: (readonly [GameObjectJSON, symbol])[], childrenMap: Record<number, readonly number[]>): Generator<TreeData | string | symbol, void, boolean> {
     const getObject = (id: number) => objects[id][0]
 
-    const stack: (readonly [GameObjectJSON, symbol])[] = Object.values(objects).filter(g => !g[0].transform!.parent);
+// TODO: Hide children who do not match filter
+
+    const stack = [...rootObjects]
     // Walk through the tree until we have no nodes available.
     while (stack.length !== 0) {
         const node = stack.pop()!;
@@ -84,7 +80,7 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
         <div style={{ paddingLeft: `calc(20px * ${nestingLevel + 1})`, ...style }}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label={go.transform!.address?.toString()} aria-label={go.transform!.address?.toString()} />
+                    <Radio isSquared key={go.transform!.address} size={"sm"} value={go.transform!.address!.toString()} label={go.transform!.address?.toString()} />
 
                     <CubeFilled title="GameObject" width={"2rem"} height={"2rem"} />
                 </div>
@@ -94,9 +90,12 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
                     <Text h4 style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{go.name}</Text>
                     {/* <Text h4>Expandable {expandable ? "true" : "false"} C {String(go?.childrenIds?.length ?? "no")}</Text> */}
                 </div>
-                <div style={{ display: "flex", flex: 1, justifyContent: "right", paddingRight: "10px" }}>
-                    {hasChildren && arrow}
-                </div>
+                {hasChildren && (
+                    <div style={{ display: "flex", flex: 1, justifyContent: "right", paddingRight: "10px", cursor: hasChildren ? "pointer" : "auto"  }} onClick={toggle}>
+                        {arrow}
+                    </div>
+                )}
+
             </div>
 
 
@@ -106,34 +105,37 @@ function GameObjectRow({ data: { go, hasChildren, nestingLevel }, toggle, isOpen
     );
 }
 
-export default function GameObjectsList(props: GameObjectsListProps) {
+export default function GameObjectsList() {
     // TODO: Clean
     // TODO: Use Suspense?
     const navigate = useNavigate()
 
     const { objectsMap, childrenMap } = useSnapshot(gameObjectsStore);
 
-    const [filter, setFilter] = useState<string>("")
+    const filter = useInput("")
 
-    {/* TODO: Allow filter to include children */ }
-    const renderableObjects = useMemo(() => objectsMap && Object.values(objectsMap).filter(g => !g[0].transform?.parent && g[0].name?.includes(filter)), [objectsMap, filter])
+    const lowercaseFilter = useMemo(() => filter.value.toLowerCase(), [filter.value])
+
+    const goFn = (id: number) => objectsMap![id]![0]
+    const childrenFn = (go: GameObjectJSON) => childrenMap![go.transform!.address!].map(e => goFn(e))
+
+    const match = (go: GameObjectJSON) => go.name?.toLowerCase().includes(lowercaseFilter);
+    const recursiveMatch = (go: GameObjectJSON) => match(go) || (childrenMap && childrenFn(go).some(recursiveMatch));
+
+    {/* TODO: Make recursive match faster */ }
+
+    const rootObjects = useMemo(() => objectsMap && Object.values(objectsMap).filter(g => !g[0].transform!.parent), [objectsMap])
+    const renderableObjects = useMemo(() => rootObjects?.filter(g => recursiveMatch(g[0])), [rootObjects, filter, childrenMap])
 
 
     // Listen to game object list events
     // On connect 
-    useEffectAsync(async () => {
-        console.log("listening for game objects")
-        const id = getEvents().CONNECTED_EVENT.addListener(() => {
-            console.log("connected after waiting, requesting objects")
-            requestGameObjects();
-        });
+    useEffectOnEvent(getEvents().CONNECTED_EVENT, () => {
+        console.log("connected after waiting, requesting objects")
+        requestGameObjects();
+    });
 
-        return () => {
-            getEvents().CONNECTED_EVENT.removeListener(id)
-        }
-    }, [])
-
-    if (!objectsMap || !renderableObjects || !childrenMap) {
+    if (!objectsMap || !childrenMap || !rootObjects || !renderableObjects) {
         return (
             <div style={{ overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", margin: "5vmin", height: "50vh" }}>
                 <Loading size="xl" />
@@ -145,7 +147,7 @@ export default function GameObjectsList(props: GameObjectsListProps) {
         <div className="flex flex-col" style={{ height: "100%" }}>
             <div className="flex justify-center" style={{ width: "100%", height: "7em" }}>
 
-                <Input label="Search" aria-label="Search" clearable bordered onChange={(e => setFilter(e.currentTarget.value))} width={"90%"} />
+                <Input {...filter.bindings} onClearClick={filter.reset} label="Search" clearable bordered width={"90%"} />
 
             </div>
 
@@ -154,14 +156,13 @@ export default function GameObjectsList(props: GameObjectsListProps) {
                     {({ height, width }) => (
                         // TODO: Make selected based on url params
                         <Radio.Group
-                            aria-label={"GameObjectList"} label={"GameObjectList"}
-
                             onChange={(e) => {
                             console.log(`Selected ${e}`);
                             // TODO: make this a function that takes a GameObjectJSON, this is extremely error prone
                             navigate(`components/${objectsMap[parseInt(e)][0].transform?.address}`)
-                        }}>
-                            <Tree treeWalker={(r) => treeWalker(r, objectsMap, childrenMap)} itemSize={55} height={height} width={"100%"}>
+                            }}>
+
+                            <Tree treeWalker={(r) => treeWalker(r, objectsMap, renderableObjects, childrenMap)} itemSize={55} height={height} width={"100%"}>
                                 {GameObjectRow}
                             </Tree>
                         </Radio.Group>

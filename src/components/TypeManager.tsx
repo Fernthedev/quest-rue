@@ -1,8 +1,8 @@
 import { FieldDataCell, PropertyDataCell } from "./DataCell"
-import { ProtoClassInfo, ProtoClassDetails } from "../misc/proto/il2cpp"
+import { ProtoClassDetails } from "../misc/proto/il2cpp"
 import { Collapse, Divider, Loading } from "@nextui-org/react"
 import { GetClassDetailsResult, GetGameObjectComponentsResult } from "../misc/proto/qrue"
-import { GameObjectJSON, PacketJSON, useRequestAndResponsePacket } from "../misc/events"
+import { PacketJSON, useRequestAndResponsePacket } from "../misc/events"
 import { useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio"
@@ -61,15 +61,11 @@ function GetHelpers(details?: PacketJSON<ProtoClassDetails>) {
     return helpers.map(helper => helper(details)).filter(component => component !== undefined);
 }
 
-export interface TypeManagerProps {
-
-}
-
 type TypeManagerParams = {
     gameObjectAddress?: string
 }
 
-export function TypeManager(props: TypeManagerProps) {
+export function TypeManager() {
     const {objectsMap} = useSnapshot(gameObjectsStore)
 
     const params = useParams<TypeManagerParams>();

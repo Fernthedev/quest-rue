@@ -100,6 +100,17 @@ export function useListenToEvent<T>(listener: EventListener<T>, once = false): T
     return val;
 }
 
+export function useEffectOnEvent<T, R>(listener: EventListener<T>, callback: (value: T) => R, once = false) {
+    useEffect(() => {
+        const id = listener.addListener(callback, once)
+
+        return () => {
+            listener.removeListener(id)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+}
+
 export type ListenerCallbackFunction<T> = (value: T) => void;
 
 export class EventListener<T> {

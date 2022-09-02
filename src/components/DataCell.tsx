@@ -37,8 +37,10 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
 
     return (
         <div className="dropdown">
-            <Button tabIndex={0} size="sm" css={{ bg: theme?.colors.accents1.value }}>{ name }</Button>
-            <div tabIndex={0} className="dropdown-content flex flex-col gap-3 my-1 p-2 rounded-box" style={{ backgroundColor: theme?.colors.accents1.value, marginLeft: -2, zIndex: 250 }}>
+            <Button tabIndex={0} size="sm" css={{ bg: theme?.colors.accents1.value }}>{name}</Button>
+            <div tabIndex={0}
+                className="dropdown-content flex flex-col gap-3 my-1 p-2 rounded-box"
+                style={{ backgroundColor: theme?.colors.accents1.value, marginLeft: -2, zIndex: 250 }}>
                 {content}
             </div>
         </div>
@@ -47,7 +49,7 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
 
 function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
     return (
-        <Input aria-label={info.clazz} label={info.clazz} readOnly bordered size="sm" width="20em" css={{ bg: "black" }}></Input>
+        <Input aria-label={info.clazz} label={info.clazz} readOnly bordered size="sm" width="20em" css={{ bg: "black" }} />
     )
 }
 
@@ -69,7 +71,7 @@ function InputCell(props: InputCellProps) {
 
 }
 
-const iconProps = { style:{ width: "20px", height: "20px" } }
+const iconProps = { style: { width: "20px", height: "20px" } }
 
 export enum DataCellType {
     Method,
@@ -152,7 +154,7 @@ export function DataCell(props: DataCellProps) {
             }
             name = "property but no input cuz pointer"
             break
-        default: 
+        default:
             throw "Property not found"
     }
 
@@ -173,7 +175,7 @@ export function FieldDataCell(fieldInfo: PacketJSON<ProtoFieldInfo>) {
 
     return (
         <div className="flex grow basis-0 items-center gap-3" style={{ minWidth: "25em", maxWidth: "40em" }}>
-            {TextboxFilled(iconProps)}
+            <TextboxFilled {...iconProps} />
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo!} />
@@ -188,7 +190,7 @@ export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
 
     return (
         <div className="flex grow basis-0 items-center gap-3" style={{ minWidth: "25em", maxWidth: "40em" }}>
-            {WrenchFilled(iconProps)}
+            <WrenchFilled {...iconProps} />
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo!} />
