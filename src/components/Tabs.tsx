@@ -4,7 +4,7 @@ import { useState } from "react";
 export interface TabsProps {
     tabs: Array<string>
     selected: number,
-    onTabSelected?: (name: string, i: number) => void
+    onTabSelected?: (name: string, i: number, prevName: NamedCurve, prevI: number) => void
 }
 
 interface TabProps {
@@ -29,9 +29,10 @@ export function Tabs(props: TabsProps) {
             <div className="tabs pt-2">
                 {props.tabs.map((n, i) => (
                     <Tab key={n} name={n} selected={i === selected} onClick={() => {
+                        const prevSelected = selected;
                         setSelected(i);
                         if (props.onTabSelected)
-                            props.onTabSelected(n, i);
+                            props.onTabSelected(n, i, props.tabs[prevSelected], prevSelected);
                     }} />
                 ))}
             </div>

@@ -3,8 +3,8 @@ import { Text, useTheme } from '@nextui-org/react'
 import GameObjectsList from '../components/GameObjectsList'
 import { ComponentsManager } from '../components/ComponentsManager'
 import { Tabs } from '../components/Tabs'
-import { Route, Routes } from 'react-router-dom'
-import { useEffect, useMemo } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { useListenToEvent, getEvents, GameObjectJSON, PacketJSON } from '../misc/events'
 import { items as main_menu_json } from "../misc/test_data_in_main_menu.json";
 import { TypeManager } from '../components/TypeManager'
@@ -12,6 +12,10 @@ import { ProtoClassInfo } from "../misc/proto/il2cpp"
 
 function SceneViewer() {
   const { theme } = useTheme();
+  const navigate = useNavigate()
+  const location = useLocation();
+
+  const [tabs, setTabs] = useState<[string, string][]>(["Tab 1", "Tab 2", "Tab 3", "Tab 4"].map(e => [e, location.pathname]))
 
   // future reference
   // 100vh means 100% of the view height
@@ -28,7 +32,11 @@ function SceneViewer() {
           backgroundColor: theme?.colors.accents0.value,
           minHeight: "100vh"
         }}>
-          <Tabs tabs={["Tab 1", "Tab 2", "Tab 3", "Tab 4"]} selected={1}></Tabs>
+          <Tabs tabs={tabs.map(m => m[0])} selected={1} onTabSelected={(name, i, prevName, prevI) => {
+            tabs[prevI][1] = location.pathname
+            navigate(tabs[i][1])
+          }} />
+{/* todo: add tab button */}
 
           <div className="h-full w-full px-5">
 
