@@ -18,8 +18,8 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
     let inputType: string;
     switch (type) {
         case ProtoTypeInfo.Primitive.BOOLEAN:
-            inputType = "toggle"
-            break
+            inputType = "toggle";
+            break;
         case ProtoTypeInfo.Primitive.CHAR:
         case ProtoTypeInfo.Primitive.STRING:
             inputType = "text";
@@ -36,7 +36,7 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
     }
 
     if (inputType === "toggle") {
-        return <Checkbox size="sm" />
+        return <Checkbox size="sm" />;
     }
 
     return (
@@ -47,7 +47,7 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
             type={inputType}
             size="sm"
             width="20em"
-            css={{ bg: "black" }}
+            css={{ bg: "$background" }}
         />
     );
 }
@@ -92,7 +92,7 @@ function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
             bordered
             size="sm"
             width="20em"
-            css={{ bg: "black" }}
+            css={{ bg: "$background" }}
         />
     );
 }
