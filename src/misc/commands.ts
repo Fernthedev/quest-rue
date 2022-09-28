@@ -3,7 +3,7 @@ import { handleGameObjects } from "./handlers/gameobject";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";
 
-let socket : WebSocket;
+let socket: WebSocket;
 
 export function connect(ip: string, port: number) {
     if (import.meta.env.VITE_USE_QUEST_MOCK) return;
@@ -13,12 +13,12 @@ export function connect(ip: string, port: number) {
     socket.onopen = (event) => {
         getEvents().CONNECTED_EVENT.invoke();
     };
-    socket.onclose = event => {
+    socket.onclose = (event) => {
         getEvents().DISCONNECTED_EVENT.invoke(event);
-    }
+    };
     socket.onerror = (event) => {
-        getEvents().ERROR_EVENT.invoke(event)
-    }
+        getEvents().ERROR_EVENT.invoke(event);
+    };
     socket.onmessage = (event) => {
         const bytes: Uint8Array = event.data;
         const wrapper = PacketWrapper.deserialize(bytes);
@@ -26,15 +26,15 @@ export function connect(ip: string, port: number) {
         // console.log(JSON.stringify(packetWrapper));
 
         if (packetWrapper.getAllGameObjectsResult) {
-            handleGameObjects(packetWrapper.getAllGameObjectsResult)
+            handleGameObjects(packetWrapper.getAllGameObjectsResult);
         }
-        if(wrapper.readMemoryResult !== undefined) {
+        if (wrapper.readMemoryResult !== undefined) {
             console.log(wrapper.readMemoryResult);
         }
 
         getEvents().ALL_PACKETS.invoke({
             ...packetWrapper,
-            packetType: wrapper.Packet
+            packetType: wrapper.Packet,
         });
     };
 }
@@ -46,11 +46,16 @@ export function isConnected() {
 }
 
 export function requestGameObjects() {
-    sendPacket(PacketWrapper.fromObject({ queryResultId: uniqueNumber(),  getAllGameObjects: {}}));
+    sendPacket(
+        PacketWrapper.fromObject({
+            queryResultId: uniqueNumber(),
+            getAllGameObjects: {},
+        })
+    );
 }
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
     if (import.meta.env.VITE_USE_QUEST_MOCK) return;
 
-    socket.send(p.serializeBinary())
+    socket.send(p.serializeBinary());
 }

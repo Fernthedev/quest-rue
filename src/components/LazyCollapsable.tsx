@@ -1,20 +1,24 @@
-import { ArrowDownFilled, ArrowUpFilled, FluentIconsProps } from "@fluentui/react-icons";
+import {
+    ArrowDownFilled,
+    ArrowUpFilled,
+    FluentIconsProps,
+} from "@fluentui/react-icons";
 import { Divider } from "@nextui-org/react";
 import { CSSProperties, useState } from "react";
 
 export interface TreeItemProps {
     childrenFactory?: (() => React.ReactNode) | undefined; // use a lambda to lazy load
-    expanded?: boolean
-    children: React.ReactNode
-    unclickableChildren?: React.ReactNode,
-    style?: CSSProperties
+    expanded?: boolean;
+    children: React.ReactNode;
+    unclickableChildren?: React.ReactNode;
+    style?: CSSProperties;
 }
 /**
  * Collapsable component that lazy renders its children
  * Once lazy loaded, it calls the lambda on render
- * 
- * @param props 
- * @returns 
+ *
+ * @param props
+ * @returns
  */
 export function LazyCollapsable(props: TreeItemProps) {
     const [renderedAlready, setRenderedAlready] = useState(false);
@@ -27,33 +31,40 @@ export function LazyCollapsable(props: TreeItemProps) {
 
     const toggleCollapse = () => {
         setRenderedAlready(true);
-        setExpanded(e => !e);
-    }
+        setExpanded((e) => !e);
+    };
 
-    const arrowProps: FluentIconsProps = { width: "1.5em", height: "1.5em" }
+    const arrowProps: FluentIconsProps = { width: "1.5em", height: "1.5em" };
 
-    const arrow = expandable &&
-        expanded ? ArrowUpFilled(arrowProps) : ArrowDownFilled(arrowProps)
-
+    const arrow =
+        expandable && expanded
+            ? ArrowUpFilled(arrowProps)
+            : ArrowDownFilled(arrowProps);
 
     return (
-        <div style={{ paddingLeft: "20px", "marginTop": 10, ...props.style }}>
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-            }}>
+        <div style={{ paddingLeft: "20px", marginTop: 10, ...props.style }}>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
                 {props.unclickableChildren}
-                <div onClick={toggleCollapse} style={{ cursor: expandable ? "pointer" : "auto" }}>
+                <div
+                    onClick={toggleCollapse}
+                    style={{ cursor: expandable ? "pointer" : "auto" }}
+                >
                     {props.children}
                 </div>
             </div>
 
-
             <Divider y={1} height={3} />
             {props.childrenFactory && (
                 <>
-
-                    {expanded && renderedAlready && props.childrenFactory && props.childrenFactory()}
+                    {expanded &&
+                        renderedAlready &&
+                        props.childrenFactory &&
+                        props.childrenFactory()}
                 </>
             )}
         </div>

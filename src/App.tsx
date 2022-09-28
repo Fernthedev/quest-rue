@@ -8,9 +8,9 @@ export default function App() {
     // MAKE A .env.development or .env.development.local file WITH THESE CONTENTS:
     // VITE_QUEST_IP="MY_QUEST_IP"
     // VITE_QUEST_PORT=3306
-    console.log("Connecting")
+    console.log("Connecting");
     let port = parseInt(import.meta.env.VITE_QUEST_PORT);
-    if (!port) port = 3306
+    if (!port) port = 3306;
 
     connect(import.meta.env.VITE_QUEST_IP, port);
 
@@ -21,20 +21,21 @@ export default function App() {
     // })
 
     const darkTheme = createTheme({
-        type: 'dark',
-    })
+        type: "dark",
+    });
 
     // https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md
     return (
-        < NextUIProvider
-            theme={darkTheme}
-        >
+        <NextUIProvider theme={darkTheme}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Navigate to={"/sceneViewer"} replace />} />
+                    <Route
+                        path="/"
+                        element={<Navigate to={"/sceneViewer"} replace />}
+                    />
                     <Route path="/sceneViewer/*" element={<SceneViewer />} />
                 </Routes>
             </BrowserRouter>
         </NextUIProvider>
-    )
+    );
 }
