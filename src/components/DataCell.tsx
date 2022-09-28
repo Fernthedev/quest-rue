@@ -1,5 +1,6 @@
 import { PlayFilled, TextboxFilled, WrenchFilled } from "@fluentui/react-icons";
-import { Button, Input, useTheme } from "@nextui-org/react";
+import { Button, Checkbox, Input, Text, useTheme } from "@nextui-org/react";
+import { useMemo } from "react";
 import { PacketJSON } from "../misc/events";
 import {
     ProtoTypeInfo,
@@ -7,6 +8,7 @@ import {
     ProtoClassInfo,
     ProtoFieldInfo,
     ProtoPropertyInfo,
+    ProtoMethodInfo,
 } from "../misc/proto/il2cpp";
 
 interface PrimitiveInputCellProps {
@@ -16,6 +18,8 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
     let inputType: string;
     switch (type) {
         case ProtoTypeInfo.Primitive.BOOLEAN:
+            inputType = "toggle"
+            break
         case ProtoTypeInfo.Primitive.CHAR:
         case ProtoTypeInfo.Primitive.STRING:
             inputType = "text";
@@ -30,10 +34,14 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
             inputType = "text";
             break;
     }
+
+    if (inputType === "toggle") {
+        return <Checkbox size="sm" />
+    }
+
     return (
         <Input
             aria-label={type.toString()}
-            label={type.toString()}
             clearable
             bordered
             type={inputType}
@@ -80,7 +88,6 @@ function ClassInputCell(info: PacketJSON<ProtoClassInfo>) {
     return (
         <Input
             aria-label={info.clazz}
-            label={info.clazz}
             readOnly
             bordered
             size="sm"
@@ -239,6 +246,35 @@ export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo!} />
+            </div>
+        </div>
+    );
+}
+export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
+    const name = methodInfo.name;
+    const retType = methodInfo.returnType;
+
+    const args = useMemo(
+        () =>
+            Object.entries(methodInfo.args!).map(([argName, argType]) => (
+                <div key={argName}>
+                    <Text>{argName}</Text>
+                    <InputCell type={argType} />
+                </div>
+            )),
+        [methodInfo.args]
+    );
+
+    return (
+        <div
+            className="flex grow basis-0 items-center gap-3"
+            style={{ minWidth: "25em", maxWidth: "40em" }}
+        >
+            <WrenchFilled {...iconProps} />
+            <div className="flex flex-col">
+                {name}
+                {args}
+                <span>Return type: {JSON.stringify(retType)}</span>
             </div>
         </div>
     );

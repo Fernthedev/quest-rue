@@ -1,5 +1,9 @@
-import { FieldDataCell, PropertyDataCell } from "./DataCell";
-import { ProtoClassDetails } from "../misc/proto/il2cpp";
+import { FieldDataCell, MethodDataCell, PropertyDataCell } from "./DataCell";
+import {
+    ProtoClassDetails,
+    ProtoMethodInfo,
+    ProtoTypeInfo,
+} from "../misc/proto/il2cpp";
 import { Collapse, Divider, Loading } from "@nextui-org/react";
 import {
     GetClassDetailsResult,
@@ -10,6 +14,7 @@ import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
+import Show from "./Show";
 
 function AllDetails(details: PacketJSON<ProtoClassDetails>) {
     const name = details?.clazz?.namespaze + " :: " + details?.clazz?.clazz;
@@ -23,13 +28,42 @@ function AllDetails(details: PacketJSON<ProtoClassDetails>) {
         <PropertyDataCell key={`${prop.getterId}${prop.setterId}`} {...prop} />
     ));
 
+    const methods = details?.methods?.map((method) => (
+        <MethodDataCell key={`${method.id}${method.name}`} {...method} />
+
+        // <PropertyDataCell key={`${method.id}${method.name}`} {...method} />
+    ));
+
     return (
         <div key={key}>
             <Collapse className="xs-collapse" title={name}>
                 <div className="flex flex-row flex-wrap items-center gap-3 p-1">
-                    {fields}
-                    <Divider height={2} />
-                    {props}
+                    <Show when={fields} keyed>
+                        {(fields) => (
+                            <>
+                                {fields}
+                                <Divider height={2} />
+                            </>
+                        )}
+                    </Show>
+
+                    <Show when={props} keyed>
+                        {(props) => (
+                            <>
+                                {props}
+                                <Divider height={2} />
+                            </>
+                        )}
+                    </Show>
+
+                    <Show when={methods} keyed>
+                        {(methods) => (
+                            <>
+                                {methods}
+                                <Divider height={2} />
+                            </>
+                        )}
+                    </Show>
                 </div>
             </Collapse>
         </div>
@@ -39,11 +73,11 @@ function AllDetails(details: PacketJSON<ProtoClassDetails>) {
 function GetAllDetails(details?: PacketJSON<ProtoClassDetails>) {
     if (!details) return undefined;
 
-    const ret: JSX.Element[] = [];
-
     const id = (d: typeof details) =>
         `${d?.clazz?.namespaze}${d?.clazz?.clazz}${d?.clazz?.generics}`;
-    ret.push(<AllDetails key={id(details)} {...details} />);
+
+    const ret: JSX.Element[] = [<AllDetails key={id(details)} {...details} />];
+
     while (details?.parent) {
         details = details?.parent;
         ret.push(<AllDetails key={id(details)} {...details} />);
@@ -77,8 +111,54 @@ export function TypeManager() {
     const { objectsMap } = useSnapshot(gameObjectsStore);
 
     const params = useParams<TypeManagerParams>();
-    const [classDetails, getClassDetails] =
+    // eslint-disable-next-line prefer-const
+    let [classDetails, getClassDetails] =
         useRequestAndResponsePacket<GetClassDetailsResult>();
+
+    if (!classDetails && import.meta.env.DEV)
+        classDetails = {
+            classDetails: {
+                clazz: {
+                    namespaze: "",
+                    clazz: "SomeClass",
+                },
+                methods: [
+                    {
+                        name: "foo",
+                        args: {
+                            arg1: {
+                                classInfo: {
+                                    clazz: "SomeClass2",
+                                    namespaze: "namespaze",
+                                },
+                            },
+                            arg2: {
+                                structInfo: {
+                                    clazz: {
+                                        clazz: "SomeStruct",
+                                        namespaze: "",
+                                    },
+                                    fieldOffsets: [],
+                                },
+                            },
+                            arg3: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.BOOLEAN,
+                            },
+                            arg4: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.INT,
+                            },
+                            arg5: {
+                                primitiveInfo: ProtoTypeInfo.Primitive.STRING,
+                            },
+                        },
+                        id: 5,
+                        returnType: {
+                            primitiveInfo: ProtoTypeInfo.Primitive.PTR,
+                        },
+                    },
+                ],
+            },
+        };
 
     const [components, getComponents] =
         useRequestAndResponsePacket<GetGameObjectComponentsResult>();
