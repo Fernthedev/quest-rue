@@ -1,5 +1,12 @@
 import { PlayFilled, TextboxFilled, WrenchFilled } from "@fluentui/react-icons";
-import { Button, Checkbox, Input, Text, useTheme } from "@nextui-org/react";
+import {
+    Button,
+    Checkbox,
+    Input,
+    Popover,
+    Text,
+    useTheme,
+} from "@nextui-org/react";
 import { useMemo } from "react";
 import { PacketJSON } from "../misc/events";
 import {
@@ -10,6 +17,7 @@ import {
     ProtoPropertyInfo,
     ProtoMethodInfo,
 } from "../misc/proto/il2cpp";
+import Show from "./Show";
 
 interface PrimitiveInputCellProps {
     type: ProtoTypeInfo.Primitive;
@@ -36,7 +44,7 @@ function PrimitiveInputCell({ type }: PrimitiveInputCellProps) {
     }
 
     if (inputType === "toggle") {
-        return <Checkbox size="sm" />;
+        return <Checkbox />;
     }
 
     return (
@@ -65,21 +73,24 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
             <Button
                 tabIndex={0}
                 size="sm"
-                css={{ bg: theme?.colors.accents1.value }}
+                ghost
+                css={{ bg: "$primary" }}
             >
                 {name}
             </Button>
-            <div
-                tabIndex={0}
-                className="dropdown-content flex flex-col gap-3 my-1 p-2 rounded-box"
-                style={{
-                    backgroundColor: theme?.colors.accents1.value,
-                    marginLeft: -2,
-                    zIndex: 250,
-                }}
-            >
-                {content}
-            </div>
+            <Show when={content.length > 0}>
+                <div
+                    tabIndex={0}
+                    className="dropdown-content flex flex-col gap-3 my-1 p-2 rounded-box"
+                    style={{
+                        backgroundColor: theme?.colors.accents1.value,
+                        marginLeft: -2,
+                        zIndex: 250,
+                    }}
+                >
+                    {content}
+                </div>
+            </Show>
         </div>
     );
 }
@@ -254,7 +265,7 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
     const name = methodInfo.name;
     const retType = methodInfo.returnType;
 
-    const args = useMemo(
+    const argsInputs = useMemo(
         () =>
             Object.entries(methodInfo.args!).map(([argName, argType]) => (
                 <div key={argName}>
@@ -264,18 +275,31 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
             )),
         [methodInfo.args]
     );
+    const argsNames = useMemo(
+        () => Object.keys(methodInfo.args!),
+        [methodInfo.args]
+    );
 
     return (
-        <div
-            className="flex grow basis-0 items-center gap-3"
-            style={{ minWidth: "25em", maxWidth: "40em" }}
-        >
-            <WrenchFilled {...iconProps} />
-            <div className="flex flex-col">
-                {name}
-                {args}
-                <span>Return type: {JSON.stringify(retType)}</span>
-            </div>
-        </div>
+        <Popover isBordered placement="right" shouldFlip>
+            <Popover.Trigger>
+                <Button auto color={"primary"} ghost>
+                    <WrenchFilled {...iconProps} />
+
+                    <Text className={"px-2"}>
+                        {JSON.stringify(retType)} {name} ({argsNames.toString()}
+                        )
+                    </Text>
+                </Button>
+            </Popover.Trigger>
+            <Popover.Content css={{ px: "$8", py: "$8" }}>
+                <div
+                    className="flex flex-col shrink gap-3"
+                    style={{ maxWidth: "40em" }}
+                >
+                    {argsInputs}
+                </div>
+            </Popover.Content>
+        </Popover>
     );
 }
