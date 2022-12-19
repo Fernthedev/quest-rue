@@ -104,7 +104,7 @@ function GetHelpers(details?: PacketJSON<ProtoClassDetails>) {
         .filter((component) => component !== undefined);
 }
 
-type TypeManagerParams = {
+export type TypeManagerParams = {
     gameObjectAddress?: string;
 };
 

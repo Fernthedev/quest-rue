@@ -9,7 +9,6 @@ import {
     Input,
     Loading,
     Radio,
-    Text,
     useInput,
 } from "@nextui-org/react";
 import { useMemo } from "react";
@@ -20,9 +19,10 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeTree as Tree } from "react-vtree";
 
 import { NodeComponentProps } from "react-vtree/dist/es/Tree";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
+import { TypeManagerParams } from "./TypeManager";
 
 interface TreeData {
     defaultHeight: number;
@@ -173,6 +173,7 @@ export default function GameObjectsList() {
     // TODO: Clean
     // TODO: Use Suspense?
     const navigate = useNavigate();
+    const params = useParams<TypeManagerParams>();
 
     const { objectsMap, childrenMap } = useSnapshot(gameObjectsStore);
 
@@ -253,6 +254,7 @@ export default function GameObjectsList() {
                         // TODO: Make selected based on url params
                         <Radio.Group
                             aria-label={"GameObjectList"}
+                            defaultValue={params.gameObjectAddress ?? undefined}
                             onChange={(e) => {
                                 console.log(`Selected ${e}`);
                                 // TODO: make this a function that takes a GameObjectJSON, this is extremely error prone
