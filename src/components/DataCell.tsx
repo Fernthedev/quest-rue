@@ -231,7 +231,8 @@ export function FieldDataCell(fieldInfo: PacketJSON<ProtoFieldInfo>) {
             className="flex grow basis-0 items-center gap-3"
             style={{ minWidth: "25em", maxWidth: "40em" }}
         >
-            <TextboxFilled {...iconProps} />
+            <IconForDataCellType type={DataCellType.Field} {...iconProps} />
+
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo!} />
@@ -249,7 +250,8 @@ export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
             className="flex grow basis-0 items-center gap-3"
             style={{ minWidth: "25em", maxWidth: "40em" }}
         >
-            <WrenchFilled {...iconProps} />
+            <IconForDataCellType type={DataCellType.Property} {...iconProps} />
+
             <div className="flex flex-col">
                 {name}
                 <InputCell type={typeInfo!} />
@@ -280,7 +282,7 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
         <Popover isBordered placement="right" shouldFlip>
             <Popover.Trigger>
                 <Button auto color={"primary"} ghost>
-                    <WrenchFilled {...iconProps} />
+                    <IconForDataCellType type={DataCellType.Method} {...iconProps} />
 
                     <Text className={"px-2"}>
                         {JSON.stringify(retType)} {name} ({argsNames.toString()}
