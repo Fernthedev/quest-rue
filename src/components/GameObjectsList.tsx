@@ -138,8 +138,7 @@ function GameObjectRow({
                         minWidth: 0,
                     }}
                 >
-                    <Text
-                        h4
+                    <h4
                         style={{
                             whiteSpace: "nowrap",
                             overflow: "hidden",
@@ -147,8 +146,7 @@ function GameObjectRow({
                         }}
                     >
                         {go.name}
-                    </Text>
-                    {/* <Text h4>Expandable {expandable ? "true" : "false"} C {String(go?.childrenIds?.length ?? "no")}</Text> */}
+                    </h4>
                 </div>
                 {hasChildren && (
                     <div

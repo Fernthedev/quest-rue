@@ -260,8 +260,11 @@ export function PropertyDataCell(propInfo: PacketJSON<ProtoPropertyInfo>) {
     );
 }
 export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
-    const name = methodInfo.name;
-    const retType = methodInfo.returnType;
+    if (!methodInfo?.args) 
+        throw "Method info is null!"
+
+    const name = methodInfo.name!;
+    const retType = methodInfo.returnType!;
 
     const argsInputs = useMemo(
         () =>
