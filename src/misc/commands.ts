@@ -57,5 +57,10 @@ export function requestGameObjects() {
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
     if (import.meta.env.VITE_USE_QUEST_MOCK) return;
 
-    socket.send(p.serializeBinary());
+    if (socket.readyState === socket.OPEN) {
+        socket.send(p.serializeBinary());
+    } else {
+        socket.addEventListener("open", () => socket.send(p.serializeBinary()));
+    }
+
 }
