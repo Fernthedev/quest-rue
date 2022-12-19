@@ -1,7 +1,6 @@
 import { Checkbox, Input } from "@nextui-org/react";
 import { ProtoTypeInfo } from "../../../misc/proto/il2cpp";
 
-
 export interface PrimitiveInputCellProps {
     type: ProtoTypeInfo.Primitive;
 }

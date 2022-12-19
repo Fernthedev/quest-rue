@@ -62,5 +62,4 @@ export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
     } else {
         socket.addEventListener("open", () => socket.send(p.serializeBinary()));
     }
-
 }
