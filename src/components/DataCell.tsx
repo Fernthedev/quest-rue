@@ -70,12 +70,7 @@ function StructInputCell(info: PacketJSON<ProtoStructInfo>) {
 
     return (
         <div className="dropdown">
-            <Button
-                tabIndex={0}
-                size="sm"
-                ghost
-                css={{ bg: "$primary" }}
-            >
+            <Button tabIndex={0} size="sm" ghost css={{ bg: "$primary" }}>
                 {name}
             </Button>
             <Show when={content.length > 0}>
@@ -128,9 +123,9 @@ function InputCell(props: InputCellProps) {
 const iconProps = { style: { width: "20px", height: "20px" } };
 
 export enum DataCellType {
-    Method,
-    Field,
-    Property,
+    Method = "Method",
+    Field = "Field",
+    Property = "Property",
 }
 
 export interface DataCellProps {
@@ -139,22 +134,23 @@ export interface DataCellProps {
     args?: Array<string>;
 }
 
-export function DataCell(props: DataCellProps) {
-    let icon: JSX.Element;
+export function IconForDataCellType(props: {
+    type: DataCellType
+}): JSX.Element {
     switch (props.type) {
         case DataCellType.Method:
-            icon = PlayFilled(iconProps);
-            break;
+            return <PlayFilled {...iconProps} />
         case DataCellType.Field:
-            icon = TextboxFilled(iconProps);
-            break;
+            return <TextboxFilled {...iconProps} />
         case DataCellType.Property:
-            icon = WrenchFilled(iconProps);
-            break;
+            return <WrenchFilled {...iconProps} />
         default:
             throw "Icon not defined for component data type";
     }
+}
 
+export function DataCell(props: DataCellProps) {
+    const icon = <IconForDataCellType {...props} />;
     let typeInfo: PacketJSON<ProtoTypeInfo>;
     let name: string;
 

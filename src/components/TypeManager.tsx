@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
 import Show from "./Show";
+import ComponentLegend from "./ComponentLegend";
 
 function AllDetails(details: PacketJSON<ProtoClassDetails>) {
     const name = details?.clazz?.namespaze + " :: " + details?.clazz?.clazz;
@@ -215,6 +216,9 @@ export function TypeManager() {
             className="flex flex-col"
             style={{ maxHeight: "100%", marginTop: "-1px" }}
         >
+            <div className="flex justify-end float">
+                <ComponentLegend />
+            </div>
             {GetHelpers(classDetails?.classDetails)}
             {GetAllDetails(classDetails?.classDetails)}
         </div>
