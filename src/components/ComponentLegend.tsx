@@ -1,4 +1,7 @@
-import { DataCellType, IconForDataCellType } from "./DataCell";
+import {
+    DataCellType,
+    IconForDataCellType,
+} from "./type_manager/members/MemberDataCell";
 
 export default function ComponentLegend() {
     const items = Object.entries(DataCellType).map(([k, v]) => [

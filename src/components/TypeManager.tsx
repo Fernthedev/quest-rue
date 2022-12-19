@@ -1,9 +1,7 @@
-import { FieldDataCell, MethodDataCell, PropertyDataCell } from "./DataCell";
-import {
-    ProtoClassDetails,
-    ProtoMethodInfo,
-    ProtoTypeInfo,
-} from "../misc/proto/il2cpp";
+import { MethodDataCell } from "./type_manager/members/MethodDataCell";
+import { PropertyDataCell } from "./type_manager/members/PropertyDataCell";
+import { FieldDataCell } from "./type_manager/members/FieldDataCell";
+import { ProtoClassDetails, ProtoTypeInfo } from "../misc/proto/il2cpp";
 import { Collapse, Divider, Loading } from "@nextui-org/react";
 import {
     GetClassDetailsResult,
@@ -14,7 +12,7 @@ import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
-import Show from "./Show";
+import Show from "./utils/Show";
 import ComponentLegend from "./ComponentLegend";
 
 function AllDetails(details: PacketJSON<ProtoClassDetails>) {
