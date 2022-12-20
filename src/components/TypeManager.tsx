@@ -31,7 +31,7 @@ function AllDetails(details: PacketJSON<ProtoClassDetails>) {
         () =>
             details?.properties?.map((prop) => (
                 <PropertyDataCell
-                    key={`${prop.getterId}${prop.setterId}`}
+                    key={`${prop.getterId}${prop.setterId}${prop.name}`}
                     {...prop}
                 />
             )),
