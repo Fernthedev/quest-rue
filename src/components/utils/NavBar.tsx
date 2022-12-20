@@ -29,6 +29,7 @@ export default function NavBar(props: NavBarProps) {
                 style={{
                     width: "20rem",
                     position: "static",
+                    marginBottom: "1rem"
                 }}
             >
                 {props.children.map((navButton, i) => (

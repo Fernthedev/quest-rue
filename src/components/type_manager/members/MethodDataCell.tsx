@@ -26,6 +26,26 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
         [methodInfo.args]
     );
 
+    const jsonDefault = useMemo<Record<string, null | -1> | undefined>(
+        () =>
+            methodInfo.args &&
+            Object.entries(methodInfo.args).reduce(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                (json, [arg, _argType]) => ({
+                    ...json,
+                    [arg]: _argType.primitiveInfo ? null : -1,
+                }),
+                {}
+            ),
+        [methodInfo.args]
+    );
+
+    if (!methodInfo.args) {
+        console.error("Method args is null!")
+    }
+
+    console.log(jsonDefault);
+
     return (
         <Popover isBordered placement="right" shouldFlip>
             <Popover.Trigger>
@@ -53,13 +73,22 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
                     </NavButton>
                     <NavButton label="JSON">
                         <Textarea
-                            bordered
                             fullWidth
+                            
+                            bordered
                             label={"JSON"}
-                            animated={false}
+                            initialValue={JSON.stringify(
+                                jsonDefault,
+                                undefined,
+                                2
+                            )}
                             minRows={8}
                             maxRows={20}
-                            css={{ bg: "$background", padding: "$4" }}
+                            status="default"
+                            css={{
+                                px: "$8",
+                                py: "$8",
+                            }}
                         />
                     </NavButton>
                 </NavBar>
