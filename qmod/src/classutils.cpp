@@ -136,7 +136,7 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppClass const* klass) {
     LOG_INFO("Getting struct info");
 
     *structInfo.mutable_clazz() = GetClassInfo(klass);
-    for(auto& field : GetFields(klass)) {
+    for(auto const& field : GetFields(klass)) {
         structInfo.mutable_fieldoffsets()->insert({field->offset, FieldUtils::GetFieldInfo(field)});
     }
     LOG_INFO("Got struct info");

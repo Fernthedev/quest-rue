@@ -35,8 +35,8 @@ inline std::string ByteString(const T& bytes) {
 }
 
 Manager* Manager::GetInstance() {
-    static Manager* Instance = new Manager();
-    return Instance;
+    static Manager Instance = Manager();
+    return &Instance;
 }
 
 void Manager::Init() {
@@ -202,7 +202,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
     std::string namespaceName = componentInfo.namespaze();
     if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
         namespaceName = "";
-    auto& className = componentInfo.clazz();
+    auto const& className = componentInfo.clazz();
 
     Il2CppClass* klass = il2cpp_utils::GetClassFromName(namespaceName, className);
     if(!klass) {
@@ -217,14 +217,14 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
     
     if(searchName) {
         LOG_INFO("Searching for name {}", name);
-        for(auto& obj : res) {
+        for(auto const& obj : res) {
             if(obj->get_name() == name)
                 namedObjs.push_back(obj);
         }
         res = std::span<Object*>(namedObjs);
     }
 
-    for(auto& obj : res) {
+    for(auto const& obj : res) {
         ProtoObject& found = *result.add_objects();
         if(!searchName)
             name = obj->get_name().operator std::string();
