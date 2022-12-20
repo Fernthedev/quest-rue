@@ -6,13 +6,11 @@ import { IconForDataCellType, DataCellType, iconProps } from "./MemberDataCell";
 import { InputCell } from "../class/InputCell";
 
 export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
-    if (!methodInfo?.args) throw "Method info is null!";
-
     const name = methodInfo.name!;
     const retType = methodInfo.returnType!;
 
     const argsInputs = useMemo(
-        () =>
+        () => methodInfo.args &&
             Object.entries(methodInfo.args!).map(([argName, argType]) => (
                 <div key={argName}>
                     <Text>{argName}</Text>
@@ -22,7 +20,7 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
         [methodInfo.args]
     );
     const argsNames = useMemo(
-        () => Object.keys(methodInfo.args!),
+        () => methodInfo.args && Object.keys(methodInfo.args),
         [methodInfo.args]
     );
 
@@ -36,9 +34,9 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
                     />
 
                     <Text className={"px-2"}>
-                        {JSON.stringify(retType)} {name} ({argsNames.toString()}
-                        )
+                        {name} ({argsNames?.toString()})
                     </Text>
+                    <span>{JSON.stringify(retType)}</span>
                 </Button>
             </Popover.Trigger>
             <Popover.Content css={{ px: "$8", py: "$8" }}>

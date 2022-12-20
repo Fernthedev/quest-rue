@@ -19,19 +19,44 @@ function AllDetails(details: PacketJSON<ProtoClassDetails>) {
     const name = details?.clazz?.namespaze + " :: " + details?.clazz?.clazz;
     const key = `${details?.clazz?.namespaze}${details?.clazz?.clazz}${details?.clazz?.generics}`;
 
-    const fields = details?.fields?.map((field) => (
-        <FieldDataCell key={field.id} {...field} />
-    ));
+    const fields = useMemo(
+        () =>
+            details?.fields?.map((field) => (
+                <FieldDataCell key={field.id} {...field} />
+            )),
+        [details.fields]
+    );
 
-    const props = details?.properties?.map((prop) => (
-        <PropertyDataCell key={`${prop.getterId}${prop.setterId}`} {...prop} />
-    ));
+    const props = useMemo(
+        () =>
+            details?.properties?.map((prop) => (
+                <PropertyDataCell
+                    key={`${prop.getterId}${prop.setterId}`}
+                    {...prop}
+                />
+            )),
+        [details.properties]
+    );
 
-    const methods = details?.methods?.map((method) => (
-        <MethodDataCell key={`${method.id}${method.name}`} {...method} />
+    const methods = useMemo(
+        () =>
+            details?.methods
+                ?.filter((method) =>
+                    details.properties?.find(
+                        (p) =>
+                            p.getterId == method.id || p.setterId == method.id
+                    ) === undefined
+                )
+                .map((method) => (
+                    <MethodDataCell
+                        key={`${method.id}${method.name}`}
+                        {...method}
+                    />
 
-        // <PropertyDataCell key={`${method.id}${method.name}`} {...method} />
-    ));
+                    // <PropertyDataCell key={`${method.id}${method.name}`} {...method} />
+                )),
+        [details.methods, details.properties]
+    );
 
     return (
         <div key={key}>
@@ -208,6 +233,8 @@ export function TypeManager() {
             </div>
         );
     }
+
+    console.log("ur mom", classDetails?.classDetails);
 
     return (
         <div
