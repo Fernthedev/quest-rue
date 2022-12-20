@@ -15,15 +15,16 @@ function SceneViewer() {
     return (
         <div className="App">
             {/* Object list */}
-            <div className="flex">
+            <div className="flex h-full min-h-screen w-screen">
                 {/* Component data */}
                 <div
-                    className="flex flex-col w-full"
+                    className="flex flex-col"
                     style={{
                         // backgroundColor: "blue"
                         flex: "2",
                         backgroundColor: theme?.colors.accents0.value,
-                        minHeight: "100vh",
+                        minHeight: "100%",
+                        maxWidth: "70%"
                     }}
                 >
                     <Tabs
@@ -31,7 +32,7 @@ function SceneViewer() {
                         selected={1}
                     />
 
-                    <div className="h-full w-full px-5">
+                    <div className="px-5">
                         {/* TODO: Require game object selected, and validate it */}
                         <Routes>
                             <Route
@@ -45,6 +46,7 @@ function SceneViewer() {
                 {/* Container box for scrolling */}
                 <div
                     style={{
+                        width: "30%",
                         maxWidth: "40%",
                         minWidth: "30%",
                         // maxWidth: "30vw" // TODO: Figure out how to make overflow scroll horizontal work
