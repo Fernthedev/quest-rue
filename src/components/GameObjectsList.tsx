@@ -80,9 +80,9 @@ export default function GameObjectsList() {
         [filter.value]
     );
 
-    const goFn = (id: number) => objectsMap![id]![0];
+    const gameObjectGetFn = (id: number) => objectsMap![id]![0];
     const childrenFn = (go: GameObjectJSON) =>
-        childrenMap![go.transform!.address!].map((e) => goFn(e));
+        childrenMap![go.transform!.address!].map(gameObjectGetFn);
 
     const match = (go: GameObjectJSON) =>
         go.name?.toLowerCase().includes(lowercaseFilter);
@@ -96,11 +96,12 @@ export default function GameObjectsList() {
     const rootObjects = useMemo(
         () =>
             objectsMap &&
-            Object.values(objectsMap).filter((g) => !g[0].transform!.parent),
+            Object.values(objectsMap).filter(([g]) => !g.transform!.parent),
         [objectsMap]
     );
     const renderableObjects = useMemo(
-        () => rootObjects?.filter((g) => recursiveMatch(g[0])),
+        () => rootObjects?.filter(([g]) => recursiveMatch(g)),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [rootObjects, filter, childrenMap]
     );
 

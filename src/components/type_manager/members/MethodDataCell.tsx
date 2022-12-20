@@ -40,10 +40,6 @@ export function MethodDataCell(methodInfo: PacketJSON<ProtoMethodInfo>) {
         [methodInfo.args]
     );
 
-    if (!methodInfo.args) {
-        console.error("Method args is null!")
-    }
-
     console.log(jsonDefault);
 
     return (
