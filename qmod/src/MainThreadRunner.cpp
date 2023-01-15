@@ -1,5 +1,5 @@
-#include "main.hpp"
 #include "MainThreadRunner.hpp"
+#include "main.hpp"
 
 #include <functional>
 #include <thread>
@@ -14,23 +14,26 @@ static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
 
 void scheduleFunction(std::function<void()> const &func) {
-    if (mainThreadId == std::this_thread::get_id())
-        func();
+  if (mainThreadId == std::this_thread::get_id()) {
+    func();
+    return;
+  }
 
-    std::unique_lock<std::mutex> lock(scheduleLock);
-    scheduledFunctions.emplace_back(func);
+  std::unique_lock<std::mutex> lock(scheduleLock);
+  scheduledFunctions.emplace_back(func);
 }
 
 void MainThreadRunner::Update() {
-    if (!scheduledFunctions.empty()) {
-        LOG_INFO("Running scheduled functions on main thread");
-        std::unique_lock<std::mutex> lock(scheduleLock);
-        std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
-        scheduledFunctions.clear();
-        lock.unlock();
+  if (scheduledFunctions.empty()) {
+    return;
+  }
+  LOG_INFO("Running scheduled functions on main thread");
+  std::unique_lock<std::mutex> lock(scheduleLock);
+  std::vector<std::function<void()>> functions(std::move(scheduledFunctions));
+  scheduledFunctions.clear();
+  lock.unlock();
 
-        for (auto const &function : functions) {
-            function();
-        }
-    }
+  for (auto const &function : functions) {
+    function();
+  }
 }

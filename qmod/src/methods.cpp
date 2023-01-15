@@ -175,7 +175,7 @@ namespace MethodUtils {
         info.set_name(method->name);
         info.set_id(asInt(method));
         for(int i = 0; i < method->parameters_count; i++) {
-            auto param = method->parameters[i];
+            auto const& param = method->parameters[i];
             info.mutable_args()->insert({param.name, ClassUtils::GetTypeInfo(param.parameter_type)});
         }
         *info.mutable_returntype() = ClassUtils::GetTypeInfo(method->return_type);

@@ -6,13 +6,24 @@
 import * as pb_1 from "google-protobuf";
 export class ProtoClassInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        namespaze?: string;
-        clazz?: string;
-        generics?: ProtoClassInfo[];
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  namespaze?: string;
+                  clazz?: string;
+                  generics?: ProtoClassInfo[];
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [3],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("namespaze" in data && data.namespaze != undefined) {
                 this.namespaze = data.namespaze;
@@ -38,7 +49,11 @@ export class ProtoClassInfo extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get generics() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            ProtoClassInfo,
+            3
+        ) as ProtoClassInfo[];
     }
     set generics(value: ProtoClassInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 3, value);
@@ -56,7 +71,9 @@ export class ProtoClassInfo extends pb_1.Message {
             message.clazz = data.clazz;
         }
         if (data.generics != null) {
-            message.generics = data.generics.map(item => ProtoClassInfo.fromObject(item));
+            message.generics = data.generics.map((item) =>
+                ProtoClassInfo.fromObject(item)
+            );
         }
         return message;
     }
@@ -73,7 +90,9 @@ export class ProtoClassInfo extends pb_1.Message {
             data.clazz = this.clazz;
         }
         if (this.generics != null) {
-            data.generics = this.generics.map((item: ProtoClassInfo) => item.toObject());
+            data.generics = this.generics.map((item: ProtoClassInfo) =>
+                item.toObject()
+            );
         }
         return data;
     }
@@ -86,15 +105,21 @@ export class ProtoClassInfo extends pb_1.Message {
         if (typeof this.clazz === "string" && this.clazz.length)
             writer.writeString(2, this.clazz);
         if (this.generics !== undefined)
-            writer.writeRepeatedMessage(3, this.generics, (item: ProtoClassInfo) => item.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeRepeatedMessage(
+                3,
+                this.generics,
+                (item: ProtoClassInfo) => item.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoClassInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoClassInfo();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoClassInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.namespaze = reader.readString();
@@ -103,9 +128,17 @@ export class ProtoClassInfo extends pb_1.Message {
                     message.clazz = reader.readString();
                     break;
                 case 3:
-                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoClassInfo.deserialize(reader), ProtoClassInfo));
+                    reader.readMessage(message.generics, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            3,
+                            ProtoClassInfo.deserialize(reader),
+                            ProtoClassInfo
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -119,12 +152,23 @@ export class ProtoClassInfo extends pb_1.Message {
 }
 export class ProtoStructInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        clazz?: ProtoClassInfo;
-        fieldOffsets?: Map<number, ProtoFieldInfo>;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  clazz?: ProtoClassInfo;
+                  fieldOffsets?: Map<number, ProtoFieldInfo>;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("clazz" in data && data.clazz != undefined) {
                 this.clazz = data.clazz;
@@ -133,17 +177,23 @@ export class ProtoStructInfo extends pb_1.Message {
                 this.fieldOffsets = data.fieldOffsets;
             }
         }
-        if (!this.fieldOffsets)
-            this.fieldOffsets = new Map();
+        if (!this.fieldOffsets) this.fieldOffsets = new Map();
     }
     get clazz() {
-        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 1) as ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoClassInfo,
+            1
+        ) as ProtoClassInfo;
     }
     set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
     get fieldOffsets() {
-        return pb_1.Message.getField(this, 2) as any as Map<number, ProtoFieldInfo>;
+        return pb_1.Message.getField(this, 2) as any as Map<
+            number,
+            ProtoFieldInfo
+        >;
     }
     set fieldOffsets(value: Map<number, ProtoFieldInfo>) {
         pb_1.Message.setField(this, 2, value as any);
@@ -159,7 +209,12 @@ export class ProtoStructInfo extends pb_1.Message {
             message.clazz = ProtoClassInfo.fromObject(data.clazz);
         }
         if (typeof data.fieldOffsets == "object") {
-            message.fieldOffsets = new Map(Object.entries(data.fieldOffsets).map(([key, value]) => [Number(key), ProtoFieldInfo.fromObject(value)]));
+            message.fieldOffsets = new Map(
+                Object.entries(data.fieldOffsets).map(([key, value]) => [
+                    Number(key),
+                    ProtoFieldInfo.fromObject(value),
+                ])
+            );
         }
         return message;
     }
@@ -167,14 +222,21 @@ export class ProtoStructInfo extends pb_1.Message {
         const data: {
             clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             fieldOffsets?: {
-                [key: number]: ReturnType<typeof ProtoFieldInfo.prototype.toObject>;
+                [key: number]: ReturnType<
+                    typeof ProtoFieldInfo.prototype.toObject
+                >;
             };
         } = {};
         if (this.clazz != null) {
             data.clazz = this.clazz.toObject();
         }
         if (this.fieldOffsets.size > 0) {
-            data.fieldOffsets = Object.fromEntries(Array.from(this.fieldOffsets).map(([key, value]) => [key, value.toObject()]));
+            data.fieldOffsets = Object.fromEntries(
+                Array.from(this.fieldOffsets).map(([key, value]) => [
+                    key,
+                    value.toObject(),
+                ])
+            );
         }
         return data;
     }
@@ -183,33 +245,54 @@ export class ProtoStructInfo extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.clazz !== undefined)
-            writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
+            writer.writeMessage(1, this.clazz, () =>
+                this.clazz.serialize(writer)
+            );
         for (const [key, value] of this.fieldOffsets) {
             writer.writeMessage(2, this.fieldOffsets, () => {
                 writer.writeInt32(1, key);
                 writer.writeMessage(2, value, () => value.serialize(writer));
             });
         }
-        if (!w)
-            return writer.getResultBuffer();
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoStructInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoStructInfo();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoStructInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.clazz, () => message.clazz = ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.clazz,
+                        () =>
+                            (message.clazz = ProtoClassInfo.deserialize(reader))
+                    );
                     break;
                 case 2:
-                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fieldOffsets as any, reader, reader.readInt32, () => {
-                        let value;
-                        reader.readMessage(message, () => value = ProtoFieldInfo.deserialize(reader));
-                        return value;
-                    }));
+                    reader.readMessage(message, () =>
+                        pb_1.Map.deserializeBinary(
+                            message.fieldOffsets as any,
+                            reader,
+                            reader.readInt32,
+                            () => {
+                                let value;
+                                reader.readMessage(
+                                    message,
+                                    () =>
+                                        (value =
+                                            ProtoFieldInfo.deserialize(reader))
+                                );
+                                return value;
+                            }
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -223,21 +306,36 @@ export class ProtoStructInfo extends pb_1.Message {
 }
 export class ProtoTypeInfo extends pb_1.Message {
     #one_of_decls: number[][] = [[1, 2, 3]];
-    constructor(data?: any[] | ({} & (({
-        primitiveInfo?: ProtoTypeInfo.Primitive;
-        structInfo?: never;
-        classInfo?: never;
-    } | {
-        primitiveInfo?: never;
-        structInfo?: ProtoStructInfo;
-        classInfo?: never;
-    } | {
-        primitiveInfo?: never;
-        structInfo?: never;
-        classInfo?: ProtoClassInfo;
-    })))) {
+    constructor(
+        data?:
+            | any[]
+            | ({} & (
+                  | {
+                        primitiveInfo?: ProtoTypeInfo.Primitive;
+                        structInfo?: never;
+                        classInfo?: never;
+                    }
+                  | {
+                        primitiveInfo?: never;
+                        structInfo?: ProtoStructInfo;
+                        classInfo?: never;
+                    }
+                  | {
+                        primitiveInfo?: never;
+                        structInfo?: never;
+                        classInfo?: ProtoClassInfo;
+                    }
+              ))
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("primitiveInfo" in data && data.primitiveInfo != undefined) {
                 this.primitiveInfo = data.primitiveInfo;
@@ -257,25 +355,47 @@ export class ProtoTypeInfo extends pb_1.Message {
         pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
     }
     get structInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoStructInfo, 2) as ProtoStructInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoStructInfo,
+            2
+        ) as ProtoStructInfo;
     }
     set structInfo(value: ProtoStructInfo) {
-        pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            2,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoClassInfo,
+            3
+        ) as ProtoClassInfo;
     }
     set classInfo(value: ProtoClassInfo) {
-        pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            3,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get Info() {
         const cases: {
-            [index: number]: "none" | "primitiveInfo" | "structInfo" | "classInfo";
+            [index: number]:
+                | "none"
+                | "primitiveInfo"
+                | "structInfo"
+                | "classInfo";
         } = {
             0: "none",
             1: "primitiveInfo",
             2: "structInfo",
-            3: "classInfo"
+            3: "classInfo",
         };
         return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3])];
     }
@@ -320,28 +440,45 @@ export class ProtoTypeInfo extends pb_1.Message {
         if (this.primitiveInfo !== undefined)
             writer.writeEnum(1, this.primitiveInfo);
         if (this.structInfo !== undefined)
-            writer.writeMessage(2, this.structInfo, () => this.structInfo.serialize(writer));
+            writer.writeMessage(2, this.structInfo, () =>
+                this.structInfo.serialize(writer)
+            );
         if (this.classInfo !== undefined)
-            writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(3, this.classInfo, () =>
+                this.classInfo.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoTypeInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoTypeInfo();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoTypeInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.primitiveInfo = reader.readEnum();
                     break;
                 case 2:
-                    reader.readMessage(message.structInfo, () => message.structInfo = ProtoStructInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.structInfo,
+                        () =>
+                            (message.structInfo =
+                                ProtoStructInfo.deserialize(reader))
+                    );
                     break;
                 case 3:
-                    reader.readMessage(message.classInfo, () => message.classInfo = ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.classInfo,
+                        () =>
+                            (message.classInfo =
+                                ProtoClassInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -364,18 +501,29 @@ export namespace ProtoTypeInfo {
         STRING = 6,
         PTR = 7,
         VOID = 8,
-        UNKNOWN = 9
+        UNKNOWN = 9,
     }
 }
 export class ProtoFieldInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        name?: string;
-        id?: number;
-        type?: ProtoTypeInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  name?: string;
+                  id?: number;
+                  type?: ProtoTypeInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("name" in data && data.name != undefined) {
                 this.name = data.name;
@@ -401,7 +549,11 @@ export class ProtoFieldInfo extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get type() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 3) as ProtoTypeInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoTypeInfo,
+            3
+        ) as ProtoTypeInfo;
     }
     set type(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 3, value);
@@ -446,18 +598,21 @@ export class ProtoFieldInfo extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (typeof this.name === "string" && this.name.length)
             writer.writeString(1, this.name);
-        if (this.id !== undefined)
-            writer.writeUint64(2, this.id);
+        if (this.id !== undefined) writer.writeUint64(2, this.id);
         if (this.type !== undefined)
-            writer.writeMessage(3, this.type, () => this.type.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(3, this.type, () =>
+                this.type.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoFieldInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoFieldInfo();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoFieldInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.name = reader.readString();
@@ -466,9 +621,13 @@ export class ProtoFieldInfo extends pb_1.Message {
                     message.id = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message.type, () => message.type = ProtoTypeInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.type,
+                        () => (message.type = ProtoTypeInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -482,15 +641,26 @@ export class ProtoFieldInfo extends pb_1.Message {
 }
 export class ProtoPropertyInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        name?: string;
-        getterId?: number;
-        setterId?: number;
-        backingFieldId?: number;
-        type?: ProtoTypeInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  name?: string;
+                  getterId?: number;
+                  setterId?: number;
+                  backingFieldId?: number;
+                  type?: ProtoTypeInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("name" in data && data.name != undefined) {
                 this.name = data.name;
@@ -534,7 +704,11 @@ export class ProtoPropertyInfo extends pb_1.Message {
         pb_1.Message.setField(this, 4, value);
     }
     get type() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 5) as ProtoTypeInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoTypeInfo,
+            5
+        ) as ProtoTypeInfo;
     }
     set type(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 5, value);
@@ -595,22 +769,26 @@ export class ProtoPropertyInfo extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (typeof this.name === "string" && this.name.length)
             writer.writeString(1, this.name);
-        if (this.getterId !== undefined)
-            writer.writeUint64(2, this.getterId);
-        if (this.setterId !== undefined)
-            writer.writeUint64(3, this.setterId);
+        if (this.getterId !== undefined) writer.writeUint64(2, this.getterId);
+        if (this.setterId !== undefined) writer.writeUint64(3, this.setterId);
         if (this.backingFieldId !== undefined)
             writer.writeUint64(4, this.backingFieldId);
         if (this.type !== undefined)
-            writer.writeMessage(5, this.type, () => this.type.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(5, this.type, () =>
+                this.type.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoPropertyInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoPropertyInfo();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): ProtoPropertyInfo {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoPropertyInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.name = reader.readString();
@@ -625,9 +803,13 @@ export class ProtoPropertyInfo extends pb_1.Message {
                     message.backingFieldId = reader.readUint64();
                     break;
                 case 5:
-                    reader.readMessage(message.type, () => message.type = ProtoTypeInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.type,
+                        () => (message.type = ProtoTypeInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -641,14 +823,25 @@ export class ProtoPropertyInfo extends pb_1.Message {
 }
 export class ProtoMethodInfo extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        name?: string;
-        id?: number;
-        args?: Map<string, ProtoTypeInfo>;
-        returnType?: ProtoTypeInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  name?: string;
+                  id?: number;
+                  args?: Map<string, ProtoTypeInfo>;
+                  returnType?: ProtoTypeInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("name" in data && data.name != undefined) {
                 this.name = data.name;
@@ -663,8 +856,7 @@ export class ProtoMethodInfo extends pb_1.Message {
                 this.returnType = data.returnType;
             }
         }
-        if (!this.args)
-            this.args = new Map();
+        if (!this.args) this.args = new Map();
     }
     get name() {
         return pb_1.Message.getField(this, 1) as string;
@@ -679,13 +871,20 @@ export class ProtoMethodInfo extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get args() {
-        return pb_1.Message.getField(this, 3) as any as Map<string, ProtoTypeInfo>;
+        return pb_1.Message.getField(this, 3) as any as Map<
+            string,
+            ProtoTypeInfo
+        >;
     }
     set args(value: Map<string, ProtoTypeInfo>) {
         pb_1.Message.setField(this, 3, value as any);
     }
     get returnType() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 4) as ProtoTypeInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoTypeInfo,
+            4
+        ) as ProtoTypeInfo;
     }
     set returnType(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 4, value);
@@ -706,7 +905,12 @@ export class ProtoMethodInfo extends pb_1.Message {
             message.id = data.id;
         }
         if (typeof data.args == "object") {
-            message.args = new Map(Object.entries(data.args).map(([key, value]) => [key, ProtoTypeInfo.fromObject(value)]));
+            message.args = new Map(
+                Object.entries(data.args).map(([key, value]) => [
+                    key,
+                    ProtoTypeInfo.fromObject(value),
+                ])
+            );
         }
         if (data.returnType != null) {
             message.returnType = ProtoTypeInfo.fromObject(data.returnType);
@@ -718,7 +922,9 @@ export class ProtoMethodInfo extends pb_1.Message {
             name?: string;
             id?: number;
             args?: {
-                [key: string]: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+                [key: string]: ReturnType<
+                    typeof ProtoTypeInfo.prototype.toObject
+                >;
             };
             returnType?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
         } = {};
@@ -729,7 +935,12 @@ export class ProtoMethodInfo extends pb_1.Message {
             data.id = this.id;
         }
         if (this.args.size > 0) {
-            data.args = Object.fromEntries(Array.from(this.args).map(([key, value]) => [key, value.toObject()]));
+            data.args = Object.fromEntries(
+                Array.from(this.args).map(([key, value]) => [
+                    key,
+                    value.toObject(),
+                ])
+            );
         }
         if (this.returnType != null) {
             data.returnType = this.returnType.toObject();
@@ -742,8 +953,7 @@ export class ProtoMethodInfo extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (typeof this.name === "string" && this.name.length)
             writer.writeString(1, this.name);
-        if (this.id !== undefined)
-            writer.writeUint64(2, this.id);
+        if (this.id !== undefined) writer.writeUint64(2, this.id);
         for (const [key, value] of this.args) {
             writer.writeMessage(3, this.args, () => {
                 writer.writeString(1, key);
@@ -751,15 +961,19 @@ export class ProtoMethodInfo extends pb_1.Message {
             });
         }
         if (this.returnType !== undefined)
-            writer.writeMessage(4, this.returnType, () => this.returnType.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(4, this.returnType, () =>
+                this.returnType.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoMethodInfo {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoMethodInfo();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoMethodInfo();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.name = reader.readString();
@@ -768,16 +982,34 @@ export class ProtoMethodInfo extends pb_1.Message {
                     message.id = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.args as any, reader, reader.readString, () => {
-                        let value;
-                        reader.readMessage(message, () => value = ProtoTypeInfo.deserialize(reader));
-                        return value;
-                    }));
+                    reader.readMessage(message, () =>
+                        pb_1.Map.deserializeBinary(
+                            message.args as any,
+                            reader,
+                            reader.readString,
+                            () => {
+                                let value;
+                                reader.readMessage(
+                                    message,
+                                    () =>
+                                        (value =
+                                            ProtoTypeInfo.deserialize(reader))
+                                );
+                                return value;
+                            }
+                        )
+                    );
                     break;
                 case 4:
-                    reader.readMessage(message.returnType, () => message.returnType = ProtoTypeInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.returnType,
+                        () =>
+                            (message.returnType =
+                                ProtoTypeInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -791,16 +1023,27 @@ export class ProtoMethodInfo extends pb_1.Message {
 }
 export class ProtoClassDetails extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        clazz?: ProtoClassInfo;
-        fields?: ProtoFieldInfo[];
-        properties?: ProtoPropertyInfo[];
-        methods?: ProtoMethodInfo[];
-        interfaces?: ProtoClassInfo[];
-        parent?: ProtoClassDetails;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  clazz?: ProtoClassInfo;
+                  fields?: ProtoFieldInfo[];
+                  properties?: ProtoPropertyInfo[];
+                  methods?: ProtoMethodInfo[];
+                  interfaces?: ProtoClassInfo[];
+                  parent?: ProtoClassDetails;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2, 3, 4, 5], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [2, 3, 4, 5],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("clazz" in data && data.clazz != undefined) {
                 this.clazz = data.clazz;
@@ -823,37 +1066,61 @@ export class ProtoClassDetails extends pb_1.Message {
         }
     }
     get clazz() {
-        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 1) as ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoClassInfo,
+            1
+        ) as ProtoClassInfo;
     }
     set clazz(value: ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
     }
     get fields() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoFieldInfo, 2) as ProtoFieldInfo[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            ProtoFieldInfo,
+            2
+        ) as ProtoFieldInfo[];
     }
     set fields(value: ProtoFieldInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 2, value);
     }
     get properties() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoPropertyInfo, 3) as ProtoPropertyInfo[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            ProtoPropertyInfo,
+            3
+        ) as ProtoPropertyInfo[];
     }
     set properties(value: ProtoPropertyInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 3, value);
     }
     get methods() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoMethodInfo, 4) as ProtoMethodInfo[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            ProtoMethodInfo,
+            4
+        ) as ProtoMethodInfo[];
     }
     set methods(value: ProtoMethodInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 4, value);
     }
     get interfaces() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassInfo, 5) as ProtoClassInfo[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            ProtoClassInfo,
+            5
+        ) as ProtoClassInfo[];
     }
     set interfaces(value: ProtoClassInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 5, value);
     }
     get parent() {
-        return pb_1.Message.getWrapperField(this, ProtoClassDetails, 6) as ProtoClassDetails;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoClassDetails,
+            6
+        ) as ProtoClassDetails;
     }
     set parent(value: ProtoClassDetails) {
         pb_1.Message.setWrapperField(this, 6, value);
@@ -871,16 +1138,24 @@ export class ProtoClassDetails extends pb_1.Message {
             message.clazz = ProtoClassInfo.fromObject(data.clazz);
         }
         if (data.fields != null) {
-            message.fields = data.fields.map(item => ProtoFieldInfo.fromObject(item));
+            message.fields = data.fields.map((item) =>
+                ProtoFieldInfo.fromObject(item)
+            );
         }
         if (data.properties != null) {
-            message.properties = data.properties.map(item => ProtoPropertyInfo.fromObject(item));
+            message.properties = data.properties.map((item) =>
+                ProtoPropertyInfo.fromObject(item)
+            );
         }
         if (data.methods != null) {
-            message.methods = data.methods.map(item => ProtoMethodInfo.fromObject(item));
+            message.methods = data.methods.map((item) =>
+                ProtoMethodInfo.fromObject(item)
+            );
         }
         if (data.interfaces != null) {
-            message.interfaces = data.interfaces.map(item => ProtoClassInfo.fromObject(item));
+            message.interfaces = data.interfaces.map((item) =>
+                ProtoClassInfo.fromObject(item)
+            );
         }
         if (data.parent != null) {
             message.parent = ProtoClassDetails.fromObject(data.parent);
@@ -891,7 +1166,9 @@ export class ProtoClassDetails extends pb_1.Message {
         const data: {
             clazz?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             fields?: ReturnType<typeof ProtoFieldInfo.prototype.toObject>[];
-            properties?: ReturnType<typeof ProtoPropertyInfo.prototype.toObject>[];
+            properties?: ReturnType<
+                typeof ProtoPropertyInfo.prototype.toObject
+            >[];
             methods?: ReturnType<typeof ProtoMethodInfo.prototype.toObject>[];
             interfaces?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
             parent?: ReturnType<typeof ProtoClassDetails.prototype.toObject>;
@@ -900,16 +1177,24 @@ export class ProtoClassDetails extends pb_1.Message {
             data.clazz = this.clazz.toObject();
         }
         if (this.fields != null) {
-            data.fields = this.fields.map((item: ProtoFieldInfo) => item.toObject());
+            data.fields = this.fields.map((item: ProtoFieldInfo) =>
+                item.toObject()
+            );
         }
         if (this.properties != null) {
-            data.properties = this.properties.map((item: ProtoPropertyInfo) => item.toObject());
+            data.properties = this.properties.map((item: ProtoPropertyInfo) =>
+                item.toObject()
+            );
         }
         if (this.methods != null) {
-            data.methods = this.methods.map((item: ProtoMethodInfo) => item.toObject());
+            data.methods = this.methods.map((item: ProtoMethodInfo) =>
+                item.toObject()
+            );
         }
         if (this.interfaces != null) {
-            data.interfaces = this.interfaces.map((item: ProtoClassInfo) => item.toObject());
+            data.interfaces = this.interfaces.map((item: ProtoClassInfo) =>
+                item.toObject()
+            );
         }
         if (this.parent != null) {
             data.parent = this.parent.toObject();
@@ -921,45 +1206,107 @@ export class ProtoClassDetails extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.clazz !== undefined)
-            writer.writeMessage(1, this.clazz, () => this.clazz.serialize(writer));
+            writer.writeMessage(1, this.clazz, () =>
+                this.clazz.serialize(writer)
+            );
         if (this.fields !== undefined)
-            writer.writeRepeatedMessage(2, this.fields, (item: ProtoFieldInfo) => item.serialize(writer));
+            writer.writeRepeatedMessage(
+                2,
+                this.fields,
+                (item: ProtoFieldInfo) => item.serialize(writer)
+            );
         if (this.properties !== undefined)
-            writer.writeRepeatedMessage(3, this.properties, (item: ProtoPropertyInfo) => item.serialize(writer));
+            writer.writeRepeatedMessage(
+                3,
+                this.properties,
+                (item: ProtoPropertyInfo) => item.serialize(writer)
+            );
         if (this.methods !== undefined)
-            writer.writeRepeatedMessage(4, this.methods, (item: ProtoMethodInfo) => item.serialize(writer));
+            writer.writeRepeatedMessage(
+                4,
+                this.methods,
+                (item: ProtoMethodInfo) => item.serialize(writer)
+            );
         if (this.interfaces !== undefined)
-            writer.writeRepeatedMessage(5, this.interfaces, (item: ProtoClassInfo) => item.serialize(writer));
+            writer.writeRepeatedMessage(
+                5,
+                this.interfaces,
+                (item: ProtoClassInfo) => item.serialize(writer)
+            );
         if (this.parent !== undefined)
-            writer.writeMessage(6, this.parent, () => this.parent.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(6, this.parent, () =>
+                this.parent.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoClassDetails {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoClassDetails();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): ProtoClassDetails {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoClassDetails();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.clazz, () => message.clazz = ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.clazz,
+                        () =>
+                            (message.clazz = ProtoClassInfo.deserialize(reader))
+                    );
                     break;
                 case 2:
-                    reader.readMessage(message.fields, () => pb_1.Message.addToRepeatedWrapperField(message, 2, ProtoFieldInfo.deserialize(reader), ProtoFieldInfo));
+                    reader.readMessage(message.fields, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            2,
+                            ProtoFieldInfo.deserialize(reader),
+                            ProtoFieldInfo
+                        )
+                    );
                     break;
                 case 3:
-                    reader.readMessage(message.properties, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoPropertyInfo.deserialize(reader), ProtoPropertyInfo));
+                    reader.readMessage(message.properties, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            3,
+                            ProtoPropertyInfo.deserialize(reader),
+                            ProtoPropertyInfo
+                        )
+                    );
                     break;
                 case 4:
-                    reader.readMessage(message.methods, () => pb_1.Message.addToRepeatedWrapperField(message, 4, ProtoMethodInfo.deserialize(reader), ProtoMethodInfo));
+                    reader.readMessage(message.methods, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            4,
+                            ProtoMethodInfo.deserialize(reader),
+                            ProtoMethodInfo
+                        )
+                    );
                     break;
                 case 5:
-                    reader.readMessage(message.interfaces, () => pb_1.Message.addToRepeatedWrapperField(message, 5, ProtoClassInfo.deserialize(reader), ProtoClassInfo));
+                    reader.readMessage(message.interfaces, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            5,
+                            ProtoClassInfo.deserialize(reader),
+                            ProtoClassInfo
+                        )
+                    );
                     break;
                 case 6:
-                    reader.readMessage(message.parent, () => message.parent = ProtoClassDetails.deserialize(reader));
+                    reader.readMessage(
+                        message.parent,
+                        () =>
+                            (message.parent =
+                                ProtoClassDetails.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -973,12 +1320,23 @@ export class ProtoClassDetails extends pb_1.Message {
 }
 export class ProtoDataPayload extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        typeInfo?: ProtoTypeInfo;
-        data?: Uint8Array;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  typeInfo?: ProtoTypeInfo;
+                  data?: Uint8Array;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("typeInfo" in data && data.typeInfo != undefined) {
                 this.typeInfo = data.typeInfo;
@@ -989,7 +1347,11 @@ export class ProtoDataPayload extends pb_1.Message {
         }
     }
     get typeInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 1) as ProtoTypeInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoTypeInfo,
+            1
+        ) as ProtoTypeInfo;
     }
     set typeInfo(value: ProtoTypeInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
@@ -1031,25 +1393,36 @@ export class ProtoDataPayload extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.typeInfo !== undefined)
-            writer.writeMessage(1, this.typeInfo, () => this.typeInfo.serialize(writer));
-        if (this.data !== undefined)
-            writer.writeBytes(2, this.data);
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(1, this.typeInfo, () =>
+                this.typeInfo.serialize(writer)
+            );
+        if (this.data !== undefined) writer.writeBytes(2, this.data);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoDataPayload {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoDataPayload();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): ProtoDataPayload {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoDataPayload();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.typeInfo, () => message.typeInfo = ProtoTypeInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.typeInfo,
+                        () =>
+                            (message.typeInfo =
+                                ProtoTypeInfo.deserialize(reader))
+                    );
                     break;
                 case 2:
                     message.data = reader.readBytes();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;

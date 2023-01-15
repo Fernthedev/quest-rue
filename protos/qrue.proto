@@ -64,6 +64,7 @@ message GetAllGameObjectsResult {
 }
 
 message GetGameObjectComponents {
+    /// GameObject address
     uint64 address = 1;
 }
 message GetGameObjectComponentsResult {
