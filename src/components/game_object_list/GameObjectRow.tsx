@@ -30,9 +30,11 @@ export function GameObjectRow({
 }: GameObjectRowProps) {
     const arrowProps: FluentIconsProps = { width: "1.5em", height: "1.5em" };
 
-    const arrow = isOpen
-        ? ChevronDownFilled(arrowProps)
-        : ChevronLeftFilled(arrowProps);
+    const arrow = isOpen ? (
+        <ChevronDownFilled {...arrowProps} />
+    ) : (
+        <ChevronLeftFilled {...arrowProps} />
+    );
 
     return (
         <div

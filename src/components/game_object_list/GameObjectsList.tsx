@@ -1,19 +1,16 @@
 import { Input, Loading, Radio, useInput } from "@nextui-org/react";
 import { useMemo } from "react";
-import { requestGameObjects } from "../misc/commands";
-import { GameObjectJSON, getEvents, useEffectOnEvent } from "../misc/events";
+import { requestGameObjects } from "../../misc/commands";
+import { GameObjectJSON, getEvents, useEffectOnEvent } from "../../misc/events";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import { FixedSizeTree as Tree } from "react-vtree";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
-import { gameObjectsStore } from "../misc/handlers/gameobject";
-import { TypeManagerParams } from "./TypeManager";
-import {
-    GameObjectRow,
-    GameObjectRowTreeData,
-} from "./game_object_list/GameObjectRow";
+import { gameObjectsStore } from "../../misc/handlers/gameobject";
+import { TypeManagerParams } from "../TypeManager";
+import { GameObjectRow, GameObjectRowTreeData } from "./GameObjectRow";
 
 function* treeWalker(
     refresh: boolean,
@@ -65,6 +62,26 @@ function* treeWalker(
     }
 }
 
+function getRenderableObjects(
+    filter: string,
+    rootObjects: readonly (readonly [GameObjectJSON, symbol])[],
+    objectsMap: Record<number, readonly [GameObjectJSON, symbol]>,
+    childrenMap: Record<number, readonly number[]>
+) {
+    const gameObjectGetFn = (id: number) => objectsMap![id]![0];
+    const childrenFn = (go: GameObjectJSON) =>
+        childrenMap![go.transform!.address!].map(gameObjectGetFn);
+
+    const match = (go: GameObjectJSON) =>
+        go.name?.toLowerCase().includes(filter);
+    const recursiveMatch = (go: GameObjectJSON) =>
+        match(go) || (childrenMap && childrenFn(go).some(recursiveMatch));
+
+    const renderableObjects = rootObjects?.filter(([g]) => recursiveMatch(g));
+
+    return renderableObjects;
+}
+
 export default function GameObjectsList() {
     // TODO: Clean
     // TODO: Use Suspense?
@@ -80,53 +97,34 @@ export default function GameObjectsList() {
         [filter.value]
     );
 
-    const gameObjectGetFn = (id: number) => objectsMap![id]![0];
-    const childrenFn = (go: GameObjectJSON) =>
-        childrenMap![go.transform!.address!].map(gameObjectGetFn);
-
-    const match = (go: GameObjectJSON) =>
-        go.name?.toLowerCase().includes(lowercaseFilter);
-    const recursiveMatch = (go: GameObjectJSON) =>
-        match(go) || (childrenMap && childrenFn(go).some(recursiveMatch));
-
-    {
-        /* TODO: Make recursive match faster */
-    }
-
     const rootObjects = useMemo(
         () =>
             objectsMap &&
-            Object.values(objectsMap).filter(([g]) => !g.transform!.parent),
+            Object.values(objectsMap).filter(([g]) => !g.transform?.parent),
         [objectsMap]
     );
     const renderableObjects = useMemo(
-        () => rootObjects?.filter(([g]) => recursiveMatch(g)),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [rootObjects, filter, childrenMap]
+        () =>
+            rootObjects &&
+            objectsMap &&
+            childrenMap &&
+            getRenderableObjects(
+                lowercaseFilter,
+                rootObjects,
+                objectsMap,
+                childrenMap
+            ),
+        [childrenMap, lowercaseFilter, objectsMap, rootObjects]
     );
 
     // Listen to game object list events
     // On connect
     useEffectOnEvent(getEvents().CONNECTED_EVENT, () => {
-        console.log("connected after waiting, requesting objects");
         requestGameObjects();
     });
 
     if (!objectsMap || !childrenMap || !rootObjects || !renderableObjects) {
-        return (
-            <div
-                style={{
-                    overflow: "hidden",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: "5vmin",
-                    height: "50vh",
-                }}
-            >
-                <Loading size="xl" />
-            </div>
-        );
+        return LoadingPage();
     }
 
     return (
@@ -182,6 +180,23 @@ export default function GameObjectsList() {
                     )}
                 </AutoSizer>
             </div>
+        </div>
+    );
+}
+
+function LoadingPage() {
+    return (
+        <div
+            style={{
+                overflow: "hidden",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "5vmin",
+                height: "50vh",
+            }}
+        >
+            <Loading size="xl" />
         </div>
     );
 }

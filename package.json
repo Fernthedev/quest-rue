@@ -13,21 +13,19 @@
     "dependencies": {
         "@fluentui/react-icons": "^2.0.190",
         "@griffel/react": "^1.5.1",
-        "@nextui-org/react": "^1.0.0-beta.10",
+        "@nextui-org/react": "^1.0.0-beta.12",
         "@tauri-apps/api": "^1.2.0",
-        "autoprefixer": "^10.4.8",
         "daisyui": "^2.45.0",
         "google-protobuf": "^3.21.2",
-        "postcss": "^8.4.16",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-router": "^6.5.0",
-        "react-router-dom": "^6.5.0",
+        "react-router": "^6.6.2",
+        "react-router-dom": "^6.6.2",
         "react-virtualized-auto-sizer": "^1.0.6",
         "react-vtree": "^2.0.4",
         "react-window": "^1.8.7",
         "use-dark-mode": "^2.3.1",
-        "valtio": "^1.7.6"
+        "valtio": "^1.9.0"
     },
     "devDependencies": {
         "@fluentui/react-make-styles": "^9.0.0-beta.4",
@@ -42,15 +40,17 @@
         "@typescript-eslint/eslint-plugin": "^5.19.0",
         "@typescript-eslint/parser": "^5.19.0",
         "@vitejs/plugin-react-swc": "^3.0.1",
-        "eslint": "^8.30.0",
+        "autoprefixer": "^10.4.8",
+        "eslint": "^8.32.0",
         "eslint-config-google": "^0.14.0",
-        "eslint-plugin-react": "^7.31.1",
+        "eslint-plugin-react": "^7.32.0",
         "eslint-plugin-react-hooks": "^4.6.0",
+        "postcss": "^8.4.16",
         "prettier": "^2.8.1",
         "protoc-gen-ts": "^0.8.4",
         "tailwindcss": "^3.2.4",
-        "typescript": "^4.8.0",
-        "vite": "^4.0.2"
+        "typescript": "^4.9.4",
+        "vite": "^4.0.4"
     },
     "packageManager": "yarn@3.2.1"
 }
