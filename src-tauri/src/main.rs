@@ -2,8 +2,6 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-#![feature(mutex_unlock)]
-#![feature(iterator_try_collect)]
 
 // use appstate::AppState;
 // use bytes::BytesMut;

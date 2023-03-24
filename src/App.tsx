@@ -1,41 +1,51 @@
-import { createTheme, NextUIProvider } from "@nextui-org/react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-// import useDarkMode from "use-dark-mode";
-import { connect } from "./misc/commands";
-import SceneViewer from "./pages/SceneViewer";
+import { createSignal } from "solid-js";
+import logo from "./assets/logo.svg";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
 
-export default function App() {
-    // MAKE A .env.development or .env.development.local file WITH THESE CONTENTS:
-    // VITE_QUEST_IP="MY_QUEST_IP"
-    // VITE_QUEST_PORT=3306
-    console.log("Connecting");
-    let port = parseInt(import.meta.env.VITE_QUEST_PORT);
-    if (!port) port = 3306;
+function App() {
+  const [greetMsg, setGreetMsg] = createSignal("");
+  const [name, setName] = createSignal("");
 
-    connect(import.meta.env.VITE_QUEST_IP, port);
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    setGreetMsg(await invoke("greet", { name: name() }));
+  }
 
-    // const darkMode = useDarkMode(true)
+  return (
+    <div class="container">
+      <h1>Welcome to Tauri!</h1>
 
-    // const lightTheme = createTheme({
-    //     type: 'light',
-    // })
+      <div class="row">
+        <a href="https://vitejs.dev" target="_blank">
+          <img src="/vite.svg" class="logo vite" alt="Vite logo" />
+        </a>
+        <a href="https://tauri.app" target="_blank">
+          <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
+        </a>
+        <a href="https://solidjs.com" target="_blank">
+          <img src={logo} class="logo solid" alt="Solid logo" />
+        </a>
+      </div>
 
-    const darkTheme = createTheme({
-        type: "dark",
-    });
+      <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
 
-    // https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md
-    return (
-        <NextUIProvider theme={darkTheme}>
-            <BrowserRouter>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<Navigate to={"/sceneViewer"} replace />}
-                    />
-                    <Route path="/sceneViewer/*" element={<SceneViewer />} />
-                </Routes>
-            </BrowserRouter>
-        </NextUIProvider>
-    );
+      <div class="row">
+        <div>
+          <input
+            id="greet-input"
+            onChange={(e) => setName(e.currentTarget.value)}
+            placeholder="Enter a name..."
+          />
+          <button type="button" onClick={() => greet()}>
+            Greet
+          </button>
+        </div>
+      </div>
+
+      <p>{greetMsg}</p>
+    </div>
+  );
 }
+
+export default App;
