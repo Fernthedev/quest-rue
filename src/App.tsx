@@ -1,13 +1,15 @@
-import "./App.css";
-import { Route, Routes } from "@solidjs/router";
+import { Navigate, Route, Router, Routes } from "@solidjs/router";
 import SceneViewer from "./pages/SceneViewer";
 
 function App() {
     return (
-        <div class="container">
-            <Routes>
-                <Route path="/scene/*" component={SceneViewer} />
-            </Routes>
+        <div class="container min-w-full">
+            <Router>
+                <Routes>
+                    <Route path="/scene/*" component={SceneViewer} />
+                    <Route path={"/"} element={<Navigate href={"/scene/"} />} />
+                </Routes>
+            </Router>
         </div>
     );
 }
