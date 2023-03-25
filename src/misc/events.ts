@@ -3,7 +3,14 @@ import { sendPacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
-import { Accessor, Signal, createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import {
+    Accessor,
+    Signal,
+    createEffect,
+    createSignal,
+    onCleanup,
+    onMount,
+} from "solid-js";
 
 export type GameObjectJSON = ReturnType<
     typeof ProtoGameObject.prototype.toObject
@@ -53,32 +60,29 @@ export function useRequestAndResponsePacket<
     const [val, setValue] = createSignal<R | undefined>(undefined);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: {value: number | undefined} = { value: 0 };
+    const expectedQueryID: { value: number | undefined } = { value: 0 };
 
     // Create the listener
     // onMount is likely not necessary
-    // onMount(() => {
-        const listener = getEvents().ALL_PACKETS;
-        const callback = listener.addListener((union) => {
-            if (
-                expectedQueryID.value &&
-                union.queryResultId === expectedQueryID.value
-            ) {
-                const packet = (union as Record<string, unknown>)[union.packetType];
+    const listener = getEvents().ALL_PACKETS;
+    const callback = listener.addListener((union) => {
+        if (
+            expectedQueryID.value &&
+            union.queryResultId === expectedQueryID.value
+        ) {
+            const packet = (union as Record<string, unknown>)[union.packetType];
 
-                if (!packet) throw "Packet is undefined why!";
+            if (!packet) throw "Packet is undefined why!";
 
-                setValue(() => packet as R);
+            setValue(() => packet as R);
 
-                expectedQueryID.value = undefined;
-            }
-        }, once);
+            expectedQueryID.value = undefined;
+        }
+    }, once);
 
-
-        onCleanup(() => {
-            listener.removeListener(callback);
-        })
-    // });
+    onCleanup(() => {
+        listener.removeListener(callback);
+    });
 
     // Return the state and a callback for invoking reads
     return [
@@ -106,16 +110,13 @@ export function createSignalEvent<T>(
 ): Accessor<T | undefined> {
     const [val, setValue] = createSignal<T | undefined>(undefined);
 
-    // onMount(() => {
-        const callback = listener.addListener((v) => {
-            setValue(() => v);
-        }, once);
+    const callback = listener.addListener((v) => {
+        setValue(() => v);
+    }, once);
 
-        onCleanup(() => {
-            listener.removeListener(callback);
-
-        })
-    // });
+    onCleanup(() => {
+        listener.removeListener(callback);
+    });
 
     return val;
 }
@@ -125,13 +126,11 @@ export function createOnEventCallback<T, R>(
     callback: (value: T) => R,
     once = false
 ) {
-    // onMount(() => {
-        const id = listener.addListener(callback, once);
+    const id = listener.addListener(callback, once);
 
-        onCleanup(() => {
-            listener.removeListener(id);
-        })
-    // })
+    onCleanup(() => {
+        listener.removeListener(id);
+    });
 }
 
 export type ListenerCallbackFunction<T> = (value: T) => void;
@@ -156,7 +155,7 @@ export class EventListener<T> {
 
             this.otherListeners[index] = [onceWrapper, callback];
             return onceWrapper;
-        } 
+        }
 
         this.otherListeners[index] = [callback, undefined];
         return callback;
