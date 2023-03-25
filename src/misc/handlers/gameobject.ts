@@ -19,10 +19,7 @@ export const [gameObjectsStore, setGameObjectsStore] =
 
 export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
     batch(() => {
-        setGameObjectsStore((o) => ({
-            ...o,
-            objects: packet.objects ?? null,
-        }));
+        setGameObjectsStore("objects", packet.objects ?? null);
 
         const objectsMap: Record<number, [GameObjectJSON, symbol]> | null =
             packet.objects ? {} : null;
@@ -60,16 +57,10 @@ export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
         }
 
         if (gameObjectsStore.objectsMap != objectsMap) {
-            setGameObjectsStore((o) => ({
-                ...o,
-                objectsMap: objectsMap,
-            }));
+            setGameObjectsStore("objectsMap", objectsMap);
         }
         if (gameObjectsStore.childrenMap != childrenMap) {
-            setGameObjectsStore((o) => ({
-                ...o,
-                childrenMap: childrenMap,
-            }));
+            setGameObjectsStore("childrenMap", childrenMap);
         }
     });
 }
