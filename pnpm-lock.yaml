@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@solidjs/router': ^0.8.1
   '@tauri-apps/api': ^1.2.0
   '@tauri-apps/cli': ^1.2.2
   '@types/google-protobuf': ^3.15.6
@@ -22,6 +23,7 @@ specifiers:
   vite-plugin-solid: ^2.3.0
 
 dependencies:
+  '@solidjs/router': 0.8.1_solid-js@1.6.15
   '@tauri-apps/api': 1.2.0
   daisyui: 2.51.5_j7yt3jd32cwenjqavrrga47yr4
   google-protobuf: 3.21.2
@@ -674,6 +676,14 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
+
+  /@solidjs/router/0.8.1_solid-js@1.6.15:
+    resolution: {integrity: sha512-BjDNvUbeyUjBoxCH89QrYCh0Z6gtibT9q6+z5DCa5JjIcsWCQ+9IcETcWqzvWZlir/vObdK1p69hMW0R7MuetA==}
+    peerDependencies:
+      solid-js: ^1.5.3
+    dependencies:
+      solid-js: 1.6.15
+    dev: false
 
   /@tauri-apps/api/1.2.0:
     resolution: {integrity: sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==}

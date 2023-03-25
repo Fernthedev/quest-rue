@@ -1,9 +1,9 @@
 import { Message } from "google-protobuf";
-import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { sendPacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
+import { Accessor, Signal, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 
 export type GameObjectJSON = ReturnType<
     typeof ProtoGameObject.prototype.toObject
@@ -48,45 +48,44 @@ export type PacketJSON<T extends Message> = ReturnType<T["toObject"]>;
 export function useRequestAndResponsePacket<
     T extends Message,
     P extends PacketTypes[0] = PacketTypes[0],
-    R = ReturnType<T["toObject"]>
->(once = false): [R | undefined, (p: P) => void] {
-    const [val, setValue] = useState<R | undefined>(undefined);
+    R extends PacketJSON<T> = PacketJSON<T>
+>(once = false): [Accessor<R | undefined>, (p: P) => void] {
+    const [val, setValue] = createSignal<R | undefined>(undefined);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: MutableRefObject<number | undefined> = useRef<
-        number | undefined
-    >(undefined);
+    const expectedQueryID: {value: number | undefined} = { value: 0 };
 
     // Create the listener
-    useEffect(() => {
+    // onMount is likely not necessary
+    // onMount(() => {
         const listener = getEvents().ALL_PACKETS;
-        const callback = listener.addListener((v) => {
+        const callback = listener.addListener((union) => {
             if (
-                expectedQueryID.current &&
-                v.queryResultId === expectedQueryID.current
+                expectedQueryID.value &&
+                union.queryResultId === expectedQueryID.value
             ) {
-                const packet = (v as Record<string, unknown>)[v.packetType];
+                const packet = (union as Record<string, unknown>)[union.packetType];
 
                 if (!packet) throw "Packet is undefined why!";
 
-                setValue(packet as R);
+                setValue(() => packet as R);
 
-                expectedQueryID.current = undefined;
+                expectedQueryID.value = undefined;
             }
         }, once);
 
-        return () => {
+
+        onCleanup(() => {
             listener.removeListener(callback);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        })
+    // });
 
     // Return the state and a callback for invoking reads
     return [
         val,
         (p: P) => {
             const randomId = uniqueNumber();
-            expectedQueryID.current = randomId;
+            expectedQueryID.value = randomId;
             sendPacket(
                 PacketWrapper.fromObject({ queryResultId: randomId, ...p })
             );
@@ -101,39 +100,38 @@ export function useRequestAndResponsePacket<
  * @param once only update once when a packet is received
  * @returns The current state value
  */
-export function useListenToEvent<T>(
+export function createSignalEvent<T>(
     listener: EventListener<T>,
     once = false
-): T | undefined {
-    const [val, setValue] = useState<T | undefined>(undefined);
+): Accessor<T | undefined> {
+    const [val, setValue] = createSignal<T | undefined>(undefined);
 
-    useEffect(() => {
+    // onMount(() => {
         const callback = listener.addListener((v) => {
-            setValue(v);
+            setValue(() => v);
         }, once);
 
-        return () => {
+        onCleanup(() => {
             listener.removeListener(callback);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+
+        })
+    // });
 
     return val;
 }
 
-export function useEffectOnEvent<T, R>(
+export function createOnEventCallback<T, R>(
     listener: EventListener<T>,
     callback: (value: T) => R,
     once = false
 ) {
-    useEffect(() => {
+    // onMount(() => {
         const id = listener.addListener(callback, once);
 
-        return () => {
+        onCleanup(() => {
             listener.removeListener(id);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        })
+    // })
 }
 
 export type ListenerCallbackFunction<T> = (value: T) => void;
@@ -149,8 +147,7 @@ export class EventListener<T> {
         callback: ListenerCallbackFunction<T>,
         once = false
     ): ListenerCallbackFunction<T> {
-        let index = this.otherListeners.findIndex((e) => !e);
-        if (!index || index < 0) index = this.otherListeners.length;
+        const index = this.otherListeners.length++;
         if (once) {
             const onceWrapper = (v: T) => {
                 callback(v);
@@ -159,10 +156,10 @@ export class EventListener<T> {
 
             this.otherListeners[index] = [onceWrapper, callback];
             return onceWrapper;
-        } else {
-            this.otherListeners[index] = [callback, undefined];
-            return callback;
-        }
+        } 
+
+        this.otherListeners[index] = [callback, undefined];
+        return callback;
     }
 
     removeListener(callback: ListenerCallbackFunction<T>) {
