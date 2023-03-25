@@ -3,11 +3,19 @@ import { GameObjectJSON, PacketJSON } from "../events";
 import { GetAllGameObjectsResult } from "../proto/qrue";
 import { createStore } from "solid-js/store";
 
+// type is based on Transform's address
+export type GameObjectIndex = Required<
+    Required<GameObjectJSON>["transform"]
+>["address"];
+
 interface GameObjectStore {
     objects: GameObjectJSON[] | null;
-    objectsMap: Record<number, [GameObjectJSON, symbol]> | null;
+    objectsMap: Record<
+        GameObjectIndex,
+        [obj: GameObjectJSON, id: symbol]
+    > | null;
     // parent -> children[]
-    childrenMap: Record<number, number[]> | null;
+    childrenMap: Record<GameObjectIndex, GameObjectIndex[]> | null;
 }
 
 export const [gameObjectsStore, setGameObjectsStore] =

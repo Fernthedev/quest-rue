@@ -1,5 +1,6 @@
 import { Navigate, Route, Router, Routes } from "@solidjs/router";
-import SceneViewer from "./pages/SceneViewer";
+import { lazy } from "solid-js";
+const SceneViewer = lazy(() => import("./pages/SceneViewer"));
 
 function App() {
     return (
