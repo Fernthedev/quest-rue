@@ -5,11 +5,8 @@ import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 import {
     Accessor,
-    Signal,
-    createEffect,
     createSignal,
-    onCleanup,
-    onMount,
+    onCleanup,                   
 } from "solid-js";
 
 export type GameObjectJSON = ReturnType<
