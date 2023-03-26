@@ -3,7 +3,6 @@ import { GameObjectJSON } from "../misc/events";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
 
 import "./GameObjectList.module.css";
-import Search from "./Search";
 
 function GameObjectListItem(props: { obj: GameObjectJSON }) {
     return <>{props.obj.name}</>;
@@ -12,6 +11,8 @@ function GameObjectListItem(props: { obj: GameObjectJSON }) {
 export default function GameObjectList() {
     const [search, setSearch] = createSignal<string>("");
 
+    // createDeferred is a createMemo that runs when the browser is idle
+    // Solid is awesome
     const filteredObjects = createDeferred(
         () => {
             if (!gameObjectsStore.objectsMap) return null;
@@ -19,22 +20,14 @@ export default function GameObjectList() {
                 return Object.entries(gameObjectsStore.objectsMap);
 
             return Object.entries(gameObjectsStore.objectsMap).filter(
-                ([, [o]]) => o.name?.toLocaleLowerCase().includes(search().toLowerCase())
+                ([, [o]]) =>
+                    o.name?.toLocaleLowerCase().includes(search().toLowerCase())
             );
         },
         {
             timeoutMs: 1000,
         }
     );
-
-    // createEffect(() => {
-    //     const searchValue = search();
-    //     if (searchValue == "")
-    //         queueMicrotask(() => {
-    //             // return if no longer
-    //             if (search() != searchValue) return;
-    //         });
-    // });
 
     const rootObjects = createMemo(() =>
         filteredObjects()?.filter(([, [o]]) => !o.transform?.parent)
@@ -44,23 +37,16 @@ export default function GameObjectList() {
         <div>
             {/* TODO: Make this sticky horizontal scroll */}
             <div class="mx-8 my-1 sticky">
-                <Search value={search()} valueChange={setSearch} />
-                {/* <input
+                <input
                     placeholder="Search"
                     value={search()}
                     onInput={(e) => {
-                        const tokenCopy = token.token;
                         const value = e.currentTarget.value;
 
-                        return queueMicrotask(() => {
-                            if (tokenCopy.cancelled()) return;
-
-                            console.log(value);
-                            return setSearch(value?.toLowerCase() ?? "");
-                        });
+                        setSearch(value);
                     }}
                     class="w-full"
-                /> */}
+                />
             </div>
             <div class="w-max overflow-x-auto">
                 <ul>
@@ -72,15 +58,6 @@ export default function GameObjectList() {
                             </li>
                         )}
                     </For>
-                    {/* <li>
-                <GameObjectListItem text="Hi this is mark and today we're going to cook some doritoes" />
-            </li>
-            <li>
-                <GameObjectListItem text="Hi2" />
-            </li>
-            <li>
-                <GameObjectListItem text="Hi3" />
-            </li> */}
                 </ul>
             </div>
         </div>
