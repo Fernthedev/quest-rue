@@ -5,7 +5,30 @@ import { gameObjectsStore } from "../misc/handlers/gameobject";
 import "./GameObjectList.module.css";
 
 function GameObjectListItem(props: { obj: GameObjectJSON }) {
-    return <>{props.obj.name}</>;
+    const [collapsed, setCollapsed] = createSignal<boolean>(false);
+
+    const children = createMemo(
+        () => gameObjectsStore.childrenMap?.[props.obj.transform!.address!]
+    );
+    const hasChildren = () => (children()?.length ?? 0) > 0;
+
+    return (
+        <li>
+            <div class="cursor-pointer">
+                <Show when={hasChildren()}>
+                    <span class="mr-1 inline-block w-4 text-center" onClick={() => setCollapsed(!collapsed())}>
+                        {collapsed() ? "+" : "-"}
+                    </span>
+                </Show>
+                <span onClick={() => {/* select object */}}>
+                    {props.obj.name}
+                </span>
+            </div>
+            <Show when={!collapsed() && hasChildren()}>
+                <ConstructList children={children()!} />
+            </Show>
+        </li>
+    );
 }
 
 export default function GameObjectList() {
@@ -33,10 +56,15 @@ export default function GameObjectList() {
         filteredObjects()?.filter(([, [o]]) => !o.transform?.parent)
     );
 
+    const noEntries = () => {
+        if (search() == "")
+            return "Loading ..."
+        return "No Results"
+    }
+
     return (
-        <div>
-            {/* TODO: Make this sticky horizontal scroll */}
-            <div class="mx-8 my-1 sticky">
+        <div class="flex flex-col items-stretch h-full">
+            <div class="mx-4 my-2">
                 <input
                     placeholder="Search"
                     value={search()}
@@ -48,15 +76,10 @@ export default function GameObjectList() {
                     class="w-full"
                 />
             </div>
-            <div class="w-max overflow-x-auto">
-                <ul>
-                    <For each={rootObjects()} fallback={<p>"Loading..."</p>}>
-                        {([, [obj]]) => (
-                            <li>
-                                <GameObjectListItem obj={obj} />
-                                <ConstructList obj={obj} />
-                            </li>
-                        )}
+            <div class="ml-2 overflow-auto">
+                <ul class="min-w-full w-max h-max">
+                    <For each={rootObjects()} fallback={<p>{noEntries()}</p>}>
+                        {([, [obj]]) => <GameObjectListItem obj={obj} />}
                     </For>
                 </ul>
             </div>
@@ -64,30 +87,20 @@ export default function GameObjectList() {
     );
 }
 
-function ConstructList(props: { obj: GameObjectJSON }) {
-    const children = createMemo(
-        () => gameObjectsStore.childrenMap?.[props.obj.transform!.address!]
-    );
+function ConstructList(props: { children: number[] }) {
 
     return (
-        <Show when={(children()?.length ?? 0) > 0} keyed>
-            <ul class="pl-6">
-                {/* For because the key is variable but the list items only insert/remove */}
-                <For each={children()} fallback={"Loading..."}>
-                    {(itemAddress) => {
-                        const gameObject = createMemo(
-                            () => gameObjectsStore.objectsMap![itemAddress][0]!
-                        );
+        <ul class="pl-4">
+            {/* For because the key is variable but the list items only insert/remove */}
+            <For each={props.children}>
+                {(itemAddress) => {
+                    const gameObject = createMemo(
+                        () => gameObjectsStore.objectsMap![itemAddress][0]!
+                    );
 
-                        return (
-                            <li>
-                                <GameObjectListItem obj={gameObject()} />
-                                <ConstructList obj={gameObject()} />
-                            </li>
-                        );
-                    }}
-                </For>
-            </ul>
-        </Show>
+                    return <GameObjectListItem obj={gameObject()} />;
+                }}
+            </For>
+        </ul>
     );
 }

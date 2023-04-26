@@ -1,16 +1,13 @@
 .gameObjectList {
     /* 700 */
     @apply bg-zinc-400 dark:bg-zinc-800;
-    max-width: 25vw;
-    max-height: 100vh;
-
-    overflow-y: auto;
-    overflow-x: auto;
+    width: 350px;
+    height: 100vh;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
     .gameObjectList {
-        max-width: 100%;
-        max-height: max-content;
+        width: 100%;
+        height: 25vh;
     }
 }
