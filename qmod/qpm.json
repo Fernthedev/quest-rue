@@ -22,10 +22,8 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.32.0",
-      "additionalData": {
-        "includeQmod": false
-      }
+      "versionRange": "^0.33.0",
+      "additionalData": {}
     },
     {
       "id": "socket_lib",

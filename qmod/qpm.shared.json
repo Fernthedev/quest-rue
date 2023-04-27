@@ -23,10 +23,8 @@
       },
       {
         "id": "codegen",
-        "versionRange": "^0.32.0",
-        "additionalData": {
-          "includeQmod": false
-        }
+        "versionRange": "^0.33.0",
+        "additionalData": {}
       },
       {
         "id": "socket_lib",
@@ -96,16 +94,16 @@
     {
       "dependency": {
         "id": "custom-types",
-        "versionRange": "=0.15.23",
+        "versionRange": "=0.15.24",
         "additionalData": {
-          "soLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/libcustom-types.so",
-          "debugSoLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/debug_libcustom-types.so",
+          "soLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/libcustom-types.so",
+          "debugSoLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/debug_libcustom-types.so",
           "overrideSoName": "libcustom-types.so",
-          "modLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/CustomTypes.qmod",
-          "branchName": "version-v0.15.23"
+          "modLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/CustomTypes.qmod",
+          "branchName": "version-v0.15.24"
         }
       },
-      "version": "0.15.23"
+      "version": "0.15.24"
     },
     {
       "dependency": {
@@ -121,12 +119,16 @@
     {
       "dependency": {
         "id": "socket_lib",
-        "versionRange": "=0.8.1",
+        "versionRange": "=0.8.2",
         "additionalData": {
-          "overrideSoName": "libsocket_lib.so"
+          "soLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.8.2/libsocket_lib.so",
+          "debugSoLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.8.2/debug_libsocket_lib.so",
+          "overrideSoName": "libsocket_lib.so",
+          "modLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.8.2/socket_lib.qmod",
+          "branchName": "version-v0.8.2"
         }
       },
-      "version": "0.8.1"
+      "version": "0.8.2"
     },
     {
       "dependency": {
@@ -143,15 +145,15 @@
     {
       "dependency": {
         "id": "codegen",
-        "versionRange": "=0.32.0",
+        "versionRange": "=0.33.0",
         "additionalData": {
-          "soLink": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.32.0/libcodegen.so",
+          "soLink": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.33.0/libcodegen.so",
           "overrideSoName": "libcodegen.so",
-          "modLink": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.32.0/Codegen.qmod",
-          "branchName": "version-v0.32.0"
+          "modLink": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.33.0/Codegen.qmod",
+          "branchName": "version-v0.33.0"
         }
       },
-      "version": "0.32.0"
+      "version": "0.33.0"
     },
     {
       "dependency": {
