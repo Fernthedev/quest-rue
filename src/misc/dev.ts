@@ -1,7 +1,7 @@
 import { handleGameObjects } from "./handlers/gameobject";
 
 export async function setupDev() {
-    if (!import.meta.env.VITE_USE_QUEST_MOCK) return;
+    if (import.meta.env.VITE_USE_QUEST_MOCK != "true") return;
 
     const main_menu_json = (await import("../misc/test_data_in_main_menu.json"))
         .items;
