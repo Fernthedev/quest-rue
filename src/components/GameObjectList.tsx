@@ -1,8 +1,9 @@
 import { For, Show, createDeferred, createMemo, createSignal } from "solid-js";
-import { GameObjectJSON } from "../misc/events";
+import { GameObjectJSON, PacketWrapperCustomJSON, createOnEventCallback, getEvents } from "../misc/events";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
 
 import "./GameObjectList.module.css";
+import { requestGameObjects } from "../misc/commands";
 
 function GameObjectListItem(props: { obj: GameObjectJSON }) {
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
@@ -47,10 +48,11 @@ export default function GameObjectList() {
                     o.name?.toLocaleLowerCase().includes(search().toLowerCase())
             );
         },
-        {
-            timeoutMs: 1000,
-        }
+        {timeoutMs: 1000}
     );
+
+    requestGameObjects();
+    const [requesting, setRequesting] = createSignal<boolean>(import.meta.env.VITE_USE_QUEST_MOCK != "true");
 
     const rootObjects = createMemo(() =>
         filteredObjects()?.filter(([, [o]]) => !o.transform?.parent)
@@ -62,25 +64,43 @@ export default function GameObjectList() {
         return "No Results"
     }
 
+    createOnEventCallback<PacketWrapperCustomJSON, void>(getEvents().ALL_PACKETS, (packet) => {
+        if (packet.packetType === "getAllGameObjectsResult") {
+            setRequesting(false);
+        }
+    });
+
+    function refresh() {
+        if (import.meta.env.VITE_USE_QUEST_MOCK == "true")
+            return;
+        if (!requesting())
+            requestGameObjects();
+        setRequesting(true);
+        setSearch("");
+    }
+
     return (
         <div class="flex flex-col items-stretch h-full">
-            <div class="mx-4 my-2">
+            <div class="px-2 py-2 flex gap-2 justify-center">
                 <input
                     placeholder="Search"
                     value={search()}
-                    onInput={(e) => {
-                        const value = e.currentTarget.value;
-
-                        setSearch(value);
-                    }}
-                    class="w-full"
+                    onInput={(e) => {setSearch(e.currentTarget.value)}}
+                    class="flex-1 w-0"
                 />
+                <button class="flex-0 p-2" onClick={refresh}>
+                    <Show when={requesting()} fallback={<img src="/src/assets/refresh.svg" />}>
+                        <img src="/src/assets/loading.svg" class="animate-spin" />
+                    </Show>
+                </button>
             </div>
             <div class="ml-2 overflow-auto">
                 <ul class="min-w-full w-max h-max">
-                    <For each={rootObjects()} fallback={<p>{noEntries()}</p>}>
-                        {([, [obj]]) => <GameObjectListItem obj={obj} />}
-                    </For>
+                    <Show when={!requesting()} fallback="Loading...">
+                        <For each={rootObjects()} fallback={noEntries()}>
+                            {([, [obj]]) => <GameObjectListItem obj={obj} />}
+                        </For>
+                    </Show>
                 </ul>
             </div>
         </div>
@@ -97,7 +117,6 @@ function ConstructList(props: { children: number[] }) {
                     const gameObject = createMemo(
                         () => gameObjectsStore.objectsMap![itemAddress][0]!
                     );
-
                     return <GameObjectListItem obj={gameObject()} />;
                 }}
             </For>
