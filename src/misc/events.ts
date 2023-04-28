@@ -6,15 +6,12 @@ import { uniqueNumber } from "./utils";
 import {
     Accessor,
     createSignal,
-    onCleanup,                   
+    onCleanup,
 } from "solid-js";
 
-export type GameObjectJSON = ReturnType<
-    typeof ProtoGameObject.prototype.toObject
->;
-export type PacketWrapperCustomJSON = ReturnType<
-    typeof PacketWrapper.prototype.toObject
-> & {
+export type GameObjectJSON = PacketJSON<ProtoGameObject>;
+
+export type PacketWrapperCustomJSON = PacketJSON<PacketWrapper> & {
     packetType: typeof PacketWrapper.prototype.Packet;
 };
 
@@ -53,8 +50,9 @@ export function useRequestAndResponsePacket<
     T extends Message,
     P extends PacketTypes[0] = PacketTypes[0],
     R extends PacketJSON<T> = PacketJSON<T>
->(once = false): [Accessor<R | undefined>, (p: P) => void] {
+>(once = false): [Accessor<R | undefined>, Accessor<boolean>, (p: P) => void] {
     const [val, setValue] = createSignal<R | undefined>(undefined);
+    const [loading, setLoading] = createSignal<boolean>(true);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
     const expectedQueryID: { value: number | undefined } = { value: 0 };
@@ -72,6 +70,7 @@ export function useRequestAndResponsePacket<
             if (!packet) throw "Packet is undefined why!";
 
             setValue(() => packet as R);
+            setLoading(false);
 
             expectedQueryID.value = undefined;
         }
@@ -84,9 +83,11 @@ export function useRequestAndResponsePacket<
     // Return the state and a callback for invoking reads
     return [
         val,
+        loading,
         (p: P) => {
             const randomId = uniqueNumber();
             expectedQueryID.value = randomId;
+            setLoading(true);
             sendPacket(
                 PacketWrapper.fromObject({ queryResultId: randomId, ...p })
             );

@@ -1,0 +1,36 @@
+.expanded {
+    margin-left: -0.5rem;
+    width: calc(100% + 1rem);
+}
+
+.separator {
+    @apply bg-zinc-700 dark:bg-zinc-500;
+
+    /* margin: 5px 0 5px -0.5rem; */
+    height: 2px;
+}
+
+.header {
+    @apply bg-zinc-400 dark:bg-zinc-800
+        text-lg font-mono px-2;
+}
+
+.rounded {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.grid > span {
+    width: content;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}

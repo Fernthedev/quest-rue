@@ -3,6 +3,9 @@
     @apply bg-zinc-400 dark:bg-zinc-800;
     width: 350px;
     height: 100vh;
+    outline-width: 2px;
+    outline-color: #71717a;
+    outline-style: solid;
 }
 
 @media (max-width: 500px) {

@@ -4,6 +4,7 @@ import { gameObjectsStore } from "../misc/handlers/gameobject";
 
 import "./GameObjectList.module.css";
 import { requestGameObjects } from "../misc/commands";
+import { selectGameObject, setSelectedObject } from "../misc/state";
 
 function GameObjectListItem(props: { obj: GameObjectJSON }) {
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
@@ -21,7 +22,7 @@ function GameObjectListItem(props: { obj: GameObjectJSON }) {
                         {collapsed() ? "+" : "-"}
                     </span>
                 </Show>
-                <span onClick={() => {/* select object */}}>
+                <span onClick={() => selectGameObject(props.obj)}>
                     {props.obj.name}
                 </span>
             </div>
@@ -66,6 +67,7 @@ export default function GameObjectList() {
 
     createOnEventCallback<PacketWrapperCustomJSON, void>(getEvents().ALL_PACKETS, (packet) => {
         if (packet.packetType === "getAllGameObjectsResult") {
+            setSelectedObject(undefined);
             setRequesting(false);
         }
     });

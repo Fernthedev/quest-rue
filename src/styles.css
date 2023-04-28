@@ -76,10 +76,15 @@ button {
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
 
+input {
+    border-style: none none solid none;
+    transition: border-radius 0.1s;
+}
 button {
     cursor: pointer;
 }
 
+input:hover,
 button:hover {
     border-color: #396cd8;
 }
@@ -88,9 +93,20 @@ button:active {
     background-color: #e8e8e8;
 }
 
+input:hover {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 input,
 button {
     outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 @media (prefers-color-scheme: dark) {
