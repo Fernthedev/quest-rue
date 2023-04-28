@@ -1,14 +1,15 @@
-import { Navigate, Route, Router, Routes } from "@solidjs/router";
+import { Route, Router, Routes } from "@solidjs/router";
 import { lazy } from "solid-js";
 const SceneViewer = lazy(() => import("./pages/SceneViewer"));
+import ConnectMenu from "./pages/ConnectMenu"
 
 function App() {
     return (
-        <div class="container min-w-full">
+        <div class="w-screen h-screen overflow-hidden">
             <Router>
                 <Routes>
                     <Route path="/scene/*" component={SceneViewer} />
-                    <Route path={"/"} element={<Navigate href={"/scene/"} />} />
+                    <Route path={"/"} component={ConnectMenu} data={() => true} /> {/* redirect */}
                 </Routes>
             </Router>
         </div>
