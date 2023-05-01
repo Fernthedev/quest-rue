@@ -23,14 +23,27 @@
 .grid {
     display: grid;
 
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 4px;
     margin-bottom: 4px;
 }
 
 .grid > span {
-    width: content;
+    width: max-content;
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.input, .button {
+    padding: 2px;
+}
+.input {
+    line-height: 16px;
+    width: 100px;
+    transition: width 0.25s;
+}
+.button > img {
+    width: 18px;
+    height: 18px;
 }

@@ -1,7 +1,7 @@
 import { batch } from "solid-js";
 import { GameObjectJSON, PacketJSON } from "../events";
 import { GetAllGameObjectsResult } from "../proto/qrue";
-import { createStore } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 
 // type is based on Transform's address
 export type GameObjectIndex = Required<
@@ -27,7 +27,7 @@ export const [gameObjectsStore, setGameObjectsStore] =
 
 export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
     batch(() => {
-        setGameObjectsStore("objects", packet.objects ?? null);
+        setGameObjectsStore("objects", reconcile(packet.objects ?? null));
 
         const objectsMap: Record<number, [GameObjectJSON, symbol]> | null =
             packet.objects ? {} : null;
@@ -63,12 +63,7 @@ export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
                 });
             }
         }
-
-        if (gameObjectsStore.objectsMap != objectsMap) {
-            setGameObjectsStore("objectsMap", objectsMap);
-        }
-        if (gameObjectsStore.childrenMap != childrenMap) {
-            setGameObjectsStore("childrenMap", childrenMap);
-        }
+        setGameObjectsStore("objectsMap", reconcile(objectsMap));
+        setGameObjectsStore("childrenMap", reconcile(childrenMap));
     });
 }

@@ -24,16 +24,6 @@ using namespace ClassUtils;
 using namespace UnityEngine;
 using namespace UnityEngine::SceneManagement;
 
-template<class T>
-inline T& ReinterpretBytes(std::string_view bytes) {
-    return *(T*) bytes.data();
-}
-
-template<class T>
-inline std::string ByteString(const T& bytes) {
-    return {(char*) &bytes, sizeof(T)};
-}
-
 Manager* Manager::GetInstance() {
     static Manager Instance = Manager();
     return &Instance;
@@ -94,7 +84,7 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
     auto field = asPtr(FieldInfo, packet.fieldid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    auto value = ReinterpretBytes<void*>(packet.value().data());
+    auto value = (void*) packet.value().data().data();
 
     FieldUtils::Set(field, object, &value);
 
@@ -119,7 +109,10 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
 
     ProtoDataPayload& data = *result.mutable_value();
     *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(field->type);
-    data.set_data(res.GetAsString());
+    if(field->type->type == IL2CPP_TYPE_STRING)
+        data.mutable_typeinfo()->set_size(res.GetAsBytes().size());
+    if(res.HasValue())
+        data.set_data(res.GetAsString());
 
     handler->sendPacket(wrapper);
 }
@@ -133,7 +126,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     void* args[argNum];
     for(int i = 0; i < argNum; i++) {
         // for protobuf here, the string is effectively a pointer to the bytes
-        args[i] = ReinterpretBytes<void*>(packet.args(i).data());
+        args[i] = (void*) packet.args(i).data().data();
     }
     
     std::string err = "";
@@ -154,7 +147,10 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     result.set_status(InvokeMethodResult::OK);
     ProtoDataPayload& data = *result.mutable_result();
     *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(method->return_type);
-    data.set_data(res.GetAsString());
+    if(method->return_type->type == IL2CPP_TYPE_STRING)
+        data.mutable_typeinfo()->set_size(res.GetAsBytes().size());
+    if(res.HasValue())
+        data.set_data(res.GetAsString());
     handler->sendPacket(wrapper);
 }
 
@@ -242,6 +238,7 @@ void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
     wrapper.set_queryresultid(id);
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
     result.mutable_objects()->Reserve(objects.Length());
+    LOG_INFO("found {} game objects", objects.Length());
     for (const auto& obj : objects) { 
         *result.add_objects() = ReadGameObject(obj);
     }

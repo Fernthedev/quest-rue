@@ -5,6 +5,7 @@ import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 import {
     Accessor,
+    createEffect,
     createSignal,
     onCleanup,
 } from "solid-js";
@@ -50,12 +51,14 @@ export function useRequestAndResponsePacket<
     T extends Message,
     P extends PacketTypes[0] = PacketTypes[0],
     R extends PacketJSON<T> = PacketJSON<T>
->(once = false): [Accessor<R | undefined>, Accessor<boolean>, (p: P) => void] {
+>(once = false, allowConcurrent = false): [Accessor<R | undefined>, Accessor<boolean>, (p: P) => void] {
     const [val, setValue] = createSignal<R | undefined>(undefined);
-    const [loading, setLoading] = createSignal<boolean>(true);
+    const [loading, setLoading] = createSignal<boolean>(false);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: { value: number | undefined } = { value: 0 };
+    const expectedQueryID: { value: number | undefined, loading: boolean } = { value: undefined, loading: false };
+
+    createEffect(() => expectedQueryID.loading = loading());
 
     // Create the listener
     // onMount is likely not necessary
@@ -85,12 +88,14 @@ export function useRequestAndResponsePacket<
         val,
         loading,
         (p: P) => {
-            const randomId = uniqueNumber();
-            expectedQueryID.value = randomId;
-            setLoading(true);
-            sendPacket(
-                PacketWrapper.fromObject({ queryResultId: randomId, ...p })
-            );
+            if (!expectedQueryID.loading || allowConcurrent) {
+                const randomId = uniqueNumber();
+                expectedQueryID.value = randomId;
+                setLoading(true);
+                sendPacket(
+                    PacketWrapper.fromObject({ queryResultId: randomId, ...p })
+                );
+            }
         },
     ];
 }

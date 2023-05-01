@@ -2,6 +2,10 @@
 
 #include "main.hpp"
 
+std::string typeName(const Il2CppType* type);
+
+size_t fieldTypeSize(const Il2CppType* type);
+
 namespace ClassUtils {
     std::vector<FieldInfo*> GetFields(Il2CppClass const* klass);
 
