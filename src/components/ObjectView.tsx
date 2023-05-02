@@ -101,7 +101,7 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
         const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
         element!.style.setProperty("grid-column", `span ${span}`);
     });
-    const args = Array<string>(Object.keys(props.method.args ?? {}).length);
+    const args = Object.keys(props.method.args ?? {}).map(() => "");
     const [result, resultLoading, runMethod] = useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
         const argsData = args.map((str, index) => stringToProtoData(str, Object.values(props.method.args!)[index]));
