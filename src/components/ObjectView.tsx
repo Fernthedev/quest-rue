@@ -1,14 +1,13 @@
 import { For, Show, createEffect, createMemo, createSignal, on, onMount } from "solid-js"
-import { selectedObject } from "../misc/state";
 import { PacketJSON, useRequestAndResponsePacket } from "../misc/events";
-import { GetClassDetailsResult, GetFieldResult, InvokeMethodResult, SetFieldResult } from "../misc/proto/qrue";
+import { GetClassDetailsResult, GetFieldResult, GetInstanceDetails, GetInstanceDetailsResult, InvokeMethodResult, SetFieldResult } from "../misc/proto/qrue";
 import { ProtoClassDetails, ProtoFieldInfo, ProtoMethodInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp";
 
 import styles from "./ObjectView.module.css";
-import { protoDataToString, stringToProtoData } from "../misc/utils";
+import { protoDataToString, protoTypeToString, stringToProtoData } from "../misc/utils";
 import InputCell, { ActionButton } from "./InputCell";
 
-function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, maxCols: number }) {
+function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (props.colSize == 0) return;
@@ -22,7 +21,7 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
         requestValue({
             getField: {
                 fieldId: props.field.id,
-                objectAddress: selectedObject()?.address,
+                objectAddress: props.address,
             }
         });
     }
@@ -33,7 +32,7 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
         requestSet({
             setField: {
                 fieldId: props.field.id,
-                objectAddress: selectedObject()?.address,
+                objectAddress: props.address,
                 value: protoData,
             }
         });
@@ -42,12 +41,12 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
         <span ref={element} class="font-mono">
             {props.field.name + " = "}
             <InputCell onInput={update} value={protoDataToString(value()?.value)} type={props.field.type!} />
-            <ActionButton class={`${styles.button}`}  onClick={refresh} loading={valueLoading() || valueSetting()} img="refresh.svg" />
+            <ActionButton class={"small-button"}  onClick={refresh} loading={valueLoading() || valueSetting()} img="refresh.svg" />
         </span>
     )
 }
 
-function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: number, maxCols: number }) {
+function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (props.colSize == 0) return;
@@ -61,7 +60,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
         requestGet({
             invokeMethod: {
                 methodId: props.prop.getterId,
-                objectAddress: selectedObject()?.address,
+                objectAddress: props.address,
                 args: [],
             }
         });
@@ -73,7 +72,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
         requestSet({
             invokeMethod: {
                 methodId: props.prop.setterId,
-                objectAddress: selectedObject()?.address,
+                objectAddress: props.address,
                 args: [protoData],
             }
         });
@@ -84,16 +83,16 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
             {props.prop.name + " = "}
             <InputCell onInput={setInputValue} value={inputValue()} disabled={!props.prop.setterId} type={props.prop.type!} />
             <Show when={props.prop.getterId}>
-                <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
+                <ActionButton class={"small-button"}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
             </Show>
             <Show when={props.prop.setterId}>
-                <ActionButton class={`${styles.button}`}  onClick={set} loading={valueLoading() || valueSetting()} img="enter.svg" />
+                <ActionButton class={"small-button"}  onClick={set} loading={valueLoading() || valueSetting()} img="enter.svg" />
             </Show>
         </span>
     )
 }
 
-function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: number, maxCols: number }) {
+function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (props.colSize == 0) return;
@@ -109,7 +108,7 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
         runMethod({
             invokeMethod: {
                 methodId: props.method.id,
-                objectAddress: selectedObject()?.address,
+                objectAddress: props.address,
                 args: argsData,
             }
         });
@@ -121,7 +120,7 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
                 {([name, type], index) => <InputCell placeholder={name} type={type!} onInput={str => args[index()] = str} />}
             </For>
             {") "}
-            <ActionButton class={`${styles.button}`}  onClick={run} loading={resultLoading()} img="enter.svg" />
+            <ActionButton class={"small-button"}  onClick={run} loading={resultLoading()} img="enter.svg" />
             <InputCell disabled value={protoDataToString(result()?.result)} type={props.method.returnType!} />
         </span>
     )
@@ -129,7 +128,7 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
 
 const separator = () => <div class={`${styles.expanded} ${styles.separator}`}/>;
 
-function TypeSection(props: { details?: PacketJSON<ProtoClassDetails> }) {
+function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedAddress: number }) {
     const className = createMemo(() => props.details?.clazz ? props.details.clazz!.namespaze + "::" + props.details.clazz!.clazz : "");
 
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
@@ -159,62 +158,61 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails> }) {
             <Show when={!collapsed()}>
                 <div class={`${styles.grid}`} ref={grid}>
                     <For each={props.details?.fields}>
-                        {item => <FieldCell field={item} colSize={colSize()} maxCols={colNum()} />}
+                        {item => <FieldCell field={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
                     <For each={props.details?.properties}>
-                        {item => <PropertyCell prop={item} colSize={colSize()} maxCols={colNum()} />}
+                        {item => <PropertyCell prop={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
                     <For each={props.details?.methods}>
-                        {item => <MethodCell method={item} colSize={colSize()} maxCols={colNum()} />}
+                        {item => <MethodCell method={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
             </Show>
             <Show when={props.details?.parent} fallback={<div class="h-20" />}>
                 {separator()}
-                <TypeSection details={props.details?.parent} />
+                <TypeSection details={props.details?.parent} selectedAddress={props.selectedAddress} />
             </Show>
         </div>
     )
 }
 
-export default function ObjectView() {
+export default function ObjectView(props: { selectedAddress: number }) {
     const globalFallback = <div class="absolute-centered">No Object Selected</div>
     const detailsFallback = <div class="absolute-centered">Loading...</div>
 
-    const className = createMemo(() => selectedObject() ? selectedObject()!.classInfo!.namespaze + "::" + selectedObject()!.classInfo!.clazz : "");
-
-    const [details, detailsLoading, requestDetails] = useRequestAndResponsePacket<GetClassDetailsResult>();
+    const [details, detailsLoading, requestDetails] = useRequestAndResponsePacket<GetInstanceDetailsResult>();
 
     createEffect(() => {
-        if (selectedObject()) {
+        if (props.selectedAddress) {
             requestDetails({
-                getClassDetails: {
-                    classInfo: selectedObject()!.classInfo
+                getInstanceDetails: {
+                    address: props.selectedAddress
                 }
             });
         }
     });
 
     const classDetails = createMemo(() => {
-        if (!selectedObject())
+        if (!props.selectedAddress)
             return undefined;
         return details()?.classDetails;
     });
+    const className = createMemo(() => classDetails() ? protoTypeToString({classInfo: classDetails()?.clazz}) : "");
 
     return (
-        <Show when={selectedObject() != undefined} fallback={globalFallback}>
+        <Show when={props.selectedAddress} fallback={globalFallback}>
             <div class="p-4 w-full h-full">
                 <div class="space-x-4">
-                    <span class="text-xl">{selectedObject()!.name}</span>
-                    <span class="text-lg font-mono">{className()}</span>
+                    <span class="text-xl font-mono">{className()}</span>
+                    <span class="text-lg font-mono">{props.selectedAddress}</span>
                 </div>
                 {separator()}
                 <Show when={!detailsLoading()} fallback={detailsFallback}>
-                    <TypeSection details={classDetails()!} />
+                    <TypeSection details={classDetails()!} selectedAddress={props.selectedAddress} />
                 </Show>
             </div>
         </Show>

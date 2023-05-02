@@ -71,8 +71,8 @@ void Manager::processMessage(const PacketWrapper& packet) {
         case PacketWrapper::kGetClassDetails:
             getClassDetails(packet.getclassdetails(), id);
             break;
-        case PacketWrapper::kReadInstanceDetails:
-            readInstanceDetails(packet.readinstancedetails(), id);
+        case PacketWrapper::kGetInstanceDetails:
+            getInstanceDetails(packet.getinstancedetails(), id);
             break;
         default:
             LOG_INFO("Invalid packet type! {}", packet.Packet_case());
@@ -120,7 +120,7 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
 void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     auto method = asPtr(MethodInfo, packet.methodid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
-    
+
     // TODO: type checking?
     int argNum = packet.args_size();
     void* args[argNum];
@@ -128,7 +128,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
         // for protobuf here, the string is effectively a pointer to the bytes
         args[i] = (void*) packet.args(i).data().data();
     }
-    
+
     std::string err = "";
     auto res = MethodUtils::Run(method, object, args, err);
 
@@ -210,7 +210,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
 
     std::span<Object*> res = objects.ref_to();
     std::vector<Object*> namedObjs;
-    
+
     if(searchName) {
         LOG_INFO("Searching for name {}", name);
         for(auto const& obj : res) {
@@ -239,7 +239,7 @@ void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
     result.mutable_objects()->Reserve(objects.Length());
     LOG_INFO("found {} game objects", objects.Length());
-    for (const auto& obj : objects) { 
+    for (const auto& obj : objects) {
         *result.add_objects() = ReadGameObject(obj);
     }
     handler->sendPacket(wrapper);
@@ -297,6 +297,44 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
+ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
+    ProtoClassDetails ret;
+
+    auto currentClass = clazz;
+    auto currentClassProto = &ret;
+
+    // Use a while loop instead of recursive
+    // method to improve stack allocations
+    while (currentClass != nullptr) {
+        LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
+        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(currentClass);
+
+        for (auto f : ClassUtils::GetFields(currentClass))
+            *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
+
+        std::set<const MethodInfo*> propertyMethods = {};
+        for (auto p : ClassUtils::GetProperties(currentClass)) {
+            propertyMethods.insert(p->get);
+            propertyMethods.insert(p->set);
+            *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
+        }
+
+        for (const auto& m : ClassUtils::GetMethods(currentClass)) {
+            if(propertyMethods.find(m) != propertyMethods.end()) continue;
+            *currentClassProto->add_methods() = MethodUtils::GetMethodInfo(m);
+        }
+
+        for (auto i : ClassUtils::GetInterfaces(currentClass))
+            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
+
+        currentClass = ClassUtils::GetParent(currentClass);
+        if (currentClass)
+            currentClassProto = currentClassProto->mutable_parent();
+    }
+
+    return ret;
+}
+
 // TODO: generics
 void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     using namespace Sombrero;
@@ -315,37 +353,23 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
         return;
     }
 
-    auto currentClass = clazz;
-    auto currentClassProto = result->mutable_classdetails();
-
-    // Use a while loop instead of recursive
-    // method to improve stack allocations
-    while (currentClass != nullptr) {
-        LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(clazz), il2cpp_functions::class_get_name(clazz));
-        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(currentClass);
-
-        for (auto i : ClassUtils::GetInterfaces(currentClass))
-            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
-
-        for (const auto& m : ClassUtils::GetMethods(currentClass))
-            *currentClassProto->add_methods() = MethodUtils::GetMethodInfo(m);
-
-        for (auto p : ClassUtils::GetProperties(currentClass))
-            *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
-
-        for (auto f : ClassUtils::GetFields(currentClass))
-            *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
-
-        currentClass = ClassUtils::GetParent(currentClass);
-        if (currentClass)
-            currentClassProto = currentClassProto->mutable_parent();
-    }
+    *result->mutable_classdetails() = getClassDetails_internal(clazz);
 
     handler->sendPacket(wrapper);
 }
 
-void Manager::readInstanceDetails(const ReadInstanceDetails& packet, uint64_t id) {
+void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
 
+    auto result = wrapper.mutable_getinstancedetailsresult();
+
+    auto instance = asPtr(Il2CppObject, packet.address());
+    *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
+
+    // TODO: field / property values
+
+    handler->sendPacket(wrapper);
 }
 
 #pragma endregion

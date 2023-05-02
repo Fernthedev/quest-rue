@@ -185,6 +185,7 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     info.set_size(fieldTypeSize(type));
     LOG_INFO("Found size {}", info.size());
 
+    // TODO: arrays
     if (!typeIsValuetype(type) && type->type != IL2CPP_TYPE_STRING)
         *info.mutable_classinfo() = GetClassInfo(classoftype(type));
     else {

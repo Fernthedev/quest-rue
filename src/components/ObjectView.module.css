@@ -41,11 +41,3 @@
 .grid > span > :not(input) {
     flex-grow: 0;
 }
-
-.button {
-    padding: 2px;
-}
-.button > img {
-    width: 18px;
-    height: 18px;
-}

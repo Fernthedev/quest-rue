@@ -224,20 +224,121 @@ export class ProtoStructInfo extends pb_1.Message {
         return ProtoStructInfo.deserialize(bytes);
     }
 }
+export class ProtoArrayInfo extends pb_1.Message {
+    #one_of_decls: number[][] = [];
+    constructor(data?: any[] | {
+        memberType?: ProtoTypeInfo;
+        length?: number;
+    }) {
+        super();
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        if (!Array.isArray(data) && typeof data == "object") {
+            if ("memberType" in data && data.memberType != undefined) {
+                this.memberType = data.memberType;
+            }
+            if ("length" in data && data.length != undefined) {
+                this.length = data.length;
+            }
+        }
+    }
+    get memberType() {
+        return pb_1.Message.getWrapperField(this, ProtoTypeInfo, 1) as ProtoTypeInfo;
+    }
+    set memberType(value: ProtoTypeInfo) {
+        pb_1.Message.setWrapperField(this, 1, value);
+    }
+    get has_memberType() {
+        return pb_1.Message.getField(this, 1) != null;
+    }
+    get length() {
+        return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
+    }
+    set length(value: number) {
+        pb_1.Message.setField(this, 2, value);
+    }
+    static fromObject(data: {
+        memberType?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+        length?: number;
+    }): ProtoArrayInfo {
+        const message = new ProtoArrayInfo({});
+        if (data.memberType != null) {
+            message.memberType = ProtoTypeInfo.fromObject(data.memberType);
+        }
+        if (data.length != null) {
+            message.length = data.length;
+        }
+        return message;
+    }
+    toObject() {
+        const data: {
+            memberType?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>;
+            length?: number;
+        } = {};
+        if (this.memberType != null) {
+            data.memberType = this.memberType.toObject();
+        }
+        if (this.length != null) {
+            data.length = this.length;
+        }
+        return data;
+    }
+    serialize(): Uint8Array;
+    serialize(w: pb_1.BinaryWriter): void;
+    serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+        const writer = w || new pb_1.BinaryWriter();
+        if (this.has_memberType)
+            writer.writeMessage(1, this.memberType, () => this.memberType.serialize(writer));
+        if (this.length != 0)
+            writer.writeInt32(2, this.length);
+        if (!w)
+            return writer.getResultBuffer();
+    }
+    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoArrayInfo {
+        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoArrayInfo();
+        while (reader.nextField()) {
+            if (reader.isEndGroup())
+                break;
+            switch (reader.getFieldNumber()) {
+                case 1:
+                    reader.readMessage(message.memberType, () => message.memberType = ProtoTypeInfo.deserialize(reader));
+                    break;
+                case 2:
+                    message.length = reader.readInt32();
+                    break;
+                default: reader.skipField();
+            }
+        }
+        return message;
+    }
+    serializeBinary(): Uint8Array {
+        return this.serialize();
+    }
+    static deserializeBinary(bytes: Uint8Array): ProtoArrayInfo {
+        return ProtoArrayInfo.deserialize(bytes);
+    }
+}
 export class ProtoTypeInfo extends pb_1.Message {
-    #one_of_decls: number[][] = [[1, 2, 3]];
+    #one_of_decls: number[][] = [[1, 2, 3, 4]];
     constructor(data?: any[] | ({
         size?: number;
     } & (({
         primitiveInfo?: ProtoTypeInfo.Primitive;
+        arrayInfo?: never;
         structInfo?: never;
         classInfo?: never;
     } | {
         primitiveInfo?: never;
+        arrayInfo?: ProtoArrayInfo;
+        structInfo?: never;
+        classInfo?: never;
+    } | {
+        primitiveInfo?: never;
+        arrayInfo?: never;
         structInfo?: ProtoStructInfo;
         classInfo?: never;
     } | {
         primitiveInfo?: never;
+        arrayInfo?: never;
         structInfo?: never;
         classInfo?: ProtoClassInfo;
     })))) {
@@ -246,6 +347,9 @@ export class ProtoTypeInfo extends pb_1.Message {
         if (!Array.isArray(data) && typeof data == "object") {
             if ("primitiveInfo" in data && data.primitiveInfo != undefined) {
                 this.primitiveInfo = data.primitiveInfo;
+            }
+            if ("arrayInfo" in data && data.arrayInfo != undefined) {
+                this.arrayInfo = data.arrayInfo;
             }
             if ("structInfo" in data && data.structInfo != undefined) {
                 this.structInfo = data.structInfo;
@@ -267,43 +371,54 @@ export class ProtoTypeInfo extends pb_1.Message {
     get has_primitiveInfo() {
         return pb_1.Message.getField(this, 1) != null;
     }
-    get structInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoStructInfo, 2) as ProtoStructInfo;
+    get arrayInfo() {
+        return pb_1.Message.getWrapperField(this, ProtoArrayInfo, 2) as ProtoArrayInfo;
     }
-    set structInfo(value: ProtoStructInfo) {
+    set arrayInfo(value: ProtoArrayInfo) {
         pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
     }
-    get has_structInfo() {
+    get has_arrayInfo() {
         return pb_1.Message.getField(this, 2) != null;
     }
-    get classInfo() {
-        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo;
+    get structInfo() {
+        return pb_1.Message.getWrapperField(this, ProtoStructInfo, 3) as ProtoStructInfo;
     }
-    set classInfo(value: ProtoClassInfo) {
+    set structInfo(value: ProtoStructInfo) {
         pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
     }
-    get has_classInfo() {
+    get has_structInfo() {
         return pb_1.Message.getField(this, 3) != null;
     }
+    get classInfo() {
+        return pb_1.Message.getWrapperField(this, ProtoClassInfo, 4) as ProtoClassInfo;
+    }
+    set classInfo(value: ProtoClassInfo) {
+        pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
+    }
+    get has_classInfo() {
+        return pb_1.Message.getField(this, 4) != null;
+    }
     get size() {
-        return pb_1.Message.getFieldWithDefault(this, 4, 0) as number;
+        return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
     }
     set size(value: number) {
-        pb_1.Message.setField(this, 4, value);
+        pb_1.Message.setField(this, 5, value);
     }
     get Info() {
         const cases: {
-            [index: number]: "none" | "primitiveInfo" | "structInfo" | "classInfo";
+            [index: number]: "none" | "primitiveInfo" | "arrayInfo" | "structInfo" | "classInfo";
         } = {
             0: "none",
             1: "primitiveInfo",
-            2: "structInfo",
-            3: "classInfo"
+            2: "arrayInfo",
+            3: "structInfo",
+            4: "classInfo"
         };
-        return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3])];
+        return cases[pb_1.Message.computeOneofCase(this, [1, 2, 3, 4])];
     }
     static fromObject(data: {
         primitiveInfo?: ProtoTypeInfo.Primitive;
+        arrayInfo?: ReturnType<typeof ProtoArrayInfo.prototype.toObject>;
         structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
         classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
         size?: number;
@@ -311,6 +426,9 @@ export class ProtoTypeInfo extends pb_1.Message {
         const message = new ProtoTypeInfo({});
         if (data.primitiveInfo != null) {
             message.primitiveInfo = data.primitiveInfo;
+        }
+        if (data.arrayInfo != null) {
+            message.arrayInfo = ProtoArrayInfo.fromObject(data.arrayInfo);
         }
         if (data.structInfo != null) {
             message.structInfo = ProtoStructInfo.fromObject(data.structInfo);
@@ -326,12 +444,16 @@ export class ProtoTypeInfo extends pb_1.Message {
     toObject() {
         const data: {
             primitiveInfo?: ProtoTypeInfo.Primitive;
+            arrayInfo?: ReturnType<typeof ProtoArrayInfo.prototype.toObject>;
             structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
             classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             size?: number;
         } = {};
         if (this.primitiveInfo != null) {
             data.primitiveInfo = this.primitiveInfo;
+        }
+        if (this.arrayInfo != null) {
+            data.arrayInfo = this.arrayInfo.toObject();
         }
         if (this.structInfo != null) {
             data.structInfo = this.structInfo.toObject();
@@ -350,12 +472,14 @@ export class ProtoTypeInfo extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.has_primitiveInfo)
             writer.writeEnum(1, this.primitiveInfo);
+        if (this.has_arrayInfo)
+            writer.writeMessage(2, this.arrayInfo, () => this.arrayInfo.serialize(writer));
         if (this.has_structInfo)
-            writer.writeMessage(2, this.structInfo, () => this.structInfo.serialize(writer));
+            writer.writeMessage(3, this.structInfo, () => this.structInfo.serialize(writer));
         if (this.has_classInfo)
-            writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
+            writer.writeMessage(4, this.classInfo, () => this.classInfo.serialize(writer));
         if (this.size != 0)
-            writer.writeInt32(4, this.size);
+            writer.writeInt32(5, this.size);
         if (!w)
             return writer.getResultBuffer();
     }
@@ -369,12 +493,15 @@ export class ProtoTypeInfo extends pb_1.Message {
                     message.primitiveInfo = reader.readEnum();
                     break;
                 case 2:
-                    reader.readMessage(message.structInfo, () => message.structInfo = ProtoStructInfo.deserialize(reader));
+                    reader.readMessage(message.arrayInfo, () => message.arrayInfo = ProtoArrayInfo.deserialize(reader));
                     break;
                 case 3:
-                    reader.readMessage(message.classInfo, () => message.classInfo = ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(message.structInfo, () => message.structInfo = ProtoStructInfo.deserialize(reader));
                     break;
                 case 4:
+                    reader.readMessage(message.classInfo, () => message.classInfo = ProtoClassInfo.deserialize(reader));
+                    break;
+                case 5:
                     message.size = reader.readInt32();
                     break;
                 default: reader.skipField();
@@ -398,9 +525,10 @@ export namespace ProtoTypeInfo {
         FLOAT = 4,
         DOUBLE = 5,
         STRING = 6,
-        PTR = 7,
-        VOID = 8,
-        UNKNOWN = 9
+        TYPE = 7,
+        PTR = 8,
+        VOID = 9,
+        UNKNOWN = 10
     }
 }
 export class ProtoFieldInfo extends pb_1.Message {

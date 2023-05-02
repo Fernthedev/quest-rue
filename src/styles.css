@@ -103,6 +103,14 @@ button {
     outline: none;
 }
 
+.small-button {
+    padding: 2px;
+}
+.small-button > img {
+    width: 18px;
+    height: 18px;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

@@ -4,7 +4,7 @@ import ObjectView from "../components/ObjectView";
 
 import styles from "./SceneViewer.module.css"
 import { isConnected } from "../misc/commands";
-import { useNavigate } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
 
 export default function SceneViewer() {
@@ -14,10 +14,12 @@ export default function SceneViewer() {
             navigate("/");
     });
     getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
+
+    const routeParams = useParams();
     return (
         <div class="flex w-full h-full">
             <div class="flex-1 overflow-auto">
-                <ObjectView />
+                <ObjectView selectedAddress={Number(routeParams.address ?? 0)} />
             </div>
 
             <div class={`${styles.gameObjectList}`}>

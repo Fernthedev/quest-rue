@@ -4,10 +4,11 @@ import { ProtoTypeInfo } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css"
 import { protoTypeToString } from "../misc/utils";
+import { selectObject } from "../App";
 
-export function ActionButton(props: { img: string, onClick: () => void, loading: boolean, class: string }) {
+export function ActionButton(props: { img: string, onClick: () => void, loading?: boolean, class?: string }) {
     return (
-        <button class={props.class} onClick={props.onClick}>
+        <button class={props.class ?? ""} onClick={props.onClick}>
             <Show when={props.loading} fallback={<img src={"/src/assets/" + props.img} />}>
                 <img src="/src/assets/loading.svg" class="animate-spin" />
             </Show>
@@ -55,20 +56,22 @@ export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, valu
     }
     const detail = createMemo(() => (props.placeholder ? props.placeholder + ": " : "") + protoTypeToString(props.type));
     return (
-        <input
-            class={styles.input}
-            type={inputType}
-            onInput={e => { props.onInput?.(e.target.value);  }}
-            value={props.value ?? ""}
-            disabled={props.disabled}
-            placeholder={detail()}
-            title={detail()}
-            style={{
-                "flex-grow": detail().length,
-                "min-width": `${minWidth}px`,
-            }}
-        >
-            <span />
-        </input>
+        <span class={styles.inputParent} style={{
+            "flex-grow": detail().length,
+            "min-width": `${minWidth}px`,
+        }}>
+            <input
+                class={styles.input}
+                type={inputType}
+                onInput={e => { props.onInput?.(e.target.value);  }}
+                value={props.value ?? ""}
+                disabled={props.disabled}
+                placeholder={detail()}
+                title={detail()}
+            />
+            <Show when={props.type.classInfo && props.disabled}>
+                <ActionButton class="small-button" img="navigate.svg" onClick={() => selectObject(Number(props.value))} />
+            </Show>
+        </span>
     )
 }
