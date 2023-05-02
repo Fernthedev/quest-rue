@@ -16,7 +16,7 @@ export function ActionButton(props: { img: string, onClick: () => void, loading?
     )
 }
 
-export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, value?: string, placeholder?: string, onInput?: (s: string) => void, disabled?: boolean }) {
+export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, value?: string, placeholder?: string, onInput?: (s: string) => void, input?: boolean, output?: boolean }) {
     let inputType = "text"
     let minWidth = 100;
     if (props.type.classInfo != undefined)
@@ -71,11 +71,11 @@ export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, valu
                 type={inputType}
                 onInput={e => { props.onInput?.(e.target.value);  }}
                 value={props.value ?? ""}
-                disabled={props.disabled}
+                disabled={!props.input}
                 placeholder={detail()}
                 title={detail()}
             />
-            <Show when={props.type.classInfo && props.disabled}>
+            <Show when={props.type.classInfo && props.output}>
                 <ActionButton class="small-button" img="navigate.svg" onClick={() => selectObject(Number(props.value))} />
             </Show>
         </span>

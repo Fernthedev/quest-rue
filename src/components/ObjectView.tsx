@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createMemo, createSignal, on, onMount } from "solid-js"
+import { For, Show, batch, createEffect, createMemo, createSignal, on, onMount } from "solid-js"
 import { PacketJSON, useRequestAndResponsePacket } from "../misc/events";
 import { GetClassDetailsResult, GetFieldResult, GetInstanceDetails, GetInstanceDetailsResult, InvokeMethodResult, SetFieldResult } from "../misc/proto/qrue";
 import { ProtoClassDetails, ProtoFieldInfo, ProtoMethodInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp";
@@ -7,15 +7,17 @@ import styles from "./ObjectView.module.css";
 import { protoDataToString, protoTypeToString, stringToProtoData } from "../misc/utils";
 import InputCell, { ActionButton } from "./InputCell";
 
+function refreshSpan(element: HTMLDivElement, colSize: number, maxCols: number) {
+    if (colSize == 0) return;
+    element.style.setProperty("grid-column", "span 1");
+    const width = (element?.clientWidth ?? 1) - 1;
+    const span = Math.min(Math.ceil(width / colSize), maxCols);
+    element.style.setProperty("grid-column", `span ${span}`);
+}
+
 function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => {
-        if (props.colSize == 0) return;
-        element!.style.setProperty("grid-column", "span 1");
-        const width = (element?.clientWidth ?? 1) - 1;
-        const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
-        element!.style.setProperty("grid-column", `span ${span}`);
-    });
+    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
     const [value, valueLoading, requestValue] = useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
         requestValue({
@@ -40,7 +42,7 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
     return (
         <span ref={element} class="font-mono">
             {props.field.name + " = "}
-            <InputCell onInput={update} value={protoDataToString(value()?.value)} type={props.field.type!} />
+            <InputCell input output onInput={update} value={protoDataToString(value()?.value)} type={props.field.type!} />
             <ActionButton class={"small-button"}  onClick={refresh} loading={valueLoading() || valueSetting()} img="refresh.svg" />
         </span>
     )
@@ -48,13 +50,7 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
 
 function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => {
-        if (props.colSize == 0) return;
-        element!.style.setProperty("grid-column", "span 1");
-        const width = (element?.clientWidth ?? 1) - 1;
-        const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
-        element!.style.setProperty("grid-column", `span ${span}`);
-    });
+    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
     const [value, valueLoading, requestGet] = useRequestAndResponsePacket<InvokeMethodResult>();
     function get() {
         requestGet({
@@ -81,7 +77,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
     return (
         <span ref={element} class="font-mono">
             {props.prop.name + " = "}
-            <InputCell onInput={setInputValue} value={inputValue()} disabled={!props.prop.setterId} type={props.prop.type!} />
+            <InputCell input={Boolean(props.prop.setterId)} output onInput={setInputValue} value={inputValue()} type={props.prop.type!} />
             <Show when={props.prop.getterId}>
                 <ActionButton class={"small-button"}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
             </Show>
@@ -94,13 +90,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
 
 function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: number, maxCols: number, address: number }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => {
-        if (props.colSize == 0) return;
-        element!.style.setProperty("grid-column", "span 1");
-        const width = (element?.clientWidth ?? 1) - 1;
-        const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
-        element!.style.setProperty("grid-column", `span ${span}`);
-    });
+    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
     const args = Object.keys(props.method.args ?? {}).map(() => "");
     const [result, resultLoading, runMethod] = useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
@@ -117,11 +107,11 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
         <span ref={element} class="font-mono">
             {props.method.name + " ("}
             <For each={Object.entries(props.method.args ?? {})}>
-                {([name, type], index) => <InputCell placeholder={name} type={type!} onInput={str => args[index()] = str} />}
+                {([name, type], index) => <InputCell input placeholder={name} type={type!} onInput={str => args[index()] = str} />}
             </For>
             {") "}
             <ActionButton class={"small-button"}  onClick={run} loading={resultLoading()} img="enter.svg" />
-            <InputCell disabled value={protoDataToString(result()?.result)} type={props.method.returnType!} />
+            <InputCell output value={protoDataToString(result()?.result)} type={props.method.returnType!} />
         </span>
     )
 }
@@ -141,11 +131,14 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedA
     const [colNum, setColNum] = createSignal<number>(0);
     const gridObserver = new ResizeObserver(() => {
         const columns = getComputedStyle(grid!).gridTemplateColumns.split(" ");
-        setColNum(columns.length);
         const column = columns[0].replace("px", "");
-        setColSize(Number(column));
+        batch(() => {
+            setColNum(columns.length);
+            setColSize(Number(column));
+        });
     });
-    onMount(() => gridObserver.observe(grid!));
+    // loses observation after collapsing
+    createEffect(() => { if (!collapsed()) gridObserver.observe(grid!) });
 
     return (
         <div>
@@ -202,13 +195,17 @@ export default function ObjectView(props: { selectedAddress: number }) {
         return details()?.classDetails;
     });
     const className = createMemo(() => classDetails() ? protoTypeToString({classInfo: classDetails()?.clazz}) : "");
+    const interfaces = createMemo(() => {
+        if (!classDetails()) return ""
+        return classDetails()?.interfaces?.map(info => protoTypeToString({classInfo: info})).join(", ");
+    });
 
     return (
         <Show when={props.selectedAddress} fallback={globalFallback}>
             <div class="p-4 w-full h-full">
                 <div class="space-x-4">
                     <span class="text-xl font-mono">{className()}</span>
-                    <span class="text-lg font-mono">{props.selectedAddress}</span>
+                    <span class="text-lg font-mono">{interfaces()}</span>
                 </div>
                 {separator()}
                 <Show when={!detailsLoading()} fallback={detailsFallback}>
