@@ -1,5 +1,10 @@
 import { For, Show, createDeferred, createMemo, createSignal } from "solid-js";
-import { GameObjectJSON, PacketWrapperCustomJSON, createOnEventCallback, getEvents } from "../misc/events";
+import {
+    GameObjectJSON,
+    PacketWrapperCustomJSON,
+    createEventEffect,
+    getEvents,
+} from "../misc/events";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
 
 import "./GameObjectList.module.css";
@@ -18,7 +23,10 @@ function GameObjectListItem(props: { obj: GameObjectJSON }) {
         <li>
             <div class="cursor-pointer">
                 <Show when={hasChildren()}>
-                    <span class="mr-1 inline-block w-4 text-center" onClick={() => setCollapsed(!collapsed())}>
+                    <span
+                        class="mr-1 inline-block w-4 text-center"
+                        onClick={() => setCollapsed(!collapsed())}
+                    >
                         {collapsed() ? "+" : "-"}
                     </span>
                 </Show>
@@ -49,34 +57,39 @@ export default function GameObjectList() {
                     o.name?.toLocaleLowerCase().includes(search().toLowerCase())
             );
         },
-        {timeoutMs: 1000}
+        { timeoutMs: 1000 }
     );
 
+    // refresh store
     requestGameObjects();
-    const [requesting, setRequesting] = createSignal<boolean>(import.meta.env.VITE_USE_QUEST_MOCK != "true");
+    const [requesting, setRequesting] = createSignal<boolean>(
+        import.meta.env.VITE_USE_QUEST_MOCK != "true"
+    );
 
     const rootObjects = createMemo(() =>
         filteredObjects()?.filter(([, [o]]) => !o.transform?.parent)
     );
 
     const noEntries = () => {
-        if (search() == "")
-            return "Loading ..."
-        return "No Results"
-    }
+        if (search() == "") return "Loading ...";
+        return "No Results";
+    };
 
-    createOnEventCallback<PacketWrapperCustomJSON, void>(getEvents().ALL_PACKETS, (packet) => {
-        if (packet.packetType === "getAllGameObjectsResult") {
-            setSelectedObject(undefined);
-            setRequesting(false);
+    // update state
+    createEventEffect<PacketWrapperCustomJSON>(
+        getEvents().ALL_PACKETS,
+        (packet) => {
+            if (packet.packetType === "getAllGameObjectsResult") {
+                setSelectedObject(undefined);
+                setRequesting(false);
+            }
         }
-    });
+    );
 
+    // refresh state
     function refresh() {
-        if (import.meta.env.VITE_USE_QUEST_MOCK == "true")
-            return;
-        if (!requesting())
-            requestGameObjects();
+        if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return;
+        if (!requesting()) requestGameObjects();
         setRequesting(true);
         setSearch("");
     }
@@ -87,12 +100,20 @@ export default function GameObjectList() {
                 <input
                     placeholder="Search"
                     value={search()}
-                    onInput={(e) => {setSearch(e.currentTarget.value)}}
+                    onInput={(e) => {
+                        setSearch(e.currentTarget.value);
+                    }}
                     class="flex-1 w-0"
                 />
                 <button class="flex-0 p-2" onClick={refresh}>
-                    <Show when={requesting()} fallback={<img src="/src/assets/refresh.svg" />}>
-                        <img src="/src/assets/loading.svg" class="animate-spin" />
+                    <Show
+                        when={requesting()}
+                        fallback={<img src="/src/assets/refresh.svg" />}
+                    >
+                        <img
+                            src="/src/assets/loading.svg"
+                            class="animate-spin"
+                        />
                     </Show>
                 </button>
             </div>
@@ -110,7 +131,6 @@ export default function GameObjectList() {
 }
 
 function ConstructList(props: { children: number[] }) {
-
     return (
         <ul class="pl-4">
             {/* For because the key is variable but the list items only insert/remove */}

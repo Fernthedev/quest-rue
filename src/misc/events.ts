@@ -196,9 +196,9 @@ export function createSignalEvent<T>(
     return val;
 }
 
-export function createOnEventCallback<T, R>(
+export function createEventEffect<T>(
     listener: EventListener<T>,
-    callback: (value: T) => R,
+    callback: (value: T) => void | Promise<void>,
     once = false
 ) {
     const id = listener.addListener(callback, once);
