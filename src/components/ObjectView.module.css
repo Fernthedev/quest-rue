@@ -40,4 +40,5 @@
 }
 .grid > span > :not(input) {
     flex-grow: 0;
+    width: max-content;
 }
