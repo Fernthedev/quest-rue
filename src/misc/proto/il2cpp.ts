@@ -520,15 +520,17 @@ export namespace ProtoTypeInfo {
     export enum Primitive {
         BOOLEAN = 0,
         CHAR = 1,
-        INT = 2,
-        LONG = 3,
-        FLOAT = 4,
-        DOUBLE = 5,
-        STRING = 6,
-        TYPE = 7,
-        PTR = 8,
-        VOID = 9,
-        UNKNOWN = 10
+        BYTE = 2,
+        SHORT = 3,
+        INT = 4,
+        LONG = 5,
+        FLOAT = 6,
+        DOUBLE = 7,
+        STRING = 8,
+        TYPE = 9,
+        PTR = 10,
+        VOID = 11,
+        UNKNOWN = 12
     }
 }
 export class ProtoFieldInfo extends pb_1.Message {

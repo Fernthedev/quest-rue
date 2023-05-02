@@ -120,9 +120,12 @@ namespace FieldUtils {
         // only strings are still a special case
         il2cpp_functions::field_get_value(object, field, ret);
         if(isString) {
+            if(!asStr) // null string field
+                return {};
             size = asStr->m_stringLength * sizeof(Il2CppChar);
             ret = malloc(size + sizeof(Il2CppChar));
-            memcpy(ret, *(void**) &asStr->m_firstChar, size);
+            memcpy(ret, (void*) &asStr->m_firstChar, size);
+            memset((char*) ret + size, 0, sizeof(Il2CppChar));
         }
         return RetWrapper(ret, size);
     }

@@ -197,6 +197,14 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
         case IL2CPP_TYPE_CHAR:
             info.set_primitiveinfo(ProtoTypeInfo::CHAR);
             break;
+        case IL2CPP_TYPE_I1:
+        case IL2CPP_TYPE_U1:
+            info.set_primitiveinfo(ProtoTypeInfo::BYTE);
+            break;
+        case IL2CPP_TYPE_I2:
+        case IL2CPP_TYPE_U2:
+            info.set_primitiveinfo(ProtoTypeInfo::SHORT);
+            break;
         case IL2CPP_TYPE_I4:
         case IL2CPP_TYPE_U4:
             info.set_primitiveinfo(ProtoTypeInfo::INT);

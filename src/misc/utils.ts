@@ -27,6 +27,12 @@ function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
         case ProtoTypeInfo.Primitive.CHAR:
             new Uint16Array(dataArray.buffer)[0] = input.charCodeAt(0);
             break;
+        case ProtoTypeInfo.Primitive.BYTE:
+            new DataView(dataArray.buffer).setInt8(0, Number(input));
+            break;
+        case ProtoTypeInfo.Primitive.SHORT:
+            new DataView(dataArray.buffer).setInt16(0, Number(input), true);
+            break;
         case ProtoTypeInfo.Primitive.INT:
             new DataView(dataArray.buffer).setInt32(0, Number(input), true);
             break;
@@ -88,6 +94,10 @@ function bytesToRealValue(bytes: DataView, typeInfo: PacketJSON<ProtoTypeInfo>, 
         case ProtoTypeInfo.Primitive.CHAR:
             const byte = bytes.buffer.slice(baseOffset, baseOffset + 2);
             return new TextDecoder("utf-16").decode(byte);
+        case ProtoTypeInfo.Primitive.BYTE:
+            return bytes.getInt8(baseOffset);
+        case ProtoTypeInfo.Primitive.SHORT:
+            return bytes.getInt16(baseOffset, true);
         case ProtoTypeInfo.Primitive.INT:
             return bytes.getInt32(baseOffset, true);
         case ProtoTypeInfo.Primitive.LONG:

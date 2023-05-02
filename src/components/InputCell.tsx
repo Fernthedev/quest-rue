@@ -31,6 +31,12 @@ export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, valu
         case ProtoTypeInfo.Primitive.CHAR:
             minWidth = 40;
             break;
+        case ProtoTypeInfo.Primitive.BYTE:
+            inputType = "number";
+            break;
+        case ProtoTypeInfo.Primitive.SHORT:
+            inputType = "number";
+            break;
         case ProtoTypeInfo.Primitive.INT:
             inputType = "number";
             break;
