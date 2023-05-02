@@ -10,10 +10,11 @@ import { connect } from "../misc/commands";
 
 export default function ConnectMenu() {
     const redirect = useRouteData<boolean>();
+    const navigate = useNavigate();
 
     if (redirect) {
         createEventEffect(getEvents().CONNECTED_EVENT, () => {
-            useNavigate()("/scene/");
+            navigate("/scene/");
         });
     }
 
