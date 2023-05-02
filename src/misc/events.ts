@@ -5,10 +5,14 @@ import { ProtoGameObject } from "./proto/unity";
 import { uniqueNumber } from "./utils";
 import {
     Accessor,
+    batch,
     createEffect,
+    createResource,
     createSignal,
     onCleanup,
+    untrack,
 } from "solid-js";
+import { deprecate } from "util";
 
 export type GameObjectJSON = PacketJSON<ProtoGameObject>;
 
@@ -46,34 +50,46 @@ export type PacketJSON<T extends Message> = ReturnType<T["toObject"]>;
  * Essentially, it gives both the current state and a function to send a packet
  * When the packet is sent, it is given a unique id
  * When a packet with the same query ID is received, it updates the state
+ *
+ * @param once Only run once and then unsubscribe
+ * @param allowConcurrent Allow multiple requests to run asynchronously
+ * @param allowUnexpectedPackets Listen to packets with any id without having to initiate a request
  */
 export function useRequestAndResponsePacket<
-    T extends Message,
-    P extends PacketTypes[0] = PacketTypes[0],
-    R extends PacketJSON<T> = PacketJSON<T>
->(once = false, allowConcurrent = false): [Accessor<R | undefined>, Accessor<boolean>, (p: P) => void] {
-    const [val, setValue] = createSignal<R | undefined>(undefined);
+    TTResponse extends Message,
+    TRequest extends PacketTypes[0] = PacketTypes[0],
+    TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
+>(
+    once = false,
+    allowConcurrent = false,
+    allowUnexpectedPackets = false
+): [Accessor<TResponse | undefined>, Accessor<boolean>, (p: TRequest) => void] {
+    const [val, setValue] = createSignal<TResponse | undefined>(undefined);
     const [loading, setLoading] = createSignal<boolean>(false);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: { value: number | undefined, loading: boolean } = { value: undefined, loading: false };
-
-    createEffect(() => expectedQueryID.loading = loading());
+    const expectedQueryID: { value: number | undefined } = {
+        value: undefined,
+    };
 
     // Create the listener
     // onMount is likely not necessary
     const listener = getEvents().ALL_PACKETS;
     const callback = listener.addListener((union) => {
         if (
-            expectedQueryID.value &&
-            union.queryResultId === expectedQueryID.value
+            allowUnexpectedPackets ||
+            (expectedQueryID.value &&
+                union.queryResultId === expectedQueryID.value)
         ) {
+            // it's guaranteed to exist ok
             const packet = (union as Record<string, unknown>)[union.packetType];
 
             if (!packet) throw "Packet is undefined why!";
 
-            setValue(() => packet as R);
-            setLoading(false);
+            batch(() => {
+                setValue(() => packet as TResponse);
+                setLoading(false);
+            });
 
             expectedQueryID.value = undefined;
         }
@@ -84,21 +100,77 @@ export function useRequestAndResponsePacket<
     });
 
     // Return the state and a callback for invoking reads
-    return [
-        val,
-        loading,
-        (p: P) => {
-            if (!expectedQueryID.loading || allowConcurrent) {
-                const randomId = uniqueNumber();
-                expectedQueryID.value = randomId;
-                setLoading(true);
-                sendPacket(
-                    PacketWrapper.fromObject({ queryResultId: randomId, ...p })
-                );
-            }
-        },
-    ];
+
+    const refetch = (p: TRequest) => {
+        if (!untrack(loading) || allowConcurrent) {
+            const randomId = uniqueNumber();
+            expectedQueryID.value = randomId;
+            setLoading(true);
+            sendPacket(
+                PacketWrapper.fromObject({ queryResultId: randomId, ...p })
+            );
+        }
+    };
+
+    return [val, loading, refetch];
 }
+
+// TODO: An experiment, didn't work out. Maybe retry at a later date.
+// export function createResourcePacket<
+//     TTResponse extends Message,
+//     TRequest extends PacketTypes[0] = PacketTypes[0],
+//     TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
+// >(
+//     input: Accessor<TRequest | undefined> | TRequest | undefined,
+//     { once = false, allowConcurrent = false }
+// ) {
+//     // We use reference here since it's not necessary to call it "state", that is handled by `val`
+//     const expectedQueryID: { value: number | undefined } = {
+//         value: undefined,
+//     };
+
+//     const fetch = (p: TRequest) => {
+//         const randomId = uniqueNumber();
+//         expectedQueryID.value = randomId;
+
+//         return new Promise((resolve, reject) => {
+
+//         })
+//     };
+
+//     const [data, rest] = createResource<TResponse, TRequest, TRequest>(
+//         input,
+//         fetch
+//     );
+
+//     // Create the listener
+//     // onMount is likely not necessary
+//     const listener = getEvents().ALL_PACKETS;
+//     const callback = listener.addListener((union) => {
+//         if (
+//             expectedQueryID.value &&
+//             union.queryResultId === expectedQueryID.value
+//         ) {
+//             const packet = (union as Record<string, unknown>)[union.packetType];
+
+//             if (!packet) throw "Packet is undefined why!";
+
+//             expectedQueryID.value = undefined;
+//         }
+//     }, once);
+
+//     onCleanup(() => {
+//         listener.removeListener(callback);
+//     });
+
+//     return [
+//         data,
+//         {
+//             ...rest,
+//             // refetch: newRefetch,
+//         },
+//     ];
+// }
 
 /**
  * Hook that listens to a packet and updates the state based on it
