@@ -1,8 +1,10 @@
 .input {
     padding: 2px;
-}
-.input {
     line-height: 16px;
-    width: 100px;
-    transition: width 0.25s;
+    min-width: 100px;
+    max-width: 250px;
+    width: 0;
+}
+.input:placeholder-shown {
+    text-overflow: ellipsis;
 }

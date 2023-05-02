@@ -11,6 +11,8 @@ import InputCell, { ActionButton } from "./InputCell";
 function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, maxCols: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
+        if (props.colSize == 0) return;
+        element!.style.setProperty("grid-column", "span 1");
         const width = (element?.clientWidth ?? 1) - 1;
         const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
         element!.style.setProperty("grid-column", `span ${span}`);
@@ -48,6 +50,8 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
 function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: number, maxCols: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
+        if (props.colSize == 0) return;
+        element!.style.setProperty("grid-column", "span 1");
         const width = (element?.clientWidth ?? 1) - 1;
         const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
         element!.style.setProperty("grid-column", `span ${span}`);
@@ -78,7 +82,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
     return (
         <span ref={element} class="font-mono">
             {props.prop.name + " = "}
-            <InputCell onInput={setInputValue} value={inputValue()} type={props.prop.type!} />
+            <InputCell onInput={setInputValue} value={inputValue()} disabled={!props.prop.setterId} type={props.prop.type!} />
             <Show when={props.prop.getterId}>
                 <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
             </Show>
@@ -92,6 +96,8 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
 function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: number, maxCols: number }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
+        if (props.colSize == 0) return;
+        element!.style.setProperty("grid-column", "span 1");
         const width = (element?.clientWidth ?? 1) - 1;
         const span = Math.min(Math.ceil(width / props.colSize), props.maxCols);
         element!.style.setProperty("grid-column", `span ${span}`);
