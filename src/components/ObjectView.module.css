@@ -35,13 +35,8 @@
     gap: 5px;
 }
 
-.input, .button {
+.button {
     padding: 2px;
-}
-.input {
-    line-height: 16px;
-    width: 100px;
-    transition: width 0.25s;
 }
 .button > img {
     width: 18px;

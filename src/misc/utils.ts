@@ -136,3 +136,41 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
         return ret.toString();
     return JSON.stringify(ret);
 }
+
+export function protoTypeToString(type: PacketJSON<ProtoTypeInfo>) {
+    if (type.classInfo != undefined) {
+        const ret = `${type.classInfo.clazz}*`;
+        if (type.classInfo.namespaze)
+            return `${type.classInfo.namespaze}::${ret}`;
+        return ret;
+    } else if (type.structInfo != undefined) {
+        const ret = type.structInfo.clazz!.clazz;
+        if (type.structInfo.clazz!.namespaze)
+            return `${type.structInfo.clazz!.namespaze}::${ret}`;
+        return ret;
+    } else if (type.primitiveInfo != undefined) {
+        switch (type.primitiveInfo) {
+        case ProtoTypeInfo.Primitive.BOOLEAN:
+            return "bool";
+        case ProtoTypeInfo.Primitive.CHAR:
+            return "char";
+        case ProtoTypeInfo.Primitive.INT:
+            return "int";
+        case ProtoTypeInfo.Primitive.LONG:
+            return "long";
+        case ProtoTypeInfo.Primitive.FLOAT:
+            return "float";
+        case ProtoTypeInfo.Primitive.DOUBLE:
+            return "double";
+        case ProtoTypeInfo.Primitive.STRING:
+            return "string";
+        case ProtoTypeInfo.Primitive.PTR:
+            return "pointer";
+        case ProtoTypeInfo.Primitive.UNKNOWN:
+            return "unknown";
+        case ProtoTypeInfo.Primitive.VOID:
+            return "void";
+        }
+    }
+    return "";
+}

@@ -6,6 +6,7 @@ import { ProtoClassDetails, ProtoFieldInfo, ProtoMethodInfo, ProtoPropertyInfo }
 
 import styles from "./ObjectView.module.css";
 import { protoDataToString, stringToProtoData } from "../misc/utils";
+import InputCell, { ActionButton } from "./InputCell";
 
 function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, maxCols: number }) {
     let element: HTMLDivElement | undefined;
@@ -38,12 +39,8 @@ function FieldCell(props: { field: PacketJSON<ProtoFieldInfo>, colSize: number, 
     return (
         <span ref={element} class="font-mono">
             {props.field.name + " = "}
-            <input class={`${styles.input}`} onInput={e => update(e.target.value)} value={protoDataToString(value()?.value)}/>
-            <button class={`${styles.button}`} onClick={refresh}>
-                <Show when={valueLoading() || valueSetting()} fallback={<img src="/src/assets/refresh.svg" />}>
-                    <img src="/src/assets/loading.svg" class="animate-spin" />
-                </Show>
-            </button>
+            <InputCell onInput={update} value={protoDataToString(value()?.value)} type={props.field.type!} />
+            <ActionButton class={`${styles.button}`}  onClick={refresh} loading={valueLoading() || valueSetting()} img="refresh.svg" />
         </span>
     )
 }
@@ -77,23 +74,16 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
             }
         });
     }
+    createEffect(() => setInputValue(protoDataToString(value()?.result)));
     return (
         <span ref={element} class="font-mono">
             {props.prop.name + " = "}
-            <input class={`${styles.input}`} onInput={e => setInputValue(e.target.value)} value={protoDataToString(value()?.result)} />
+            <InputCell onInput={setInputValue} value={inputValue()} type={props.prop.type!} />
             <Show when={props.prop.getterId}>
-                <button class={`${styles.button}`} onClick={get}>
-                    <Show when={valueLoading() || valueSetting()} fallback={<img src="/src/assets/refresh.svg" />}>
-                        <img src="/src/assets/loading.svg" class="animate-spin" />
-                    </Show>
-                </button>
+                <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
             </Show>
             <Show when={props.prop.setterId}>
-                <button class={`${styles.button}`} onClick={set}>
-                    <Show when={valueLoading() || valueSetting()} fallback={<img src="/src/assets/enter.svg" />}>
-                        <img src="/src/assets/loading.svg" class="animate-spin" />
-                    </Show>
-                </button>
+                <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="enter.svg" />
             </Show>
         </span>
     )
@@ -121,16 +111,12 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
     return (
         <span ref={element} class="font-mono">
             {props.method.name + " ("}
-            <For each={Object.keys(props.method.args ?? {})}>
-                {(item, index) => <input class={`${styles.input}`} placeholder={item} onInput={e => args[index()] = e.target.value} />}
+            <For each={Object.entries(props.method.args ?? {})}>
+                {([name, type], index) => <InputCell placeholder={name} type={type!} onInput={str => args[index()] = str} />}
             </For>
             {") "}
-            <button class={`${styles.button}`} onClick={run}>
-                <Show when={resultLoading()} fallback={<img src="/src/assets/enter.svg" />}>
-                    <img src="/src/assets/loading.svg" class="animate-spin" />
-                </Show>
-            </button>
-            <input class={`${styles.input}`} disabled value={protoDataToString(result()?.result)} />
+            <ActionButton class={`${styles.button}`}  onClick={run} loading={resultLoading()} img="enter.svg" />
+            <InputCell disabled value={protoDataToString(result()?.result)} type={props.method.returnType!} />
         </span>
     )
 }
@@ -142,7 +128,7 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails> }) {
 
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
 
-    const htmlClass = createMemo(() => `${styles.expanded} ${styles.header} ${!collapsed() ? styles.rounded : ""} cursor-pointer`);
+    const headerClass = createMemo(() => `${styles.expanded} ${styles.header} ${!collapsed() ? styles.rounded : ""} cursor-pointer`);
 
     // due to auto-fill all the grids will have the same size columns
     let grid: HTMLDivElement | undefined;
@@ -158,7 +144,7 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails> }) {
 
     return (
         <div>
-            <div class={htmlClass()} onClick={() => setCollapsed(!collapsed())}>
+            <div class={headerClass()} onClick={() => setCollapsed(!collapsed())}>
                 <span class="mr-1 inline-block w-4 text-center">
                     {collapsed() ? "+" : "-"}
                 </span>
