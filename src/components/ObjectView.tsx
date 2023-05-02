@@ -83,7 +83,7 @@ function PropertyCell(props: { prop: PacketJSON<ProtoPropertyInfo>, colSize: num
                 <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="refresh.svg" />
             </Show>
             <Show when={props.prop.setterId}>
-                <ActionButton class={`${styles.button}`}  onClick={get} loading={valueLoading() || valueSetting()} img="enter.svg" />
+                <ActionButton class={`${styles.button}`}  onClick={set} loading={valueLoading() || valueSetting()} img="enter.svg" />
             </Show>
         </span>
     )
