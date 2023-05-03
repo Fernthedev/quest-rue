@@ -4,7 +4,8 @@ import { ProtoTypeInfo } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css"
 import { protoTypeToString } from "../misc/utils";
-import { selectObject } from "../App";
+import { objectUrl } from "../App";
+import { useNavigate } from "@solidjs/router";
 
 export function ActionButton(props: { img: string, onClick: () => void, loading?: boolean, class?: string }) {
     return (
@@ -61,6 +62,9 @@ export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, valu
         }
     }
     const detail = createMemo(() => (props.placeholder ? props.placeholder + ": " : "") + protoTypeToString(props.type));
+
+    const navigate = useNavigate();
+
     return (
         <span class={styles.inputParent} style={{
             "flex-grow": detail().length,
@@ -76,7 +80,7 @@ export default function InputCell(props: { type: PacketJSON<ProtoTypeInfo>, valu
                 title={detail()}
             />
             <Show when={props.type.classInfo && props.output}>
-                <ActionButton class="small-button" img="navigate.svg" onClick={() => selectObject(Number(props.value))} />
+                <ActionButton class="small-button" img="navigate.svg" onClick={() => navigate(objectUrl(Number(props.value)))} />
             </Show>
         </span>
     )

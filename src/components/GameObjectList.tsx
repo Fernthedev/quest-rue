@@ -1,4 +1,4 @@
-import { For, Show, createDeferred, createMemo, createSignal } from "solid-js";
+import { For, Show, createDeferred, createEffect, createMemo, createSignal, onMount } from "solid-js";
 import {
     GameObjectJSON,
     PacketWrapperCustomJSON,
@@ -7,21 +7,34 @@ import {
 } from "../misc/events";
 import { gameObjectsStore } from "../misc/handlers/gameobject";
 
-import "./GameObjectList.module.css";
+import styles from "./GameObjectList.module.css";
 import { requestGameObjects } from "../misc/commands";
-import { selectObject } from "../App";
+import { objectUrl } from "../App";
+import { Navigator, useNavigate } from "@solidjs/router";
 
-function GameObjectListItem(props: { obj: GameObjectJSON }) {
-    const [collapsed, setCollapsed] = createSignal<boolean>(false);
+let navigate: Navigator;
+
+function GameObjectListItem(props: { obj: GameObjectJSON, addressMap?: Map<number, [boolean, boolean]> }) {
+    const address = createMemo(() => props.obj.transform!.address!);
+
+    const highlighted = createMemo(() => props.addressMap?.get(address())?.[0] ?? false);
+
+    const [collapsed, setCollapsed] = createSignal(false);
+    createEffect(() => {
+        if (props.addressMap)
+            setCollapsed(!(props.addressMap.get(address())?.[1] ?? true));
+        else
+            setCollapsed(false);
+    });
 
     const children = createMemo(
-        () => gameObjectsStore.childrenMap?.[props.obj.transform!.address!]
+        () => gameObjectsStore.childrenMap?.[address()].filter(addr => props.addressMap?.has(addr) ?? true)
     );
     const hasChildren = () => (children()?.length ?? 0) > 0;
 
     return (
         <li>
-            <div class="cursor-pointer">
+            <div class={`${styles.objectTitle} ${highlighted() ? styles.highlighted : ""}`}>
                 <Show when={hasChildren()}>
                     <span
                         class="mr-1 inline-block w-4 text-center"
@@ -30,32 +43,56 @@ function GameObjectListItem(props: { obj: GameObjectJSON }) {
                         {collapsed() ? "+" : "-"}
                     </span>
                 </Show>
-                <span onClick={() => selectObject(props.obj.address)}>
+                <span onClick={() => navigate(objectUrl(props.obj.address))}>
                     {props.obj.name}
                 </span>
             </div>
             <Show when={!collapsed() && hasChildren()}>
-                <ConstructList children={children()!} />
+                <ConstructList children={children()!} addressMap={props.addressMap} />
             </Show>
         </li>
     );
 }
 
+function inSearch(object: GameObjectJSON, addressMap: Map<number, [boolean, boolean]>, searchLower: string, matchChild = false) {
+    let childMatches = false;
+    let selfMatches = false;
+    if (object.name?.toLocaleLowerCase().includes(searchLower))
+        selfMatches = true;
+    for (const addr of gameObjectsStore.childrenMap?.[object.transform!.address!] ?? []) {
+        if (inSearch(gameObjectsStore.objectsMap![addr][0], addressMap, searchLower, selfMatches || matchChild))
+            childMatches = true;
+    }
+    if (childMatches || selfMatches || matchChild)
+        addressMap.set(object.transform!.address!, [selfMatches, childMatches]);
+    return childMatches || selfMatches;
+}
+
 export default function GameObjectList() {
     const [search, setSearch] = createSignal<string>("");
 
+    // address -> [highlight, expand]
+    const [searchAddresses, setSearchAddresses] = createSignal<Map<number, [boolean, boolean]>>();
+
+    const rootObjects = createDeferred(() =>
+        Object.entries(gameObjectsStore.objectsMap ?? {}).filter(([, [o]]) => !o.transform?.parent)
+    );
+
     // createDeferred is a createMemo that runs when the browser is idle
     // Solid is awesome
-    const filteredObjects = createDeferred(
+    const filteredRootObjects = createDeferred(
         () => {
+            if (search() == "") {
+                setSearchAddresses(undefined);
+                return rootObjects();
+            }
             if (!gameObjectsStore.objectsMap) return null;
-            if (search() == "")
-                return Object.entries(gameObjectsStore.objectsMap);
 
-            return Object.entries(gameObjectsStore.objectsMap).filter(
-                ([, [o]]) =>
-                    o.name?.toLocaleLowerCase().includes(search().toLowerCase())
-            );
+            const searchLower = search().toLocaleLowerCase();
+            const newAddresses = new Map<number, [boolean, boolean]>();
+            const ret = rootObjects().filter(([, [obj]]) => inSearch(obj, newAddresses, searchLower));
+            setSearchAddresses(newAddresses);
+            return ret;
         },
         { timeoutMs: 1000 }
     );
@@ -66,21 +103,14 @@ export default function GameObjectList() {
         import.meta.env.VITE_USE_QUEST_MOCK != "true"
     );
 
-    const rootObjects = createMemo(() =>
-        filteredObjects()?.filter(([, [o]]) => !o.transform?.parent)
-    );
-
-    const noEntries = () => {
-        if (search() == "") return "Loading ...";
-        return "No Results";
-    };
+    const noEntries = () => search() ? "No Results" : "Loading...";
 
     // update state
     createEventEffect<PacketWrapperCustomJSON>(
         getEvents().ALL_PACKETS,
         (packet) => {
             if (packet.packetType === "getAllGameObjectsResult") {
-                selectObject(undefined);
+                navigate(objectUrl(undefined));
                 setRequesting(false);
             }
         }
@@ -93,6 +123,8 @@ export default function GameObjectList() {
         setRequesting(true);
         setSearch("");
     }
+
+    onMount(() => navigate = useNavigate());
 
     return (
         <div class="flex flex-col items-stretch h-full">
@@ -117,11 +149,11 @@ export default function GameObjectList() {
                     </Show>
                 </button>
             </div>
-            <div class="ml-2 overflow-auto">
+            <div class="ml-2 overflow-auto grow">
                 <ul class="min-w-full w-max h-max">
                     <Show when={!requesting()} fallback="Loading...">
-                        <For each={rootObjects()} fallback={noEntries()}>
-                            {([, [obj]]) => <GameObjectListItem obj={obj} />}
+                        <For each={filteredRootObjects()} fallback={noEntries()}>
+                            {([, [obj]]) => <GameObjectListItem obj={obj} addressMap={searchAddresses()} />}
                         </For>
                     </Show>
                 </ul>
@@ -130,7 +162,7 @@ export default function GameObjectList() {
     );
 }
 
-function ConstructList(props: { children: number[] }) {
+function ConstructList(props: { children: number[], addressMap?: Map<number, [boolean, boolean]> }) {
     return (
         <ul class="pl-4">
             {/* For because the key is variable but the list items only insert/remove */}
@@ -139,7 +171,7 @@ function ConstructList(props: { children: number[] }) {
                     const gameObject = createMemo(
                         () => gameObjectsStore.objectsMap![itemAddress][0]!
                     );
-                    return <GameObjectListItem obj={gameObject()} />;
+                    return <GameObjectListItem obj={gameObject()} addressMap={props.addressMap} />;
                 }}
             </For>
         </ul>

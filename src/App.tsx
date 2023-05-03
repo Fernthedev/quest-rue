@@ -1,17 +1,10 @@
-import { Navigator, Route, Router, Routes, useNavigate } from "@solidjs/router";
-import { lazy, onMount } from "solid-js";
+import { Route, Router, Routes } from "@solidjs/router";
+import { lazy } from "solid-js";
 const SceneViewer = lazy(() => import("./pages/SceneViewer"));
 import ConnectMenu from "./pages/ConnectMenu"
 
-let navigate: Navigator;
-
-export function selectObject(address?: number) {
-    navigate(`/scene/${address ?? ""}`);
-}
-
-function GlobalNav() {
-    onMount(() => navigate = useNavigate());
-    return <></>
+export function objectUrl(address?: number) {
+    return `/scene/${address ?? ""}`;
 }
 
 export default function App() {
@@ -21,7 +14,6 @@ export default function App() {
                 <Routes>
                     <Route path="/scene/:address?" component={SceneViewer} />
                     <Route path={"/"} component={ConnectMenu} data={() => true} /> {/* redirect */}
-                    <GlobalNav />
                 </Routes>
             </Router>
         </div>

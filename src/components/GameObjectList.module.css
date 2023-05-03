@@ -8,3 +8,11 @@ ul,
 li {
     @apply divide-y-2 divide-blue-200 dark:divide-zinc-600 border-collapse ;
 }
+
+.objectTitle {
+    cursor: pointer;
+}
+.highlighted {
+    @apply bg-zinc-300 dark:bg-zinc-900;
+    font-weight: bolder;
+}
