@@ -1,4 +1,4 @@
-import { For, Show, batch, createEffect, createMemo, createSignal, on, onMount } from "solid-js"
+import { For, Show, batch, createDeferred, createEffect, createMemo, createSignal, on, onMount } from "solid-js"
 import { PacketJSON, useRequestAndResponsePacket } from "../misc/events";
 import { GetClassDetailsResult, GetFieldResult, GetInstanceDetails, GetInstanceDetailsResult, InvokeMethodResult, SetFieldResult } from "../misc/proto/qrue";
 import { ProtoClassDetails, ProtoFieldInfo, ProtoMethodInfo, ProtoPropertyInfo } from "../misc/proto/il2cpp";
@@ -118,7 +118,7 @@ function MethodCell(props: { method: PacketJSON<ProtoMethodInfo>, colSize: numbe
 
 const separator = () => <div class={`${styles.expanded} ${styles.separator}`}/>;
 
-function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedAddress: number }) {
+function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedAddress: number, search: string }) {
     const className = createMemo(() => props.details?.clazz ? props.details.clazz!.namespaze + "::" + props.details.clazz!.clazz : "");
 
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
@@ -140,6 +140,12 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedA
     // loses observation after collapsing
     createEffect(() => { if (!collapsed()) gridObserver.observe(grid!) });
 
+    const filter = <T extends { name?: string }>(list: T[], search: string) => list.filter(item => item.name?.toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+
+    const filteredFields = createDeferred(() => filter(props.details?.fields ?? [], props.search));
+    const filteredProps = createDeferred(() => filter(props.details?.properties ?? [], props.search));
+    const filteredMethods = createDeferred(() => filter(props.details?.methods ?? [], props.search));
+
     return (
         <div>
             <div class={headerClass()} onClick={() => setCollapsed(!collapsed())}>
@@ -150,24 +156,24 @@ function TypeSection(props: { details?: PacketJSON<ProtoClassDetails>, selectedA
             </div>
             <Show when={!collapsed()}>
                 <div class={`${styles.grid}`} ref={grid}>
-                    <For each={props.details?.fields}>
+                    <For each={filteredFields()}>
                         {item => <FieldCell field={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
-                    <For each={props.details?.properties}>
+                    <For each={filteredProps()}>
                         {item => <PropertyCell prop={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
-                    <For each={props.details?.methods}>
+                    <For each={filteredMethods()}>
                         {item => <MethodCell method={item} colSize={colSize()} maxCols={colNum()} address={props.selectedAddress} />}
                     </For>
                 </div>
             </Show>
             <Show when={props.details?.parent} fallback={<div class="h-20" />}>
                 {separator()}
-                <TypeSection details={props.details?.parent} selectedAddress={props.selectedAddress} />
+                <TypeSection details={props.details?.parent} selectedAddress={props.selectedAddress} search={props.search} />
             </Show>
         </div>
     )
@@ -200,16 +206,20 @@ export default function ObjectView(props: { selectedAddress: number }) {
         return classDetails()?.interfaces?.map(info => protoTypeToString({classInfo: info})).join(", ");
     });
 
+    const [search, setSearch] = createSignal<string>("");
+
     return (
         <Show when={props.selectedAddress} fallback={globalFallback}>
             <div class="p-4 w-full h-full">
-                <div class="space-x-4">
-                    <span class="text-xl font-mono">{className()}</span>
-                    <span class="text-lg font-mono">{interfaces()}</span>
+                <div class="flex gap-4 mb-1 items-end">
+                    <span class="text-xl font-mono flex-0">{className()}</span>
+                    <span class="text-lg font-mono flex-0">{interfaces()}</span>
+                    <span class="flex-1" />
+                    <input class="px-2 py-1" placeholder="Search" onInput={e => setSearch(e.target.value)} value={search()} />
                 </div>
                 {separator()}
                 <Show when={!detailsLoading()} fallback={detailsFallback}>
-                    <TypeSection details={classDetails()!} selectedAddress={props.selectedAddress} />
+                    <TypeSection details={classDetails()!} selectedAddress={props.selectedAddress} search={search()} />
                 </Show>
             </div>
         </Show>
