@@ -96,13 +96,8 @@ function inSearch(
         object.transform!.address!
     ] ?? []) {
         const child = gameObjectsStore.objectsMap![addr][0];
-        childMatches =
-            childMatches ||
-            inSearch(child, addressMap, searchLower, selfMatches || matchChild);
-
-        // short circuit
-        // TODO: Should this be done?
-        if (childMatches) break;
+        if (inSearch(child, addressMap, searchLower, selfMatches || matchChild))
+            childMatches = true;
     }
     if (childMatches || selfMatches || matchChild)
         addressMap.set(object.transform!.address!, [selfMatches, childMatches]);
