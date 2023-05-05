@@ -2,10 +2,7 @@ import { useNavigate, useRouteData } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
 import styles from "./ConnectMenu.module.css";
-import {
-    createEventEffect,
-    getEvents,
-} from "../misc/events";
+import { createEventEffect, getEvents } from "../misc/events";
 import { connect } from "../misc/commands";
 
 export default function ConnectMenu() {

@@ -7,12 +7,23 @@ import * as dependency_1 from "./il2cpp";
 import * as pb_1 from "google-protobuf";
 export class ProtoVector2 extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        x?: number;
-        y?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  x?: number;
+                  y?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("x" in data && data.x != undefined) {
                 this.x = data.x;
@@ -34,10 +45,7 @@ export class ProtoVector2 extends pb_1.Message {
     set y(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
-    static fromObject(data: {
-        x?: number;
-        y?: number;
-    }): ProtoVector2 {
+    static fromObject(data: { x?: number; y?: number }): ProtoVector2 {
         const message = new ProtoVector2({});
         if (data.x != null) {
             message.x = data.x;
@@ -64,18 +72,18 @@ export class ProtoVector2 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x != 0)
-            writer.writeFloat(1, this.x);
-        if (this.y != 0)
-            writer.writeFloat(2, this.y);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.x != 0) writer.writeFloat(1, this.x);
+        if (this.y != 0) writer.writeFloat(2, this.y);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector2 {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector2();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoVector2();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.x = reader.readFloat();
@@ -83,7 +91,8 @@ export class ProtoVector2 extends pb_1.Message {
                 case 2:
                     message.y = reader.readFloat();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -97,13 +106,24 @@ export class ProtoVector2 extends pb_1.Message {
 }
 export class ProtoVector3 extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        x?: number;
-        y?: number;
-        z?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  x?: number;
+                  y?: number;
+                  z?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("x" in data && data.x != undefined) {
                 this.x = data.x;
@@ -172,20 +192,19 @@ export class ProtoVector3 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x != 0)
-            writer.writeFloat(1, this.x);
-        if (this.y != 0)
-            writer.writeFloat(2, this.y);
-        if (this.z != 0)
-            writer.writeFloat(3, this.z);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.x != 0) writer.writeFloat(1, this.x);
+        if (this.y != 0) writer.writeFloat(2, this.y);
+        if (this.z != 0) writer.writeFloat(3, this.z);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector3 {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector3();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoVector3();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.x = reader.readFloat();
@@ -196,7 +215,8 @@ export class ProtoVector3 extends pb_1.Message {
                 case 3:
                     message.z = reader.readFloat();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -210,14 +230,25 @@ export class ProtoVector3 extends pb_1.Message {
 }
 export class ProtoVector4 extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        x?: number;
-        y?: number;
-        z?: number;
-        w?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  x?: number;
+                  y?: number;
+                  z?: number;
+                  w?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("x" in data && data.x != undefined) {
                 this.x = data.x;
@@ -303,22 +334,20 @@ export class ProtoVector4 extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.x != 0)
-            writer.writeFloat(1, this.x);
-        if (this.y != 0)
-            writer.writeFloat(2, this.y);
-        if (this.z != 0)
-            writer.writeFloat(3, this.z);
-        if (this.w != 0)
-            writer.writeFloat(4, this.w);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.x != 0) writer.writeFloat(1, this.x);
+        if (this.y != 0) writer.writeFloat(2, this.y);
+        if (this.z != 0) writer.writeFloat(3, this.z);
+        if (this.w != 0) writer.writeFloat(4, this.w);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoVector4 {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoVector4();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoVector4();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.x = reader.readFloat();
@@ -332,7 +361,8 @@ export class ProtoVector4 extends pb_1.Message {
                 case 4:
                     message.w = reader.readFloat();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -346,13 +376,24 @@ export class ProtoVector4 extends pb_1.Message {
 }
 export class ProtoObject extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        name?: string;
-        classInfo?: dependency_1.ProtoClassInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  name?: string;
+                  classInfo?: dependency_1.ProtoClassInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -378,7 +419,11 @@ export class ProtoObject extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 3) as dependency_1.ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassInfo,
+            3
+        ) as dependency_1.ProtoClassInfo;
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 3, value);
@@ -389,7 +434,9 @@ export class ProtoObject extends pb_1.Message {
     static fromObject(data: {
         address?: number;
         name?: string;
-        classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+        classInfo?: ReturnType<
+            typeof dependency_1.ProtoClassInfo.prototype.toObject
+        >;
     }): ProtoObject {
         const message = new ProtoObject({});
         if (data.address != null) {
@@ -399,7 +446,9 @@ export class ProtoObject extends pb_1.Message {
             message.name = data.name;
         }
         if (data.classInfo != null) {
-            message.classInfo = dependency_1.ProtoClassInfo.fromObject(data.classInfo);
+            message.classInfo = dependency_1.ProtoClassInfo.fromObject(
+                data.classInfo
+            );
         }
         return message;
     }
@@ -407,7 +456,9 @@ export class ProtoObject extends pb_1.Message {
         const data: {
             address?: number;
             name?: string;
-            classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+            classInfo?: ReturnType<
+                typeof dependency_1.ProtoClassInfo.prototype.toObject
+            >;
         } = {};
         if (this.address != null) {
             data.address = this.address;
@@ -424,20 +475,22 @@ export class ProtoObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.name.length)
-            writer.writeString(2, this.name);
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.name.length) writer.writeString(2, this.name);
         if (this.has_classInfo)
-            writer.writeMessage(3, this.classInfo, () => this.classInfo.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(3, this.classInfo, () =>
+                this.classInfo.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoObject {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoObject();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoObject();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -446,9 +499,15 @@ export class ProtoObject extends pb_1.Message {
                     message.name = reader.readString();
                     break;
                 case 3:
-                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.classInfo,
+                        () =>
+                            (message.classInfo =
+                                dependency_1.ProtoClassInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -462,14 +521,25 @@ export class ProtoObject extends pb_1.Message {
 }
 export class ProtoComponent extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        name?: string;
-        gameObject?: number;
-        classInfo?: dependency_1.ProtoClassInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  name?: string;
+                  gameObject?: number;
+                  classInfo?: dependency_1.ProtoClassInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -504,7 +574,11 @@ export class ProtoComponent extends pb_1.Message {
         pb_1.Message.setField(this, 3, value);
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 4) as dependency_1.ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassInfo,
+            4
+        ) as dependency_1.ProtoClassInfo;
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 4, value);
@@ -516,7 +590,9 @@ export class ProtoComponent extends pb_1.Message {
         address?: number;
         name?: string;
         gameObject?: number;
-        classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+        classInfo?: ReturnType<
+            typeof dependency_1.ProtoClassInfo.prototype.toObject
+        >;
     }): ProtoComponent {
         const message = new ProtoComponent({});
         if (data.address != null) {
@@ -529,7 +605,9 @@ export class ProtoComponent extends pb_1.Message {
             message.gameObject = data.gameObject;
         }
         if (data.classInfo != null) {
-            message.classInfo = dependency_1.ProtoClassInfo.fromObject(data.classInfo);
+            message.classInfo = dependency_1.ProtoClassInfo.fromObject(
+                data.classInfo
+            );
         }
         return message;
     }
@@ -538,7 +616,9 @@ export class ProtoComponent extends pb_1.Message {
             address?: number;
             name?: string;
             gameObject?: number;
-            classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+            classInfo?: ReturnType<
+                typeof dependency_1.ProtoClassInfo.prototype.toObject
+            >;
         } = {};
         if (this.address != null) {
             data.address = this.address;
@@ -558,22 +638,23 @@ export class ProtoComponent extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.name.length)
-            writer.writeString(2, this.name);
-        if (this.gameObject != 0)
-            writer.writeUint64(3, this.gameObject);
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.name.length) writer.writeString(2, this.name);
+        if (this.gameObject != 0) writer.writeUint64(3, this.gameObject);
         if (this.has_classInfo)
-            writer.writeMessage(4, this.classInfo, () => this.classInfo.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(4, this.classInfo, () =>
+                this.classInfo.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoComponent {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoComponent();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoComponent();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -585,9 +666,15 @@ export class ProtoComponent extends pb_1.Message {
                     message.gameObject = reader.readUint64();
                     break;
                 case 4:
-                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.classInfo,
+                        () =>
+                            (message.classInfo =
+                                dependency_1.ProtoClassInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -601,14 +688,25 @@ export class ProtoComponent extends pb_1.Message {
 }
 export class ProtoTransform extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        name?: string;
-        childCount?: number;
-        parent?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  name?: string;
+                  childCount?: number;
+                  parent?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -694,22 +792,20 @@ export class ProtoTransform extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.name.length)
-            writer.writeString(2, this.name);
-        if (this.childCount != 0)
-            writer.writeInt32(3, this.childCount);
-        if (this.parent != 0)
-            writer.writeUint64(4, this.parent);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.name.length) writer.writeString(2, this.name);
+        if (this.childCount != 0) writer.writeInt32(3, this.childCount);
+        if (this.parent != 0) writer.writeUint64(4, this.parent);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoTransform {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoTransform();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoTransform();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -723,7 +819,8 @@ export class ProtoTransform extends pb_1.Message {
                 case 4:
                     message.parent = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -737,17 +834,28 @@ export class ProtoTransform extends pb_1.Message {
 }
 export class ProtoGameObject extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        name?: string;
-        active?: boolean;
-        layer?: number;
-        scene?: ProtoScene;
-        tag?: string;
-        transform?: ProtoTransform;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  name?: string;
+                  active?: boolean;
+                  layer?: number;
+                  scene?: ProtoScene;
+                  tag?: string;
+                  transform?: ProtoTransform;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -812,7 +920,11 @@ export class ProtoGameObject extends pb_1.Message {
         pb_1.Message.setField(this, 6, value);
     }
     get transform() {
-        return pb_1.Message.getWrapperField(this, ProtoTransform, 7) as ProtoTransform;
+        return pb_1.Message.getWrapperField(
+            this,
+            ProtoTransform,
+            7
+        ) as ProtoTransform;
     }
     set transform(value: ProtoTransform) {
         pb_1.Message.setWrapperField(this, 7, value);
@@ -890,28 +1002,29 @@ export class ProtoGameObject extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.name.length)
-            writer.writeString(2, this.name);
-        if (this.active != false)
-            writer.writeBool(3, this.active);
-        if (this.layer != 0)
-            writer.writeInt32(4, this.layer);
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.name.length) writer.writeString(2, this.name);
+        if (this.active != false) writer.writeBool(3, this.active);
+        if (this.layer != 0) writer.writeInt32(4, this.layer);
         if (this.has_scene)
-            writer.writeMessage(5, this.scene, () => this.scene.serialize(writer));
-        if (this.tag.length)
-            writer.writeString(6, this.tag);
+            writer.writeMessage(5, this.scene, () =>
+                this.scene.serialize(writer)
+            );
+        if (this.tag.length) writer.writeString(6, this.tag);
         if (this.has_transform)
-            writer.writeMessage(7, this.transform, () => this.transform.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(7, this.transform, () =>
+                this.transform.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoGameObject {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoGameObject();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoGameObject();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -926,15 +1039,24 @@ export class ProtoGameObject extends pb_1.Message {
                     message.layer = reader.readInt32();
                     break;
                 case 5:
-                    reader.readMessage(message.scene, () => message.scene = ProtoScene.deserialize(reader));
+                    reader.readMessage(
+                        message.scene,
+                        () => (message.scene = ProtoScene.deserialize(reader))
+                    );
                     break;
                 case 6:
                     message.tag = reader.readString();
                     break;
                 case 7:
-                    reader.readMessage(message.transform, () => message.transform = ProtoTransform.deserialize(reader));
+                    reader.readMessage(
+                        message.transform,
+                        () =>
+                            (message.transform =
+                                ProtoTransform.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -948,13 +1070,24 @@ export class ProtoGameObject extends pb_1.Message {
 }
 export class ProtoScene extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        handle?: number;
-        name?: string;
-        isLoaded?: boolean;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  handle?: number;
+                  name?: string;
+                  isLoaded?: boolean;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("handle" in data && data.handle != undefined) {
                 this.handle = data.handle;
@@ -1023,20 +1156,19 @@ export class ProtoScene extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.handle != 0)
-            writer.writeInt32(1, this.handle);
-        if (this.name.length)
-            writer.writeString(2, this.name);
-        if (this.isLoaded != false)
-            writer.writeBool(3, this.isLoaded);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.handle != 0) writer.writeInt32(1, this.handle);
+        if (this.name.length) writer.writeString(2, this.name);
+        if (this.isLoaded != false) writer.writeBool(3, this.isLoaded);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtoScene {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtoScene();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ProtoScene();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.handle = reader.readInt32();
@@ -1047,7 +1179,8 @@ export class ProtoScene extends pb_1.Message {
                 case 3:
                     message.isLoaded = reader.readBool();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;

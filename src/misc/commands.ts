@@ -11,7 +11,7 @@ export function connect(ip: string, port: number) {
         return;
     }
 
-    const url = "ws://" + ip + ":" + port
+    const url = "ws://" + ip + ":" + port;
     socket = new WebSocket(url);
     socket.binaryType = "arraybuffer";
     socket.onopen = (event) => {
@@ -61,8 +61,9 @@ export function requestGameObjects() {
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return;
 
-    if (isConnected())
-        socket?.send(p.serializeBinary());
+    if (isConnected()) socket?.send(p.serializeBinary());
     else
-        socket?.addEventListener("open", () => socket?.send(p.serializeBinary()));
+        socket?.addEventListener("open", () =>
+            socket?.send(p.serializeBinary())
+        );
 }

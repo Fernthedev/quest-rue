@@ -8,13 +8,24 @@ import * as dependency_2 from "./unity";
 import * as pb_1 from "google-protobuf";
 export class SetField extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        fieldId?: number;
-        objectAddress?: number;
-        value?: dependency_1.ProtoDataPayload;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  fieldId?: number;
+                  objectAddress?: number;
+                  value?: dependency_1.ProtoDataPayload;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("fieldId" in data && data.fieldId != undefined) {
                 this.fieldId = data.fieldId;
@@ -40,7 +51,11 @@ export class SetField extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get value() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoDataPayload,
+            3
+        ) as dependency_1.ProtoDataPayload;
     }
     set value(value: dependency_1.ProtoDataPayload) {
         pb_1.Message.setWrapperField(this, 3, value);
@@ -51,7 +66,9 @@ export class SetField extends pb_1.Message {
     static fromObject(data: {
         fieldId?: number;
         objectAddress?: number;
-        value?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+        value?: ReturnType<
+            typeof dependency_1.ProtoDataPayload.prototype.toObject
+        >;
     }): SetField {
         const message = new SetField({});
         if (data.fieldId != null) {
@@ -61,7 +78,9 @@ export class SetField extends pb_1.Message {
             message.objectAddress = data.objectAddress;
         }
         if (data.value != null) {
-            message.value = dependency_1.ProtoDataPayload.fromObject(data.value);
+            message.value = dependency_1.ProtoDataPayload.fromObject(
+                data.value
+            );
         }
         return message;
     }
@@ -69,7 +88,9 @@ export class SetField extends pb_1.Message {
         const data: {
             fieldId?: number;
             objectAddress?: number;
-            value?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+            value?: ReturnType<
+                typeof dependency_1.ProtoDataPayload.prototype.toObject
+            >;
         } = {};
         if (this.fieldId != null) {
             data.fieldId = this.fieldId;
@@ -86,20 +107,22 @@ export class SetField extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.fieldId != 0)
-            writer.writeUint64(1, this.fieldId);
-        if (this.objectAddress != 0)
-            writer.writeUint64(2, this.objectAddress);
+        if (this.fieldId != 0) writer.writeUint64(1, this.fieldId);
+        if (this.objectAddress != 0) writer.writeUint64(2, this.objectAddress);
         if (this.has_value)
-            writer.writeMessage(3, this.value, () => this.value.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(3, this.value, () =>
+                this.value.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SetField {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SetField();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new SetField();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.fieldId = reader.readUint64();
@@ -108,9 +131,17 @@ export class SetField extends pb_1.Message {
                     message.objectAddress = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message.value, () => message.value = dependency_1.ProtoDataPayload.deserialize(reader));
+                    reader.readMessage(
+                        message.value,
+                        () =>
+                            (message.value =
+                                dependency_1.ProtoDataPayload.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -124,11 +155,22 @@ export class SetField extends pb_1.Message {
 }
 export class SetFieldResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        fieldId?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  fieldId?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("fieldId" in data && data.fieldId != undefined) {
                 this.fieldId = data.fieldId;
@@ -141,9 +183,7 @@ export class SetFieldResult extends pb_1.Message {
     set fieldId(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
-    static fromObject(data: {
-        fieldId?: number;
-    }): SetFieldResult {
+    static fromObject(data: { fieldId?: number }): SetFieldResult {
         const message = new SetFieldResult({});
         if (data.fieldId != null) {
             message.fieldId = data.fieldId;
@@ -163,21 +203,23 @@ export class SetFieldResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.fieldId != 0)
-            writer.writeUint64(1, this.fieldId);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.fieldId != 0) writer.writeUint64(1, this.fieldId);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SetFieldResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SetFieldResult();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new SetFieldResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.fieldId = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -191,12 +233,23 @@ export class SetFieldResult extends pb_1.Message {
 }
 export class GetField extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        fieldId?: number;
-        objectAddress?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  fieldId?: number;
+                  objectAddress?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("fieldId" in data && data.fieldId != undefined) {
                 this.fieldId = data.fieldId;
@@ -248,18 +301,18 @@ export class GetField extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.fieldId != 0)
-            writer.writeUint64(1, this.fieldId);
-        if (this.objectAddress != 0)
-            writer.writeUint64(2, this.objectAddress);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.fieldId != 0) writer.writeUint64(1, this.fieldId);
+        if (this.objectAddress != 0) writer.writeUint64(2, this.objectAddress);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetField {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetField();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetField();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.fieldId = reader.readUint64();
@@ -267,7 +320,8 @@ export class GetField extends pb_1.Message {
                 case 2:
                     message.objectAddress = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -281,12 +335,23 @@ export class GetField extends pb_1.Message {
 }
 export class GetFieldResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        fieldId?: number;
-        value?: dependency_1.ProtoDataPayload;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  fieldId?: number;
+                  value?: dependency_1.ProtoDataPayload;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("fieldId" in data && data.fieldId != undefined) {
                 this.fieldId = data.fieldId;
@@ -303,7 +368,11 @@ export class GetFieldResult extends pb_1.Message {
         pb_1.Message.setField(this, 1, value);
     }
     get value() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoDataPayload, 2) as dependency_1.ProtoDataPayload;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoDataPayload,
+            2
+        ) as dependency_1.ProtoDataPayload;
     }
     set value(value: dependency_1.ProtoDataPayload) {
         pb_1.Message.setWrapperField(this, 2, value);
@@ -313,21 +382,27 @@ export class GetFieldResult extends pb_1.Message {
     }
     static fromObject(data: {
         fieldId?: number;
-        value?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+        value?: ReturnType<
+            typeof dependency_1.ProtoDataPayload.prototype.toObject
+        >;
     }): GetFieldResult {
         const message = new GetFieldResult({});
         if (data.fieldId != null) {
             message.fieldId = data.fieldId;
         }
         if (data.value != null) {
-            message.value = dependency_1.ProtoDataPayload.fromObject(data.value);
+            message.value = dependency_1.ProtoDataPayload.fromObject(
+                data.value
+            );
         }
         return message;
     }
     toObject() {
         const data: {
             fieldId?: number;
-            value?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+            value?: ReturnType<
+                typeof dependency_1.ProtoDataPayload.prototype.toObject
+            >;
         } = {};
         if (this.fieldId != null) {
             data.fieldId = this.fieldId;
@@ -341,26 +416,37 @@ export class GetFieldResult extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.fieldId != 0)
-            writer.writeUint64(1, this.fieldId);
+        if (this.fieldId != 0) writer.writeUint64(1, this.fieldId);
         if (this.has_value)
-            writer.writeMessage(2, this.value, () => this.value.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(2, this.value, () =>
+                this.value.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetFieldResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetFieldResult();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetFieldResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.fieldId = reader.readUint64();
                     break;
                 case 2:
-                    reader.readMessage(message.value, () => message.value = dependency_1.ProtoDataPayload.deserialize(reader));
+                    reader.readMessage(
+                        message.value,
+                        () =>
+                            (message.value =
+                                dependency_1.ProtoDataPayload.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -374,13 +460,24 @@ export class GetFieldResult extends pb_1.Message {
 }
 export class InvokeMethod extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        methodId?: number;
-        objectAddress?: number;
-        args?: dependency_1.ProtoDataPayload[];
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  methodId?: number;
+                  objectAddress?: number;
+                  args?: dependency_1.ProtoDataPayload[];
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [3],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("methodId" in data && data.methodId != undefined) {
                 this.methodId = data.methodId;
@@ -406,7 +503,11 @@ export class InvokeMethod extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get args() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            dependency_1.ProtoDataPayload,
+            3
+        ) as dependency_1.ProtoDataPayload[];
     }
     set args(value: dependency_1.ProtoDataPayload[]) {
         pb_1.Message.setRepeatedWrapperField(this, 3, value);
@@ -414,7 +515,9 @@ export class InvokeMethod extends pb_1.Message {
     static fromObject(data: {
         methodId?: number;
         objectAddress?: number;
-        args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
+        args?: ReturnType<
+            typeof dependency_1.ProtoDataPayload.prototype.toObject
+        >[];
     }): InvokeMethod {
         const message = new InvokeMethod({});
         if (data.methodId != null) {
@@ -424,7 +527,9 @@ export class InvokeMethod extends pb_1.Message {
             message.objectAddress = data.objectAddress;
         }
         if (data.args != null) {
-            message.args = data.args.map(item => dependency_1.ProtoDataPayload.fromObject(item));
+            message.args = data.args.map((item) =>
+                dependency_1.ProtoDataPayload.fromObject(item)
+            );
         }
         return message;
     }
@@ -432,7 +537,9 @@ export class InvokeMethod extends pb_1.Message {
         const data: {
             methodId?: number;
             objectAddress?: number;
-            args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
+            args?: ReturnType<
+                typeof dependency_1.ProtoDataPayload.prototype.toObject
+            >[];
         } = {};
         if (this.methodId != null) {
             data.methodId = this.methodId;
@@ -441,7 +548,9 @@ export class InvokeMethod extends pb_1.Message {
             data.objectAddress = this.objectAddress;
         }
         if (this.args != null) {
-            data.args = this.args.map((item: dependency_1.ProtoDataPayload) => item.toObject());
+            data.args = this.args.map((item: dependency_1.ProtoDataPayload) =>
+                item.toObject()
+            );
         }
         return data;
     }
@@ -449,20 +558,24 @@ export class InvokeMethod extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.methodId != 0)
-            writer.writeUint64(1, this.methodId);
-        if (this.objectAddress != 0)
-            writer.writeUint64(2, this.objectAddress);
+        if (this.methodId != 0) writer.writeUint64(1, this.methodId);
+        if (this.objectAddress != 0) writer.writeUint64(2, this.objectAddress);
         if (this.args.length)
-            writer.writeRepeatedMessage(3, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeRepeatedMessage(
+                3,
+                this.args,
+                (item: dependency_1.ProtoDataPayload) => item.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): InvokeMethod {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new InvokeMethod();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new InvokeMethod();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.methodId = reader.readUint64();
@@ -471,9 +584,17 @@ export class InvokeMethod extends pb_1.Message {
                     message.objectAddress = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message.args, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_1.ProtoDataPayload.deserialize(reader), dependency_1.ProtoDataPayload));
+                    reader.readMessage(message.args, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            3,
+                            dependency_1.ProtoDataPayload.deserialize(reader),
+                            dependency_1.ProtoDataPayload
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -487,14 +608,25 @@ export class InvokeMethod extends pb_1.Message {
 }
 export class InvokeMethodResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        status?: InvokeMethodResult.Status;
-        methodId?: number;
-        result?: dependency_1.ProtoDataPayload;
-        error?: string;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  status?: InvokeMethodResult.Status;
+                  methodId?: number;
+                  result?: dependency_1.ProtoDataPayload;
+                  error?: string;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("status" in data && data.status != undefined) {
                 this.status = data.status;
@@ -511,7 +643,11 @@ export class InvokeMethodResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getFieldWithDefault(this, 1, InvokeMethodResult.Status.ERR) as InvokeMethodResult.Status;
+        return pb_1.Message.getFieldWithDefault(
+            this,
+            1,
+            InvokeMethodResult.Status.ERR
+        ) as InvokeMethodResult.Status;
     }
     set status(value: InvokeMethodResult.Status) {
         pb_1.Message.setField(this, 1, value);
@@ -523,7 +659,11 @@ export class InvokeMethodResult extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get result() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoDataPayload,
+            3
+        ) as dependency_1.ProtoDataPayload;
     }
     set result(value: dependency_1.ProtoDataPayload) {
         pb_1.Message.setWrapperField(this, 3, value);
@@ -540,7 +680,9 @@ export class InvokeMethodResult extends pb_1.Message {
     static fromObject(data: {
         status?: InvokeMethodResult.Status;
         methodId?: number;
-        result?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+        result?: ReturnType<
+            typeof dependency_1.ProtoDataPayload.prototype.toObject
+        >;
         error?: string;
     }): InvokeMethodResult {
         const message = new InvokeMethodResult({});
@@ -551,7 +693,9 @@ export class InvokeMethodResult extends pb_1.Message {
             message.methodId = data.methodId;
         }
         if (data.result != null) {
-            message.result = dependency_1.ProtoDataPayload.fromObject(data.result);
+            message.result = dependency_1.ProtoDataPayload.fromObject(
+                data.result
+            );
         }
         if (data.error != null) {
             message.error = data.error;
@@ -562,7 +706,9 @@ export class InvokeMethodResult extends pb_1.Message {
         const data: {
             status?: InvokeMethodResult.Status;
             methodId?: number;
-            result?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+            result?: ReturnType<
+                typeof dependency_1.ProtoDataPayload.prototype.toObject
+            >;
             error?: string;
         } = {};
         if (this.status != null) {
@@ -585,20 +731,24 @@ export class InvokeMethodResult extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.status != InvokeMethodResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.methodId != 0)
-            writer.writeUint64(2, this.methodId);
+        if (this.methodId != 0) writer.writeUint64(2, this.methodId);
         if (this.has_result)
-            writer.writeMessage(3, this.result, () => this.result.serialize(writer));
-        if (this.error.length)
-            writer.writeString(4, this.error);
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(3, this.result, () =>
+                this.result.serialize(writer)
+            );
+        if (this.error.length) writer.writeString(4, this.error);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): InvokeMethodResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new InvokeMethodResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): InvokeMethodResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new InvokeMethodResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.status = reader.readEnum();
@@ -607,12 +757,20 @@ export class InvokeMethodResult extends pb_1.Message {
                     message.methodId = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message.result, () => message.result = dependency_1.ProtoDataPayload.deserialize(reader));
+                    reader.readMessage(
+                        message.result,
+                        () =>
+                            (message.result =
+                                dependency_1.ProtoDataPayload.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
                 case 4:
                     message.error = reader.readString();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -627,17 +785,28 @@ export class InvokeMethodResult extends pb_1.Message {
 export namespace InvokeMethodResult {
     export enum Status {
         ERR = 0,
-        OK = 1
+        OK = 1,
     }
 }
 export class SearchObjects extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        componentClass?: dependency_1.ProtoClassInfo;
-        name?: string;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  componentClass?: dependency_1.ProtoClassInfo;
+                  name?: string;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("componentClass" in data && data.componentClass != undefined) {
                 this.componentClass = data.componentClass;
@@ -648,7 +817,11 @@ export class SearchObjects extends pb_1.Message {
         }
     }
     get componentClass() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 1) as dependency_1.ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassInfo,
+            1
+        ) as dependency_1.ProtoClassInfo;
     }
     set componentClass(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
@@ -663,12 +836,16 @@ export class SearchObjects extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     static fromObject(data: {
-        componentClass?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+        componentClass?: ReturnType<
+            typeof dependency_1.ProtoClassInfo.prototype.toObject
+        >;
         name?: string;
     }): SearchObjects {
         const message = new SearchObjects({});
         if (data.componentClass != null) {
-            message.componentClass = dependency_1.ProtoClassInfo.fromObject(data.componentClass);
+            message.componentClass = dependency_1.ProtoClassInfo.fromObject(
+                data.componentClass
+            );
         }
         if (data.name != null) {
             message.name = data.name;
@@ -677,7 +854,9 @@ export class SearchObjects extends pb_1.Message {
     }
     toObject() {
         const data: {
-            componentClass?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+            componentClass?: ReturnType<
+                typeof dependency_1.ProtoClassInfo.prototype.toObject
+            >;
             name?: string;
         } = {};
         if (this.componentClass != null) {
@@ -693,25 +872,34 @@ export class SearchObjects extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.has_componentClass)
-            writer.writeMessage(1, this.componentClass, () => this.componentClass.serialize(writer));
-        if (this.name.length)
-            writer.writeString(2, this.name);
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(1, this.componentClass, () =>
+                this.componentClass.serialize(writer)
+            );
+        if (this.name.length) writer.writeString(2, this.name);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchObjects {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchObjects();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new SearchObjects();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.componentClass, () => message.componentClass = dependency_1.ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.componentClass,
+                        () =>
+                            (message.componentClass =
+                                dependency_1.ProtoClassInfo.deserialize(reader))
+                    );
                     break;
                 case 2:
                     message.name = reader.readString();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -725,11 +913,22 @@ export class SearchObjects extends pb_1.Message {
 }
 export class SearchObjectsResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        objects?: dependency_2.ProtoObject[];
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  objects?: dependency_2.ProtoObject[];
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [1],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("objects" in data && data.objects != undefined) {
                 this.objects = data.objects;
@@ -737,26 +936,38 @@ export class SearchObjectsResult extends pb_1.Message {
         }
     }
     get objects() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.ProtoObject, 1) as dependency_2.ProtoObject[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            dependency_2.ProtoObject,
+            1
+        ) as dependency_2.ProtoObject[];
     }
     set objects(value: dependency_2.ProtoObject[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        objects?: ReturnType<typeof dependency_2.ProtoObject.prototype.toObject>[];
+        objects?: ReturnType<
+            typeof dependency_2.ProtoObject.prototype.toObject
+        >[];
     }): SearchObjectsResult {
         const message = new SearchObjectsResult({});
         if (data.objects != null) {
-            message.objects = data.objects.map(item => dependency_2.ProtoObject.fromObject(item));
+            message.objects = data.objects.map((item) =>
+                dependency_2.ProtoObject.fromObject(item)
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            objects?: ReturnType<typeof dependency_2.ProtoObject.prototype.toObject>[];
+            objects?: ReturnType<
+                typeof dependency_2.ProtoObject.prototype.toObject
+            >[];
         } = {};
         if (this.objects != null) {
-            data.objects = this.objects.map((item: dependency_2.ProtoObject) => item.toObject());
+            data.objects = this.objects.map((item: dependency_2.ProtoObject) =>
+                item.toObject()
+            );
         }
         return data;
     }
@@ -765,20 +976,36 @@ export class SearchObjectsResult extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.objects.length)
-            writer.writeRepeatedMessage(1, this.objects, (item: dependency_2.ProtoObject) => item.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeRepeatedMessage(
+                1,
+                this.objects,
+                (item: dependency_2.ProtoObject) => item.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SearchObjectsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SearchObjectsResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): SearchObjectsResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new SearchObjectsResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.objects, () => pb_1.Message.addToRepeatedWrapperField(message, 1, dependency_2.ProtoObject.deserialize(reader), dependency_2.ProtoObject));
+                    reader.readMessage(message.objects, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            1,
+                            dependency_2.ProtoObject.deserialize(reader),
+                            dependency_2.ProtoObject
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -794,8 +1021,16 @@ export class GetAllGameObjects extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {}) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-        if (!Array.isArray(data) && typeof data == "object") { }
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
+        if (!Array.isArray(data) && typeof data == "object") {
+        }
     }
     static fromObject(data: {}): GetAllGameObjects {
         const message = new GetAllGameObjects({});
@@ -809,16 +1044,21 @@ export class GetAllGameObjects extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (!w)
-            return writer.getResultBuffer();
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetAllGameObjects {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetAllGameObjects();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetAllGameObjects {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetAllGameObjects();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -832,11 +1072,22 @@ export class GetAllGameObjects extends pb_1.Message {
 }
 export class GetAllGameObjectsResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        objects?: dependency_2.ProtoGameObject[];
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  objects?: dependency_2.ProtoGameObject[];
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [1],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("objects" in data && data.objects != undefined) {
                 this.objects = data.objects;
@@ -844,26 +1095,38 @@ export class GetAllGameObjectsResult extends pb_1.Message {
         }
     }
     get objects() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.ProtoGameObject, 1) as dependency_2.ProtoGameObject[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            dependency_2.ProtoGameObject,
+            1
+        ) as dependency_2.ProtoGameObject[];
     }
     set objects(value: dependency_2.ProtoGameObject[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        objects?: ReturnType<typeof dependency_2.ProtoGameObject.prototype.toObject>[];
+        objects?: ReturnType<
+            typeof dependency_2.ProtoGameObject.prototype.toObject
+        >[];
     }): GetAllGameObjectsResult {
         const message = new GetAllGameObjectsResult({});
         if (data.objects != null) {
-            message.objects = data.objects.map(item => dependency_2.ProtoGameObject.fromObject(item));
+            message.objects = data.objects.map((item) =>
+                dependency_2.ProtoGameObject.fromObject(item)
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            objects?: ReturnType<typeof dependency_2.ProtoGameObject.prototype.toObject>[];
+            objects?: ReturnType<
+                typeof dependency_2.ProtoGameObject.prototype.toObject
+            >[];
         } = {};
         if (this.objects != null) {
-            data.objects = this.objects.map((item: dependency_2.ProtoGameObject) => item.toObject());
+            data.objects = this.objects.map(
+                (item: dependency_2.ProtoGameObject) => item.toObject()
+            );
         }
         return data;
     }
@@ -872,20 +1135,36 @@ export class GetAllGameObjectsResult extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.objects.length)
-            writer.writeRepeatedMessage(1, this.objects, (item: dependency_2.ProtoGameObject) => item.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeRepeatedMessage(
+                1,
+                this.objects,
+                (item: dependency_2.ProtoGameObject) => item.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetAllGameObjectsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetAllGameObjectsResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetAllGameObjectsResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetAllGameObjectsResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.objects, () => pb_1.Message.addToRepeatedWrapperField(message, 1, dependency_2.ProtoGameObject.deserialize(reader), dependency_2.ProtoGameObject));
+                    reader.readMessage(message.objects, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            1,
+                            dependency_2.ProtoGameObject.deserialize(reader),
+                            dependency_2.ProtoGameObject
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -899,11 +1178,22 @@ export class GetAllGameObjectsResult extends pb_1.Message {
 }
 export class GetGameObjectComponents extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -916,9 +1206,7 @@ export class GetGameObjectComponents extends pb_1.Message {
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
-    static fromObject(data: {
-        address?: number;
-    }): GetGameObjectComponents {
+    static fromObject(data: { address?: number }): GetGameObjectComponents {
         const message = new GetGameObjectComponents({});
         if (data.address != null) {
             message.address = data.address;
@@ -938,21 +1226,25 @@ export class GetGameObjectComponents extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetGameObjectComponents {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetGameObjectComponents();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetGameObjectComponents {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetGameObjectComponents();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -966,11 +1258,22 @@ export class GetGameObjectComponents extends pb_1.Message {
 }
 export class GetGameObjectComponentsResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        components?: dependency_2.ProtoComponent[];
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  components?: dependency_2.ProtoComponent[];
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [1],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("components" in data && data.components != undefined) {
                 this.components = data.components;
@@ -978,26 +1281,38 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
         }
     }
     get components() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_2.ProtoComponent, 1) as dependency_2.ProtoComponent[];
+        return pb_1.Message.getRepeatedWrapperField(
+            this,
+            dependency_2.ProtoComponent,
+            1
+        ) as dependency_2.ProtoComponent[];
     }
     set components(value: dependency_2.ProtoComponent[]) {
         pb_1.Message.setRepeatedWrapperField(this, 1, value);
     }
     static fromObject(data: {
-        components?: ReturnType<typeof dependency_2.ProtoComponent.prototype.toObject>[];
+        components?: ReturnType<
+            typeof dependency_2.ProtoComponent.prototype.toObject
+        >[];
     }): GetGameObjectComponentsResult {
         const message = new GetGameObjectComponentsResult({});
         if (data.components != null) {
-            message.components = data.components.map(item => dependency_2.ProtoComponent.fromObject(item));
+            message.components = data.components.map((item) =>
+                dependency_2.ProtoComponent.fromObject(item)
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            components?: ReturnType<typeof dependency_2.ProtoComponent.prototype.toObject>[];
+            components?: ReturnType<
+                typeof dependency_2.ProtoComponent.prototype.toObject
+            >[];
         } = {};
         if (this.components != null) {
-            data.components = this.components.map((item: dependency_2.ProtoComponent) => item.toObject());
+            data.components = this.components.map(
+                (item: dependency_2.ProtoComponent) => item.toObject()
+            );
         }
         return data;
     }
@@ -1006,20 +1321,36 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.components.length)
-            writer.writeRepeatedMessage(1, this.components, (item: dependency_2.ProtoComponent) => item.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeRepeatedMessage(
+                1,
+                this.components,
+                (item: dependency_2.ProtoComponent) => item.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetGameObjectComponentsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetGameObjectComponentsResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetGameObjectComponentsResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetGameObjectComponentsResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.components, () => pb_1.Message.addToRepeatedWrapperField(message, 1, dependency_2.ProtoComponent.deserialize(reader), dependency_2.ProtoComponent));
+                    reader.readMessage(message.components, () =>
+                        pb_1.Message.addToRepeatedWrapperField(
+                            message,
+                            1,
+                            dependency_2.ProtoComponent.deserialize(reader),
+                            dependency_2.ProtoComponent
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1033,12 +1364,23 @@ export class GetGameObjectComponentsResult extends pb_1.Message {
 }
 export class ReadMemory extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        size?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  size?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -1060,10 +1402,7 @@ export class ReadMemory extends pb_1.Message {
     set size(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
-    static fromObject(data: {
-        address?: number;
-        size?: number;
-    }): ReadMemory {
+    static fromObject(data: { address?: number; size?: number }): ReadMemory {
         const message = new ReadMemory({});
         if (data.address != null) {
             message.address = data.address;
@@ -1090,18 +1429,18 @@ export class ReadMemory extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.size != 0)
-            writer.writeUint64(2, this.size);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.size != 0) writer.writeUint64(2, this.size);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ReadMemory {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ReadMemory();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ReadMemory();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -1109,7 +1448,8 @@ export class ReadMemory extends pb_1.Message {
                 case 2:
                     message.size = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1123,13 +1463,24 @@ export class ReadMemory extends pb_1.Message {
 }
 export class ReadMemoryResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        status?: ReadMemoryResult.Status;
-        address?: number;
-        data?: Uint8Array;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  status?: ReadMemoryResult.Status;
+                  address?: number;
+                  data?: Uint8Array;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("status" in data && data.status != undefined) {
                 this.status = data.status;
@@ -1143,7 +1494,11 @@ export class ReadMemoryResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getFieldWithDefault(this, 1, ReadMemoryResult.Status.ERR) as ReadMemoryResult.Status;
+        return pb_1.Message.getFieldWithDefault(
+            this,
+            1,
+            ReadMemoryResult.Status.ERR
+        ) as ReadMemoryResult.Status;
     }
     set status(value: ReadMemoryResult.Status) {
         pb_1.Message.setField(this, 1, value);
@@ -1155,7 +1510,11 @@ export class ReadMemoryResult extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get data() {
-        return pb_1.Message.getFieldWithDefault(this, 3, new Uint8Array(0)) as Uint8Array;
+        return pb_1.Message.getFieldWithDefault(
+            this,
+            3,
+            new Uint8Array(0)
+        ) as Uint8Array;
     }
     set data(value: Uint8Array) {
         pb_1.Message.setField(this, 3, value);
@@ -1200,18 +1559,20 @@ export class ReadMemoryResult extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.status != ReadMemoryResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.address != 0)
-            writer.writeUint64(2, this.address);
-        if (this.data.length)
-            writer.writeBytes(3, this.data);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(2, this.address);
+        if (this.data.length) writer.writeBytes(3, this.data);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ReadMemoryResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ReadMemoryResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): ReadMemoryResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new ReadMemoryResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.status = reader.readEnum();
@@ -1222,7 +1583,8 @@ export class ReadMemoryResult extends pb_1.Message {
                 case 3:
                     message.data = reader.readBytes();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1237,17 +1599,28 @@ export class ReadMemoryResult extends pb_1.Message {
 export namespace ReadMemoryResult {
     export enum Status {
         ERR = 0,
-        OK = 1
+        OK = 1,
     }
 }
 export class WriteMemory extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-        data?: Uint8Array;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+                  data?: Uint8Array;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -1264,7 +1637,11 @@ export class WriteMemory extends pb_1.Message {
         pb_1.Message.setField(this, 1, value);
     }
     get data() {
-        return pb_1.Message.getFieldWithDefault(this, 2, new Uint8Array(0)) as Uint8Array;
+        return pb_1.Message.getFieldWithDefault(
+            this,
+            2,
+            new Uint8Array(0)
+        ) as Uint8Array;
     }
     set data(value: Uint8Array) {
         pb_1.Message.setField(this, 2, value);
@@ -1299,18 +1676,18 @@ export class WriteMemory extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (this.data.length)
-            writer.writeBytes(2, this.data);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (this.data.length) writer.writeBytes(2, this.data);
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): WriteMemory {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new WriteMemory();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new WriteMemory();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
@@ -1318,7 +1695,8 @@ export class WriteMemory extends pb_1.Message {
                 case 2:
                     message.data = reader.readBytes();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1332,13 +1710,24 @@ export class WriteMemory extends pb_1.Message {
 }
 export class WriteMemoryResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        status?: WriteMemoryResult.Status;
-        address?: number;
-        size?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  status?: WriteMemoryResult.Status;
+                  address?: number;
+                  size?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("status" in data && data.status != undefined) {
                 this.status = data.status;
@@ -1352,7 +1741,11 @@ export class WriteMemoryResult extends pb_1.Message {
         }
     }
     get status() {
-        return pb_1.Message.getFieldWithDefault(this, 1, WriteMemoryResult.Status.ERR) as WriteMemoryResult.Status;
+        return pb_1.Message.getFieldWithDefault(
+            this,
+            1,
+            WriteMemoryResult.Status.ERR
+        ) as WriteMemoryResult.Status;
     }
     set status(value: WriteMemoryResult.Status) {
         pb_1.Message.setField(this, 1, value);
@@ -1409,18 +1802,20 @@ export class WriteMemoryResult extends pb_1.Message {
         const writer = w || new pb_1.BinaryWriter();
         if (this.status != WriteMemoryResult.Status.ERR)
             writer.writeEnum(1, this.status);
-        if (this.address != 0)
-            writer.writeUint64(2, this.address);
-        if (this.size != 0)
-            writer.writeUint64(3, this.size);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(2, this.address);
+        if (this.size != 0) writer.writeUint64(3, this.size);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): WriteMemoryResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new WriteMemoryResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): WriteMemoryResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new WriteMemoryResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.status = reader.readEnum();
@@ -1431,7 +1826,8 @@ export class WriteMemoryResult extends pb_1.Message {
                 case 3:
                     message.size = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1446,16 +1842,27 @@ export class WriteMemoryResult extends pb_1.Message {
 export namespace WriteMemoryResult {
     export enum Status {
         ERR = 0,
-        OK = 1
+        OK = 1,
     }
 }
 export class GetClassDetails extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        classInfo?: dependency_1.ProtoClassInfo;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  classInfo?: dependency_1.ProtoClassInfo;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("classInfo" in data && data.classInfo != undefined) {
                 this.classInfo = data.classInfo;
@@ -1463,7 +1870,11 @@ export class GetClassDetails extends pb_1.Message {
         }
     }
     get classInfo() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassInfo, 1) as dependency_1.ProtoClassInfo;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassInfo,
+            1
+        ) as dependency_1.ProtoClassInfo;
     }
     set classInfo(value: dependency_1.ProtoClassInfo) {
         pb_1.Message.setWrapperField(this, 1, value);
@@ -1472,17 +1883,23 @@ export class GetClassDetails extends pb_1.Message {
         return pb_1.Message.getField(this, 1) != null;
     }
     static fromObject(data: {
-        classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+        classInfo?: ReturnType<
+            typeof dependency_1.ProtoClassInfo.prototype.toObject
+        >;
     }): GetClassDetails {
         const message = new GetClassDetails({});
         if (data.classInfo != null) {
-            message.classInfo = dependency_1.ProtoClassInfo.fromObject(data.classInfo);
+            message.classInfo = dependency_1.ProtoClassInfo.fromObject(
+                data.classInfo
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            classInfo?: ReturnType<typeof dependency_1.ProtoClassInfo.prototype.toObject>;
+            classInfo?: ReturnType<
+                typeof dependency_1.ProtoClassInfo.prototype.toObject
+            >;
         } = {};
         if (this.classInfo != null) {
             data.classInfo = this.classInfo.toObject();
@@ -1494,20 +1911,30 @@ export class GetClassDetails extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.has_classInfo)
-            writer.writeMessage(1, this.classInfo, () => this.classInfo.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(1, this.classInfo, () =>
+                this.classInfo.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetClassDetails {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetClassDetails();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetClassDetails();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.classInfo, () => message.classInfo = dependency_1.ProtoClassInfo.deserialize(reader));
+                    reader.readMessage(
+                        message.classInfo,
+                        () =>
+                            (message.classInfo =
+                                dependency_1.ProtoClassInfo.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1521,11 +1948,22 @@ export class GetClassDetails extends pb_1.Message {
 }
 export class GetClassDetailsResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        classDetails?: dependency_1.ProtoClassDetails;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  classDetails?: dependency_1.ProtoClassDetails;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("classDetails" in data && data.classDetails != undefined) {
                 this.classDetails = data.classDetails;
@@ -1533,7 +1971,11 @@ export class GetClassDetailsResult extends pb_1.Message {
         }
     }
     get classDetails() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassDetails, 1) as dependency_1.ProtoClassDetails;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassDetails,
+            1
+        ) as dependency_1.ProtoClassDetails;
     }
     set classDetails(value: dependency_1.ProtoClassDetails) {
         pb_1.Message.setWrapperField(this, 1, value);
@@ -1542,17 +1984,23 @@ export class GetClassDetailsResult extends pb_1.Message {
         return pb_1.Message.getField(this, 1) != null;
     }
     static fromObject(data: {
-        classDetails?: ReturnType<typeof dependency_1.ProtoClassDetails.prototype.toObject>;
+        classDetails?: ReturnType<
+            typeof dependency_1.ProtoClassDetails.prototype.toObject
+        >;
     }): GetClassDetailsResult {
         const message = new GetClassDetailsResult({});
         if (data.classDetails != null) {
-            message.classDetails = dependency_1.ProtoClassDetails.fromObject(data.classDetails);
+            message.classDetails = dependency_1.ProtoClassDetails.fromObject(
+                data.classDetails
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            classDetails?: ReturnType<typeof dependency_1.ProtoClassDetails.prototype.toObject>;
+            classDetails?: ReturnType<
+                typeof dependency_1.ProtoClassDetails.prototype.toObject
+            >;
         } = {};
         if (this.classDetails != null) {
             data.classDetails = this.classDetails.toObject();
@@ -1564,20 +2012,34 @@ export class GetClassDetailsResult extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.has_classDetails)
-            writer.writeMessage(1, this.classDetails, () => this.classDetails.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(1, this.classDetails, () =>
+                this.classDetails.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetClassDetailsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetClassDetailsResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetClassDetailsResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetClassDetailsResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.classDetails, () => message.classDetails = dependency_1.ProtoClassDetails.deserialize(reader));
+                    reader.readMessage(
+                        message.classDetails,
+                        () =>
+                            (message.classDetails =
+                                dependency_1.ProtoClassDetails.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1591,11 +2053,22 @@ export class GetClassDetailsResult extends pb_1.Message {
 }
 export class GetInstanceDetails extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        address?: number;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  address?: number;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("address" in data && data.address != undefined) {
                 this.address = data.address;
@@ -1608,9 +2081,7 @@ export class GetInstanceDetails extends pb_1.Message {
     set address(value: number) {
         pb_1.Message.setField(this, 1, value);
     }
-    static fromObject(data: {
-        address?: number;
-    }): GetInstanceDetails {
+    static fromObject(data: { address?: number }): GetInstanceDetails {
         const message = new GetInstanceDetails({});
         if (data.address != null) {
             message.address = data.address;
@@ -1630,21 +2101,25 @@ export class GetInstanceDetails extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.address != 0)
-            writer.writeUint64(1, this.address);
-        if (!w)
-            return writer.getResultBuffer();
+        if (this.address != 0) writer.writeUint64(1, this.address);
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetInstanceDetails {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetInstanceDetails();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetInstanceDetails {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetInstanceDetails();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.address = reader.readUint64();
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1658,13 +2133,24 @@ export class GetInstanceDetails extends pb_1.Message {
 }
 export class GetInstanceDetailsResult extends pb_1.Message {
     #one_of_decls: number[][] = [];
-    constructor(data?: any[] | {
-        classDetails?: dependency_1.ProtoClassDetails;
-        fieldValues?: Map<number, Uint8Array>;
-        propertyValues?: Map<number, Uint8Array>;
-    }) {
+    constructor(
+        data?:
+            | any[]
+            | {
+                  classDetails?: dependency_1.ProtoClassDetails;
+                  fieldValues?: Map<number, Uint8Array>;
+                  propertyValues?: Map<number, Uint8Array>;
+              }
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("classDetails" in data && data.classDetails != undefined) {
                 this.classDetails = data.classDetails;
@@ -1676,13 +2162,15 @@ export class GetInstanceDetailsResult extends pb_1.Message {
                 this.propertyValues = data.propertyValues;
             }
         }
-        if (!this.fieldValues)
-            this.fieldValues = new Map();
-        if (!this.propertyValues)
-            this.propertyValues = new Map();
+        if (!this.fieldValues) this.fieldValues = new Map();
+        if (!this.propertyValues) this.propertyValues = new Map();
     }
     get classDetails() {
-        return pb_1.Message.getWrapperField(this, dependency_1.ProtoClassDetails, 1) as dependency_1.ProtoClassDetails;
+        return pb_1.Message.getWrapperField(
+            this,
+            dependency_1.ProtoClassDetails,
+            1
+        ) as dependency_1.ProtoClassDetails;
     }
     set classDetails(value: dependency_1.ProtoClassDetails) {
         pb_1.Message.setWrapperField(this, 1, value);
@@ -1703,7 +2191,9 @@ export class GetInstanceDetailsResult extends pb_1.Message {
         pb_1.Message.setField(this, 4, value as any);
     }
     static fromObject(data: {
-        classDetails?: ReturnType<typeof dependency_1.ProtoClassDetails.prototype.toObject>;
+        classDetails?: ReturnType<
+            typeof dependency_1.ProtoClassDetails.prototype.toObject
+        >;
         fieldValues?: {
             [key: number]: Uint8Array;
         };
@@ -1713,19 +2203,33 @@ export class GetInstanceDetailsResult extends pb_1.Message {
     }): GetInstanceDetailsResult {
         const message = new GetInstanceDetailsResult({});
         if (data.classDetails != null) {
-            message.classDetails = dependency_1.ProtoClassDetails.fromObject(data.classDetails);
+            message.classDetails = dependency_1.ProtoClassDetails.fromObject(
+                data.classDetails
+            );
         }
         if (typeof data.fieldValues == "object") {
-            message.fieldValues = new Map(Object.entries(data.fieldValues).map(([key, value]) => [Number(key), value]));
+            message.fieldValues = new Map(
+                Object.entries(data.fieldValues).map(([key, value]) => [
+                    Number(key),
+                    value,
+                ])
+            );
         }
         if (typeof data.propertyValues == "object") {
-            message.propertyValues = new Map(Object.entries(data.propertyValues).map(([key, value]) => [Number(key), value]));
+            message.propertyValues = new Map(
+                Object.entries(data.propertyValues).map(([key, value]) => [
+                    Number(key),
+                    value,
+                ])
+            );
         }
         return message;
     }
     toObject() {
         const data: {
-            classDetails?: ReturnType<typeof dependency_1.ProtoClassDetails.prototype.toObject>;
+            classDetails?: ReturnType<
+                typeof dependency_1.ProtoClassDetails.prototype.toObject
+            >;
             fieldValues?: {
                 [key: number]: Uint8Array;
             };
@@ -1737,10 +2241,10 @@ export class GetInstanceDetailsResult extends pb_1.Message {
             data.classDetails = this.classDetails.toObject();
         }
         if (this.fieldValues != null) {
-            data.fieldValues = (Object.fromEntries)(this.fieldValues);
+            data.fieldValues = Object.fromEntries(this.fieldValues);
         }
         if (this.propertyValues != null) {
-            data.propertyValues = (Object.fromEntries)(this.propertyValues);
+            data.propertyValues = Object.fromEntries(this.propertyValues);
         }
         return data;
     }
@@ -1749,7 +2253,9 @@ export class GetInstanceDetailsResult extends pb_1.Message {
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
         if (this.has_classDetails)
-            writer.writeMessage(1, this.classDetails, () => this.classDetails.serialize(writer));
+            writer.writeMessage(1, this.classDetails, () =>
+                this.classDetails.serialize(writer)
+            );
         for (const [key, value] of this.fieldValues) {
             writer.writeMessage(3, this.fieldValues, () => {
                 writer.writeUint64(1, key);
@@ -1762,25 +2268,51 @@ export class GetInstanceDetailsResult extends pb_1.Message {
                 writer.writeBytes(2, value);
             });
         }
-        if (!w)
-            return writer.getResultBuffer();
+        if (!w) return writer.getResultBuffer();
     }
-    static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetInstanceDetailsResult {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetInstanceDetailsResult();
+    static deserialize(
+        bytes: Uint8Array | pb_1.BinaryReader
+    ): GetInstanceDetailsResult {
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new GetInstanceDetailsResult();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
-                    reader.readMessage(message.classDetails, () => message.classDetails = dependency_1.ProtoClassDetails.deserialize(reader));
+                    reader.readMessage(
+                        message.classDetails,
+                        () =>
+                            (message.classDetails =
+                                dependency_1.ProtoClassDetails.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
                 case 3:
-                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.fieldValues as any, reader, reader.readUint64, reader.readBytes));
+                    reader.readMessage(message, () =>
+                        pb_1.Map.deserializeBinary(
+                            message.fieldValues as any,
+                            reader,
+                            reader.readUint64,
+                            reader.readBytes
+                        )
+                    );
                     break;
                 case 4:
-                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.propertyValues as any, reader, reader.readUint64, reader.readBytes));
+                    reader.readMessage(message, () =>
+                        pb_1.Map.deserializeBinary(
+                            message.propertyValues as any,
+                            reader,
+                            reader.readUint64,
+                            reader.readBytes
+                        )
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;
@@ -1793,432 +2325,469 @@ export class GetInstanceDetailsResult extends pb_1.Message {
     }
 }
 export class PacketWrapper extends pb_1.Message {
-    #one_of_decls: number[][] = [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]];
-    constructor(data?: any[] | ({
-        queryResultId?: number;
-    } & (({
-        setField?: SetField;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: SetFieldResult;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: GetField;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: GetFieldResult;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: InvokeMethod;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: InvokeMethodResult;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: SearchObjects;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: SearchObjectsResult;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: GetAllGameObjects;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: GetAllGameObjectsResult;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: GetGameObjectComponents;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: GetGameObjectComponentsResult;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: ReadMemory;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: ReadMemoryResult;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: WriteMemory;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: WriteMemoryResult;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: GetClassDetails;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: GetClassDetailsResult;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: GetInstanceDetails;
-        getInstanceDetailsResult?: never;
-    } | {
-        setField?: never;
-        setFieldResult?: never;
-        getField?: never;
-        getFieldResult?: never;
-        invokeMethod?: never;
-        invokeMethodResult?: never;
-        searchObjects?: never;
-        searchObjectsResult?: never;
-        getAllGameObjects?: never;
-        getAllGameObjectsResult?: never;
-        getGameObjectComponents?: never;
-        getGameObjectComponentsResult?: never;
-        readMemory?: never;
-        readMemoryResult?: never;
-        writeMemory?: never;
-        writeMemoryResult?: never;
-        getClassDetails?: never;
-        getClassDetailsResult?: never;
-        getInstanceDetails?: never;
-        getInstanceDetailsResult?: GetInstanceDetailsResult;
-    })))) {
+    #one_of_decls: number[][] = [
+        [
+            2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            21,
+        ],
+    ];
+    constructor(
+        data?:
+            | any[]
+            | ({
+                  queryResultId?: number;
+              } & (
+                  | {
+                        setField?: SetField;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: SetFieldResult;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: GetField;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: GetFieldResult;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: InvokeMethod;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: InvokeMethodResult;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: SearchObjects;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: SearchObjectsResult;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: GetAllGameObjects;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: GetAllGameObjectsResult;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: GetGameObjectComponents;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: GetGameObjectComponentsResult;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: ReadMemory;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: ReadMemoryResult;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: WriteMemory;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: WriteMemoryResult;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: GetClassDetails;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: GetClassDetailsResult;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: GetInstanceDetails;
+                        getInstanceDetailsResult?: never;
+                    }
+                  | {
+                        setField?: never;
+                        setFieldResult?: never;
+                        getField?: never;
+                        getFieldResult?: never;
+                        invokeMethod?: never;
+                        invokeMethodResult?: never;
+                        searchObjects?: never;
+                        searchObjectsResult?: never;
+                        getAllGameObjects?: never;
+                        getAllGameObjectsResult?: never;
+                        getGameObjectComponents?: never;
+                        getGameObjectComponentsResult?: never;
+                        readMemory?: never;
+                        readMemoryResult?: never;
+                        writeMemory?: never;
+                        writeMemoryResult?: never;
+                        getClassDetails?: never;
+                        getClassDetailsResult?: never;
+                        getInstanceDetails?: never;
+                        getInstanceDetailsResult?: GetInstanceDetailsResult;
+                    }
+              ))
+    ) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+        pb_1.Message.initialize(
+            this,
+            Array.isArray(data) ? data : [],
+            0,
+            -1,
+            [],
+            this.#one_of_decls
+        );
         if (!Array.isArray(data) && typeof data == "object") {
             if ("queryResultId" in data && data.queryResultId != undefined) {
                 this.queryResultId = data.queryResultId;
@@ -2238,49 +2807,86 @@ export class PacketWrapper extends pb_1.Message {
             if ("invokeMethod" in data && data.invokeMethod != undefined) {
                 this.invokeMethod = data.invokeMethod;
             }
-            if ("invokeMethodResult" in data && data.invokeMethodResult != undefined) {
+            if (
+                "invokeMethodResult" in data &&
+                data.invokeMethodResult != undefined
+            ) {
                 this.invokeMethodResult = data.invokeMethodResult;
             }
             if ("searchObjects" in data && data.searchObjects != undefined) {
                 this.searchObjects = data.searchObjects;
             }
-            if ("searchObjectsResult" in data && data.searchObjectsResult != undefined) {
+            if (
+                "searchObjectsResult" in data &&
+                data.searchObjectsResult != undefined
+            ) {
                 this.searchObjectsResult = data.searchObjectsResult;
             }
-            if ("getAllGameObjects" in data && data.getAllGameObjects != undefined) {
+            if (
+                "getAllGameObjects" in data &&
+                data.getAllGameObjects != undefined
+            ) {
                 this.getAllGameObjects = data.getAllGameObjects;
             }
-            if ("getAllGameObjectsResult" in data && data.getAllGameObjectsResult != undefined) {
+            if (
+                "getAllGameObjectsResult" in data &&
+                data.getAllGameObjectsResult != undefined
+            ) {
                 this.getAllGameObjectsResult = data.getAllGameObjectsResult;
             }
-            if ("getGameObjectComponents" in data && data.getGameObjectComponents != undefined) {
+            if (
+                "getGameObjectComponents" in data &&
+                data.getGameObjectComponents != undefined
+            ) {
                 this.getGameObjectComponents = data.getGameObjectComponents;
             }
-            if ("getGameObjectComponentsResult" in data && data.getGameObjectComponentsResult != undefined) {
-                this.getGameObjectComponentsResult = data.getGameObjectComponentsResult;
+            if (
+                "getGameObjectComponentsResult" in data &&
+                data.getGameObjectComponentsResult != undefined
+            ) {
+                this.getGameObjectComponentsResult =
+                    data.getGameObjectComponentsResult;
             }
             if ("readMemory" in data && data.readMemory != undefined) {
                 this.readMemory = data.readMemory;
             }
-            if ("readMemoryResult" in data && data.readMemoryResult != undefined) {
+            if (
+                "readMemoryResult" in data &&
+                data.readMemoryResult != undefined
+            ) {
                 this.readMemoryResult = data.readMemoryResult;
             }
             if ("writeMemory" in data && data.writeMemory != undefined) {
                 this.writeMemory = data.writeMemory;
             }
-            if ("writeMemoryResult" in data && data.writeMemoryResult != undefined) {
+            if (
+                "writeMemoryResult" in data &&
+                data.writeMemoryResult != undefined
+            ) {
                 this.writeMemoryResult = data.writeMemoryResult;
             }
-            if ("getClassDetails" in data && data.getClassDetails != undefined) {
+            if (
+                "getClassDetails" in data &&
+                data.getClassDetails != undefined
+            ) {
                 this.getClassDetails = data.getClassDetails;
             }
-            if ("getClassDetailsResult" in data && data.getClassDetailsResult != undefined) {
+            if (
+                "getClassDetailsResult" in data &&
+                data.getClassDetailsResult != undefined
+            ) {
                 this.getClassDetailsResult = data.getClassDetailsResult;
             }
-            if ("getInstanceDetails" in data && data.getInstanceDetails != undefined) {
+            if (
+                "getInstanceDetails" in data &&
+                data.getInstanceDetails != undefined
+            ) {
                 this.getInstanceDetails = data.getInstanceDetails;
             }
-            if ("getInstanceDetailsResult" in data && data.getInstanceDetailsResult != undefined) {
+            if (
+                "getInstanceDetailsResult" in data &&
+                data.getInstanceDetailsResult != undefined
+            ) {
                 this.getInstanceDetailsResult = data.getInstanceDetailsResult;
             }
         }
@@ -2295,16 +2901,30 @@ export class PacketWrapper extends pb_1.Message {
         return pb_1.Message.getWrapperField(this, SetField, 2) as SetField;
     }
     set setField(value: SetField) {
-        pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            2,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_setField() {
         return pb_1.Message.getField(this, 2) != null;
     }
     get setFieldResult() {
-        return pb_1.Message.getWrapperField(this, SetFieldResult, 3) as SetFieldResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            SetFieldResult,
+            3
+        ) as SetFieldResult;
     }
     set setFieldResult(value: SetFieldResult) {
-        pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            3,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_setFieldResult() {
         return pb_1.Message.getField(this, 3) != null;
@@ -2313,88 +2933,174 @@ export class PacketWrapper extends pb_1.Message {
         return pb_1.Message.getWrapperField(this, GetField, 4) as GetField;
     }
     set getField(value: GetField) {
-        pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            4,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getField() {
         return pb_1.Message.getField(this, 4) != null;
     }
     get getFieldResult() {
-        return pb_1.Message.getWrapperField(this, GetFieldResult, 5) as GetFieldResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetFieldResult,
+            5
+        ) as GetFieldResult;
     }
     set getFieldResult(value: GetFieldResult) {
-        pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            5,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getFieldResult() {
         return pb_1.Message.getField(this, 5) != null;
     }
     get invokeMethod() {
-        return pb_1.Message.getWrapperField(this, InvokeMethod, 6) as InvokeMethod;
+        return pb_1.Message.getWrapperField(
+            this,
+            InvokeMethod,
+            6
+        ) as InvokeMethod;
     }
     set invokeMethod(value: InvokeMethod) {
-        pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            6,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_invokeMethod() {
         return pb_1.Message.getField(this, 6) != null;
     }
     get invokeMethodResult() {
-        return pb_1.Message.getWrapperField(this, InvokeMethodResult, 7) as InvokeMethodResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            InvokeMethodResult,
+            7
+        ) as InvokeMethodResult;
     }
     set invokeMethodResult(value: InvokeMethodResult) {
-        pb_1.Message.setOneofWrapperField(this, 7, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            7,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_invokeMethodResult() {
         return pb_1.Message.getField(this, 7) != null;
     }
     get searchObjects() {
-        return pb_1.Message.getWrapperField(this, SearchObjects, 8) as SearchObjects;
+        return pb_1.Message.getWrapperField(
+            this,
+            SearchObjects,
+            8
+        ) as SearchObjects;
     }
     set searchObjects(value: SearchObjects) {
-        pb_1.Message.setOneofWrapperField(this, 8, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            8,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_searchObjects() {
         return pb_1.Message.getField(this, 8) != null;
     }
     get searchObjectsResult() {
-        return pb_1.Message.getWrapperField(this, SearchObjectsResult, 9) as SearchObjectsResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            SearchObjectsResult,
+            9
+        ) as SearchObjectsResult;
     }
     set searchObjectsResult(value: SearchObjectsResult) {
-        pb_1.Message.setOneofWrapperField(this, 9, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            9,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_searchObjectsResult() {
         return pb_1.Message.getField(this, 9) != null;
     }
     get getAllGameObjects() {
-        return pb_1.Message.getWrapperField(this, GetAllGameObjects, 10) as GetAllGameObjects;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetAllGameObjects,
+            10
+        ) as GetAllGameObjects;
     }
     set getAllGameObjects(value: GetAllGameObjects) {
-        pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            10,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getAllGameObjects() {
         return pb_1.Message.getField(this, 10) != null;
     }
     get getAllGameObjectsResult() {
-        return pb_1.Message.getWrapperField(this, GetAllGameObjectsResult, 11) as GetAllGameObjectsResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetAllGameObjectsResult,
+            11
+        ) as GetAllGameObjectsResult;
     }
     set getAllGameObjectsResult(value: GetAllGameObjectsResult) {
-        pb_1.Message.setOneofWrapperField(this, 11, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            11,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getAllGameObjectsResult() {
         return pb_1.Message.getField(this, 11) != null;
     }
     get getGameObjectComponents() {
-        return pb_1.Message.getWrapperField(this, GetGameObjectComponents, 12) as GetGameObjectComponents;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetGameObjectComponents,
+            12
+        ) as GetGameObjectComponents;
     }
     set getGameObjectComponents(value: GetGameObjectComponents) {
-        pb_1.Message.setOneofWrapperField(this, 12, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            12,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getGameObjectComponents() {
         return pb_1.Message.getField(this, 12) != null;
     }
     get getGameObjectComponentsResult() {
-        return pb_1.Message.getWrapperField(this, GetGameObjectComponentsResult, 13) as GetGameObjectComponentsResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetGameObjectComponentsResult,
+            13
+        ) as GetGameObjectComponentsResult;
     }
     set getGameObjectComponentsResult(value: GetGameObjectComponentsResult) {
-        pb_1.Message.setOneofWrapperField(this, 13, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            13,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getGameObjectComponentsResult() {
         return pb_1.Message.getField(this, 13) != null;
@@ -2403,77 +3109,166 @@ export class PacketWrapper extends pb_1.Message {
         return pb_1.Message.getWrapperField(this, ReadMemory, 14) as ReadMemory;
     }
     set readMemory(value: ReadMemory) {
-        pb_1.Message.setOneofWrapperField(this, 14, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            14,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_readMemory() {
         return pb_1.Message.getField(this, 14) != null;
     }
     get readMemoryResult() {
-        return pb_1.Message.getWrapperField(this, ReadMemoryResult, 15) as ReadMemoryResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            ReadMemoryResult,
+            15
+        ) as ReadMemoryResult;
     }
     set readMemoryResult(value: ReadMemoryResult) {
-        pb_1.Message.setOneofWrapperField(this, 15, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            15,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_readMemoryResult() {
         return pb_1.Message.getField(this, 15) != null;
     }
     get writeMemory() {
-        return pb_1.Message.getWrapperField(this, WriteMemory, 16) as WriteMemory;
+        return pb_1.Message.getWrapperField(
+            this,
+            WriteMemory,
+            16
+        ) as WriteMemory;
     }
     set writeMemory(value: WriteMemory) {
-        pb_1.Message.setOneofWrapperField(this, 16, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            16,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_writeMemory() {
         return pb_1.Message.getField(this, 16) != null;
     }
     get writeMemoryResult() {
-        return pb_1.Message.getWrapperField(this, WriteMemoryResult, 17) as WriteMemoryResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            WriteMemoryResult,
+            17
+        ) as WriteMemoryResult;
     }
     set writeMemoryResult(value: WriteMemoryResult) {
-        pb_1.Message.setOneofWrapperField(this, 17, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            17,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_writeMemoryResult() {
         return pb_1.Message.getField(this, 17) != null;
     }
     get getClassDetails() {
-        return pb_1.Message.getWrapperField(this, GetClassDetails, 18) as GetClassDetails;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetClassDetails,
+            18
+        ) as GetClassDetails;
     }
     set getClassDetails(value: GetClassDetails) {
-        pb_1.Message.setOneofWrapperField(this, 18, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            18,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getClassDetails() {
         return pb_1.Message.getField(this, 18) != null;
     }
     get getClassDetailsResult() {
-        return pb_1.Message.getWrapperField(this, GetClassDetailsResult, 19) as GetClassDetailsResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetClassDetailsResult,
+            19
+        ) as GetClassDetailsResult;
     }
     set getClassDetailsResult(value: GetClassDetailsResult) {
-        pb_1.Message.setOneofWrapperField(this, 19, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            19,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getClassDetailsResult() {
         return pb_1.Message.getField(this, 19) != null;
     }
     get getInstanceDetails() {
-        return pb_1.Message.getWrapperField(this, GetInstanceDetails, 20) as GetInstanceDetails;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetInstanceDetails,
+            20
+        ) as GetInstanceDetails;
     }
     set getInstanceDetails(value: GetInstanceDetails) {
-        pb_1.Message.setOneofWrapperField(this, 20, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            20,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getInstanceDetails() {
         return pb_1.Message.getField(this, 20) != null;
     }
     get getInstanceDetailsResult() {
-        return pb_1.Message.getWrapperField(this, GetInstanceDetailsResult, 21) as GetInstanceDetailsResult;
+        return pb_1.Message.getWrapperField(
+            this,
+            GetInstanceDetailsResult,
+            21
+        ) as GetInstanceDetailsResult;
     }
     set getInstanceDetailsResult(value: GetInstanceDetailsResult) {
-        pb_1.Message.setOneofWrapperField(this, 21, this.#one_of_decls[0], value);
+        pb_1.Message.setOneofWrapperField(
+            this,
+            21,
+            this.#one_of_decls[0],
+            value
+        );
     }
     get has_getInstanceDetailsResult() {
         return pb_1.Message.getField(this, 21) != null;
     }
     get Packet() {
         const cases: {
-            [index: number]: "none" | "setField" | "setFieldResult" | "getField" | "getFieldResult" | "invokeMethod" | "invokeMethodResult" | "searchObjects" | "searchObjectsResult" | "getAllGameObjects" | "getAllGameObjectsResult" | "getGameObjectComponents" | "getGameObjectComponentsResult" | "readMemory" | "readMemoryResult" | "writeMemory" | "writeMemoryResult" | "getClassDetails" | "getClassDetailsResult" | "getInstanceDetails" | "getInstanceDetailsResult";
+            [index: number]:
+                | "none"
+                | "setField"
+                | "setFieldResult"
+                | "getField"
+                | "getFieldResult"
+                | "invokeMethod"
+                | "invokeMethodResult"
+                | "searchObjects"
+                | "searchObjectsResult"
+                | "getAllGameObjects"
+                | "getAllGameObjectsResult"
+                | "getGameObjectComponents"
+                | "getGameObjectComponentsResult"
+                | "readMemory"
+                | "readMemoryResult"
+                | "writeMemory"
+                | "writeMemoryResult"
+                | "getClassDetails"
+                | "getClassDetailsResult"
+                | "getInstanceDetails"
+                | "getInstanceDetailsResult";
         } = {
             0: "none",
             2: "setField",
@@ -2495,9 +3290,17 @@ export class PacketWrapper extends pb_1.Message {
             18: "getClassDetails",
             19: "getClassDetailsResult",
             20: "getInstanceDetails",
-            21: "getInstanceDetailsResult"
+            21: "getInstanceDetailsResult",
         };
-        return cases[pb_1.Message.computeOneofCase(this, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])];
+        return cases[
+            pb_1.Message.computeOneofCase(
+                this,
+                [
+                    2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                    19, 20, 21,
+                ]
+            )
+        ];
     }
     static fromObject(data: {
         queryResultId?: number;
@@ -2506,21 +3309,43 @@ export class PacketWrapper extends pb_1.Message {
         getField?: ReturnType<typeof GetField.prototype.toObject>;
         getFieldResult?: ReturnType<typeof GetFieldResult.prototype.toObject>;
         invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
-        invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
+        invokeMethodResult?: ReturnType<
+            typeof InvokeMethodResult.prototype.toObject
+        >;
         searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
-        searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
-        getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
-        getAllGameObjectsResult?: ReturnType<typeof GetAllGameObjectsResult.prototype.toObject>;
-        getGameObjectComponents?: ReturnType<typeof GetGameObjectComponents.prototype.toObject>;
-        getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
+        searchObjectsResult?: ReturnType<
+            typeof SearchObjectsResult.prototype.toObject
+        >;
+        getAllGameObjects?: ReturnType<
+            typeof GetAllGameObjects.prototype.toObject
+        >;
+        getAllGameObjectsResult?: ReturnType<
+            typeof GetAllGameObjectsResult.prototype.toObject
+        >;
+        getGameObjectComponents?: ReturnType<
+            typeof GetGameObjectComponents.prototype.toObject
+        >;
+        getGameObjectComponentsResult?: ReturnType<
+            typeof GetGameObjectComponentsResult.prototype.toObject
+        >;
         readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
-        readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
+        readMemoryResult?: ReturnType<
+            typeof ReadMemoryResult.prototype.toObject
+        >;
         writeMemory?: ReturnType<typeof WriteMemory.prototype.toObject>;
-        writeMemoryResult?: ReturnType<typeof WriteMemoryResult.prototype.toObject>;
+        writeMemoryResult?: ReturnType<
+            typeof WriteMemoryResult.prototype.toObject
+        >;
         getClassDetails?: ReturnType<typeof GetClassDetails.prototype.toObject>;
-        getClassDetailsResult?: ReturnType<typeof GetClassDetailsResult.prototype.toObject>;
-        getInstanceDetails?: ReturnType<typeof GetInstanceDetails.prototype.toObject>;
-        getInstanceDetailsResult?: ReturnType<typeof GetInstanceDetailsResult.prototype.toObject>;
+        getClassDetailsResult?: ReturnType<
+            typeof GetClassDetailsResult.prototype.toObject
+        >;
+        getInstanceDetails?: ReturnType<
+            typeof GetInstanceDetails.prototype.toObject
+        >;
+        getInstanceDetailsResult?: ReturnType<
+            typeof GetInstanceDetailsResult.prototype.toObject
+        >;
     }): PacketWrapper {
         const message = new PacketWrapper({});
         if (data.queryResultId != null) {
@@ -2530,61 +3355,95 @@ export class PacketWrapper extends pb_1.Message {
             message.setField = SetField.fromObject(data.setField);
         }
         if (data.setFieldResult != null) {
-            message.setFieldResult = SetFieldResult.fromObject(data.setFieldResult);
+            message.setFieldResult = SetFieldResult.fromObject(
+                data.setFieldResult
+            );
         }
         if (data.getField != null) {
             message.getField = GetField.fromObject(data.getField);
         }
         if (data.getFieldResult != null) {
-            message.getFieldResult = GetFieldResult.fromObject(data.getFieldResult);
+            message.getFieldResult = GetFieldResult.fromObject(
+                data.getFieldResult
+            );
         }
         if (data.invokeMethod != null) {
             message.invokeMethod = InvokeMethod.fromObject(data.invokeMethod);
         }
         if (data.invokeMethodResult != null) {
-            message.invokeMethodResult = InvokeMethodResult.fromObject(data.invokeMethodResult);
+            message.invokeMethodResult = InvokeMethodResult.fromObject(
+                data.invokeMethodResult
+            );
         }
         if (data.searchObjects != null) {
-            message.searchObjects = SearchObjects.fromObject(data.searchObjects);
+            message.searchObjects = SearchObjects.fromObject(
+                data.searchObjects
+            );
         }
         if (data.searchObjectsResult != null) {
-            message.searchObjectsResult = SearchObjectsResult.fromObject(data.searchObjectsResult);
+            message.searchObjectsResult = SearchObjectsResult.fromObject(
+                data.searchObjectsResult
+            );
         }
         if (data.getAllGameObjects != null) {
-            message.getAllGameObjects = GetAllGameObjects.fromObject(data.getAllGameObjects);
+            message.getAllGameObjects = GetAllGameObjects.fromObject(
+                data.getAllGameObjects
+            );
         }
         if (data.getAllGameObjectsResult != null) {
-            message.getAllGameObjectsResult = GetAllGameObjectsResult.fromObject(data.getAllGameObjectsResult);
+            message.getAllGameObjectsResult =
+                GetAllGameObjectsResult.fromObject(
+                    data.getAllGameObjectsResult
+                );
         }
         if (data.getGameObjectComponents != null) {
-            message.getGameObjectComponents = GetGameObjectComponents.fromObject(data.getGameObjectComponents);
+            message.getGameObjectComponents =
+                GetGameObjectComponents.fromObject(
+                    data.getGameObjectComponents
+                );
         }
         if (data.getGameObjectComponentsResult != null) {
-            message.getGameObjectComponentsResult = GetGameObjectComponentsResult.fromObject(data.getGameObjectComponentsResult);
+            message.getGameObjectComponentsResult =
+                GetGameObjectComponentsResult.fromObject(
+                    data.getGameObjectComponentsResult
+                );
         }
         if (data.readMemory != null) {
             message.readMemory = ReadMemory.fromObject(data.readMemory);
         }
         if (data.readMemoryResult != null) {
-            message.readMemoryResult = ReadMemoryResult.fromObject(data.readMemoryResult);
+            message.readMemoryResult = ReadMemoryResult.fromObject(
+                data.readMemoryResult
+            );
         }
         if (data.writeMemory != null) {
             message.writeMemory = WriteMemory.fromObject(data.writeMemory);
         }
         if (data.writeMemoryResult != null) {
-            message.writeMemoryResult = WriteMemoryResult.fromObject(data.writeMemoryResult);
+            message.writeMemoryResult = WriteMemoryResult.fromObject(
+                data.writeMemoryResult
+            );
         }
         if (data.getClassDetails != null) {
-            message.getClassDetails = GetClassDetails.fromObject(data.getClassDetails);
+            message.getClassDetails = GetClassDetails.fromObject(
+                data.getClassDetails
+            );
         }
         if (data.getClassDetailsResult != null) {
-            message.getClassDetailsResult = GetClassDetailsResult.fromObject(data.getClassDetailsResult);
+            message.getClassDetailsResult = GetClassDetailsResult.fromObject(
+                data.getClassDetailsResult
+            );
         }
         if (data.getInstanceDetails != null) {
-            message.getInstanceDetails = GetInstanceDetails.fromObject(data.getInstanceDetails);
+            message.getInstanceDetails = GetInstanceDetails.fromObject(
+                data.getInstanceDetails
+            );
         }
         if (data.getInstanceDetailsResult != null) {
-            message.getInstanceDetailsResult = GetInstanceDetailsResult.fromObject(data.getInstanceDetailsResult);
+            message.getInstanceDetailsResult =
+                GetInstanceDetailsResult.fromObject(
+                    data.getInstanceDetailsResult
+                );
         }
         return message;
     }
@@ -2592,25 +3451,53 @@ export class PacketWrapper extends pb_1.Message {
         const data: {
             queryResultId?: number;
             setField?: ReturnType<typeof SetField.prototype.toObject>;
-            setFieldResult?: ReturnType<typeof SetFieldResult.prototype.toObject>;
+            setFieldResult?: ReturnType<
+                typeof SetFieldResult.prototype.toObject
+            >;
             getField?: ReturnType<typeof GetField.prototype.toObject>;
-            getFieldResult?: ReturnType<typeof GetFieldResult.prototype.toObject>;
+            getFieldResult?: ReturnType<
+                typeof GetFieldResult.prototype.toObject
+            >;
             invokeMethod?: ReturnType<typeof InvokeMethod.prototype.toObject>;
-            invokeMethodResult?: ReturnType<typeof InvokeMethodResult.prototype.toObject>;
+            invokeMethodResult?: ReturnType<
+                typeof InvokeMethodResult.prototype.toObject
+            >;
             searchObjects?: ReturnType<typeof SearchObjects.prototype.toObject>;
-            searchObjectsResult?: ReturnType<typeof SearchObjectsResult.prototype.toObject>;
-            getAllGameObjects?: ReturnType<typeof GetAllGameObjects.prototype.toObject>;
-            getAllGameObjectsResult?: ReturnType<typeof GetAllGameObjectsResult.prototype.toObject>;
-            getGameObjectComponents?: ReturnType<typeof GetGameObjectComponents.prototype.toObject>;
-            getGameObjectComponentsResult?: ReturnType<typeof GetGameObjectComponentsResult.prototype.toObject>;
+            searchObjectsResult?: ReturnType<
+                typeof SearchObjectsResult.prototype.toObject
+            >;
+            getAllGameObjects?: ReturnType<
+                typeof GetAllGameObjects.prototype.toObject
+            >;
+            getAllGameObjectsResult?: ReturnType<
+                typeof GetAllGameObjectsResult.prototype.toObject
+            >;
+            getGameObjectComponents?: ReturnType<
+                typeof GetGameObjectComponents.prototype.toObject
+            >;
+            getGameObjectComponentsResult?: ReturnType<
+                typeof GetGameObjectComponentsResult.prototype.toObject
+            >;
             readMemory?: ReturnType<typeof ReadMemory.prototype.toObject>;
-            readMemoryResult?: ReturnType<typeof ReadMemoryResult.prototype.toObject>;
+            readMemoryResult?: ReturnType<
+                typeof ReadMemoryResult.prototype.toObject
+            >;
             writeMemory?: ReturnType<typeof WriteMemory.prototype.toObject>;
-            writeMemoryResult?: ReturnType<typeof WriteMemoryResult.prototype.toObject>;
-            getClassDetails?: ReturnType<typeof GetClassDetails.prototype.toObject>;
-            getClassDetailsResult?: ReturnType<typeof GetClassDetailsResult.prototype.toObject>;
-            getInstanceDetails?: ReturnType<typeof GetInstanceDetails.prototype.toObject>;
-            getInstanceDetailsResult?: ReturnType<typeof GetInstanceDetailsResult.prototype.toObject>;
+            writeMemoryResult?: ReturnType<
+                typeof WriteMemoryResult.prototype.toObject
+            >;
+            getClassDetails?: ReturnType<
+                typeof GetClassDetails.prototype.toObject
+            >;
+            getClassDetailsResult?: ReturnType<
+                typeof GetClassDetailsResult.prototype.toObject
+            >;
+            getInstanceDetails?: ReturnType<
+                typeof GetInstanceDetails.prototype.toObject
+            >;
+            getInstanceDetailsResult?: ReturnType<
+                typeof GetInstanceDetailsResult.prototype.toObject
+            >;
         } = {};
         if (this.queryResultId != null) {
             data.queryResultId = this.queryResultId;
@@ -2643,13 +3530,16 @@ export class PacketWrapper extends pb_1.Message {
             data.getAllGameObjects = this.getAllGameObjects.toObject();
         }
         if (this.getAllGameObjectsResult != null) {
-            data.getAllGameObjectsResult = this.getAllGameObjectsResult.toObject();
+            data.getAllGameObjectsResult =
+                this.getAllGameObjectsResult.toObject();
         }
         if (this.getGameObjectComponents != null) {
-            data.getGameObjectComponents = this.getGameObjectComponents.toObject();
+            data.getGameObjectComponents =
+                this.getGameObjectComponents.toObject();
         }
         if (this.getGameObjectComponentsResult != null) {
-            data.getGameObjectComponentsResult = this.getGameObjectComponentsResult.toObject();
+            data.getGameObjectComponentsResult =
+                this.getGameObjectComponentsResult.toObject();
         }
         if (this.readMemory != null) {
             data.readMemory = this.readMemory.toObject();
@@ -2673,7 +3563,8 @@ export class PacketWrapper extends pb_1.Message {
             data.getInstanceDetails = this.getInstanceDetails.toObject();
         }
         if (this.getInstanceDetailsResult != null) {
-            data.getInstanceDetailsResult = this.getInstanceDetailsResult.toObject();
+            data.getInstanceDetailsResult =
+                this.getInstanceDetailsResult.toObject();
         }
         return data;
     }
@@ -2681,121 +3572,261 @@ export class PacketWrapper extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.queryResultId != 0)
-            writer.writeUint64(1, this.queryResultId);
+        if (this.queryResultId != 0) writer.writeUint64(1, this.queryResultId);
         if (this.has_setField)
-            writer.writeMessage(2, this.setField, () => this.setField.serialize(writer));
+            writer.writeMessage(2, this.setField, () =>
+                this.setField.serialize(writer)
+            );
         if (this.has_setFieldResult)
-            writer.writeMessage(3, this.setFieldResult, () => this.setFieldResult.serialize(writer));
+            writer.writeMessage(3, this.setFieldResult, () =>
+                this.setFieldResult.serialize(writer)
+            );
         if (this.has_getField)
-            writer.writeMessage(4, this.getField, () => this.getField.serialize(writer));
+            writer.writeMessage(4, this.getField, () =>
+                this.getField.serialize(writer)
+            );
         if (this.has_getFieldResult)
-            writer.writeMessage(5, this.getFieldResult, () => this.getFieldResult.serialize(writer));
+            writer.writeMessage(5, this.getFieldResult, () =>
+                this.getFieldResult.serialize(writer)
+            );
         if (this.has_invokeMethod)
-            writer.writeMessage(6, this.invokeMethod, () => this.invokeMethod.serialize(writer));
+            writer.writeMessage(6, this.invokeMethod, () =>
+                this.invokeMethod.serialize(writer)
+            );
         if (this.has_invokeMethodResult)
-            writer.writeMessage(7, this.invokeMethodResult, () => this.invokeMethodResult.serialize(writer));
+            writer.writeMessage(7, this.invokeMethodResult, () =>
+                this.invokeMethodResult.serialize(writer)
+            );
         if (this.has_searchObjects)
-            writer.writeMessage(8, this.searchObjects, () => this.searchObjects.serialize(writer));
+            writer.writeMessage(8, this.searchObjects, () =>
+                this.searchObjects.serialize(writer)
+            );
         if (this.has_searchObjectsResult)
-            writer.writeMessage(9, this.searchObjectsResult, () => this.searchObjectsResult.serialize(writer));
+            writer.writeMessage(9, this.searchObjectsResult, () =>
+                this.searchObjectsResult.serialize(writer)
+            );
         if (this.has_getAllGameObjects)
-            writer.writeMessage(10, this.getAllGameObjects, () => this.getAllGameObjects.serialize(writer));
+            writer.writeMessage(10, this.getAllGameObjects, () =>
+                this.getAllGameObjects.serialize(writer)
+            );
         if (this.has_getAllGameObjectsResult)
-            writer.writeMessage(11, this.getAllGameObjectsResult, () => this.getAllGameObjectsResult.serialize(writer));
+            writer.writeMessage(11, this.getAllGameObjectsResult, () =>
+                this.getAllGameObjectsResult.serialize(writer)
+            );
         if (this.has_getGameObjectComponents)
-            writer.writeMessage(12, this.getGameObjectComponents, () => this.getGameObjectComponents.serialize(writer));
+            writer.writeMessage(12, this.getGameObjectComponents, () =>
+                this.getGameObjectComponents.serialize(writer)
+            );
         if (this.has_getGameObjectComponentsResult)
-            writer.writeMessage(13, this.getGameObjectComponentsResult, () => this.getGameObjectComponentsResult.serialize(writer));
+            writer.writeMessage(13, this.getGameObjectComponentsResult, () =>
+                this.getGameObjectComponentsResult.serialize(writer)
+            );
         if (this.has_readMemory)
-            writer.writeMessage(14, this.readMemory, () => this.readMemory.serialize(writer));
+            writer.writeMessage(14, this.readMemory, () =>
+                this.readMemory.serialize(writer)
+            );
         if (this.has_readMemoryResult)
-            writer.writeMessage(15, this.readMemoryResult, () => this.readMemoryResult.serialize(writer));
+            writer.writeMessage(15, this.readMemoryResult, () =>
+                this.readMemoryResult.serialize(writer)
+            );
         if (this.has_writeMemory)
-            writer.writeMessage(16, this.writeMemory, () => this.writeMemory.serialize(writer));
+            writer.writeMessage(16, this.writeMemory, () =>
+                this.writeMemory.serialize(writer)
+            );
         if (this.has_writeMemoryResult)
-            writer.writeMessage(17, this.writeMemoryResult, () => this.writeMemoryResult.serialize(writer));
+            writer.writeMessage(17, this.writeMemoryResult, () =>
+                this.writeMemoryResult.serialize(writer)
+            );
         if (this.has_getClassDetails)
-            writer.writeMessage(18, this.getClassDetails, () => this.getClassDetails.serialize(writer));
+            writer.writeMessage(18, this.getClassDetails, () =>
+                this.getClassDetails.serialize(writer)
+            );
         if (this.has_getClassDetailsResult)
-            writer.writeMessage(19, this.getClassDetailsResult, () => this.getClassDetailsResult.serialize(writer));
+            writer.writeMessage(19, this.getClassDetailsResult, () =>
+                this.getClassDetailsResult.serialize(writer)
+            );
         if (this.has_getInstanceDetails)
-            writer.writeMessage(20, this.getInstanceDetails, () => this.getInstanceDetails.serialize(writer));
+            writer.writeMessage(20, this.getInstanceDetails, () =>
+                this.getInstanceDetails.serialize(writer)
+            );
         if (this.has_getInstanceDetailsResult)
-            writer.writeMessage(21, this.getInstanceDetailsResult, () => this.getInstanceDetailsResult.serialize(writer));
-        if (!w)
-            return writer.getResultBuffer();
+            writer.writeMessage(21, this.getInstanceDetailsResult, () =>
+                this.getInstanceDetailsResult.serialize(writer)
+            );
+        if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): PacketWrapper {
-        const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new PacketWrapper();
+        const reader =
+                bytes instanceof pb_1.BinaryReader
+                    ? bytes
+                    : new pb_1.BinaryReader(bytes),
+            message = new PacketWrapper();
         while (reader.nextField()) {
-            if (reader.isEndGroup())
-                break;
+            if (reader.isEndGroup()) break;
             switch (reader.getFieldNumber()) {
                 case 1:
                     message.queryResultId = reader.readUint64();
                     break;
                 case 2:
-                    reader.readMessage(message.setField, () => message.setField = SetField.deserialize(reader));
+                    reader.readMessage(
+                        message.setField,
+                        () => (message.setField = SetField.deserialize(reader))
+                    );
                     break;
                 case 3:
-                    reader.readMessage(message.setFieldResult, () => message.setFieldResult = SetFieldResult.deserialize(reader));
+                    reader.readMessage(
+                        message.setFieldResult,
+                        () =>
+                            (message.setFieldResult =
+                                SetFieldResult.deserialize(reader))
+                    );
                     break;
                 case 4:
-                    reader.readMessage(message.getField, () => message.getField = GetField.deserialize(reader));
+                    reader.readMessage(
+                        message.getField,
+                        () => (message.getField = GetField.deserialize(reader))
+                    );
                     break;
                 case 5:
-                    reader.readMessage(message.getFieldResult, () => message.getFieldResult = GetFieldResult.deserialize(reader));
+                    reader.readMessage(
+                        message.getFieldResult,
+                        () =>
+                            (message.getFieldResult =
+                                GetFieldResult.deserialize(reader))
+                    );
                     break;
                 case 6:
-                    reader.readMessage(message.invokeMethod, () => message.invokeMethod = InvokeMethod.deserialize(reader));
+                    reader.readMessage(
+                        message.invokeMethod,
+                        () =>
+                            (message.invokeMethod =
+                                InvokeMethod.deserialize(reader))
+                    );
                     break;
                 case 7:
-                    reader.readMessage(message.invokeMethodResult, () => message.invokeMethodResult = InvokeMethodResult.deserialize(reader));
+                    reader.readMessage(
+                        message.invokeMethodResult,
+                        () =>
+                            (message.invokeMethodResult =
+                                InvokeMethodResult.deserialize(reader))
+                    );
                     break;
                 case 8:
-                    reader.readMessage(message.searchObjects, () => message.searchObjects = SearchObjects.deserialize(reader));
+                    reader.readMessage(
+                        message.searchObjects,
+                        () =>
+                            (message.searchObjects =
+                                SearchObjects.deserialize(reader))
+                    );
                     break;
                 case 9:
-                    reader.readMessage(message.searchObjectsResult, () => message.searchObjectsResult = SearchObjectsResult.deserialize(reader));
+                    reader.readMessage(
+                        message.searchObjectsResult,
+                        () =>
+                            (message.searchObjectsResult =
+                                SearchObjectsResult.deserialize(reader))
+                    );
                     break;
                 case 10:
-                    reader.readMessage(message.getAllGameObjects, () => message.getAllGameObjects = GetAllGameObjects.deserialize(reader));
+                    reader.readMessage(
+                        message.getAllGameObjects,
+                        () =>
+                            (message.getAllGameObjects =
+                                GetAllGameObjects.deserialize(reader))
+                    );
                     break;
                 case 11:
-                    reader.readMessage(message.getAllGameObjectsResult, () => message.getAllGameObjectsResult = GetAllGameObjectsResult.deserialize(reader));
+                    reader.readMessage(
+                        message.getAllGameObjectsResult,
+                        () =>
+                            (message.getAllGameObjectsResult =
+                                GetAllGameObjectsResult.deserialize(reader))
+                    );
                     break;
                 case 12:
-                    reader.readMessage(message.getGameObjectComponents, () => message.getGameObjectComponents = GetGameObjectComponents.deserialize(reader));
+                    reader.readMessage(
+                        message.getGameObjectComponents,
+                        () =>
+                            (message.getGameObjectComponents =
+                                GetGameObjectComponents.deserialize(reader))
+                    );
                     break;
                 case 13:
-                    reader.readMessage(message.getGameObjectComponentsResult, () => message.getGameObjectComponentsResult = GetGameObjectComponentsResult.deserialize(reader));
+                    reader.readMessage(
+                        message.getGameObjectComponentsResult,
+                        () =>
+                            (message.getGameObjectComponentsResult =
+                                GetGameObjectComponentsResult.deserialize(
+                                    reader
+                                ))
+                    );
                     break;
                 case 14:
-                    reader.readMessage(message.readMemory, () => message.readMemory = ReadMemory.deserialize(reader));
+                    reader.readMessage(
+                        message.readMemory,
+                        () =>
+                            (message.readMemory =
+                                ReadMemory.deserialize(reader))
+                    );
                     break;
                 case 15:
-                    reader.readMessage(message.readMemoryResult, () => message.readMemoryResult = ReadMemoryResult.deserialize(reader));
+                    reader.readMessage(
+                        message.readMemoryResult,
+                        () =>
+                            (message.readMemoryResult =
+                                ReadMemoryResult.deserialize(reader))
+                    );
                     break;
                 case 16:
-                    reader.readMessage(message.writeMemory, () => message.writeMemory = WriteMemory.deserialize(reader));
+                    reader.readMessage(
+                        message.writeMemory,
+                        () =>
+                            (message.writeMemory =
+                                WriteMemory.deserialize(reader))
+                    );
                     break;
                 case 17:
-                    reader.readMessage(message.writeMemoryResult, () => message.writeMemoryResult = WriteMemoryResult.deserialize(reader));
+                    reader.readMessage(
+                        message.writeMemoryResult,
+                        () =>
+                            (message.writeMemoryResult =
+                                WriteMemoryResult.deserialize(reader))
+                    );
                     break;
                 case 18:
-                    reader.readMessage(message.getClassDetails, () => message.getClassDetails = GetClassDetails.deserialize(reader));
+                    reader.readMessage(
+                        message.getClassDetails,
+                        () =>
+                            (message.getClassDetails =
+                                GetClassDetails.deserialize(reader))
+                    );
                     break;
                 case 19:
-                    reader.readMessage(message.getClassDetailsResult, () => message.getClassDetailsResult = GetClassDetailsResult.deserialize(reader));
+                    reader.readMessage(
+                        message.getClassDetailsResult,
+                        () =>
+                            (message.getClassDetailsResult =
+                                GetClassDetailsResult.deserialize(reader))
+                    );
                     break;
                 case 20:
-                    reader.readMessage(message.getInstanceDetails, () => message.getInstanceDetails = GetInstanceDetails.deserialize(reader));
+                    reader.readMessage(
+                        message.getInstanceDetails,
+                        () =>
+                            (message.getInstanceDetails =
+                                GetInstanceDetails.deserialize(reader))
+                    );
                     break;
                 case 21:
-                    reader.readMessage(message.getInstanceDetailsResult, () => message.getInstanceDetailsResult = GetInstanceDetailsResult.deserialize(reader));
+                    reader.readMessage(
+                        message.getInstanceDetailsResult,
+                        () =>
+                            (message.getInstanceDetailsResult =
+                                GetInstanceDetailsResult.deserialize(reader))
+                    );
                     break;
-                default: reader.skipField();
+                default:
+                    reader.skipField();
             }
         }
         return message;

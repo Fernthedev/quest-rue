@@ -2,7 +2,7 @@ import { onMount } from "solid-js";
 import GameObjectList from "../components/GameObjectList";
 import ObjectView from "../components/ObjectView";
 
-import styles from "./SceneViewer.module.css"
+import styles from "./SceneViewer.module.css";
 import { isConnected } from "../misc/commands";
 import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
@@ -10,8 +10,7 @@ import { getEvents } from "../misc/events";
 export default function SceneViewer() {
     const navigate = useNavigate();
     onMount(() => {
-        if (!isConnected())
-            navigate("/");
+        if (!isConnected()) navigate("/");
     });
     getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
 
@@ -19,7 +18,9 @@ export default function SceneViewer() {
     return (
         <div class="flex w-full h-full">
             <div class="flex-1 overflow-auto">
-                <ObjectView selectedAddress={Number(routeParams.address ?? 0)} />
+                <ObjectView
+                    selectedAddress={Number(routeParams.address ?? 0)}
+                />
             </div>
 
             <div class={`${styles.gameObjectList}`}>
