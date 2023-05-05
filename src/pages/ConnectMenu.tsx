@@ -1,13 +1,19 @@
 import { useNavigate, useRouteData } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import styles from "./ConnectMenu.module.css";
 import { createEventEffect, getEvents } from "../misc/events";
 import { connect } from "../misc/commands";
 
+import toast from "solid-toast";
+
 export default function ConnectMenu() {
     const redirect = useRouteData<boolean>();
     const navigate = useNavigate();
+
+    // Utility for dismissing existing toasts
+    // There might be a smarter way to do this
+    const [connectingToast, setConnectingToast] = createSignal<string | undefined>()
 
     if (redirect) {
         createEventEffect(getEvents().CONNECTED_EVENT, () => {
@@ -43,8 +49,26 @@ export default function ConnectMenu() {
                 }}
             />
             <button
-                onClick={() => {
-                    connect(ip(), Number(port()));
+                onClick={async () => {
+                    const promise = connect(ip(), Number.parseInt(port()));
+                    const id = toast.loading(`Connecting to ${ip()}:${port()}`);
+                    // Dismiss existing toast
+                    setConnectingToast((prev) => {
+                        if (!prev) return
+                        toast.dismiss(prev)
+
+                        return id
+                    })
+
+                    // Ignore error, toast is created in App.tsx
+                    try {
+                        const val = await promise;
+                        console.log("Finished waiting")
+                        toast.success("Finished connecting " + val)
+                    } catch (e) { /* ignore */ }
+
+                    // Dismiss toast
+                    toast.dismiss(id);
                 }}
             >
                 Connect

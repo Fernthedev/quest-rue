@@ -9,10 +9,15 @@ import { getEvents } from "../misc/events";
 
 export default function SceneViewer() {
     const navigate = useNavigate();
+
+    // TODO: Reconnect if possible
     onMount(() => {
-        if (!isConnected()) navigate("/");
+        if (isConnected()) return;
+
+        navigate("/");
     });
     getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
+    ///
 
     const routeParams = useParams();
     return (

@@ -5,42 +5,48 @@ import { uniqueNumber } from "./utils";
 
 let socket: WebSocket | undefined;
 
-export function connect(ip: string, port: number) {
+export function connect(ip: string, port: number): Promise<boolean> {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
         getEvents().CONNECTED_EVENT.invoke();
-        return;
+        return Promise.resolve(true);
     }
 
-    const url = "ws://" + ip + ":" + port;
-    socket = new WebSocket(url);
-    socket.binaryType = "arraybuffer";
-    socket.onopen = (event) => {
-        getEvents().CONNECTED_EVENT.invoke();
-    };
-    socket.onclose = (event) => {
-        getEvents().DISCONNECTED_EVENT.invoke(event);
-    };
-    socket.onerror = (event) => {
-        getEvents().ERROR_EVENT.invoke(event);
-    };
-    socket.onmessage = (event) => {
-        const bytes: Uint8Array = event.data;
-        const wrapper = PacketWrapper.deserialize(bytes);
-        const packetWrapper = wrapper.toObject();
-        // console.log(JSON.stringify(packetWrapper));
+    const url = `ws://${ip}:${port}`;
 
-        if (packetWrapper.getAllGameObjectsResult) {
-            handleGameObjects(packetWrapper.getAllGameObjectsResult);
-        }
-        if (wrapper.readMemoryResult !== undefined) {
-            console.log(wrapper.readMemoryResult);
-        }
+    return new Promise((res, err) => {
+        socket = new WebSocket(url);
+        socket.binaryType = "arraybuffer";
+        socket.onopen = () => {
+            res(true);
+            getEvents().CONNECTED_EVENT.invoke();
+        };
+        socket.onclose = (event) => {
+            res(false);
+            getEvents().DISCONNECTED_EVENT.invoke(event);
+        };
+        socket.onerror = (event) => {
+            err(event);
+            getEvents().ERROR_EVENT.invoke(event);
+        };
+        socket.onmessage = (event) => {
+            const bytes: Uint8Array = event.data;
+            const wrapper = PacketWrapper.deserialize(bytes);
+            const packetWrapper = wrapper.toObject();
+            // console.log(JSON.stringify(packetWrapper));
 
-        getEvents().ALL_PACKETS.invoke({
-            ...packetWrapper,
-            packetType: wrapper.Packet,
-        });
-    };
+            if (packetWrapper.getAllGameObjectsResult) {
+                handleGameObjects(packetWrapper.getAllGameObjectsResult);
+            }
+            if (wrapper.readMemoryResult !== undefined) {
+                console.log(wrapper.readMemoryResult);
+            }
+
+            getEvents().ALL_PACKETS.invoke({
+                ...packetWrapper,
+                packetType: wrapper.Packet,
+            });
+        };
+    });
 }
 
 export function isConnected() {
