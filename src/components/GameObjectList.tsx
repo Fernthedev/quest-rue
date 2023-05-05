@@ -184,11 +184,19 @@ export default function GameObjectList() {
                 <button class="flex-0 p-2" onClick={refresh}>
                     <Show
                         when={requesting()}
-                        fallback={<img src="/src/assets/refresh.svg" />}
+                        fallback={
+                            <img
+                                src="/src/assets/refresh.svg"
+                                elementtiming={"Refresh icon"}
+                                fetchpriority={"auto"}
+                            />
+                        }
                     >
                         <img
                             src="/src/assets/loading.svg"
                             class="animate-spin"
+                            elementtiming={"Spinning icon"}
+                            fetchpriority={"auto"}
                         />
                     </Show>
                 </button>

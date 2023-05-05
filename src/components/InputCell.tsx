@@ -8,18 +8,29 @@ import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 
 export function ActionButton(props: {
-    img: string;
+    img: "refresh.svg" | "enter.svg" | "navigate.svg";
     onClick: () => void;
     loading?: boolean;
     class?: string;
 }) {
     return (
-        <button class={props.class ?? ""} onClick={props.onClick}>
+        <button class={props.class ?? ""} onClick={() => props.onClick()}>
             <Show
                 when={props.loading}
-                fallback={<img src={"/src/assets/" + props.img} />}
+                fallback={
+                    <img
+                        src={"/src/assets/" + props.img}
+                        elementtiming={"Action"}
+                        fetchpriority={"auto"}
+                    />
+                }
             >
-                <img src="/src/assets/loading.svg" class="animate-spin" />
+                <img
+                    src="/src/assets/loading.svg"
+                    class="animate-spin"
+                    elementtiming={"Loading"}
+                    fetchpriority={"auto"}
+                />
             </Show>
         </button>
     );
@@ -33,47 +44,40 @@ export default function InputCell(props: {
     input?: boolean;
     output?: boolean;
 }) {
-    let inputType = "text";
-    let minWidth = 100;
-    if (props.type.classInfo != undefined) inputType = "number";
-    else if (props.type.structInfo != undefined) minWidth = 200;
-    else if (props.type.primitiveInfo != undefined) {
-        switch (props.type.primitiveInfo) {
-            case ProtoTypeInfo.Primitive.BOOLEAN:
-                minWidth = 60;
-                break;
-            case ProtoTypeInfo.Primitive.CHAR:
-                minWidth = 40;
-                break;
-            case ProtoTypeInfo.Primitive.BYTE:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.SHORT:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.INT:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.LONG:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.FLOAT:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.DOUBLE:
-                inputType = "number";
-                break;
-            case ProtoTypeInfo.Primitive.STRING:
-                break;
-            case ProtoTypeInfo.Primitive.PTR:
-                break;
-            case ProtoTypeInfo.Primitive.UNKNOWN:
-                break;
-            case ProtoTypeInfo.Primitive.VOID:
-                minWidth = 50;
-                break;
+    const inputType = createMemo(() => {
+        if (props.type.classInfo != undefined) return "number";
+
+        if (props.type.primitiveInfo != undefined) {
+            switch (props.type.primitiveInfo) {
+                case ProtoTypeInfo.Primitive.BYTE:
+                case ProtoTypeInfo.Primitive.SHORT:
+                case ProtoTypeInfo.Primitive.INT:
+                case ProtoTypeInfo.Primitive.LONG:
+                case ProtoTypeInfo.Primitive.DOUBLE:
+                case ProtoTypeInfo.Primitive.FLOAT:
+                    return "number";
+            }
         }
-    }
+
+        return "text";
+    });
+    const minWidth = createMemo(() => {
+        if (props.type.structInfo != undefined) return 200;
+
+        if (props.type.primitiveInfo != undefined) {
+            switch (props.type.primitiveInfo) {
+                case ProtoTypeInfo.Primitive.BOOLEAN:
+                    return 60;
+                case ProtoTypeInfo.Primitive.CHAR:
+                    return 40;
+                case ProtoTypeInfo.Primitive.VOID:
+                    return 50;
+            }
+        }
+
+        return 100;
+    });
+
     const detail = createMemo(
         () =>
             (props.placeholder ? props.placeholder + ": " : "") +
@@ -82,17 +86,18 @@ export default function InputCell(props: {
 
     const navigate = useNavigate();
 
+ 
     return (
         <span
             class={styles.inputParent}
             style={{
                 "flex-grow": detail().length,
-                "min-width": `${minWidth}px`,
+                "min-width": `${minWidth()}px`,
             }}
         >
             <input
                 class={styles.input}
-                type={inputType}
+                type={inputType()}
                 onInput={(e) => {
                     props.onInput?.(e.target.value);
                 }}
@@ -105,7 +110,9 @@ export default function InputCell(props: {
                 <ActionButton
                     class="small-button"
                     img="navigate.svg"
-                    onClick={() => navigate(objectUrl(Number(props.value)))}
+                    // False positive
+                    // eslint-disable-next-line solid/reactivity
+                    onClick={() => navigate(objectUrl(Number.parseInt(props.value!)))}
                 />
             </Show>
         </span>

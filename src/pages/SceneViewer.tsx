@@ -1,6 +1,6 @@
 import { onMount } from "solid-js";
 import GameObjectList from "../components/GameObjectList";
-import ObjectView from "../components/ObjectView";
+import ObjectView from "../components/ObjectView/ObjectView";
 
 import styles from "./SceneViewer.module.css";
 import { isConnected } from "../misc/commands";
