@@ -1,19 +1,16 @@
 [package]
-name = "app"
+name = "quest-rue"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["Fernthedev"]
 license = ""
 repository = ""
-default-run = "app"
 edition = "2021"
-rust-version = "1.57"
-# include = ["../protos"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1", features = [] }
+tauri-build = { version = "1.2", features = [] }
 protoc-rust = "2"
 
 [dependencies]
@@ -22,19 +19,16 @@ tokio-util = { version = "0.7", features = ["full"] }
 bytes = "*"
 futures = "*"
 anyhow = "1.0"
-protobuf = { version = "2", features = ["with-bytes"] }
+protobuf = { version = "3", features = ["with-bytes"] }
 serde_json = "1.0"
-serde = { version = "1", features = ["derive"] }
-tauri = { version = "1", features = ["api-all"] }
+tauri = { version = "1.2", features = ["shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 env_logger = "0.10"
 
 [features]
-# by default Tauri runs in production mode
-# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = ["custom-protocol"]
-# this feature is used used for production builds where `devPath` points to the filesystem
-# DO NOT remove this
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 
 [profile.release]

@@ -111,26 +111,17 @@ message GetClassDetailsResult {
     ProtoClassDetails classDetails = 1;
 }
 
-message ReadInstanceDetails {
+message GetInstanceDetails {
     uint64 address = 1;
-    ProtoClassInfo classInfo = 2;
-
-    /* nullable */
-    repeated ProtoFieldInfo fields = 3;
-    /* nullable */
-    repeated ProtoPropertyInfo properties = 4;
 }
 
-message ReadInstanceDetailsResult {
-    uint64 address = 1;
-    ProtoClassInfo classInfo = 2;
+message GetInstanceDetailsResult {
+    ProtoClassDetails classDetails = 1;
 
     /* nullable */
     map<uint64, bytes> fieldValues = 3;
-
     /* nullable */
     map<uint64, bytes> propertyValues = 4;
-
 }
 
 // TODO: Rename?
@@ -155,7 +146,7 @@ message PacketWrapper {
         WriteMemoryResult writeMemoryResult = 17;
         GetClassDetails getClassDetails = 18;
         GetClassDetailsResult getClassDetailsResult = 19;
-        ReadInstanceDetails readInstanceDetails = 20;
-        ReadInstanceDetailsResult readInstanceDetailsResult = 21;
+        GetInstanceDetails getInstanceDetails = 20;
+        GetInstanceDetailsResult getInstanceDetailsResult = 21;
     }
 }

@@ -16,24 +16,35 @@ message ProtoStructInfo {
     map<int32, ProtoFieldInfo> fieldOffsets = 2;
 }
 
+message ProtoArrayInfo {
+    ProtoTypeInfo memberType = 1;
+
+    int32 length = 2;
+}
+
 message ProtoTypeInfo {
     enum Primitive { // TODO: maybe add more primitives
         BOOLEAN = 0;
         CHAR = 1;
-        INT = 2;
-        LONG = 3;
-        FLOAT = 4;
-        DOUBLE = 5;
-        STRING = 6;
-        PTR = 7;
-        VOID = 8;
-        UNKNOWN = 9;
+        BYTE = 2;
+        SHORT = 3;
+        INT = 4;
+        LONG = 5;
+        FLOAT = 6;
+        DOUBLE = 7;
+        STRING = 8;
+        TYPE = 9;
+        PTR = 10;
+        VOID = 11;
+        UNKNOWN = 12;
     }
     oneof Info {
         Primitive primitiveInfo = 1;
-        ProtoStructInfo structInfo = 2;
-        ProtoClassInfo classInfo = 3;
+        ProtoArrayInfo arrayInfo = 2;
+        ProtoStructInfo structInfo = 3;
+        ProtoClassInfo classInfo = 4;
     }
+    int32 size = 5;
 }
 
 // Type Details
@@ -68,7 +79,7 @@ message ProtoClassDetails {
     repeated ProtoFieldInfo fields = 2;
     repeated ProtoPropertyInfo properties = 3;
     repeated ProtoMethodInfo methods = 4;
-    
+
     repeated ProtoClassInfo interfaces = 5; /* nullable */
 
     ProtoClassDetails parent = 6; /* nullable */

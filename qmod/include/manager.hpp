@@ -8,7 +8,6 @@
 
 class Manager {
     private:
-    
     void processMessage(const PacketWrapper& packet);
     void setField(const SetField& packet, uint64_t id);
     void getField(const GetField& packet, uint64_t id);
@@ -19,7 +18,7 @@ class Manager {
     void readMemory(const ReadMemory& packet, uint64_t id);
     void writeMemory(const WriteMemory& packet, uint64_t id);
     void getClassDetails(const GetClassDetails& packet, uint64_t id);
-    void readInstanceDetails(const ReadInstanceDetails& packet, uint64_t id);
+    void getInstanceDetails(const GetInstanceDetails& packet, uint64_t id);
 
     bool initialized;
     std::unique_ptr<PacketHandler> handler;

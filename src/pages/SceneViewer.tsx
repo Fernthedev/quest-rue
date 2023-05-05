@@ -1,58 +1,30 @@
-import "./SceneViewer.css";
-import { useTheme } from "@nextui-org/react";
-import GameObjectsList from "../components/game_object_list/GameObjectsList";
-import { Tabs } from "../components/Tabs";
-import { Route, Routes } from "react-router-dom";
-import { TypeManager } from "../components/TypeManager";
+import { onMount } from "solid-js";
+import GameObjectList from "../components/GameObjectList";
+import ObjectView from "../components/ObjectView";
 
-function SceneViewer() {
-    const { theme } = useTheme();
+import styles from "./SceneViewer.module.css"
+import { isConnected } from "../misc/commands";
+import { useNavigate, useParams } from "@solidjs/router";
+import { getEvents } from "../misc/events";
 
-    // future reference
-    // 100vh means 100% of the view height
+export default function SceneViewer() {
+    const navigate = useNavigate();
+    onMount(() => {
+        if (!isConnected())
+            navigate("/");
+    });
+    getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
 
+    const routeParams = useParams();
     return (
-        <div className="App">
-            {/* Object list */}
-            <div className="flex h-full min-h-screen w-screen">
-                {/* Component data */}
-                <div
-                    className="flex flex-col"
-                    style={{
-                        flex: "2",
-                        backgroundColor: theme?.colors.accents0.value,
-                        minHeight: "100%",
-                        maxWidth: "70%",
-                    }}
-                >
-                    <Tabs
-                        tabs={["Tab 1", "Tab 2", "Tab 3", "Tab 4"]}
-                        selected={1}
-                    />
+        <div class="flex w-full h-full">
+            <div class="flex-1 overflow-auto">
+                <ObjectView selectedAddress={Number(routeParams.address ?? 0)} />
+            </div>
 
-                    <div className="px-5">
-                        <Routes>
-                            <Route
-                                path={"components/:gameObjectAddress"}
-                                element={<TypeManager />}
-                            />
-                        </Routes>
-                    </div>
-                </div>
-
-                {/* Container box for scrolling */}
-                <div
-                    style={{
-                        width: "30%",
-                        maxWidth: "40%",
-                        minWidth: "30%",
-                    }}
-                >
-                    <GameObjectsList />
-                </div>
+            <div class={`${styles.gameObjectList}`}>
+                <GameObjectList />
             </div>
         </div>
     );
 }
-
-export default SceneViewer;

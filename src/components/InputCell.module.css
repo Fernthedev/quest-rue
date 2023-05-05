@@ -1,0 +1,21 @@
+.input {
+    padding: 2px;
+    line-height: 16px;
+    width: 0;
+    flex: 1;
+}
+.input:placeholder-shown {
+    text-overflow: ellipsis;
+}
+
+.inputParent {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    min-width: 100px;
+    max-width: 250px;
+    width: 0;
+}
+.inputParent > button {
+    min-width: max-content;
+}

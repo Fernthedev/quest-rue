@@ -3,12 +3,16 @@ import { handleGameObjects } from "./handlers/gameobject";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueNumber } from "./utils";
 
-let socket: WebSocket;
+let socket: WebSocket | undefined;
 
 export function connect(ip: string, port: number) {
-    if (import.meta.env.VITE_USE_QUEST_MOCK) return;
+    if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
+        getEvents().CONNECTED_EVENT.invoke();
+        return;
+    }
 
-    socket = new WebSocket("ws://" + ip + ":" + port);
+    const url = "ws://" + ip + ":" + port
+    socket = new WebSocket(url);
     socket.binaryType = "arraybuffer";
     socket.onopen = (event) => {
         getEvents().CONNECTED_EVENT.invoke();
@@ -40,9 +44,9 @@ export function connect(ip: string, port: number) {
 }
 
 export function isConnected() {
-    if (import.meta.env.VITE_USE_QUEST_MOCK) true;
+    if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return true;
 
-    return socket.readyState == WebSocket.OPEN;
+    return socket?.readyState == WebSocket.OPEN;
 }
 
 export function requestGameObjects() {
@@ -55,11 +59,10 @@ export function requestGameObjects() {
 }
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
-    if (import.meta.env.VITE_USE_QUEST_MOCK) return;
+    if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return;
 
-    if (socket.readyState === socket.OPEN) {
-        socket.send(p.serializeBinary());
-    } else {
-        socket.addEventListener("open", () => socket.send(p.serializeBinary()));
-    }
+    if (isConnected())
+        socket?.send(p.serializeBinary());
+    else
+        socket?.addEventListener("open", () => socket?.send(p.serializeBinary()));
 }

@@ -1,0 +1,44 @@
+.expanded {
+    margin-left: -0.5rem;
+    width: calc(100% + 1rem);
+}
+
+.separator {
+    @apply bg-zinc-700 dark:bg-zinc-500;
+
+    /* margin: 5px 0 5px -0.5rem; */
+    height: 2px;
+}
+
+.header {
+    @apply bg-zinc-400 dark:bg-zinc-800
+        text-lg font-mono px-2;
+}
+
+.rounded {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.grid {
+    display: grid;
+    justify-items: stretch;
+
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.grid > span {
+    min-width: min-content;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 5px;
+    border-left: 2px solid;
+    padding-left: 5px;
+}
+.grid > span > :not(input) {
+    flex-grow: 0;
+    width: max-content;
+}
