@@ -1,10 +1,11 @@
-import { Show, createEffect, createSignal } from "solid-js";
+import { Accessor, Show, createEffect, createSignal } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoPropertyInfo } from "../../misc/proto/il2cpp";
 import { protoDataToString, stringToProtoData } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
 import { refreshSpan } from "./ObjectView";
+import toast from "solid-toast";
 
 export function PropertyCell(props: {
     prop: PacketJSON<ProtoPropertyInfo>;
@@ -25,7 +26,7 @@ export function PropertyCell(props: {
             },
         });
     }
-    const [, valueSetting, requestSet] =
+    const [valueSetter, valueSetting, requestSet] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     const [inputValue, setInputValue] = createSignal<string>("");
     function set() {
@@ -39,6 +40,22 @@ export function PropertyCell(props: {
         });
     }
     createEffect(() => setInputValue(protoDataToString(value()?.result)));
+
+    const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
+        const resultData = result()
+        if (!resultData?.error) return;
+
+        toast.error(`Property exception error: ${resultData.error}`);
+    };
+
+    // Error handle
+    createEffect(() => {
+        errorHandler(value)
+    });
+    createEffect(() => {
+        errorHandler(valueSetter);
+    });
+
     return (
         <span ref={element} class="font-mono">
             {props.prop.name + " = "}

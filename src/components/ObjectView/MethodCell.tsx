@@ -5,6 +5,7 @@ import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
 import { protoDataToString, stringToProtoData } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
 import { refreshSpan } from "./ObjectView";
+import toast from "solid-toast";
 
 export function MethodCell(props: {
     method: PacketJSON<ProtoMethodInfo>;
@@ -31,6 +32,14 @@ export function MethodCell(props: {
             },
         });
     }
+
+    createEffect(() => {
+        const resultData = result();
+        if (!resultData?.error) return
+
+        toast.error(`Method exception error: ${resultData.error}`)
+    });
+
     return (
         <span ref={element} class="font-mono">
             {props.method.name + " ("}
