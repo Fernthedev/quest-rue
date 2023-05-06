@@ -13,7 +13,7 @@ export default function ConnectMenu() {
 
     // Utility for dismissing existing toasts
     // There might be a smarter way to do this
-    const [_connectingToast, setConnectingToast] = createSignal<string | undefined>()
+    const [_connectingToast, setConnectingToast] = createSignal<string | undefined>();
 
     if (redirect) {
         createEventEffect(getEvents().CONNECTED_EVENT, () => {
@@ -28,8 +28,39 @@ export default function ConnectMenu() {
         import.meta.env.VITE_QUEST_PORT ?? ""
     );
 
+    const submit = async (e: Event) => {
+        // Stop refresh
+        e.preventDefault();
+        
+        const promise = connect(ip(), Number.parseInt(port()));
+        const id = toast.loading(`Connecting to ${ip()}:${port()}`);
+        // Dismiss existing toast
+        setConnectingToast((prev) => {
+            if (!prev) return;
+            toast.dismiss(prev);
+
+            return id;
+        });
+
+        // Ignore error, toast is created in App.tsx
+        try {
+            const val = await promise;
+            console.log("Finished waiting");
+            toast.success("Finished connecting " + val);
+        } catch (e) {
+            /* ignore */
+        }
+
+        // Dismiss toast
+        toast.dismiss(id);
+    };
+
     return (
-        <div class={`${styles.wrapper} absolute-centered`}>
+        <form
+            onSubmit={(e) => submit(e)}
+            
+            class={`${styles.wrapper} absolute-centered`}
+        >
             <text class="text-center">Enter your Quest IP Address</text>
             <input
                 placeholder="IP"
@@ -48,31 +79,7 @@ export default function ConnectMenu() {
                     setPort(e.currentTarget.value);
                 }}
             />
-            <button
-                onClick={async () => {
-                    const promise = connect(ip(), Number.parseInt(port()));
-                    const id = toast.loading(`Connecting to ${ip()}:${port()}`);
-                    // Dismiss existing toast
-                    setConnectingToast((prev) => {
-                        if (!prev) return
-                        toast.dismiss(prev)
-
-                        return id
-                    })
-
-                    // Ignore error, toast is created in App.tsx
-                    try {
-                        const val = await promise;
-                        console.log("Finished waiting")
-                        toast.success("Finished connecting " + val)
-                    } catch (e) { /* ignore */ }
-
-                    // Dismiss toast
-                    toast.dismiss(id);
-                }}
-            >
-                Connect
-            </button>
-        </div>
+            <button type="submit">Connect</button>
+        </form>
     );
 }
