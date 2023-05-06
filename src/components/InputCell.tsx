@@ -1,9 +1,9 @@
-import { Show, createMemo } from "solid-js";
+import { ErrorBoundary, Show, createMemo } from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import { protoTypeToString } from "../misc/utils";
+import { errorHandle, protoTypeToString } from "../misc/utils";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 
@@ -14,7 +14,9 @@ export function ActionButton(props: {
     class?: string;
 }) {
     return (
-        <button class={props.class ?? ""} onClick={() => props.onClick()}>
+        // False positive
+        // eslint-disable-next-line solid/reactivity
+        <button class={props.class ?? ""} onClick={() => errorHandle(() => props.onClick())}>
             <Show
                 when={props.loading}
                 fallback={

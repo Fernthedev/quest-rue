@@ -1,3 +1,4 @@
+import toast from "solid-toast";
 import { PacketJSON } from "./events";
 import {
     ProtoDataPayload,
@@ -17,6 +18,15 @@ function stringifyQuotesless(obj: unknown) {
     return JSON.stringify(obj, (_, value) =>
         typeof value == "bigint" ? value.toString() : value
     ).replace(/^"|"$/g, "");
+}
+
+export function errorHandle<R, T extends () => R>(func: T) {
+    try {
+        return func()
+    } catch (e) {
+        toast.error(`Suffered from error: ${e}`)
+        throw e;
+    }
 }
 
 function parseShallow(jsonStr: string) {
