@@ -1,6 +1,6 @@
 import { Show, createMemo } from "solid-js";
 import { PacketJSON } from "../misc/events";
-import { ProtoTypeInfo } from "../misc/proto/il2cpp";
+import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
 import { protoTypeToString } from "../misc/utils";
@@ -45,16 +45,16 @@ export default function InputCell(props: {
     output?: boolean;
 }) {
     const inputType = createMemo(() => {
-        if (props.type.classInfo != undefined) return "number";
+        if (props.type.Info?.$case == "classInfo") return "number";
 
-        if (props.type.primitiveInfo != undefined) {
-            switch (props.type.primitiveInfo) {
-                case ProtoTypeInfo.Primitive.BYTE:
-                case ProtoTypeInfo.Primitive.SHORT:
-                case ProtoTypeInfo.Primitive.INT:
-                case ProtoTypeInfo.Primitive.LONG:
-                case ProtoTypeInfo.Primitive.DOUBLE:
-                case ProtoTypeInfo.Primitive.FLOAT:
+        if (props.type.Info?.$case == "primitiveInfo") {
+            switch (props.type.Info.primitiveInfo) {
+                case ProtoTypeInfo_Primitive.BYTE:
+                case ProtoTypeInfo_Primitive.SHORT:
+                case ProtoTypeInfo_Primitive.INT:
+                case ProtoTypeInfo_Primitive.LONG:
+                case ProtoTypeInfo_Primitive.DOUBLE:
+                case ProtoTypeInfo_Primitive.FLOAT:
                     return "number";
             }
         }
@@ -62,18 +62,18 @@ export default function InputCell(props: {
         return "text";
     });
     const minWidth = createMemo(() => {
-        if (props.type.structInfo != undefined) return 150;
-        if (props.type.arrayInfo != undefined) return 150;
+        if (props.type.Info?.$case == "structInfo") return 150;
+        if (props.type.Info?.$case == "arrayInfo") return 150;
 
-        if (props.type.classInfo == undefined) {
-            switch (props.type.primitiveInfo) {
-                case ProtoTypeInfo.Primitive.BOOLEAN:
+        if (props.type.Info?.$case == "primitiveInfo") {
+            switch (props.type.Info.primitiveInfo) {
+                case ProtoTypeInfo_Primitive.BOOLEAN:
                     return 60;
-                case ProtoTypeInfo.Primitive.CHAR:
+                case ProtoTypeInfo_Primitive.CHAR:
                     return 40;
-                case ProtoTypeInfo.Primitive.GENERIC:
+                case ProtoTypeInfo_Primitive.GENERIC:
                     return 80;
-                case ProtoTypeInfo.Primitive.VOID:
+                case ProtoTypeInfo_Primitive.VOID:
                     return 50;
             }
         }
@@ -110,15 +110,13 @@ export default function InputCell(props: {
                 placeholder={detail()}
                 title={detail()}
             />
-            <Show when={props.type.classInfo && props.output}>
+            <Show when={props.type.Info?.$case == "classInfo" && props.output}>
                 <ActionButton
                     class="small-button"
                     img="navigate.svg"
                     // False positive
                     // eslint-disable-next-line solid/reactivity
-                    onClick={() =>
-                        navigate(objectUrl(Number.parseInt(props.value!)))
-                    }
+                    onClick={() => navigate(objectUrl(BigInt(props.value!)))}
                 />
             </Show>
         </span>

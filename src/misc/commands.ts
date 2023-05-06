@@ -1,7 +1,7 @@
 import { getEvents } from "./events";
 import { handleGameObjects } from "./handlers/gameobject";
 import { PacketWrapper } from "./proto/qrue";
-import { uniqueNumber } from "./utils";
+import { uniqueBigNumber, uniqueNumber } from "./utils";
 
 let socket: WebSocket | undefined;
 
@@ -29,22 +29,25 @@ export function connect(ip: string, port: number): Promise<boolean> {
             getEvents().ERROR_EVENT.invoke(event);
         };
         socket.onmessage = (event) => {
-            const bytes: Uint8Array = event.data;
-            const wrapper = PacketWrapper.deserialize(bytes);
-            const packetWrapper = wrapper.toObject();
+            const bytes: ArrayBuffer = event.data;
+            const packetWrapper = PacketWrapper.decode(new Uint8Array(bytes));
             // console.log(JSON.stringify(packetWrapper));
 
-            if (packetWrapper.getAllGameObjectsResult) {
-                handleGameObjects(packetWrapper.getAllGameObjectsResult);
-            }
-            if (wrapper.readMemoryResult !== undefined) {
-                console.log(wrapper.readMemoryResult);
+            switch (packetWrapper.Packet?.$case) {
+                case "getAllGameObjectsResult": {
+                    handleGameObjects(
+                        packetWrapper.Packet.getAllGameObjectsResult
+                    );
+                    break;
+                }
+                case "readMemoryResult": {
+                    console.log(packetWrapper.Packet.readMemoryResult);
+
+                    break;
+                }
             }
 
-            getEvents().ALL_PACKETS.invoke({
-                ...packetWrapper,
-                packetType: wrapper.Packet,
-            });
+            getEvents().ALL_PACKETS.invoke(packetWrapper);
         };
     });
 }
@@ -57,9 +60,12 @@ export function isConnected() {
 
 export function requestGameObjects() {
     sendPacket(
-        PacketWrapper.fromObject({
-            queryResultId: uniqueNumber(),
-            getAllGameObjects: {},
+        PacketWrapper.create({
+            queryResultId: uniqueBigNumber(),
+            Packet: {
+                $case: "getAllGameObjects",
+                getAllGameObjects: {},
+            },
         })
     );
 }
@@ -67,9 +73,11 @@ export function requestGameObjects() {
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return;
 
-    if (isConnected()) socket?.send(p.serializeBinary());
-    else
+    if (isConnected()) {
+        socket?.send(PacketWrapper.encode(p).finish());
+    } else {
         socket?.addEventListener("open", () =>
-            socket?.send(p.serializeBinary())
+            socket?.send(PacketWrapper.encode(p).finish())
         );
+    }
 }

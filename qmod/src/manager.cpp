@@ -98,6 +98,12 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
     auto field = asPtr(FieldInfo, packet.fieldid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
+    VALIDATE_PTR(field);
+    VALIDATE_PTR(object);
+
+    LOG_INFO("Getting field {} ({}) for object {} ({})", fmt::ptr(field), packet.fieldid(),
+             fmt::ptr(object), packet.objectaddress());
+
     auto res = FieldUtils::Get(field, object);
 
     PacketWrapper wrapper;
@@ -356,7 +362,9 @@ void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) 
 
     auto result = wrapper.mutable_getinstancedetailsresult();
 
+    LOG_INFO("Requesting object {}", packet.address());
     auto instance = asPtr(Il2CppObject, packet.address());
+    VALIDATE_PTR(instance);
     *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
 
     // TODO: field / property values

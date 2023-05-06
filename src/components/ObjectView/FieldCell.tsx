@@ -10,14 +10,16 @@ export function FieldCell(props: {
     field: PacketJSON<ProtoFieldInfo>;
     colSize: number;
     maxCols: number;
-    address: number;
+    address: bigint;
 }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
+        console.log(`Requesting ${props.field.id} ${props.address}`)
         requestValue({
+            $case: "getField",
             getField: {
                 fieldId: props.field.id,
                 objectAddress: props.address,
@@ -30,6 +32,7 @@ export function FieldCell(props: {
     function update(value: string) {
         const protoData = stringToProtoData(value, props.field.type!);
         requestSet({
+            $case: "setField",
             setField: {
                 fieldId: props.field.id,
                 objectAddress: props.address,

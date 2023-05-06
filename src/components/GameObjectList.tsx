@@ -5,6 +5,7 @@ import {
     createEffect,
     createMemo,
     createSignal,
+    on,
 } from "solid-js";
 import {
     GameObjectJSON,
@@ -12,7 +13,7 @@ import {
     createEventEffect,
     getEvents,
 } from "../misc/events";
-import { gameObjectsStore } from "../misc/handlers/gameobject";
+import { GameObjectIndex, gameObjectsStore } from "../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
 import { requestGameObjects } from "../misc/commands";
@@ -22,7 +23,7 @@ import { Navigator, useNavigate } from "@solidjs/router";
 function GameObjectListItem(props: {
     navigate: Navigator;
     obj: GameObjectJSON;
-    addressMap?: Map<number, [boolean, boolean]>;
+    addressMap?: Map<GameObjectIndex, [boolean, boolean]>;
 }) {
     const address = createMemo(() => props.obj.transform!.address!);
 
@@ -38,9 +39,9 @@ function GameObjectListItem(props: {
     });
 
     const children = createMemo(() =>
-        gameObjectsStore.childrenMap?.[address()]?.filter(
-            (addr) => props.addressMap?.has(addr) ?? true
-        )
+        gameObjectsStore.childrenMap
+            ?.get(address())
+            ?.filter((addr) => props.addressMap?.has(addr) ?? true)
     );
     const hasChildren = () => (children()?.length ?? 0) > 0;
 
@@ -79,7 +80,7 @@ function GameObjectListItem(props: {
 function inSearch(
     object: GameObjectJSON,
     addressMap: Map<
-        Required<GameObjectJSON>["transform"]["address"],
+        GameObjectIndex,
         [selfMatches: boolean, childMatches: boolean]
     >,
     searchLower: string,
@@ -92,10 +93,10 @@ function inSearch(
     if (object.name?.toLocaleLowerCase().includes(searchLower))
         selfMatches = true;
 
-    for (const addr of gameObjectsStore.childrenMap?.[
+    for (const addr of gameObjectsStore.childrenMap?.get(
         object.transform!.address!
-    ] ?? []) {
-        const child = gameObjectsStore.objectsMap![addr][0];
+    ) ?? []) {
+        const child = gameObjectsStore.objectsMap!.get(addr)![0];
         if (inSearch(child, addressMap, searchLower, selfMatches || matchChild))
             childMatches = true;
     }
@@ -113,10 +114,10 @@ export default function GameObjectList() {
 
     // address -> [highlight, expand]
     const [searchAddresses, setSearchAddresses] =
-        createSignal<Map<number, [boolean, boolean]>>();
+        createSignal<Map<GameObjectIndex, [boolean, boolean]>>();
 
     const rootObjects = createDeferred(() =>
-        Object.entries(gameObjectsStore.objectsMap ?? {}).filter(
+        [...gameObjectsStore.objectsMap?.entries() ?? []].filter(
             ([, [o]]) => !o.transform?.parent
         )
     );
@@ -132,7 +133,7 @@ export default function GameObjectList() {
             if (!gameObjectsStore.objectsMap) return null;
 
             const searchLower = search().toLocaleLowerCase();
-            const newAddresses = new Map<number, [boolean, boolean]>();
+            const newAddresses = new Map<bigint, [boolean, boolean]>();
             const ret = rootObjects().filter(([, [obj]]) =>
                 inSearch(obj, newAddresses, searchLower)
             );
@@ -155,7 +156,7 @@ export default function GameObjectList() {
     createEventEffect<PacketWrapperCustomJSON>(
         getEvents().ALL_PACKETS,
         (packet) => {
-            if (packet.packetType === "getAllGameObjectsResult") {
+            if (packet.Packet?.$case === "getAllGameObjectsResult") {
                 navigate(objectUrl(undefined));
                 setRequesting(false);
             }
@@ -224,8 +225,8 @@ export default function GameObjectList() {
 }
 
 function ConstructList(props: {
-    children: number[];
-    addressMap?: Map<number, [boolean, boolean]>;
+    children: GameObjectIndex[];
+    addressMap?: Map<GameObjectIndex, [boolean, boolean]>;
     navigate: Navigator;
 }) {
     return (
@@ -234,7 +235,7 @@ function ConstructList(props: {
             <For each={props.children}>
                 {(itemAddress) => {
                     const gameObject = createMemo(
-                        () => gameObjectsStore.objectsMap![itemAddress][0]!
+                        () => gameObjectsStore.objectsMap!.get(itemAddress)![0]!
                     );
                     return (
                         <GameObjectListItem

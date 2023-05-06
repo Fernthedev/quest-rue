@@ -1,11 +1,10 @@
 import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
-import { ProtoMethodInfo, ProtoTypeInfo } from "../../misc/proto/il2cpp";
+import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
 import {
     getAllGenerics,
     protoDataToString,
-    protoTypeToString,
     stringToProtoData,
     stringToProtoType,
 } from "../../misc/utils";
@@ -17,7 +16,7 @@ export function MethodCell(props: {
     method: PacketJSON<ProtoMethodInfo>;
     colSize: number;
     maxCols: number;
-    address: number;
+    address: bigint;
 }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
@@ -35,6 +34,7 @@ export function MethodCell(props: {
             stringToProtoType(str)
         );
         runMethod({
+            $case: "invokeMethod",
             invokeMethod: {
                 methodId: props.method.id,
                 objectAddress: props.address,

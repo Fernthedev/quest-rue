@@ -1,24 +1,12 @@
-import { Message } from "google-protobuf";
 import { sendPacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
-import { uniqueNumber } from "./utils";
-import {
-    Accessor,
-    batch,
-    createEffect,
-    createResource,
-    createSignal,
-    onCleanup,
-    untrack,
-} from "solid-js";
-import { deprecate } from "util";
+import { uniqueBigNumber } from "./utils";
+import { Accessor, batch, createSignal, onCleanup, untrack } from "solid-js";
 
 export type GameObjectJSON = PacketJSON<ProtoGameObject>;
 
-export type PacketWrapperCustomJSON = PacketJSON<PacketWrapper> & {
-    packetType: typeof PacketWrapper.prototype.Packet;
-};
+export type PacketWrapperCustomJSON = PacketJSON<PacketWrapper>;
 
 // Singleton for all events
 // Lazily initialized
@@ -42,8 +30,8 @@ function buildEvents() {
     } as const;
 }
 
-export type PacketTypes = Parameters<typeof PacketWrapper.fromObject>;
-export type PacketJSON<T extends Message> = ReturnType<T["toObject"]>;
+export type PacketTypes = PacketWrapper["Packet"];
+export type PacketJSON<T> = T; // ReturnType<T["toObject"]>;
 
 /**
  * A hook that returns the value of a packet with a response
@@ -56,8 +44,8 @@ export type PacketJSON<T extends Message> = ReturnType<T["toObject"]>;
  * @param allowUnexpectedPackets Listen to packets with any id without having to initiate a request
  */
 export function useRequestAndResponsePacket<
-    TTResponse extends Message,
-    TRequest extends PacketTypes[0] = PacketTypes[0],
+    TTResponse,
+    TRequest extends PacketTypes = PacketTypes,
     TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
 >(
     once = false,
@@ -68,7 +56,7 @@ export function useRequestAndResponsePacket<
     const [loading, setLoading] = createSignal<boolean>(false);
 
     // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: { value: number | undefined } = {
+    const expectedQueryID: { value: bigint | undefined } = {
         value: undefined,
     };
 
@@ -82,12 +70,14 @@ export function useRequestAndResponsePacket<
                 union.queryResultId === expectedQueryID.value)
         ) {
             // it's guaranteed to exist ok
-            const packet = (union as Record<string, unknown>)[union.packetType];
+            const packet: TResponse = (union.Packet as Record<string, unknown>)[
+                union.Packet!.$case!
+            ]! as unknown as TResponse;
 
             if (!packet) throw "Packet is undefined why!";
 
             batch(() => {
-                setValue(() => packet as TResponse);
+                setValue(() => packet);
                 setLoading(false);
             });
 
@@ -103,12 +93,13 @@ export function useRequestAndResponsePacket<
 
     const refetch = (p: TRequest) => {
         if (!untrack(loading) || allowConcurrent) {
-            const randomId = uniqueNumber();
+            const randomId = uniqueBigNumber();
             expectedQueryID.value = randomId;
             setLoading(true);
-            sendPacket(
-                PacketWrapper.fromObject({ queryResultId: randomId, ...p })
-            );
+            sendPacket({
+                queryResultId: randomId,
+                Packet: p,
+            });
         }
     };
 

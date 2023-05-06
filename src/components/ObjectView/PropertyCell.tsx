@@ -11,7 +11,7 @@ export function PropertyCell(props: {
     prop: PacketJSON<ProtoPropertyInfo>;
     colSize: number;
     maxCols: number;
-    address: number;
+    address: bigint;
 }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
@@ -19,8 +19,10 @@ export function PropertyCell(props: {
         useRequestAndResponsePacket<InvokeMethodResult>();
     function get() {
         requestGet({
+            $case: "invokeMethod",
             invokeMethod: {
-                methodId: props.prop.getterId,
+                generics: [],
+                methodId: props.prop.getterId!,
                 objectAddress: props.address,
                 args: [],
             },
@@ -32,8 +34,10 @@ export function PropertyCell(props: {
     function set() {
         const protoData = stringToProtoData(inputValue(), props.prop.type!);
         requestSet({
+            $case: "invokeMethod",
             invokeMethod: {
-                methodId: props.prop.setterId,
+                generics: [],
+                methodId: props.prop.setterId!,
                 objectAddress: props.address,
                 args: [protoData],
             },
@@ -42,7 +46,7 @@ export function PropertyCell(props: {
     createEffect(() => setInputValue(protoDataToString(value()?.result)));
 
     const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
-        const resultData = result()
+        const resultData = result();
         if (!resultData?.error) return;
 
         toast.error(`Property exception error: ${resultData.error}`);
@@ -50,7 +54,7 @@ export function PropertyCell(props: {
 
     // Error handle
     createEffect(() => {
-        errorHandler(value)
+        errorHandler(value);
     });
     createEffect(() => {
         errorHandler(valueSetter);

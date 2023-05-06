@@ -243,6 +243,7 @@ namespace MethodUtils {
 
 namespace FieldUtils {
     ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
+        LOG_INFO("Object", object->klass->name);
         LOG_INFO("Getting field {}", field->name);
         LOG_INFO("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
@@ -272,6 +273,8 @@ namespace FieldUtils {
     ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
         ProtoFieldInfo info;
         info.set_name(field->name);
+        LOG_INFO("Field address: {} vs converted {} ({})", fmt::ptr(field),
+                 asInt(field), fmt::ptr((void *)asInt(field)));
         info.set_id(asInt(field));
         *info.mutable_type() = ClassUtils::GetTypeInfo(field->type);
         return info;

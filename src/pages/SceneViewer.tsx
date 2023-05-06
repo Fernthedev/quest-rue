@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { Show, onMount } from "solid-js";
 import GameObjectList from "../components/GameObjectList";
 import ObjectView from "../components/ObjectView/ObjectView";
 
@@ -19,12 +19,14 @@ export default function SceneViewer() {
     getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
     ///
 
-    const routeParams = useParams();
+    const routeParams = useParams<{ address?: string }>();
     return (
         <div class="flex w-full h-full">
             <div class="flex-1 overflow-auto">
                 <ObjectView
-                    selectedAddress={Number(routeParams.address ?? 0)}
+                    selectedAddress={
+                        routeParams.address ? BigInt(routeParams.address) : undefined
+                    }
                 />
             </div>
 

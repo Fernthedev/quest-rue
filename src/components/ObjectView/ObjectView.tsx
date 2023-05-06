@@ -1,4 +1,4 @@
-import { Show, createEffect, createMemo, createSignal } from "solid-js";
+import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
 import { useRequestAndResponsePacket } from "../../misc/events";
 import { GetInstanceDetailsResult } from "../../misc/proto/qrue";
 
@@ -22,7 +22,9 @@ export const separator = () => (
     <div class={`${styles.expanded} ${styles.separator}`} />
 );
 
-export default function ObjectView(props: { selectedAddress: number }) {
+export default function ObjectView(props: {
+    selectedAddress: bigint | undefined;
+}) {
     const globalFallback = (
         <div class="absolute-centered">No Object Selected</div>
     );
@@ -32,35 +34,49 @@ export default function ObjectView(props: { selectedAddress: number }) {
         useRequestAndResponsePacket<GetInstanceDetailsResult>();
 
     createEffect(() => {
-        if (props.selectedAddress) {
-            requestDetails({
-                getInstanceDetails: {
-                    address: props.selectedAddress,
-                },
-            });
-        }
+        if (!props.selectedAddress) return;
+
+        requestDetails({
+            $case: "getInstanceDetails",
+            getInstanceDetails: {
+                address: props.selectedAddress,
+            },
+        });
     });
 
     const classDetails = createMemo(() => {
         if (!props.selectedAddress) return undefined;
+        console.log("detail", details(), details()?.classDetails)
         return details()?.classDetails;
     });
     const className = createMemo(() =>
         classDetails()
-            ? protoTypeToString({ classInfo: classDetails()?.clazz })
+            ? protoTypeToString({
+                  Info: {
+                      $case: "classInfo",
+                      classInfo: classDetails()!.clazz!,
+                  },
+              })
             : ""
     );
     const interfaces = createMemo(() => {
         if (!classDetails()) return "";
         return classDetails()
-            ?.interfaces?.map((info) => protoTypeToString({ classInfo: info }))
+            ?.interfaces?.map((info) =>
+                protoTypeToString({
+                    Info: {
+                        $case: "classInfo",
+                        classInfo: info,
+                    },
+                })
+            )
             .join(", ");
     });
 
     const [search, setSearch] = createSignal<string>("");
 
     return (
-        <Show when={props.selectedAddress} fallback={globalFallback}>
+        <Show when={props.selectedAddress} fallback={globalFallback} keyed>
             <div class="p-4 w-full h-full">
                 <div class="flex gap-4 mb-1 items-end">
                     <span class="text-xl font-mono flex-0">{className()}</span>
@@ -74,10 +90,10 @@ export default function ObjectView(props: { selectedAddress: number }) {
                     />
                 </div>
                 {separator()}
-                <Show when={!detailsLoading()} fallback={detailsFallback}>
+                <Show when={!detailsLoading() && classDetails()} fallback={detailsFallback}>
                     <TypeSection
                         details={classDetails()!}
-                        selectedAddress={props.selectedAddress}
+                        selectedAddress={props.selectedAddress!}
                         search={search()}
                     />
                 </Show>

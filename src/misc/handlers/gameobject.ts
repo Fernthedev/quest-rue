@@ -4,18 +4,16 @@ import { GetAllGameObjectsResult } from "../proto/qrue";
 import { createStore, reconcile } from "solid-js/store";
 
 // type is based on Transform's address
-export type GameObjectIndex = Required<
-    Required<GameObjectJSON>["transform"]
+export type GameObjectIndex = Exclude<
+    GameObjectJSON["transform"],
+    undefined
 >["address"];
 
 interface GameObjectStore {
     objects: GameObjectJSON[] | null;
-    objectsMap: Record<
-        GameObjectIndex,
-        [obj: GameObjectJSON, id: symbol]
-    > | null;
+    objectsMap: Map<GameObjectIndex, [obj: GameObjectJSON, id: symbol]> | null;
     // parent -> children[]
-    childrenMap: Record<GameObjectIndex, GameObjectIndex[]> | null;
+    childrenMap: Map<GameObjectIndex, GameObjectIndex[]> | null;
 }
 
 export const [gameObjectsStore, setGameObjectsStore] =
@@ -29,36 +27,36 @@ export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
     batch(() => {
         setGameObjectsStore("objects", reconcile(packet.objects ?? null));
 
-        const objectsMap: Record<number, [GameObjectJSON, symbol]> | null =
-            packet.objects ? {} : null;
-        const childrenMap: Record<number, number[]> | null = packet.objects
-            ? {}
-            : null;
+        const objectsMap: GameObjectStore["objectsMap"] | null =
+            packet.objects && new Map();
+        const childrenMap: GameObjectStore["childrenMap"] | null =
+            packet.objects && new Map();
 
         if (objectsMap) {
-            packet.objects?.forEach((o) => {
-                objectsMap[o.transform!.address!] = [
+            packet.objects?.forEach((o) =>
+                objectsMap.set(o.transform!.address!, [
                     o,
-                    Symbol(o.transform!.address),
-                ];
-            });
+                    Symbol(o.transform!.address.toString()),
+                ])
+            );
 
             if (childrenMap) {
-                Object.values(objectsMap).forEach((pair) => {
+                objectsMap.forEach((pair) => {
                     const o = pair[0];
                     // ignore the error messages!
                     const address = o.transform?.address;
 
                     if (!address) return;
 
-                    if (!childrenMap[address]) childrenMap[address] = [];
+                    if (!childrenMap.has(address)) childrenMap.set(address, []);
 
                     const parent = o.transform?.parent;
 
                     if (parent) {
-                        if (!childrenMap[parent]) childrenMap[parent] = [];
+                        if (!childrenMap.has(parent))
+                            childrenMap.set(parent, []);
 
-                        childrenMap[parent].push(address);
+                        childrenMap.get(parent)?.push(address);
                     }
                 });
             }

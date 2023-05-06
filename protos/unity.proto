@@ -52,7 +52,7 @@ message ProtoGameObject {
     bool active = 3;
     int32 layer = 4;
     ProtoScene scene = 5;
-    string tag = 6;     /* optional */
+    optional string tag = 6;     /* optional */
     ProtoTransform transform = 7;
 }
 

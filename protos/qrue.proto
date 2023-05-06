@@ -45,12 +45,12 @@ message InvokeMethodResult {
     ProtoDataPayload result = 3;
     // map from parameter index
     map<int32, ProtoDataPayload> byrefChanges = 4;
-    string error = 5; /* nullable */
+    optional string error = 5; /* nullable */
 }
 
 message SearchObjects {
     ProtoClassInfo componentClass = 1;
-    string name = 2; /* nullable */
+    optional string name = 2; /* nullable */
 }
 
 message SearchObjectsResult {

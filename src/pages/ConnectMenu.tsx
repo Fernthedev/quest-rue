@@ -13,7 +13,7 @@ export default function ConnectMenu() {
 
     // Utility for dismissing existing toasts
     // There might be a smarter way to do this
-    const [connectingToast, setConnectingToast] = createSignal<string | undefined>()
+    const [_connectingToast, setConnectingToast] = createSignal<string | undefined>()
 
     if (redirect) {
         createEventEffect(getEvents().CONNECTED_EVENT, () => {

@@ -17,9 +17,13 @@ import { separator } from "./ObjectView";
 
 export function TypeSection(props: {
     details?: PacketJSON<ProtoClassDetails>;
-    selectedAddress: number;
+    selectedAddress: bigint;
     search: string;
 }) {
+    createEffect(() => {
+        console.log(props.details);
+    });
+
     const className = createMemo(() =>
         props.details?.clazz
             ? props.details.clazz!.namespaze + "::" + props.details.clazz!.clazz

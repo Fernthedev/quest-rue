@@ -19,7 +19,7 @@ message ProtoStructInfo {
 message ProtoArrayInfo {
     ProtoTypeInfo memberType = 1;
 
-    int32 length = 2; /* nullable */
+    optional int32 length = 2; /* nullable */
 }
 
 message ProtoTypeInfo {
@@ -59,9 +59,9 @@ message ProtoFieldInfo {
 
 message ProtoPropertyInfo {
     string name = 1;
-    uint64 getterId = 2; /* nullable */
-    uint64 setterId = 3; /* nullable */
-    uint64 backingFieldId = 4; /* nullable */
+    optional uint64 getterId = 2; /* nullable */
+    optional uint64 setterId = 3; /* nullable */
+    optional uint64 backingFieldId = 4; /* nullable */
     ProtoTypeInfo type = 5;
 }
 
@@ -84,12 +84,12 @@ message ProtoClassDetails {
 
     repeated ProtoClassInfo interfaces = 5; /* nullable */
 
-    ProtoClassDetails parent = 6; /* nullable */
+    optional ProtoClassDetails parent = 6; /* nullable */
 }
 
 // Data Sending
 message ProtoDataPayload {
-    ProtoTypeInfo typeInfo = 1; /* nullable */
+    optional ProtoTypeInfo typeInfo = 1; /* nullable */
 
     bytes data = 2;
 }

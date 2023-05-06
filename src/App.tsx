@@ -7,7 +7,7 @@ const SceneViewer = lazy(() => import("./pages/SceneViewer"));
 import ConnectMenu from "./pages/ConnectMenu";
 import { createEventEffect, getEvents } from "./misc/events";
 
-export function objectUrl(address?: number) {
+export function objectUrl(address?: bigint) {
     return `/scene/${address ?? ""}`;
 }
 
