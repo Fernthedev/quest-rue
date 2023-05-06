@@ -74,7 +74,11 @@ export function TypeSection(props: {
     return (
         <div>
             <div
+                role="checkbox"
+                tabIndex={"0"}
+                aria-checked={collapsed()}
                 class={headerClass()}
+                onKeyPress={() => setCollapsed(!collapsed())}
                 onClick={() => setCollapsed(!collapsed())}
             >
                 <span class="mr-1 inline-block w-4 text-center">

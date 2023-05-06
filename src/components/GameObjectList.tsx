@@ -5,7 +5,6 @@ import {
     createEffect,
     createMemo,
     createSignal,
-    on,
 } from "solid-js";
 import {
     GameObjectJSON,
@@ -54,13 +53,22 @@ function GameObjectListItem(props: {
             >
                 <Show when={hasChildren()}>
                     <span
+                        role="checkbox"
+                        tabIndex={"0"}
+                        aria-checked={collapsed()}
                         class="mr-1 inline-block w-4 text-center"
+                        onKeyPress={() => setCollapsed(!collapsed())}
                         onClick={() => setCollapsed(!collapsed())}
                     >
                         {collapsed() ? "+" : "-"}
                     </span>
                 </Show>
                 <span
+                    role="link"
+                    tabIndex="0"
+                    onKeyPress={() =>
+                        props.navigate(objectUrl(props.obj.address))
+                    }
                     onClick={() => props.navigate(objectUrl(props.obj.address))}
                 >
                     {props.obj.name}
@@ -117,7 +125,7 @@ export default function GameObjectList() {
         createSignal<Map<GameObjectIndex, [boolean, boolean]>>();
 
     const rootObjects = createDeferred(() =>
-        [...gameObjectsStore.objectsMap?.entries() ?? []].filter(
+        [...(gameObjectsStore.objectsMap?.entries() ?? [])].filter(
             ([, [o]]) => !o.transform?.parent
         )
     );
@@ -190,6 +198,7 @@ export default function GameObjectList() {
                                 src="/src/assets/refresh.svg"
                                 elementtiming={"Refresh icon"}
                                 fetchpriority={"auto"}
+                                alt="Refresh"
                             />
                         }
                     >
@@ -198,6 +207,7 @@ export default function GameObjectList() {
                             class="animate-spin"
                             elementtiming={"Spinning icon"}
                             fetchpriority={"auto"}
+                            alt="Loading"
                         />
                     </Show>
                 </button>
