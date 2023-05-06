@@ -7,7 +7,7 @@ syntax = "proto3";
 message ProtoClassInfo {
     string namespaze = 1;
     string clazz = 2;
-    repeated ProtoClassInfo generics = 3;
+    repeated ProtoTypeInfo generics = 3;
 }
 
 message ProtoStructInfo {
@@ -19,7 +19,7 @@ message ProtoStructInfo {
 message ProtoArrayInfo {
     ProtoTypeInfo memberType = 1;
 
-    int32 length = 2;
+    int32 length = 2; /* nullable */
 }
 
 message ProtoTypeInfo {
@@ -34,9 +34,10 @@ message ProtoTypeInfo {
         DOUBLE = 7;
         STRING = 8;
         TYPE = 9;
-        PTR = 10;
-        VOID = 11;
-        UNKNOWN = 12;
+        GENERIC = 10; // TODO: separate and add more metadata
+        PTR = 11; // maybe this too
+        VOID = 12;
+        UNKNOWN = 13;
     }
     oneof Info {
         Primitive primitiveInfo = 1;
@@ -44,7 +45,8 @@ message ProtoTypeInfo {
         ProtoStructInfo structInfo = 3;
         ProtoClassInfo classInfo = 4;
     }
-    int32 size = 5;
+    int32 size = 5; /* or generic index */
+    bool isByref = 6;
 }
 
 // Type Details
@@ -91,4 +93,3 @@ message ProtoDataPayload {
 
     bytes data = 2;
 }
-

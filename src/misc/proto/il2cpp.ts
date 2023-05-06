@@ -9,7 +9,7 @@ export class ProtoClassInfo extends pb_1.Message {
     constructor(data?: any[] | {
         namespaze?: string;
         clazz?: string;
-        generics?: ProtoClassInfo[];
+        generics?: ProtoTypeInfo[];
     }) {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
@@ -38,15 +38,15 @@ export class ProtoClassInfo extends pb_1.Message {
         pb_1.Message.setField(this, 2, value);
     }
     get generics() {
-        return pb_1.Message.getRepeatedWrapperField(this, ProtoClassInfo, 3) as ProtoClassInfo[];
+        return pb_1.Message.getRepeatedWrapperField(this, ProtoTypeInfo, 3) as ProtoTypeInfo[];
     }
-    set generics(value: ProtoClassInfo[]) {
+    set generics(value: ProtoTypeInfo[]) {
         pb_1.Message.setRepeatedWrapperField(this, 3, value);
     }
     static fromObject(data: {
         namespaze?: string;
         clazz?: string;
-        generics?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
+        generics?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>[];
     }): ProtoClassInfo {
         const message = new ProtoClassInfo({});
         if (data.namespaze != null) {
@@ -56,7 +56,7 @@ export class ProtoClassInfo extends pb_1.Message {
             message.clazz = data.clazz;
         }
         if (data.generics != null) {
-            message.generics = data.generics.map(item => ProtoClassInfo.fromObject(item));
+            message.generics = data.generics.map(item => ProtoTypeInfo.fromObject(item));
         }
         return message;
     }
@@ -64,7 +64,7 @@ export class ProtoClassInfo extends pb_1.Message {
         const data: {
             namespaze?: string;
             clazz?: string;
-            generics?: ReturnType<typeof ProtoClassInfo.prototype.toObject>[];
+            generics?: ReturnType<typeof ProtoTypeInfo.prototype.toObject>[];
         } = {};
         if (this.namespaze != null) {
             data.namespaze = this.namespaze;
@@ -73,7 +73,7 @@ export class ProtoClassInfo extends pb_1.Message {
             data.clazz = this.clazz;
         }
         if (this.generics != null) {
-            data.generics = this.generics.map((item: ProtoClassInfo) => item.toObject());
+            data.generics = this.generics.map((item: ProtoTypeInfo) => item.toObject());
         }
         return data;
     }
@@ -86,7 +86,7 @@ export class ProtoClassInfo extends pb_1.Message {
         if (this.clazz.length)
             writer.writeString(2, this.clazz);
         if (this.generics.length)
-            writer.writeRepeatedMessage(3, this.generics, (item: ProtoClassInfo) => item.serialize(writer));
+            writer.writeRepeatedMessage(3, this.generics, (item: ProtoTypeInfo) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -103,7 +103,7 @@ export class ProtoClassInfo extends pb_1.Message {
                     message.clazz = reader.readString();
                     break;
                 case 3:
-                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoClassInfo.deserialize(reader), ProtoClassInfo));
+                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, ProtoTypeInfo.deserialize(reader), ProtoTypeInfo));
                     break;
                 default: reader.skipField();
             }
@@ -321,6 +321,7 @@ export class ProtoTypeInfo extends pb_1.Message {
     #one_of_decls: number[][] = [[1, 2, 3, 4]];
     constructor(data?: any[] | ({
         size?: number;
+        isByref?: boolean;
     } & (({
         primitiveInfo?: ProtoTypeInfo.Primitive;
         arrayInfo?: never;
@@ -359,6 +360,9 @@ export class ProtoTypeInfo extends pb_1.Message {
             }
             if ("size" in data && data.size != undefined) {
                 this.size = data.size;
+            }
+            if ("isByref" in data && data.isByref != undefined) {
+                this.isByref = data.isByref;
             }
         }
     }
@@ -404,6 +408,12 @@ export class ProtoTypeInfo extends pb_1.Message {
     set size(value: number) {
         pb_1.Message.setField(this, 5, value);
     }
+    get isByref() {
+        return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+    }
+    set isByref(value: boolean) {
+        pb_1.Message.setField(this, 6, value);
+    }
     get Info() {
         const cases: {
             [index: number]: "none" | "primitiveInfo" | "arrayInfo" | "structInfo" | "classInfo";
@@ -422,6 +432,7 @@ export class ProtoTypeInfo extends pb_1.Message {
         structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
         classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
         size?: number;
+        isByref?: boolean;
     }): ProtoTypeInfo {
         const message = new ProtoTypeInfo({});
         if (data.primitiveInfo != null) {
@@ -439,6 +450,9 @@ export class ProtoTypeInfo extends pb_1.Message {
         if (data.size != null) {
             message.size = data.size;
         }
+        if (data.isByref != null) {
+            message.isByref = data.isByref;
+        }
         return message;
     }
     toObject() {
@@ -448,6 +462,7 @@ export class ProtoTypeInfo extends pb_1.Message {
             structInfo?: ReturnType<typeof ProtoStructInfo.prototype.toObject>;
             classInfo?: ReturnType<typeof ProtoClassInfo.prototype.toObject>;
             size?: number;
+            isByref?: boolean;
         } = {};
         if (this.primitiveInfo != null) {
             data.primitiveInfo = this.primitiveInfo;
@@ -463,6 +478,9 @@ export class ProtoTypeInfo extends pb_1.Message {
         }
         if (this.size != null) {
             data.size = this.size;
+        }
+        if (this.isByref != null) {
+            data.isByref = this.isByref;
         }
         return data;
     }
@@ -480,6 +498,8 @@ export class ProtoTypeInfo extends pb_1.Message {
             writer.writeMessage(4, this.classInfo, () => this.classInfo.serialize(writer));
         if (this.size != 0)
             writer.writeInt32(5, this.size);
+        if (this.isByref != false)
+            writer.writeBool(6, this.isByref);
         if (!w)
             return writer.getResultBuffer();
     }
@@ -503,6 +523,9 @@ export class ProtoTypeInfo extends pb_1.Message {
                     break;
                 case 5:
                     message.size = reader.readInt32();
+                    break;
+                case 6:
+                    message.isByref = reader.readBool();
                     break;
                 default: reader.skipField();
             }
@@ -528,9 +551,10 @@ export namespace ProtoTypeInfo {
         DOUBLE = 7,
         STRING = 8,
         TYPE = 9,
-        PTR = 10,
-        VOID = 11,
-        UNKNOWN = 12
+        GENERIC = 10,
+        PTR = 11,
+        VOID = 12,
+        UNKNOWN = 13
     }
 }
 export class ProtoFieldInfo extends pb_1.Message {

@@ -1,8 +1,14 @@
-import { For, createEffect, createMemo } from "solid-js";
+import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
-import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
-import { protoDataToString, stringToProtoData } from "../../misc/utils";
+import { ProtoMethodInfo, ProtoTypeInfo } from "../../misc/proto/il2cpp";
+import {
+    getAllGenerics,
+    protoDataToString,
+    protoTypeToString,
+    stringToProtoData,
+    stringToProtoType,
+} from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
 import { refreshSpan } from "./ObjectView";
 import toast from "solid-toast";
@@ -15,34 +21,63 @@ export function MethodCell(props: {
 }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
-    const args = createMemo(() =>
-        Object.keys(props.method.args ?? {}).map(() => "")
-    );
+
+    const args = createMemo(() => Object.entries(props.method.args ?? {}));
+
+    const argInputs = createMemo(() => args().map(() => ""));
     const [result, resultLoading, runMethod] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
-        const argsData = args().map((str, index) =>
+        const argsData = argInputs().map((str, index) =>
             stringToProtoData(str, Object.values(props.method.args!)[index])
+        );
+        const genericsData = genericInputs().map((str) =>
+            stringToProtoType(str)
         );
         runMethod({
             invokeMethod: {
                 methodId: props.method.id,
                 objectAddress: props.address,
+                generics: genericsData,
                 args: argsData,
             },
         });
     }
 
+    const genericArgs = createMemo(() =>
+        args()
+            .map(([, t]) => t)
+            .concat([props.method.returnType!])
+            .flatMap((t) => getAllGenerics(t))
+    );
+    const genericInputs = createMemo(() => genericArgs().map(() => ""));
+
     createEffect(() => {
         const resultData = result();
-        if (!resultData?.error) return
+        if (!resultData?.error) return;
 
-        toast.error(`Method exception error: ${resultData.error}`)
+        toast.error(`Method exception error: ${resultData.error}`);
     });
 
     return (
         <span ref={element} class="font-mono">
-            {props.method.name + " ("}
+            {props.method.name + " "}
+            <Show when={genericArgs().length > 0}>
+                {"<"}
+                <For each={genericArgs()}>
+                    {(type, index) => (
+                        <InputCell
+                            input
+                            type={type}
+                            // False positive
+                            // eslint-disable-next-line solid/reactivity
+                            onInput={(str) => (genericInputs()[index()] = str)}
+                        />
+                    )}
+                </For>
+                {">"}
+            </Show>
+            {"("}
             <For each={Object.entries(props.method.args ?? {})}>
                 {([name, type], index) => (
                     <InputCell
@@ -51,7 +86,7 @@ export function MethodCell(props: {
                         type={type!}
                         // False positive
                         // eslint-disable-next-line solid/reactivity
-                        onInput={(str) => (args()[index()] = str)}
+                        onInput={(str) => (argInputs()[index()] = str)}
                     />
                 )}
             </For>

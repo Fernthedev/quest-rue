@@ -11,69 +11,207 @@
 // in which case the handling of value / reference types needs to be done before the call
 // so int*, Vector3*, Il2CppObject*
 
+inline void** pointerOffset(void* ptr, int offset) {
+    return (void**) ((char*) ptr) + offset;
+}
+
+void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size);
+
+void* HandleClass(ProtoClassInfo const& info, void* arg, int size) {
+    return arg;
+}
+
+void* HandleArray(ProtoArrayInfo const& info, void* arg, int size) {
+    int len = info.length();
+    if(len < 0) // idk
+        return arg;
+    auto elemTypeProto = info.membertype();
+    auto elemClass = ClassUtils::GetClass(elemTypeProto);
+    auto ret = il2cpp_functions::array_new(elemClass, len);
+    void* values = pointerOffset(ret, sizeof(Il2CppArray));
+    // for arrays with variable length data... just set size to the largest and align based on that I guess
+    // TODO: fix that
+    int inputSize = elemTypeProto.size();
+    int outputSize = fieldTypeSize(typeofclass(elemClass));
+    for(int i = 0; i < len; i++) {
+        void* value = HandleType(elemTypeProto, pointerOffset(arg, i * inputSize), inputSize);
+        *pointerOffset(values, i * outputSize) = value;
+    }
+    return ret;
+}
+
+void* HandleStruct(ProtoStructInfo const& info, void* arg, int size) {
+    // TODO: structs with fancy contents
+    // for(auto& field : info.fieldoffsets())
+    //     *pointerOffset(???, field.first) = HandleType(field.second.type(), pointerOffset(arg, ???), ???);
+    return arg;
+}
+
+void* HandlePrimitive(ProtoTypeInfo::Primitive info, void* arg, int size) {
+    switch(info) {
+    case ProtoTypeInfo::STRING:
+        // since StringW does an il2cpp string allocation, it should last long enough for the method
+        // btw make sure the string is null terminated haha
+        return StringW(std::u16string_view((Il2CppChar*) arg, size)).convert();
+    case ProtoTypeInfo::TYPE: {
+        ProtoTypeInfo typeInfo;
+        typeInfo.ParseFromArray(arg, size);
+        return il2cpp_utils::GetSystemType(ClassUtils::GetType(typeInfo));
+    } default:
+        return arg;
+    }
+}
+
+void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size) {
+    if(typeInfo.has_classinfo())
+        return HandleClass(typeInfo.classinfo(), arg, size);
+    else if(typeInfo.has_arrayinfo())
+        return HandleArray(typeInfo.arrayinfo(), arg, size);
+    else if(typeInfo.has_structinfo())
+        return HandleStruct(typeInfo.structinfo(), arg, size);
+    else if(typeInfo.has_primitiveinfo())
+        return HandlePrimitive(typeInfo.primitiveinfo(), arg, size);
+    return nullptr;
+}
+
+void FillList(std::vector<ProtoDataPayload> args, void** dest) {
+    for(int i = 0; i < args.size(); i++)
+        dest[i] = HandleType(args[i].typeinfo(), (void*) args[i].data().data(), args[i].data().length());
+}
+
+ProtoDataPayload VoidDataPayload(Il2CppType const* type = nullptr) {
+    ProtoDataPayload ret;
+    ProtoTypeInfo typeProto;
+    if(!type) {
+        typeProto.set_primitiveinfo(ProtoTypeInfo::VOID);
+        typeProto.set_size(0);
+        typeProto.set_isbyref(false);
+    } else
+        typeProto = ClassUtils::GetTypeInfo(type);
+    *ret.mutable_typeinfo() = typeProto;
+    return ret;
+}
+
+std::string OutputType(ProtoTypeInfo& typeInfo, void* value);
+
+std::string OutputClass(ProtoClassInfo& info, void* value, int size) {
+    return std::string((char*) value, size);
+}
+
+std::string OutputArray(ProtoArrayInfo& info, void* value, int size) {
+    auto arr = *(Il2CppArray**) value;
+    if(arr->max_length <= 0)
+        return "";
+    info.set_length(arr->max_length);
+
+    // see comment in HandleArray
+    std::vector<std::string> elementData{};
+    void* values = pointerOffset(arr, sizeof(Il2CppArray));
+    int memberSize = info.membertype().size();
+    for(int i = 0; i < arr->max_length; i++)
+        elementData.emplace_back(OutputType(*info.mutable_membertype(), pointerOffset(values, i * memberSize)));
+
+    int maxSize = 0;
+    for(auto& data : elementData) {
+        if(maxSize < data.length())
+            maxSize = data.length();
+    }
+    info.mutable_membertype()->set_size(maxSize);
+    std::stringstream out;
+    for(auto& data : elementData) {
+        // pad endings of smaller elements with null
+        data.append(maxSize - data.length(), '\0');
+        out << data;
+    }
+    return out.str();
+}
+
+std::string OutputStruct(ProtoStructInfo& info, void* value, int size) {
+    // TODO: structs with strings and stuff here too
+    return std::string((char*) value, size);
+}
+
+std::string OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size) {
+    switch(info) {
+    case ProtoTypeInfo::STRING: {
+        auto str = *(Il2CppString**) value;
+        // while codegen says this is a char16, il2cpp says this is a char16[]
+        // also ignore the error
+        return std::string((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
+    } case ProtoTypeInfo::TYPE:
+        return ClassUtils::GetTypeInfo(il2cpp_functions::class_from_system_type(*(Il2CppReflectionType**) value)).SerializeAsString();
+    default:
+        return std::string((char*) value, size);
+    }
+}
+
+std::string OutputType(ProtoTypeInfo& typeInfo, void* value) {
+    if(typeInfo.has_classinfo())
+        return OutputClass(*typeInfo.mutable_classinfo(), value, typeInfo.size());
+    else if(typeInfo.has_arrayinfo())
+        return OutputArray(*typeInfo.mutable_arrayinfo(), value, typeInfo.size());
+    else if(typeInfo.has_structinfo())
+        return OutputStruct(*typeInfo.mutable_structinfo(), value, typeInfo.size());
+    else if(typeInfo.has_primitiveinfo())
+        return OutputPrimitive(typeInfo.primitiveinfo(), value, typeInfo.size());
+    return "";
+}
+
+ProtoDataPayload OutputData(ProtoTypeInfo& typeInfo, void* value) {
+    ProtoDataPayload ret;
+    ret.set_data(OutputType(typeInfo, value));
+    typeInfo.set_size(ret.data().length());
+    *ret.mutable_typeinfo() = typeInfo;
+    return ret;
+}
+
+ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
+    if(method->return_type->type == IL2CPP_TYPE_VOID) {
+        LOG_INFO("void return");
+        return VoidDataPayload();
+    }
+    size_t size = fieldTypeSize(method->return_type);
+    char ownedValue[size];
+    if(ret && typeIsValuetype(method->return_type)) {
+        memcpy(ownedValue, il2cpp_functions::object_unbox(ret), size);
+        il2cpp_functions::GC_free(ret);
+    } else
+    // boxedReturn is a pointer to a reference type, so we want to have that pointer as the value we return
+        memcpy(ownedValue, &ret, size);
+    auto typeInfo = ClassUtils::GetTypeInfo(method->return_type);
+    return OutputData(typeInfo, ownedValue);
+}
+
 namespace MethodUtils {
-    RetWrapper Run(MethodInfo* method, Il2CppObject* object, void** args, std::string& error, bool derefReferences) {
+    ProtoDataPayload Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences) {
         LOG_INFO("Running method {}", method->name);
         LOG_INFO("{} parameters", method->parameters_count);
 
-        // let's not manage memory manually for strings
-        std::vector<StringW> madeStrings = {};
+        void* il2cppArgs[args.size()];
+        // TODO: type checking?
+        FillList(args, il2cppArgs);
 
         // deref reference types when running a method as it expects direct pointers to them
-        for(int i = 0; i < method->parameters_count; i++) {
-            // for strings, instead of an Il2CppString** (like for other objects), a char16_t* is sent in the args
-            if(method->parameters[i].parameter_type->type == Il2CppTypeEnum::IL2CPP_TYPE_STRING)
-                // make sure strings in your packets are null terminated lol
-                args[i] = madeStrings.emplace_back((Il2CppChar*) args[i]).convert();
-            else if(derefReferences) {
-                if(!typeIsValuetype(method->parameters[i].parameter_type))
-                    args[i] = *(void**) args[i];
-            }
+        for(int i = 0; i < args.size(); i++) {
+            if(derefReferences && args[i].typeinfo().has_classinfo())
+                il2cppArgs[i] = *(void**) il2cppArgs[i];
         }
 
         Il2CppException* ex = nullptr;
-        auto ret = il2cpp_functions::runtime_invoke(method, object, args, &ex);
+        auto ret = il2cpp_functions::runtime_invoke(method, object, (void**) il2cppArgs, &ex);
 
         if(ex) {
-            LOG_INFO("{}: Failed with exception: {}", method->name, il2cpp_utils::ExceptionToString(ex));
             error = il2cpp_utils::ExceptionToString(ex);
-            return {};
-        }
-        if(method->return_type->type == IL2CPP_TYPE_VOID) {
-            LOG_INFO("void return");
-            return {};
+            LOG_INFO("{}: Failed with exception: {}", method->name, error);
+            return VoidDataPayload(method->return_type);
         }
 
         LOG_INFO("Returning");
         if(!ret) {
             LOG_INFO("null pointer");
-            size_t size = sizeof(nullptr);
-            void* ownedRet = malloc(size);
-            (*(void**) ownedRet) = nullptr;
-            return RetWrapper(ownedRet, size);
+            return VoidDataPayload(method->return_type);
         }
-        size_t size = fieldTypeSize(method->return_type);
-        bool isString = method->return_type->type == Il2CppTypeEnum::IL2CPP_TYPE_STRING;
-        auto asStr = (Il2CppString*) ret;
-        if(isString)
-            size = (asStr->m_stringLength + 1) * sizeof(Il2CppChar); // null char
-        if(isString) LOG_INFO("Returning string of length {}", size);
-        void* ownedRet = malloc(size);
-        // ret is a boxed value type, so a pointer to the data with a bit of metatada or something
-        // so we unbox it to get the raw pointer to the data, and copy that data so it is the value we return
-        if(ret && typeIsValuetype(method->return_type)) {
-            memcpy(ownedRet, il2cpp_functions::object_unbox(ret), size);
-            il2cpp_functions::GC_free(ret);
-        } else if(ret && isString) {
-        // while codegen says this is a char16, il2cpp says this is a char16[]
-        // also the Il2CppString doesn't contain the null char
-            memcpy(ownedRet, (void*) &asStr->m_firstChar, size - sizeof(Il2CppChar));
-            memset((char*) ownedRet + size - sizeof(Il2CppChar), 0, sizeof(Il2CppChar));
-            il2cpp_functions::GC_free(ret);
-        } else
-        // ret is a pointer to a reference type, so we want to have that pointer as the value we return
-            memcpy(ownedRet, &ret, size);
-        return RetWrapper(ownedRet, size);
+        return HandleReturn(method, ret);
     }
 
     ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property) {
@@ -104,41 +242,28 @@ namespace MethodUtils {
 }
 
 namespace FieldUtils {
-    RetWrapper Get(FieldInfo* field, Il2CppObject* object) {
+    ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
         LOG_INFO("Getting field {}", field->name);
-        LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
+        LOG_INFO("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
-        bool isString = field->type->type == Il2CppTypeEnum::IL2CPP_TYPE_STRING;
-        Il2CppString* asStr;
         size_t size = fieldTypeSize(field->type);
-        void* ret = nullptr;
-        if(isString)
-            ret = &asStr;
-        else
-            ret = malloc(size);
+        char ret[size];
         // in the case of either a value type or not, the value we want will be copied to what we return
-        // only strings are still a special case
-        il2cpp_functions::field_get_value(object, field, ret);
-        if(isString) {
-            if(!asStr) // null string field
-                return {};
-            size = asStr->m_stringLength * sizeof(Il2CppChar);
-            ret = malloc(size + sizeof(Il2CppChar));
-            memcpy(ret, (void*) &asStr->m_firstChar, size);
-            memset((char*) ret + size, 0, sizeof(Il2CppChar));
-        }
-        return RetWrapper(ret, size);
+        il2cpp_functions::field_get_value(object, field, (void*) ret);
+
+        // handles copying of string data if necessary
+        auto typeInfo = ClassUtils::GetTypeInfo(field->type);
+        return OutputData(typeInfo, ret);
     }
 
-    void Set(FieldInfo* field, Il2CppObject* object, void** args, bool derefReferences) {
+    void Set(FieldInfo* field, Il2CppObject* object, ProtoDataPayload const& arg, bool derefReferences) {
         LOG_INFO("Setting field {}", field->name);
-        LOG_INFO("Field type: {} = {}", field->type->type, typeName(field->type));
+        LOG_INFO("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
-        void* value = *args;
-        if(field->type->type == Il2CppTypeEnum::IL2CPP_TYPE_STRING)
-            value = StringW((Il2CppChar*) value).convert();
-        else if(derefReferences && !typeIsValuetype(field->type))
+        void* value = HandleType(arg.typeinfo(), (void*) arg.data().data(), arg.data().length());
+
         // deref reference types here as well since it expects the same as if it were running a method
+        if(derefReferences && arg.typeinfo().has_classinfo())
             value = *(void**) value;
 
         il2cpp_functions::field_set_value(object, field, value);

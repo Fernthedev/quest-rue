@@ -1,5 +1,5 @@
 import { Route, Router, Routes } from "@solidjs/router";
-import { catchError, lazy } from "solid-js";
+import { lazy } from "solid-js";
 
 import toast, { Toaster } from "solid-toast";
 

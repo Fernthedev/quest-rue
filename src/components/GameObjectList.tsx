@@ -38,7 +38,7 @@ function GameObjectListItem(props: {
     });
 
     const children = createMemo(() =>
-        gameObjectsStore.childrenMap?.[address()].filter(
+        gameObjectsStore.childrenMap?.[address()]?.filter(
             (addr) => props.addressMap?.has(addr) ?? true
         )
     );

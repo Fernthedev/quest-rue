@@ -84,9 +84,7 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
     auto field = asPtr(FieldInfo, packet.fieldid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    auto value = (void*) packet.value().data().data();
-
-    FieldUtils::Set(field, object, &value);
+    FieldUtils::Set(field, object, packet.value());
 
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
@@ -107,27 +105,26 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
     GetFieldResult& result = *wrapper.mutable_getfieldresult();
     result.set_fieldid(asInt(field));
 
-    ProtoDataPayload& data = *result.mutable_value();
-    *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(field->type);
-    if(field->type->type == IL2CPP_TYPE_STRING)
-        data.mutable_typeinfo()->set_size(res.GetAsBytes().size());
-    if(res.HasValue())
-        data.set_data(res.GetAsString());
+    *result.mutable_value() = res;
 
     handler->sendPacket(wrapper);
 }
 
 void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
-    auto method = asPtr(MethodInfo, packet.methodid());
+    auto method = asPtr(const MethodInfo, packet.methodid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    // TODO: type checking?
-    int argNum = packet.args_size();
-    void* args[argNum];
-    for(int i = 0; i < argNum; i++) {
-        // for protobuf here, the string is effectively a pointer to the bytes
-        args[i] = (void*) packet.args(i).data().data();
+    if(int size = packet.generics_size()) {
+        std::vector<Il2CppClass*> generics{};
+        for(int i = 0; i < size; i++)
+            generics.push_back(GetClass(packet.generics(i)));
+
+        method = il2cpp_utils::MakeGenericMethod(method, generics);
     }
+
+    std::vector<ProtoDataPayload> args{};
+    for(int i = 0; i < packet.args_size(); i++)
+        args.emplace_back(packet.args(i));
 
     std::string err = "";
     auto res = MethodUtils::Run(method, object, args, err);
@@ -145,12 +142,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     }
 
     result.set_status(InvokeMethodResult::OK);
-    ProtoDataPayload& data = *result.mutable_result();
-    *data.mutable_typeinfo() = ClassUtils::GetTypeInfo(method->return_type);
-    if(method->return_type->type == IL2CPP_TYPE_STRING)
-        data.mutable_typeinfo()->set_size(res.GetAsBytes().size());
-    if(res.HasValue())
-        data.set_data(res.GetAsString());
+    *result.mutable_result() = res;
     handler->sendPacket(wrapper);
 }
 
@@ -226,7 +218,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
             name = obj->get_name().operator std::string();
         found.set_address(asInt(obj));
         found.set_name(name);
-        *found.mutable_classinfo() = GetClassInfo(classofinst(obj));
+        *found.mutable_classinfo() = GetClassInfo(typeofinst(obj));
     }
 
     handler->sendPacket(wrapper);
@@ -255,7 +247,7 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
 
         found.set_address(asInt(comp));
         found.set_name(comp->get_name());
-        *found.mutable_classinfo() = GetClassInfo(classofinst(comp));
+        *found.mutable_classinfo() = GetClassInfo(typeofinst(comp));
     }
 
     handler->sendPacket(wrapper);
@@ -307,7 +299,7 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     // method to improve stack allocations
     while (currentClass != nullptr) {
         LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
-        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(currentClass);
+        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(typeofclass(currentClass));
 
         for (auto f : ClassUtils::GetFields(currentClass))
             *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
@@ -325,7 +317,7 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
         }
 
         for (auto i : ClassUtils::GetInterfaces(currentClass))
-            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(i);
+            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(typeofclass(i));
 
         currentClass = ClassUtils::GetParent(currentClass);
         if (currentClass)

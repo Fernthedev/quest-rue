@@ -377,16 +377,20 @@ export class InvokeMethod extends pb_1.Message {
     constructor(data?: any[] | {
         methodId?: number;
         objectAddress?: number;
+        generics?: dependency_1.ProtoTypeInfo[];
         args?: dependency_1.ProtoDataPayload[];
     }) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3, 4], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
             if ("methodId" in data && data.methodId != undefined) {
                 this.methodId = data.methodId;
             }
             if ("objectAddress" in data && data.objectAddress != undefined) {
                 this.objectAddress = data.objectAddress;
+            }
+            if ("generics" in data && data.generics != undefined) {
+                this.generics = data.generics;
             }
             if ("args" in data && data.args != undefined) {
                 this.args = data.args;
@@ -405,15 +409,22 @@ export class InvokeMethod extends pb_1.Message {
     set objectAddress(value: number) {
         pb_1.Message.setField(this, 2, value);
     }
+    get generics() {
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoTypeInfo, 3) as dependency_1.ProtoTypeInfo[];
+    }
+    set generics(value: dependency_1.ProtoTypeInfo[]) {
+        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+    }
     get args() {
-        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoDataPayload, 3) as dependency_1.ProtoDataPayload[];
+        return pb_1.Message.getRepeatedWrapperField(this, dependency_1.ProtoDataPayload, 4) as dependency_1.ProtoDataPayload[];
     }
     set args(value: dependency_1.ProtoDataPayload[]) {
-        pb_1.Message.setRepeatedWrapperField(this, 3, value);
+        pb_1.Message.setRepeatedWrapperField(this, 4, value);
     }
     static fromObject(data: {
         methodId?: number;
         objectAddress?: number;
+        generics?: ReturnType<typeof dependency_1.ProtoTypeInfo.prototype.toObject>[];
         args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
     }): InvokeMethod {
         const message = new InvokeMethod({});
@@ -422,6 +433,9 @@ export class InvokeMethod extends pb_1.Message {
         }
         if (data.objectAddress != null) {
             message.objectAddress = data.objectAddress;
+        }
+        if (data.generics != null) {
+            message.generics = data.generics.map(item => dependency_1.ProtoTypeInfo.fromObject(item));
         }
         if (data.args != null) {
             message.args = data.args.map(item => dependency_1.ProtoDataPayload.fromObject(item));
@@ -432,6 +446,7 @@ export class InvokeMethod extends pb_1.Message {
         const data: {
             methodId?: number;
             objectAddress?: number;
+            generics?: ReturnType<typeof dependency_1.ProtoTypeInfo.prototype.toObject>[];
             args?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>[];
         } = {};
         if (this.methodId != null) {
@@ -439,6 +454,9 @@ export class InvokeMethod extends pb_1.Message {
         }
         if (this.objectAddress != null) {
             data.objectAddress = this.objectAddress;
+        }
+        if (this.generics != null) {
+            data.generics = this.generics.map((item: dependency_1.ProtoTypeInfo) => item.toObject());
         }
         if (this.args != null) {
             data.args = this.args.map((item: dependency_1.ProtoDataPayload) => item.toObject());
@@ -453,8 +471,10 @@ export class InvokeMethod extends pb_1.Message {
             writer.writeUint64(1, this.methodId);
         if (this.objectAddress != 0)
             writer.writeUint64(2, this.objectAddress);
+        if (this.generics.length)
+            writer.writeRepeatedMessage(3, this.generics, (item: dependency_1.ProtoTypeInfo) => item.serialize(writer));
         if (this.args.length)
-            writer.writeRepeatedMessage(3, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
+            writer.writeRepeatedMessage(4, this.args, (item: dependency_1.ProtoDataPayload) => item.serialize(writer));
         if (!w)
             return writer.getResultBuffer();
     }
@@ -471,7 +491,10 @@ export class InvokeMethod extends pb_1.Message {
                     message.objectAddress = reader.readUint64();
                     break;
                 case 3:
-                    reader.readMessage(message.args, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_1.ProtoDataPayload.deserialize(reader), dependency_1.ProtoDataPayload));
+                    reader.readMessage(message.generics, () => pb_1.Message.addToRepeatedWrapperField(message, 3, dependency_1.ProtoTypeInfo.deserialize(reader), dependency_1.ProtoTypeInfo));
+                    break;
+                case 4:
+                    reader.readMessage(message.args, () => pb_1.Message.addToRepeatedWrapperField(message, 4, dependency_1.ProtoDataPayload.deserialize(reader), dependency_1.ProtoDataPayload));
                     break;
                 default: reader.skipField();
             }
@@ -491,6 +514,7 @@ export class InvokeMethodResult extends pb_1.Message {
         status?: InvokeMethodResult.Status;
         methodId?: number;
         result?: dependency_1.ProtoDataPayload;
+        byrefChanges?: Map<number, dependency_1.ProtoDataPayload>;
         error?: string;
     }) {
         super();
@@ -505,10 +529,15 @@ export class InvokeMethodResult extends pb_1.Message {
             if ("result" in data && data.result != undefined) {
                 this.result = data.result;
             }
+            if ("byrefChanges" in data && data.byrefChanges != undefined) {
+                this.byrefChanges = data.byrefChanges;
+            }
             if ("error" in data && data.error != undefined) {
                 this.error = data.error;
             }
         }
+        if (!this.byrefChanges)
+            this.byrefChanges = new Map();
     }
     get status() {
         return pb_1.Message.getFieldWithDefault(this, 1, InvokeMethodResult.Status.ERR) as InvokeMethodResult.Status;
@@ -531,16 +560,25 @@ export class InvokeMethodResult extends pb_1.Message {
     get has_result() {
         return pb_1.Message.getField(this, 3) != null;
     }
+    get byrefChanges() {
+        return pb_1.Message.getField(this, 4) as any as Map<number, dependency_1.ProtoDataPayload>;
+    }
+    set byrefChanges(value: Map<number, dependency_1.ProtoDataPayload>) {
+        pb_1.Message.setField(this, 4, value as any);
+    }
     get error() {
-        return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        return pb_1.Message.getFieldWithDefault(this, 5, "") as string;
     }
     set error(value: string) {
-        pb_1.Message.setField(this, 4, value);
+        pb_1.Message.setField(this, 5, value);
     }
     static fromObject(data: {
         status?: InvokeMethodResult.Status;
         methodId?: number;
         result?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+        byrefChanges?: {
+            [key: number]: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+        };
         error?: string;
     }): InvokeMethodResult {
         const message = new InvokeMethodResult({});
@@ -553,6 +591,9 @@ export class InvokeMethodResult extends pb_1.Message {
         if (data.result != null) {
             message.result = dependency_1.ProtoDataPayload.fromObject(data.result);
         }
+        if (typeof data.byrefChanges == "object") {
+            message.byrefChanges = new Map(Object.entries(data.byrefChanges).map(([key, value]) => [Number(key), dependency_1.ProtoDataPayload.fromObject(value)]));
+        }
         if (data.error != null) {
             message.error = data.error;
         }
@@ -563,6 +604,9 @@ export class InvokeMethodResult extends pb_1.Message {
             status?: InvokeMethodResult.Status;
             methodId?: number;
             result?: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+            byrefChanges?: {
+                [key: number]: ReturnType<typeof dependency_1.ProtoDataPayload.prototype.toObject>;
+            };
             error?: string;
         } = {};
         if (this.status != null) {
@@ -573,6 +617,9 @@ export class InvokeMethodResult extends pb_1.Message {
         }
         if (this.result != null) {
             data.result = this.result.toObject();
+        }
+        if (this.byrefChanges != null) {
+            data.byrefChanges = (Object.fromEntries)((Array.from)(this.byrefChanges).map(([key, value]) => [key, value.toObject()]));
         }
         if (this.error != null) {
             data.error = this.error;
@@ -589,8 +636,14 @@ export class InvokeMethodResult extends pb_1.Message {
             writer.writeUint64(2, this.methodId);
         if (this.has_result)
             writer.writeMessage(3, this.result, () => this.result.serialize(writer));
+        for (const [key, value] of this.byrefChanges) {
+            writer.writeMessage(4, this.byrefChanges, () => {
+                writer.writeInt32(1, key);
+                writer.writeMessage(2, value, () => value.serialize(writer));
+            });
+        }
         if (this.error.length)
-            writer.writeString(4, this.error);
+            writer.writeString(5, this.error);
         if (!w)
             return writer.getResultBuffer();
     }
@@ -610,6 +663,13 @@ export class InvokeMethodResult extends pb_1.Message {
                     reader.readMessage(message.result, () => message.result = dependency_1.ProtoDataPayload.deserialize(reader));
                     break;
                 case 4:
+                    reader.readMessage(message, () => pb_1.Map.deserializeBinary(message.byrefChanges as any, reader, reader.readInt32, () => {
+                        let value;
+                        reader.readMessage(message, () => value = dependency_1.ProtoDataPayload.deserialize(reader));
+                        return value;
+                    }));
+                    break;
+                case 5:
                     message.error = reader.readString();
                     break;
                 default: reader.skipField();

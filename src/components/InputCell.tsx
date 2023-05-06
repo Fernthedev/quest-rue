@@ -62,14 +62,17 @@ export default function InputCell(props: {
         return "text";
     });
     const minWidth = createMemo(() => {
-        if (props.type.structInfo != undefined) return 200;
+        if (props.type.structInfo != undefined) return 150;
+        if (props.type.arrayInfo != undefined) return 150;
 
-        if (props.type.primitiveInfo != undefined) {
+        if (props.type.classInfo == undefined) {
             switch (props.type.primitiveInfo) {
                 case ProtoTypeInfo.Primitive.BOOLEAN:
                     return 60;
                 case ProtoTypeInfo.Primitive.CHAR:
                     return 40;
+                case ProtoTypeInfo.Primitive.GENERIC:
+                    return 80;
                 case ProtoTypeInfo.Primitive.VOID:
                     return 50;
             }
@@ -77,6 +80,7 @@ export default function InputCell(props: {
 
         return 100;
     });
+    const maxWidth = createMemo(() => minWidth() * 2);
 
     const detail = createMemo(
         () =>
@@ -86,13 +90,13 @@ export default function InputCell(props: {
 
     const navigate = useNavigate();
 
- 
     return (
         <span
             class={styles.inputParent}
             style={{
                 "flex-grow": detail().length,
                 "min-width": `${minWidth()}px`,
+                "max-width": `${maxWidth()}px`,
             }}
         >
             <input
@@ -112,7 +116,9 @@ export default function InputCell(props: {
                     img="navigate.svg"
                     // False positive
                     // eslint-disable-next-line solid/reactivity
-                    onClick={() => navigate(objectUrl(Number.parseInt(props.value!)))}
+                    onClick={() =>
+                        navigate(objectUrl(Number.parseInt(props.value!)))
+                    }
                 />
             </Show>
         </span>

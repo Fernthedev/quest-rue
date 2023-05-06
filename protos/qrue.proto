@@ -31,7 +31,8 @@ message GetFieldResult {
 message InvokeMethod {
     uint64 methodId = 1;
     uint64 objectAddress = 2;
-    repeated ProtoDataPayload args = 3;
+    repeated ProtoTypeInfo generics = 3;
+    repeated ProtoDataPayload args = 4;
 }
 
 message InvokeMethodResult {
@@ -42,7 +43,9 @@ message InvokeMethodResult {
     Status status = 1;
     uint64 methodId = 2;
     ProtoDataPayload result = 3;
-    string error = 4; /* nullable */
+    // map from parameter index
+    map<int32, ProtoDataPayload> byrefChanges = 4;
+    string error = 5; /* nullable */
 }
 
 message SearchObjects {

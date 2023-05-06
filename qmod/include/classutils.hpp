@@ -2,9 +2,12 @@
 
 #include "main.hpp"
 
-std::string typeName(const Il2CppType* type);
-
 size_t fieldTypeSize(const Il2CppType* type);
+
+#define typeofclass(klass) &klass->byval_arg
+#define classoftype(type) il2cpp_functions::class_from_il2cpp_type(type)
+#define classofinst(instance) instance->klass
+#define typeofinst(instance) typeofclass(classofinst(instance))
 
 namespace ClassUtils {
     std::vector<FieldInfo*> GetFields(Il2CppClass const* klass);
@@ -19,12 +22,13 @@ namespace ClassUtils {
     Il2CppClass* GetParent(Il2CppClass const* klass);
 
     ProtoTypeInfo GetTypeInfo(Il2CppType const* type);
-    inline ProtoTypeInfo GetTypeInfo(Il2CppClass* klass) {
-        return GetTypeInfo(il2cpp_functions::class_get_type(klass));
+    inline ProtoTypeInfo GetTypeInfo(Il2CppClass const* klass) {
+        return GetTypeInfo(typeofclass(klass));
     }
-    ProtoClassInfo GetClassInfo(Il2CppClass const* classType);
-    ProtoStructInfo GetStructInfo(Il2CppClass const* structType);
-}
+    ProtoClassInfo GetClassInfo(Il2CppType const* classType);
+    ProtoArrayInfo GetArrayInfo(Il2CppType const* arrayType);
+    ProtoStructInfo GetStructInfo(Il2CppType const* structType);
 
-#define classofinst(instance) il2cpp_functions::object_get_class(instance)
-#define classoftype(instance) il2cpp_functions::class_from_il2cpp_type(instance)
+    Il2CppClass* GetClass(ProtoTypeInfo const& typeInfo);
+    Il2CppType* GetType(ProtoTypeInfo const& typeInfo);
+}
