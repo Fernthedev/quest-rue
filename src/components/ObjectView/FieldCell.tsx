@@ -6,6 +6,8 @@ import { protoDataToString, stringToProtoData } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
 import { refreshSpan } from "./ObjectView";
 
+import styles from "./ObjectView.module.css";
+
 export function FieldCell(props: {
     field: PacketJSON<ProtoFieldInfo>;
     colSize: number;
@@ -41,7 +43,7 @@ export function FieldCell(props: {
         });
     }
     return (
-        <span ref={element} class="font-mono">
+        <span ref={element} class={`font-mono ${styles.field}`}>
             {props.field.name + " = "}
             <InputCell
                 input

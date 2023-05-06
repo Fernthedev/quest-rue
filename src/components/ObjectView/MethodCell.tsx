@@ -12,6 +12,8 @@ import InputCell, { ActionButton } from "../InputCell";
 import { refreshSpan } from "./ObjectView";
 import toast from "solid-toast";
 
+import styles from "./ObjectView.module.css";
+
 export function MethodCell(props: {
     method: PacketJSON<ProtoMethodInfo>;
     colSize: number;
@@ -60,7 +62,7 @@ export function MethodCell(props: {
     });
 
     return (
-        <span ref={element} class="font-mono">
+        <span ref={element} class={`font-mono method ${styles.method}`}>
             {props.method.name + " "}
             <Show when={genericArgs().length > 0}>
                 {"<"}
