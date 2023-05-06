@@ -55,6 +55,7 @@ export function FieldCell(props: {
                 onClick={refresh}
                 loading={valueLoading() || valueSetting()}
                 img="refresh.svg"
+                tooltip="Refresh"
             />
         </span>
     );

@@ -96,6 +96,7 @@ export function MethodCell(props: {
                 onClick={run}
                 loading={resultLoading()}
                 img="enter.svg"
+                tooltip="Invoke"
             />
             <InputCell
                 output

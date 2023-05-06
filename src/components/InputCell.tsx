@@ -1,4 +1,4 @@
-import { ErrorBoundary, Show, createMemo } from "solid-js";
+import { Show, createMemo } from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
@@ -12,11 +12,22 @@ export function ActionButton(props: {
     onClick: () => void;
     loading?: boolean;
     class?: string;
+    label?: string
+    tooltip?: string;
 }) {
+    const classes = createMemo(() => props.class);
+
     return (
-        // False positive
-        // eslint-disable-next-line solid/reactivity
-        <button class={props.class ?? ""} onClick={() => errorHandle(() => props.onClick())}>
+        <button
+            // Accessibility is important
+            aria-label={props.label ?? props.tooltip}
+            class={classes()}
+            classList={{ tooltip: props.tooltip !== undefined }}
+            // False positive
+            // eslint-disable-next-line solid/reactivity
+            onClick={() => errorHandle(() => props.onClick())}
+            data-tip={props.tooltip}
+        >
             <Show
                 when={props.loading}
                 fallback={
@@ -24,6 +35,7 @@ export function ActionButton(props: {
                         src={"/src/assets/" + props.img}
                         elementtiming={"Action"}
                         fetchpriority={"auto"}
+                        alt="Action"
                     />
                 }
             >
@@ -32,6 +44,7 @@ export function ActionButton(props: {
                     class="animate-spin"
                     elementtiming={"Loading"}
                     fetchpriority={"auto"}
+                    alt="Loading"
                 />
             </Show>
         </button>
@@ -119,6 +132,7 @@ export default function InputCell(props: {
                     // False positive
                     // eslint-disable-next-line solid/reactivity
                     onClick={() => navigate(objectUrl(BigInt(props.value!)))}
+                    tooltip="Select as object"
                 />
             </Show>
         </span>

@@ -76,6 +76,7 @@ export function PropertyCell(props: {
                     onClick={get}
                     loading={valueLoading() || valueSetting()}
                     img="refresh.svg"
+                    tooltip="Refresh"
                 />
             </Show>
             <Show when={props.prop.setterId}>
@@ -84,6 +85,7 @@ export function PropertyCell(props: {
                     onClick={set}
                     loading={valueLoading() || valueSetting()}
                     img="enter.svg"
+                    tooltip="Set"
                 />
             </Show>
         </span>
