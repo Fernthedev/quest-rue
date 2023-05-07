@@ -1,21 +1,21 @@
-import { createEffect, onMount } from "solid-js";
+import { createEffect, createRenderEffect, onMount } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../misc/proto/qrue";
 import { ProtoFieldInfo } from "../../misc/proto/il2cpp";
 import { protoDataToString, stringToProtoData } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
-import { refreshSpan } from "./ObjectView";
+import { SpanFn } from "./ObjectView";
 
 import styles from "./ObjectView.module.css";
 
 export function FieldCell(props: {
     field: PacketJSON<ProtoFieldInfo>;
     colSize: number;
-    maxCols: number;
     address: bigint;
+    spanFn: SpanFn
 }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
+    createRenderEffect(() => props.spanFn(element!, props.colSize));
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {

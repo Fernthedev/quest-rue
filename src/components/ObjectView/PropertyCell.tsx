@@ -1,22 +1,30 @@
-import { Accessor, Show, createEffect, createMemo, createSignal } from "solid-js";
+import {
+    Accessor,
+    Show,
+    createEffect,
+    createMemo,
+    createRenderEffect,
+    createSignal,
+} from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoPropertyInfo } from "../../misc/proto/il2cpp";
 import { protoDataToString, stringToProtoData } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
-import { refreshSpan } from "./ObjectView";
 import toast from "solid-toast";
 
 import styles from "./ObjectView.module.css";
+import { SpanFn } from "./ObjectView";
 
 export function PropertyCell(props: {
     prop: PacketJSON<ProtoPropertyInfo>;
     colSize: number;
-    maxCols: number;
     address: bigint;
+    spanFn: SpanFn;
 }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
+    createRenderEffect(() => props.spanFn(element!, props.colSize));
+
     const [value, valueLoading, requestGet] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function get() {
@@ -62,15 +70,22 @@ export function PropertyCell(props: {
         errorHandler(valueSetter);
     });
 
-    const propertyGetter = createMemo(() => props.prop.getterId && styles.propertyGetter);
-    const propertySetter = createMemo(() => props.prop.setterId && styles.propertySetter);
-    const propertyBoth = createMemo(() => 
-        props.prop.getterId && props.prop.setterId && styles.propertyBoth);
+    const propertyGetter = createMemo(
+        () => props.prop.getterId && styles.propertyGetter
+    );
+    const propertySetter = createMemo(
+        () => props.prop.setterId && styles.propertySetter
+    );
+    const propertyBoth = createMemo(
+        () => props.prop.getterId && props.prop.setterId && styles.propertyBoth
+    );
 
     return (
         <span
             ref={element}
-            class={`font-mono ${propertyBoth() || propertySetter() || propertyGetter()}`}
+            class={`font-mono ${
+                propertyBoth() || propertySetter() || propertyGetter()
+            }`}
         >
             {props.prop.name + " = "}
             <InputCell

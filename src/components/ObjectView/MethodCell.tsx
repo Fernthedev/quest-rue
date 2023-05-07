@@ -1,4 +1,4 @@
-import { Show, For, createEffect, createMemo } from "solid-js";
+import { Show, For, createEffect, createMemo, createRenderEffect } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
@@ -9,19 +9,19 @@ import {
     stringToProtoType,
 } from "../../misc/utils";
 import InputCell, { ActionButton } from "../InputCell";
-import { refreshSpan } from "./ObjectView";
 import toast from "solid-toast";
 
 import styles from "./ObjectView.module.css";
+import { SpanFn } from "./ObjectView";
 
 export function MethodCell(props: {
     method: PacketJSON<ProtoMethodInfo>;
     colSize: number;
-    maxCols: number;
     address: bigint;
+    spanFn: SpanFn
 }) {
     let element: HTMLDivElement | undefined;
-    createEffect(() => refreshSpan(element!, props.colSize, props.maxCols));
+    createRenderEffect(() => props.spanFn(element!, props.colSize));
 
     const args = createMemo(() => Object.entries(props.method.args ?? {}));
 

@@ -13,12 +13,13 @@ import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
 import { MethodCell } from "./MethodCell";
-import { separator } from "./ObjectView";
+import { SpanFn, separator } from "./ObjectView";
 
 export function TypeSection(props: {
     details?: PacketJSON<ProtoClassDetails>;
     selectedAddress: bigint;
     search: string;
+    spanFn: SpanFn;
 }) {
     createEffect(() => {
         console.log(props.details);
@@ -91,9 +92,9 @@ export function TypeSection(props: {
                     <For each={filteredFields()}>
                         {(item) => (
                             <FieldCell
+                                spanFn={props.spanFn}
                                 field={item}
                                 colSize={colSize()}
-                                maxCols={colNum()}
                                 address={props.selectedAddress}
                             />
                         )}
@@ -105,8 +106,8 @@ export function TypeSection(props: {
                             <PropertyCell
                                 prop={item}
                                 colSize={colSize()}
-                                maxCols={colNum()}
                                 address={props.selectedAddress}
+                                spanFn={props.spanFn}
                             />
                         )}
                     </For>
@@ -117,7 +118,7 @@ export function TypeSection(props: {
                             <MethodCell
                                 method={item}
                                 colSize={colSize()}
-                                maxCols={colNum()}
+                                spanFn={props.spanFn}
                                 address={props.selectedAddress}
                             />
                         )}
@@ -130,6 +131,7 @@ export function TypeSection(props: {
                     details={props.details?.parent}
                     selectedAddress={props.selectedAddress}
                     search={props.search}
+                    spanFn={props.spanFn}
                 />
             </Show>
         </div>

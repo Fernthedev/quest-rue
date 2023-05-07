@@ -267,8 +267,13 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
     //     bytes = new DataView(data.data!.buffer.slice(30)); // wtf
     const ret = bytesToRealValue(bytes, typeInfo, 0);
     if (typeof ret === "string") return ret;
-    if (typeof ret === "bigint") return ret.toString();
-    // TODO:: better nested bigints
+    if (typeof ret === "bigint") {
+        // TODO: Fix?
+        // if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo === ProtoTypeInfo_Primitive.PTR) {
+        //     return ret.toString(16)
+        // }
+        return ret.toString();
+    }// TODO:: better nested bigints
     return JSON.stringify(ret, (_, value) =>
         typeof value === "bigint" ? value.toString() : value
     );
