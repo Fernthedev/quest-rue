@@ -35,6 +35,7 @@
         "eslint-plugin-solid": "^0.11.0",
         "postcss": "^8.4.23",
         "prettier": "^2.8.8",
+        "solid-devtools": "^0.26.0",
         "tailwindcss": "^3.3.2",
         "ts-proto": "^1.147.1",
         "typescript": "^4.9.5",
