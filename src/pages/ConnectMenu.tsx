@@ -31,7 +31,7 @@ export default function ConnectMenu() {
     const submit = async (e: Event) => {
         // Stop refresh
         e.preventDefault();
-        
+
         const promise = connect(ip(), Number.parseInt(port()));
         const id = toast.loading(`Connecting to ${ip()}:${port()}`);
         // Dismiss existing toast
@@ -46,7 +46,6 @@ export default function ConnectMenu() {
         try {
             const val = await promise;
             console.log("Finished waiting");
-            toast.success("Finished connecting " + val);
         } catch (e) {
             /* ignore */
         }
@@ -58,7 +57,7 @@ export default function ConnectMenu() {
     return (
         <form
             onSubmit={(e) => submit(e)}
-            
+
             class={`${styles.wrapper} absolute-centered`}
         >
             <text class="text-center">Enter your Quest IP Address</text>

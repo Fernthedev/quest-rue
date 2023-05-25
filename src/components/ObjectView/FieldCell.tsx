@@ -15,7 +15,7 @@ export function FieldCell(props: {
     spanFn: SpanFn
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => props.spanFn(element!, props.colSize));
+    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
@@ -43,7 +43,7 @@ export function FieldCell(props: {
         });
     }
     return (
-        <span ref={element} class={`font-mono ${styles.field}`}>
+        <span ref={element} class={`font-mono ${styles.field} ${styles.gridElement}`}>
             {props.field.name + " = "}
             <InputCell
                 input

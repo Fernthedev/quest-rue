@@ -21,7 +21,7 @@ export function MethodCell(props: {
     spanFn: SpanFn
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => props.spanFn(element!, props.colSize));
+    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
 
     const args = createMemo(() => Object.entries(props.method.args ?? {}));
 
@@ -62,7 +62,7 @@ export function MethodCell(props: {
     });
 
     return (
-        <span ref={element} class={`font-mono method ${styles.method}`}>
+        <span ref={element} class={`font-mono method ${styles.method} ${styles.gridElement}`}>
             {props.method.name + " "}
             <Show when={genericArgs().length > 0}>
                 {"<"}

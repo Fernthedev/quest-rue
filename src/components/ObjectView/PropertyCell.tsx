@@ -23,7 +23,7 @@ export function PropertyCell(props: {
     spanFn: SpanFn;
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => props.spanFn(element!, props.colSize));
+    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
 
     const [value, valueLoading, requestGet] =
         useRequestAndResponsePacket<InvokeMethodResult>();
@@ -85,7 +85,7 @@ export function PropertyCell(props: {
             ref={element}
             class={`font-mono ${
                 propertyBoth() || propertySetter() || propertyGetter()
-            }`}
+            } ${styles.gridElement}`}
         >
             {props.prop.name + " = "}
             <InputCell

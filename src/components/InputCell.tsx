@@ -12,7 +12,7 @@ export function ActionButton(props: {
     onClick: () => void;
     loading?: boolean;
     class?: string;
-    label?: string
+    label?: string;
     tooltip?: string;
 }) {
     const classes = createMemo(() => props.class);
@@ -26,7 +26,7 @@ export function ActionButton(props: {
             // False positive
             // eslint-disable-next-line solid/reactivity
             onClick={() => errorHandle(() => props.onClick())}
-            data-tip={props.tooltip}
+            title={props.tooltip}
         >
             <Show
                 when={props.loading}

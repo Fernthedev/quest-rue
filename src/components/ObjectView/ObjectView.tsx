@@ -14,7 +14,7 @@ function adaptiveSpanSize(
     maxCols: number,
     adaptiveSize: boolean
 ) {
-    if (colSize == 0) return undefined;
+    if (colSize == 0) return;
 
     if (!adaptiveSize) {
         element.style.removeProperty("grid-column");
@@ -112,7 +112,7 @@ export default function ObjectView(props: {
 
     return (
         <Show when={props.selectedAddress} fallback={globalFallback} keyed>
-            <div class="p-4 w-full h-full">
+            <div class="p-4 w-full h-full overflow-x-hidden">
                 <div class="flex gap-4 mb-1 items-end">
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>

@@ -24,52 +24,54 @@
     display: grid;
     justify-items: stretch;
 
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
     gap: 4px;
     margin-bottom: 4px;
 }
 
-.grid > span {
+.gridElement {
     min-width: min-content;
     display: flex;
     align-items: center;
     white-space: nowrap;
     gap: 5px;
-    border-left-width: 2px;
-    border-left-style: solid;
-    /* border-left: 2px solid; */
+    border-left: 4px solid;
     padding-left: 5px;
 }
-.grid > span > :not(input) {
+.gridElement > :not(input) {
     flex-grow: 0;
     width: max-content;
 }
 
 .field {
-    @apply border-orange-400;
+    @apply border-l-orange-400;
+    --tw-border-opacity: 0.4;
 }
 .method {
-    @apply border-l-fuchsia-400;
+    @apply border-l-fuchsia-500;
+    --tw-border-opacity: 0.4;
 }
 
 .propertyGetter {
-    @apply border-green-400;
+    @apply border-l-green-500;
+    --tw-border-opacity: 0.4;
 }
 .propertySetter {
-    @apply border-sky-500;
+    @apply border-l-sky-600;
+    --tw-border-opacity: 0.4;
 }
 
 .propertyBoth {
-    /* TODO: Figure out gradients */
-    /* @apply border-l-red-600; */
-    /* @apply from-green-400 to-sky-500; */
-    /* --tw-gradient-from: #4ade80 var(--tw-gradient-from-position);
-    --tw-gradient-to: #0ea5e9 var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); */
-    /* border-color: linear-gradient(to bottom right, var(--tw-gradient-stops)); */
+    border-left: none;
+}
+.propertyBoth::before {
+    content: "";
+    width: 0;
+    height: 100%;
+    margin-left: -5px; /* undo flex gap */
 
-
-    border-image: linear-gradient(180deg, #4ade80, #0ea5e9);
-    border-image-slice: 1;
-    border-left-width: 3px !important; /* this is sad*/
+    @apply from-green-500 to-sky-600;
+    border-image: linear-gradient(to bottom, var(--tw-gradient-stops)) 1;
+    border-left: 4px solid;
+    opacity: 0.5;
 }
