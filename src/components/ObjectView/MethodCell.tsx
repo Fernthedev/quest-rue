@@ -46,19 +46,29 @@ export function MethodCell(props: {
         });
     }
 
-    const genericArgs = createMemo(() =>
-        args()
+    const genericArgs = createMemo(() => {
+        // unique on genericParameterIndex
+        const indices = new Set<number>();
+        const ret = args()
             .map(([, t]) => t)
             .concat([props.method.returnType!])
             .flatMap((t) => getAllGenerics(t))
-    );
+            .filter((t) => {
+                // @ts-expect-error (getAllGenerics only returns with $case "genericInfo")
+                const index: number = t.Info.genericInfo.genericIndex;
+                if (indices.has(index)) return false;
+                indices.add(index);
+                return true;
+            });
+        return ret;
+    });
     const genericInputs = createMemo(() => genericArgs().map(() => ""));
 
     createEffect(() => {
         const resultData = result();
         if (!resultData?.error) return;
 
-        toast.error(`Method exception error: ${resultData.error}`);
+        toast.error(`${props.method.name} threw an exception: ${resultData.error}`);
     });
 
     return (

@@ -4,8 +4,9 @@ import {
     ProtoDataPayload,
     ProtoTypeInfo,
     ProtoTypeInfo_Primitive,
+    ProtoGenericInfo,
 } from "./proto/il2cpp";
-import { PacketWrapper } from "./proto/qrue";
+
 
 export function uniqueNumber(min = 0, max = Number.MAX_SAFE_INTEGER) {
     return Math.floor(Math.random() * max + min);
@@ -207,6 +208,8 @@ function bytesToRealValue(
             return arr;
             // check for primitive last since its default is 0 instead of undefined
         }
+        case "genericInfo":
+            return typeInfo.Info.genericInfo.name;
         case "primitiveInfo": {
             switch (typeInfo.Info.primitiveInfo) {
                 case ProtoTypeInfo_Primitive.BOOLEAN:
@@ -236,8 +239,6 @@ function bytesToRealValue(
                 }
                 case ProtoTypeInfo_Primitive.TYPE:
                     return protoTypeToString(ProtoTypeInfo.decode(arr));
-                case ProtoTypeInfo_Primitive.GENERIC:
-                    return `unspecified generic T${typeInfo.size}`;
                 case ProtoTypeInfo_Primitive.PTR:
                     return bytes.getBigInt64(baseOffset, true);
                 case ProtoTypeInfo_Primitive.UNKNOWN:
@@ -403,12 +404,11 @@ function _protoTypeToString(type?: PacketJSON<ProtoTypeInfo>): string {
                 return `${type.Info.structInfo.clazz!.namespaze}::${ret}`;
             break;
         }
+        case "genericInfo":
+            return type.Info.genericInfo.name;
         case "primitiveInfo": {
             if (primitiveStringMap.has(type.Info.primitiveInfo))
                 return primitiveStringMap.getStr(type.Info.primitiveInfo);
-            if (type.Info.primitiveInfo == ProtoTypeInfo_Primitive.GENERIC)
-                return `T${type.size}`;
-
             break;
         }
     }
@@ -445,11 +445,11 @@ export function getAllGenerics(type?: PacketJSON<ProtoTypeInfo>) {
                 ret = ret.concat(getAllGenerics(field.type));
             break;
         }
+        case "genericInfo":
+            type.isByref = false;
+            ret = [type];
+            break;
         case "primitiveInfo": {
-            if (type.Info.primitiveInfo == ProtoTypeInfo_Primitive.GENERIC) {
-                type.isByref = false;
-                ret = [type];
-            }
             break;
         }
     }

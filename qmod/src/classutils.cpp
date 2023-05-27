@@ -160,6 +160,8 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     // szarray means regular array, array means some fancy multidimensional never used c# thing I think
     } else if (type->type == IL2CPP_TYPE_SZARRAY)
         *info.mutable_arrayinfo() = GetArrayInfo(type);
+    else if (type->type == IL2CPP_TYPE_VAR || type->type == IL2CPP_TYPE_MVAR)
+        *info.mutable_genericinfo() = GetGenericInfo(type);
     else {
         // TODO: make some of these more correct
         switch (type->type) {
@@ -201,11 +203,6 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
             break;
         case IL2CPP_TYPE_PTR:
             info.set_primitiveinfo(ProtoTypeInfo::PTR);
-            break;
-        case IL2CPP_TYPE_VAR:
-        case IL2CPP_TYPE_MVAR:
-            info.set_primitiveinfo(ProtoTypeInfo::GENERIC);
-            info.set_size(type->data.genericParameterIndex);
             break;
         case IL2CPP_TYPE_VALUETYPE: {
             auto klass = classoftype(type);
@@ -259,6 +256,16 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppType const* type) {
     return structInfo;
 }
 
+ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
+    ProtoGenericInfo genericInfo;
+    LOG_INFO("Getting generic info");
+
+    genericInfo.set_genericindex(type->data.genericParameterIndex);
+    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(type->data.genericParameterIndex);
+    genericInfo.set_name(il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex));
+    return genericInfo;
+}
+
 Il2CppClass* GetClass(ProtoClassInfo const& classInfo) {
     LOG_INFO("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
 
@@ -288,6 +295,13 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         LOG_INFO("Getting class from struct info");
 
         return GetClass(typeInfo.structinfo().clazz());
+    } else if(typeInfo.has_genericinfo()) {
+        LOG_INFO("Getting class from generic info");
+        // I don't think this should even come up
+        Il2CppType type = {};
+        type.data.genericParameterIndex = typeInfo.size();
+        type.type = IL2CPP_TYPE_VAR; // hmm, mvar?
+        return classoftype(&type); // only uses the above two fields for var/mvar
     } else if(typeInfo.has_primitiveinfo()) {
         LOG_INFO("Getting class from primitive info");
 
@@ -312,13 +326,7 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
             return il2cpp_functions::defaults->string_class;
         case ProtoTypeInfo::TYPE:
             return il2cpp_functions::defaults->systemtype_class;
-        case ProtoTypeInfo::GENERIC: {
-            // I don't think this should even come up
-            Il2CppType type = {};
-            type.data.genericParameterIndex = typeInfo.size();
-            type.type = IL2CPP_TYPE_VAR; // hmm, mvar?
-            return classoftype(&type); // only uses the above two fields for var/mvar
-        } case ProtoTypeInfo::PTR:
+        case ProtoTypeInfo::PTR:
             return il2cpp_functions::defaults->pointer_class;
         case ProtoTypeInfo::VOID:
             return il2cpp_functions::defaults->void_class;

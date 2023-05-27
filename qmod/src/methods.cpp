@@ -47,6 +47,12 @@ void* HandleStruct(ProtoStructInfo const& info, void* arg, int size) {
     return arg;
 }
 
+void* HandleGeneric(ProtoGenericInfo const& info, void* arg, int size) {
+    // This shouldn't be called as it represents an unspecified generic
+    LOG_INFO("Unspecified generic passed as a parameter!");
+    return arg;
+}
+
 void* HandlePrimitive(ProtoTypeInfo::Primitive info, void* arg, int size) {
     switch(info) {
     case ProtoTypeInfo::STRING:
@@ -69,6 +75,8 @@ void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size) {
         return HandleArray(typeInfo.arrayinfo(), arg, size);
     else if(typeInfo.has_structinfo())
         return HandleStruct(typeInfo.structinfo(), arg, size);
+    else if(typeInfo.has_genericinfo())
+        return HandleGeneric(typeInfo.genericinfo(), arg, size);
     else if(typeInfo.has_primitiveinfo())
         return HandlePrimitive(typeInfo.primitiveinfo(), arg, size);
     return nullptr;
@@ -131,6 +139,12 @@ std::string OutputStruct(ProtoStructInfo& info, void* value, int size) {
     return std::string((char*) value, size);
 }
 
+std::string OutputGeneric(ProtoGenericInfo& info, void* value, int size) {
+    // This also shouldn't be called
+    LOG_INFO("Unspecified generic sent to be output!");
+    return std::string((char*) value, size);
+}
+
 std::string OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size) {
     switch(info) {
     case ProtoTypeInfo::STRING: {
@@ -152,6 +166,8 @@ std::string OutputType(ProtoTypeInfo& typeInfo, void* value) {
         return OutputArray(*typeInfo.mutable_arrayinfo(), value, typeInfo.size());
     else if(typeInfo.has_structinfo())
         return OutputStruct(*typeInfo.mutable_structinfo(), value, typeInfo.size());
+    else if(typeInfo.has_genericinfo())
+        return OutputGeneric(*typeInfo.mutable_genericinfo(), value, typeInfo.size());
     else if(typeInfo.has_primitiveinfo())
         return OutputPrimitive(typeInfo.primitiveinfo(), value, typeInfo.size());
     return "";

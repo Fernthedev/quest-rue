@@ -79,6 +79,7 @@ export default function InputCell(props: {
     const minWidth = createMemo(() => {
         if (props.type.Info?.$case == "structInfo") return 150;
         if (props.type.Info?.$case == "arrayInfo") return 150;
+        if (props.type.Info?.$case == "genericInfo") return 80;
 
         if (props.type.Info?.$case == "primitiveInfo") {
             switch (props.type.Info.primitiveInfo) {
@@ -86,8 +87,6 @@ export default function InputCell(props: {
                     return 60;
                 case ProtoTypeInfo_Primitive.CHAR:
                     return 40;
-                case ProtoTypeInfo_Primitive.GENERIC:
-                    return 80;
                 case ProtoTypeInfo_Primitive.VOID:
                     return 50;
             }

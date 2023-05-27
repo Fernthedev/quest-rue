@@ -29,13 +29,18 @@ export interface ProtoArrayInfo {
   length?: number | undefined;
 }
 
+export interface ProtoGenericInfo {
+  genericIndex: number;
+  name: string;
+}
+
 export interface ProtoTypeInfo {
   Info?:
     | { $case: "primitiveInfo"; primitiveInfo: ProtoTypeInfo_Primitive }
     | { $case: "arrayInfo"; arrayInfo: ProtoArrayInfo }
     | { $case: "structInfo"; structInfo: ProtoStructInfo }
-    | { $case: "classInfo"; classInfo: ProtoClassInfo };
-  /** or generic index */
+    | { $case: "classInfo"; classInfo: ProtoClassInfo }
+    | { $case: "genericInfo"; genericInfo: ProtoGenericInfo };
   size: number;
   isByref: boolean;
 }
@@ -52,12 +57,10 @@ export enum ProtoTypeInfo_Primitive {
   DOUBLE = 7,
   STRING = 8,
   TYPE = 9,
-  /** GENERIC - TODO: separate and add more metadata */
-  GENERIC = 10,
-  /** PTR - maybe this too */
-  PTR = 11,
-  VOID = 12,
-  UNKNOWN = 13,
+  /** PTR - TODO: maybe separate and add pointed to type */
+  PTR = 10,
+  VOID = 11,
+  UNKNOWN = 12,
   UNRECOGNIZED = -1,
 }
 
@@ -94,15 +97,12 @@ export function protoTypeInfo_PrimitiveFromJSON(object: any): ProtoTypeInfo_Prim
     case "TYPE":
       return ProtoTypeInfo_Primitive.TYPE;
     case 10:
-    case "GENERIC":
-      return ProtoTypeInfo_Primitive.GENERIC;
-    case 11:
     case "PTR":
       return ProtoTypeInfo_Primitive.PTR;
-    case 12:
+    case 11:
     case "VOID":
       return ProtoTypeInfo_Primitive.VOID;
-    case 13:
+    case 12:
     case "UNKNOWN":
       return ProtoTypeInfo_Primitive.UNKNOWN;
     case -1:
@@ -134,8 +134,6 @@ export function protoTypeInfo_PrimitiveToJSON(object: ProtoTypeInfo_Primitive): 
       return "STRING";
     case ProtoTypeInfo_Primitive.TYPE:
       return "TYPE";
-    case ProtoTypeInfo_Primitive.GENERIC:
-      return "GENERIC";
     case ProtoTypeInfo_Primitive.PTR:
       return "PTR";
     case ProtoTypeInfo_Primitive.VOID:
@@ -540,6 +538,77 @@ export const ProtoArrayInfo = {
   },
 };
 
+function createBaseProtoGenericInfo(): ProtoGenericInfo {
+  return { genericIndex: 0, name: "" };
+}
+
+export const ProtoGenericInfo = {
+  encode(message: ProtoGenericInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.genericIndex !== 0) {
+      writer.uint32(8).int32(message.genericIndex);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoGenericInfo {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProtoGenericInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.genericIndex = reader.int32();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProtoGenericInfo {
+    return {
+      genericIndex: isSet(object.genericIndex) ? Number(object.genericIndex) : 0,
+      name: isSet(object.name) ? String(object.name) : "",
+    };
+  },
+
+  toJSON(message: ProtoGenericInfo): unknown {
+    const obj: any = {};
+    message.genericIndex !== undefined && (obj.genericIndex = Math.round(message.genericIndex));
+    message.name !== undefined && (obj.name = message.name);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProtoGenericInfo>, I>>(base?: I): ProtoGenericInfo {
+    return ProtoGenericInfo.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProtoGenericInfo>, I>>(object: I): ProtoGenericInfo {
+    const message = createBaseProtoGenericInfo();
+    message.genericIndex = object.genericIndex ?? 0;
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
 function createBaseProtoTypeInfo(): ProtoTypeInfo {
   return { Info: undefined, size: 0, isByref: false };
 }
@@ -559,12 +628,15 @@ export const ProtoTypeInfo = {
       case "classInfo":
         ProtoClassInfo.encode(message.Info.classInfo, writer.uint32(34).fork()).ldelim();
         break;
+      case "genericInfo":
+        ProtoGenericInfo.encode(message.Info.genericInfo, writer.uint32(42).fork()).ldelim();
+        break;
     }
     if (message.size !== 0) {
-      writer.uint32(40).int32(message.size);
+      writer.uint32(48).int32(message.size);
     }
     if (message.isByref === true) {
-      writer.uint32(48).bool(message.isByref);
+      writer.uint32(56).bool(message.isByref);
     }
     return writer;
   },
@@ -605,14 +677,21 @@ export const ProtoTypeInfo = {
           message.Info = { $case: "classInfo", classInfo: ProtoClassInfo.decode(reader, reader.uint32()) };
           continue;
         case 5:
-          if (tag !== 40) {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.Info = { $case: "genericInfo", genericInfo: ProtoGenericInfo.decode(reader, reader.uint32()) };
+          continue;
+        case 6:
+          if (tag !== 48) {
             break;
           }
 
           message.size = reader.int32();
           continue;
-        case 6:
-          if (tag !== 48) {
+        case 7:
+          if (tag !== 56) {
             break;
           }
 
@@ -637,6 +716,8 @@ export const ProtoTypeInfo = {
         ? { $case: "structInfo", structInfo: ProtoStructInfo.fromJSON(object.structInfo) }
         : isSet(object.classInfo)
         ? { $case: "classInfo", classInfo: ProtoClassInfo.fromJSON(object.classInfo) }
+        : isSet(object.genericInfo)
+        ? { $case: "genericInfo", genericInfo: ProtoGenericInfo.fromJSON(object.genericInfo) }
         : undefined,
       size: isSet(object.size) ? Number(object.size) : 0,
       isByref: isSet(object.isByref) ? Boolean(object.isByref) : false,
@@ -654,6 +735,8 @@ export const ProtoTypeInfo = {
       (obj.structInfo = message.Info?.structInfo ? ProtoStructInfo.toJSON(message.Info?.structInfo) : undefined);
     message.Info?.$case === "classInfo" &&
       (obj.classInfo = message.Info?.classInfo ? ProtoClassInfo.toJSON(message.Info?.classInfo) : undefined);
+    message.Info?.$case === "genericInfo" &&
+      (obj.genericInfo = message.Info?.genericInfo ? ProtoGenericInfo.toJSON(message.Info?.genericInfo) : undefined);
     message.size !== undefined && (obj.size = Math.round(message.size));
     message.isByref !== undefined && (obj.isByref = message.isByref);
     return obj;
@@ -682,6 +765,13 @@ export const ProtoTypeInfo = {
     }
     if (object.Info?.$case === "classInfo" && object.Info?.classInfo !== undefined && object.Info?.classInfo !== null) {
       message.Info = { $case: "classInfo", classInfo: ProtoClassInfo.fromPartial(object.Info.classInfo) };
+    }
+    if (
+      object.Info?.$case === "genericInfo" &&
+      object.Info?.genericInfo !== undefined &&
+      object.Info?.genericInfo !== null
+    ) {
+      message.Info = { $case: "genericInfo", genericInfo: ProtoGenericInfo.fromPartial(object.Info.genericInfo) };
     }
     message.size = object.size ?? 0;
     message.isByref = object.isByref ?? false;

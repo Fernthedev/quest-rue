@@ -22,6 +22,11 @@ message ProtoArrayInfo {
     optional int32 length = 2; /* nullable */
 }
 
+message ProtoGenericInfo {
+    int32 genericIndex = 1;
+    string name = 2;
+}
+
 message ProtoTypeInfo {
     enum Primitive { // TODO: maybe add more primitives
         BOOLEAN = 0;
@@ -34,19 +39,19 @@ message ProtoTypeInfo {
         DOUBLE = 7;
         STRING = 8;
         TYPE = 9;
-        GENERIC = 10; // TODO: separate and add more metadata
-        PTR = 11; // maybe this too
-        VOID = 12;
-        UNKNOWN = 13;
+        PTR = 10; // TODO: maybe separate and add pointed to type
+        VOID = 11;
+        UNKNOWN = 12;
     }
     oneof Info {
         Primitive primitiveInfo = 1;
         ProtoArrayInfo arrayInfo = 2;
         ProtoStructInfo structInfo = 3;
         ProtoClassInfo classInfo = 4;
+        ProtoGenericInfo genericInfo = 5;
     }
-    int32 size = 5; /* or generic index */
-    bool isByref = 6;
+    int32 size = 6;
+    bool isByref = 7;
 }
 
 // Type Details

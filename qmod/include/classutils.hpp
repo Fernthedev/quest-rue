@@ -28,6 +28,7 @@ namespace ClassUtils {
     ProtoClassInfo GetClassInfo(Il2CppType const* classType);
     ProtoArrayInfo GetArrayInfo(Il2CppType const* arrayType);
     ProtoStructInfo GetStructInfo(Il2CppType const* structType);
+    ProtoGenericInfo GetGenericInfo(Il2CppType const* genericType);
 
     Il2CppClass* GetClass(ProtoTypeInfo const& typeInfo);
     Il2CppType* GetType(ProtoTypeInfo const& typeInfo);
