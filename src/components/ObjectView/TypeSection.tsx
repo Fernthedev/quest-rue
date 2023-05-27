@@ -1,7 +1,6 @@
 import {
     For,
     Show,
-    batch,
     createDeferred,
     createEffect,
     createMemo,
@@ -43,14 +42,10 @@ export function TypeSection(props: {
     // due to auto-fill all the grids will have the same size columns
     let grid: HTMLDivElement | undefined;
     const [colSize, setColSize] = createSignal<number>(0);
-    const [colNum, setColNum] = createSignal<number>(0);
     const gridObserver = new ResizeObserver(() => {
         const columns = getComputedStyle(grid!).gridTemplateColumns.split(" ");
         const column = columns[0].replace("px", "");
-        batch(() => {
-            setColNum(columns.length);
-            setColSize(Number(column));
-        });
+        setColSize(Number(column));
     });
     // loses observation after collapsing
     createEffect(() => {

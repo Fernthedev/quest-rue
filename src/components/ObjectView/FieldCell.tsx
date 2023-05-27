@@ -1,4 +1,4 @@
-import { createEffect, createRenderEffect, onMount } from "solid-js";
+import { createEffect, onMount } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../misc/proto/qrue";
 import { ProtoFieldInfo } from "../../misc/proto/il2cpp";
@@ -12,14 +12,16 @@ export function FieldCell(props: {
     field: PacketJSON<ProtoFieldInfo>;
     colSize: number;
     address: bigint;
-    spanFn: SpanFn
+    spanFn: SpanFn;
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
+    createEffect(() => {
+        if (element) props.spanFn(element, props.colSize);
+    });
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
-        console.log(`Requesting ${props.field.id} ${props.address}`)
+        console.log(`Requesting ${props.field.id} ${props.address}`);
         requestValue({
             $case: "getField",
             getField: {
@@ -43,7 +45,10 @@ export function FieldCell(props: {
         });
     }
     return (
-        <span ref={element} class={`font-mono ${styles.field} ${styles.gridElement}`}>
+        <span
+            ref={element}
+            class={`font-mono ${styles.field} ${styles.gridElement}`}
+        >
             {props.field.name + " = "}
             <InputCell
                 input

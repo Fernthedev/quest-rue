@@ -3,7 +3,6 @@ import {
     Show,
     createEffect,
     createMemo,
-    createRenderEffect,
     createSignal,
 } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
@@ -23,7 +22,9 @@ export function PropertyCell(props: {
     spanFn: SpanFn;
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
+    createEffect(() => {
+        if (element) props.spanFn(element, props.colSize);
+    });
 
     const [value, valueLoading, requestGet] =
         useRequestAndResponsePacket<InvokeMethodResult>();

@@ -1,4 +1,9 @@
-import { Show, For, createEffect, createMemo, createRenderEffect } from "solid-js";
+import {
+    Show,
+    For,
+    createEffect,
+    createMemo,
+} from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
@@ -18,10 +23,12 @@ export function MethodCell(props: {
     method: PacketJSON<ProtoMethodInfo>;
     colSize: number;
     address: bigint;
-    spanFn: SpanFn
+    spanFn: SpanFn;
 }) {
     let element: HTMLDivElement | undefined;
-    createRenderEffect(() => {if (element) props.spanFn(element, props.colSize)});
+    createEffect(() => {
+        if (element) props.spanFn(element, props.colSize);
+    });
 
     const args = createMemo(() => Object.entries(props.method.args ?? {}));
 
@@ -72,8 +79,11 @@ export function MethodCell(props: {
     });
 
     return (
-        <span ref={element} class={`font-mono method ${styles.method} ${styles.gridElement}`}>
-            {props.method.name + " "}
+        <span
+            ref={element}
+            class={`font-mono method ${styles.method} ${styles.gridElement}`}
+        >
+            {props.method.name}
             <Show when={genericArgs().length > 0}>
                 {"<"}
                 <For each={genericArgs()}>
