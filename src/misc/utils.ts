@@ -1,4 +1,5 @@
 import toast from "solid-toast";
+import { Signal, SignalOptions, createEffect, createSignal } from "solid-js";
 import { PacketJSON } from "./events";
 import {
     ProtoDataPayload,
@@ -7,6 +8,11 @@ import {
     ProtoGenericInfo,
 } from "./proto/il2cpp";
 
+export function createUpdatingSignal<T>(val: () => T, options?: SignalOptions<T>): Signal<T> {
+    const [valAccessor, valSetter] = createSignal(val(), options);
+    createEffect(() => valSetter(() => val())); // typescript is so stupid sometimes
+    return [valAccessor, valSetter];
+}
 
 export function uniqueNumber(min = 0, max = Number.MAX_SAFE_INTEGER) {
     return Math.floor(Math.random() * max + min);

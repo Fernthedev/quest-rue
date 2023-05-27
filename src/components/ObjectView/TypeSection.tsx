@@ -7,12 +7,14 @@ import {
     createSignal,
 } from "solid-js";
 import { PacketJSON } from "../../misc/events";
-import { ProtoClassDetails } from "../../misc/proto/il2cpp";
+import { ProtoClassDetails, ProtoMethodInfo } from "../../misc/proto/il2cpp";
 import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
 import { MethodCell } from "./MethodCell";
 import { SpanFn, separator } from "./ObjectView";
+import { OverloadCell } from "./OverloadCell";
+import { createUpdatingSignal } from "../../misc/utils";
 
 export function TypeSection(props: {
     details?: PacketJSON<ProtoClassDetails>;
@@ -67,6 +69,24 @@ export function TypeSection(props: {
         filter(props.details?.methods ?? [], props.search)
     );
 
+    const groupedMethods = createMemo(() => {
+        const ret = new Map<string, ProtoMethodInfo[]>();
+        for (const method of filteredMethods()) {
+            if (ret.has(method.name)) ret.get(method.name)!.push(method);
+            else ret.set(method.name, [method]);
+        }
+        return Array.from(ret.entries());
+    });
+
+    const [expanded, setExpanded] = createUpdatingSignal(
+        () =>
+            groupedMethods().reduce((ret: Map<string, boolean>, val) => {
+                if (val[1].length > 1) ret.set(val[0], false);
+                return ret;
+            }, new Map<string, boolean>()),
+        { equals: false }
+    );
+
     return (
         <div>
             <div
@@ -108,14 +128,44 @@ export function TypeSection(props: {
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
-                    <For each={filteredMethods()}>
+                    <For
+                        each={groupedMethods()
+                            .map(([name, arr]) =>
+                                arr.length == 1
+                                    ? arr
+                                    : expanded().get(name)
+                                    ? [{ name: name, count: arr.length }, ...arr]
+                                    : { name: name, count: arr.length }
+                            )
+                            .flat()}
+                    >
                         {(item) => (
-                            <MethodCell
-                                method={item}
-                                colSize={colSize()}
-                                spanFn={props.spanFn}
-                                address={props.selectedAddress}
-                            />
+                            <Show
+                                // @ts-expect-error (I know it might not have the field why do you think I'm doing this check typescript)
+                                when={item.count !== undefined}
+                                fallback={
+                                    <MethodCell
+                                        // @ts-expect-error (item is ProtoMethodInfo)
+                                        method={item}
+                                        colSize={colSize()}
+                                        spanFn={props.spanFn}
+                                        address={props.selectedAddress}
+                                    />
+                                }
+                            >
+                                <OverloadCell
+                                    name={item.name}
+                                    // @ts-expect-error (field is verified in "when")
+                                    count={item.count}
+                                    toggleFn={() =>
+                                        setExpanded((prev) =>
+                                            prev.set(item.name, !prev.get(item.name))
+                                        )
+                                    }
+                                    colSize={colSize()}
+                                    spanFn={props.spanFn}
+                                />
+                            </Show>
                         )}
                     </For>
                 </div>
