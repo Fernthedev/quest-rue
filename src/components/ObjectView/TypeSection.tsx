@@ -1,5 +1,6 @@
 import {
     For,
+    Index,
     Show,
     createDeferred,
     createEffect,
@@ -69,19 +70,30 @@ export function TypeSection(props: {
         filter(props.details?.methods ?? [], props.search)
     );
 
+    // Groups methods as [methodName, Methods[]]
     const groupedMethods = createMemo(() => {
-        const ret = new Map<string, ProtoMethodInfo[]>();
-        for (const method of filteredMethods()) {
-            if (ret.has(method.name)) ret.get(method.name)!.push(method);
-            else ret.set(method.name, [method]);
-        }
-        return Array.from(ret.entries());
+        const ret = filteredMethods().reduce((map, method) => {
+            const arr = map.get(method.name);
+            if (arr) {
+                arr.push(method);
+            } else {
+                map.set(method.name, [method]);
+            }
+
+            return map;
+        }, new Map<string, ProtoMethodInfo[]>());
+
+        return Array.from(ret);
     });
 
     const [expanded, setExpanded] = createUpdatingSignal(
         () =>
-            groupedMethods().reduce((ret: Map<string, boolean>, val) => {
-                if (val[1].length > 1) ret.set(val[0], false);
+            groupedMethods().reduce((ret, [name, methodInfos]) => {
+                // more than one method
+                if (methodInfos.length > 1) {
+                    ret.set(name, false);
+                }
+
                 return ret;
             }, new Map<string, boolean>()),
         { equals: false }
@@ -128,46 +140,66 @@ export function TypeSection(props: {
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
-                    <For
-                        each={groupedMethods()
-                            .map(([name, arr]) =>
-                                arr.length == 1
-                                    ? arr
-                                    : expanded().get(name)
-                                    ? [{ name: name, count: arr.length }, ...arr]
-                                    : { name: name, count: arr.length }
-                            )
-                            .flat()}
+                    <Index
+                        each={
+                            groupedMethods()
+                            // .map(([name, methodInfos]) => {
+                            //     if (methodInfos.length == 1) {
+                            //         return methodInfos;
+                            //     }
+
+                            //     if (expanded().get(name)) {
+                            //         return [
+                            //             {
+                            //                 name: name,
+                            //                 count: methodInfos.length,
+                            //             },
+                            //             ...methodInfos,
+                            //         ];
+                            //     }
+
+                            //     return {
+                            //         name: name,
+                            //         count: methodInfos.length,
+                            //     };
+                            // })
+                            // .flat()
+                        }
                     >
-                        {(item) => (
-                            <Show
-                                // @ts-expect-error (I know it might not have the field why do you think I'm doing this check typescript)
-                                when={item.count !== undefined}
-                                fallback={
-                                    <MethodCell
-                                        // @ts-expect-error (item is ProtoMethodInfo)
-                                        method={item}
+                        {(item) => {
+                            const name = createMemo(() => item()[0]);
+                            const methodInfos = createMemo(() => item()[1]);
+
+                            return (
+                                <Show
+                                    when={methodInfos().length > 1}
+                                    fallback={
+                                        <MethodCell
+                                            method={methodInfos()[0]}
+                                            colSize={colSize()}
+                                            spanFn={props.spanFn}
+                                            address={props.selectedAddress}
+                                        />
+                                    }
+                                >
+                                    <OverloadCell
+                                        name={name()}
+                                        count={methodInfos().length}
+                                        toggleFn={() =>
+                                            setExpanded((prev) =>
+                                                prev.set(
+                                                    item.name,
+                                                    !prev.get(item.name)
+                                                )
+                                            )
+                                        }
                                         colSize={colSize()}
                                         spanFn={props.spanFn}
-                                        address={props.selectedAddress}
                                     />
-                                }
-                            >
-                                <OverloadCell
-                                    name={item.name}
-                                    // @ts-expect-error (field is verified in "when")
-                                    count={item.count}
-                                    toggleFn={() =>
-                                        setExpanded((prev) =>
-                                            prev.set(item.name, !prev.get(item.name))
-                                        )
-                                    }
-                                    colSize={colSize()}
-                                    spanFn={props.spanFn}
-                                />
-                            </Show>
-                        )}
-                    </For>
+                                </Show>
+                            );
+                        }}
+                    </Index>
                 </div>
             </Show>
             <Show when={props.details?.parent} fallback={<div class="h-20" />}>
