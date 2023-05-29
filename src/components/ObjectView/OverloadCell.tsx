@@ -8,6 +8,7 @@ export function OverloadCell(props: {
     colSize: number;
     spanFn: SpanFn;
     toggleFn: () => void;
+    expanded: boolean;
 }) {
     let element: HTMLDivElement | undefined;
     createEffect(() => {
@@ -26,6 +27,7 @@ export function OverloadCell(props: {
             >
                 {`${props.name}(${props.count} overloads)`}
             </button>
+            {props.expanded ? "-" : "+"}
         </span>
     );
 }

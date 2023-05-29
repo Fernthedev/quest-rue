@@ -197,6 +197,9 @@ export function TypeSection(props: {
                                         }
                                         colSize={colSize()}
                                         spanFn={props.spanFn}
+                                        expanded={
+                                            expanded().get(item.name) ?? false
+                                        }
                                     />
                                 </Show>
                             );
