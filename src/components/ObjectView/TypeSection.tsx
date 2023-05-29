@@ -17,16 +17,17 @@ import { SpanFn, separator } from "./ObjectView";
 import { OverloadCell } from "./OverloadCell";
 import { createUpdatingSignal } from "../../misc/utils";
 
+interface OverloadInfo {
+    name: string;
+    count: number;
+}
+
 export function TypeSection(props: {
     details?: PacketJSON<ProtoClassDetails>;
     selectedAddress: bigint;
     search: string;
     spanFn: SpanFn;
 }) {
-    createEffect(() => {
-        console.log(props.details);
-    });
-
     const className = createMemo(() =>
         props.details?.clazz
             ? props.details.clazz!.namespaze + "::" + props.details.clazz!.clazz
@@ -90,9 +91,7 @@ export function TypeSection(props: {
         () =>
             groupedMethods().reduce((ret, [name, methodInfos]) => {
                 // more than one method
-                if (methodInfos.length > 1) {
-                    ret.set(name, false);
-                }
+                if (methodInfos.length > 1) ret.set(name, false);
 
                 return ret;
             }, new Map<string, boolean>()),
@@ -140,42 +139,45 @@ export function TypeSection(props: {
                     </For>
                 </div>
                 <div class={`${styles.grid}`}>
-                    <Index
-                        each={
-                            groupedMethods()
-                            // .map(([name, methodInfos]) => {
-                            //     if (methodInfos.length == 1) {
-                            //         return methodInfos;
-                            //     }
-
-                            //     if (expanded().get(name)) {
-                            //         return [
-                            //             {
-                            //                 name: name,
-                            //                 count: methodInfos.length,
-                            //             },
-                            //             ...methodInfos,
-                            //         ];
-                            //     }
-
-                            //     return {
-                            //         name: name,
-                            //         count: methodInfos.length,
-                            //     };
-                            // })
-                            // .flat()
-                        }
+                    <For
+                        each={groupedMethods()
+                            .map<
+                                | OverloadInfo
+                                | (OverloadInfo | ProtoMethodInfo)[]
+                            >(([name, methodInfos]) => {
+                                if (methodInfos.length == 1) {
+                                    return methodInfos;
+                                }
+                                if (expanded().get(name)) {
+                                    return [
+                                        {
+                                            name: name,
+                                            count: methodInfos.length,
+                                        },
+                                        ...methodInfos,
+                                    ];
+                                }
+                                return {
+                                    name: name,
+                                    count: methodInfos.length,
+                                };
+                            })
+                            .flat()}
                     >
                         {(item) => {
-                            const name = createMemo(() => item()[0]);
-                            const methodInfos = createMemo(() => item()[1]);
+                            const overload = createMemo(
+                                () => item as OverloadInfo
+                            );
+                            const isOverload = createMemo(
+                                () => overload().count !== undefined
+                            );
 
                             return (
                                 <Show
-                                    when={methodInfos().length > 1}
+                                    when={isOverload()}
                                     fallback={
                                         <MethodCell
-                                            method={methodInfos()[0]}
+                                            method={item as ProtoMethodInfo}
                                             colSize={colSize()}
                                             spanFn={props.spanFn}
                                             address={props.selectedAddress}
@@ -183,8 +185,8 @@ export function TypeSection(props: {
                                     }
                                 >
                                     <OverloadCell
-                                        name={name()}
-                                        count={methodInfos().length}
+                                        name={overload().name}
+                                        count={overload().count}
                                         toggleFn={() =>
                                             setExpanded((prev) =>
                                                 prev.set(
@@ -199,7 +201,7 @@ export function TypeSection(props: {
                                 </Show>
                             );
                         }}
-                    </Index>
+                    </For>
                 </div>
             </Show>
             <Show when={props.details?.parent} fallback={<div class="h-20" />}>
