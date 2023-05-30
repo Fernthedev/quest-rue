@@ -3,8 +3,10 @@
 #include "classutils.hpp"
 #include "manager.hpp"
 #include "MainThreadRunner.hpp"
+#include "CameraController.hpp"
 
 #include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/Camera.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
@@ -34,7 +36,8 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     IL2CPP_CATCH_HANDLER(
         auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
         UnityEngine::Object::DontDestroyOnLoad(go);
-        go->AddComponent<QRUE::MainThreadRunner *>();)
+        go->AddComponent<QRUE::MainThreadRunner*>();
+    )
 }
 
 Logger &getLogger()
@@ -59,15 +62,58 @@ extern "C" void setup(ModInfo& info) {
     auto dataPath = GetDataPath();
     if (!direxists(dataPath))
         mkpath(dataPath);
-    
+
     LOG_INFO("Completed setup!");
 }
 
+#ifdef BEAT_SABER
+#include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
+using namespace GlobalNamespace;
+
+MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &DefaultScenesTransitionsFromInit::TransitionToNextScene, void, DefaultScenesTransitionsFromInit* self, bool goStraightToMenu, bool goStraightToEditor, bool goToRecordingToolScene) {
+
+    DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
+}
+
+#include "GlobalNamespace/MainMenuViewController.hpp"
+
+MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &MainMenuViewController::DidActivate, void, MainMenuViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+
+    MainMenuViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+
+    auto cam = UnityEngine::Camera::get_main();
+    cam->get_gameObject()->AddComponent<QRUE::CameraController*>();
+}
+
+#include "VRUIControls/VRInputModule.hpp"
+#include "VRUIControls/MouseState.hpp"
+#include "VRUIControls/ButtonState.hpp"
+#include "VRUIControls/MouseButtonEventData.hpp"
+
+MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData, &VRUIControls::VRInputModule::GetMousePointerEventData, VRUIControls::MouseState*, VRUIControls::VRInputModule* self, int id) {
+
+    using EventData = UnityEngine::EventSystems::PointerEventData;
+
+    auto ret = VRInputModule_GetMousePointerEventData(self, id);
+    ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
+    click = false;
+    return ret;
+}
+
+#endif
+
 extern "C" void load() {
-    LOG_INFO("Installing hooks...");
     il2cpp_functions::Init();
 
     custom_types::Register::AutoRegister();
+
+#ifdef BEAT_SABER
+    LOG_INFO("Installing hooks...");
+    INSTALL_HOOK(getLogger(), DefaultScenesTransitionsFromInit_TransitionToNextScene);
+    INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
+    INSTALL_HOOK(getLogger(), VRInputModule_GetMousePointerEventData);
+    LOG_INFO("Installed hooks!");
+#endif
 
     mainThreadId = std::this_thread::get_id();
 

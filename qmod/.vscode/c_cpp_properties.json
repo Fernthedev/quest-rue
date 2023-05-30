@@ -5,7 +5,8 @@
                 "__GNUC__",
                 "__aarch64__",
                 "VERSION=\"0.1.0\"",
-                "MOD_ID=\"qec\""
+                "MOD_ID=\"qec\"",
+                "BEAT_SABER"
             ],
             "includePath": [
                 "${workspaceFolder}/extern/includes/libil2cpp/il2cpp/libil2cpp",
