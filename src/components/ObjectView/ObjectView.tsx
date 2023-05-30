@@ -1,4 +1,4 @@
-import { Show, createEffect, createMemo, createSignal } from "solid-js";
+import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
 import { useRequestAndResponsePacket } from "../../misc/events";
 import { GetInstanceDetailsResult } from "../../misc/proto/qrue";
 
@@ -14,15 +14,14 @@ function adaptiveSpanSize(
     maxCols: number,
     adaptiveSize: boolean
 ) {
-    if (colSize == 0) return;
-
     if (!adaptiveSize) {
         element.style.removeProperty("grid-column");
         return;
     }
-
-    element.style.setProperty("grid-column", `span 1`);
-    if (maxCols == 1) return;
+    if (colSize == 0 || maxCols == 1) {
+        element.style.setProperty("grid-column", `span 1`);
+        return;
+    }
 
     const width = (element?.clientWidth ?? 1) - 1;
     const span = Math.min(Math.ceil(width / colSize), maxCols);
@@ -88,13 +87,23 @@ export default function ObjectView(props: {
     const [search, setSearch] = createSignal<string>("");
     // TODO: Store in localStorage
     const [adaptiveSize, setAdaptiveSize] = createSignal(true);
-    const [columnCount, setColumnCount] = createSignal<number>(2);
-    const [deferredColumnCount, setDeferredColumnCount] = createSignal<number>(2);
+    const [columnCount, setColumnCount] = createSignal(2);
+    const [deferredColumnCount, setDeferredColumnCount] = createSignal(2);
 
-    createEffect(() => {
-        document.documentElement.style.setProperty('--type-grid-columns', columnCount().toString());
-        setDeferredColumnCount(columnCount());
-    })
+    let container: HTMLDivElement | undefined;
+    createEffect(on(columnCount, () => {
+        if (container) {
+            container.style.setProperty('--type-grid-columns', columnCount().toString());
+            setDeferredColumnCount(columnCount());
+        }
+    }));
+    // doesn't react to columnCount ????
+    // createEffect(() => {
+        // if (container) {
+        //     container.style.setProperty('--type-grid-columns', columnCount().toString());
+        //     setDeferredColumnCount(columnCount());
+        // }
+    // })
 
     const spanFn = createMemo<SpanFn>(() => {
         const adapt = adaptiveSize();
@@ -110,14 +119,14 @@ export default function ObjectView(props: {
             target: HTMLInputElement;
         }
     ) => {
-        if (!e.currentTarget.checked) return;
-
+        if (!e.currentTarget.checked)
+            return;
         setColumnCount(Number.parseInt(e.currentTarget.value));
     };
 
     return (
         <Show when={props.selectedAddress} fallback={globalFallback} keyed>
-            <div class="p-4 w-full h-full overflow-x-hidden">
+            <div class={`p-4 w-full h-full overflow-x-hidden ${styles.viewContainer}`} ref={container}>
                 <div class="flex gap-4 mb-1 items-end">
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>

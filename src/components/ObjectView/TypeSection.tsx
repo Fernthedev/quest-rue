@@ -1,6 +1,5 @@
 import {
     For,
-    Index,
     Show,
     createDeferred,
     createEffect,
@@ -47,22 +46,19 @@ export function TypeSection(props: {
     // due to the set count all the grids will have the same size columns
     let grid: HTMLDivElement | undefined;
     const [colSize, setColSize] = createSignal<number>(0);
-    const gridObserver = new ResizeObserver(() => {
+    const recalculateSize = () => {
         const columns = getComputedStyle(grid!).gridTemplateColumns.split(" ");
         const column = columns[0].replace("px", "");
-        setColSize(Number(column));
-    });
+        setColSize(0);
+        requestAnimationFrame(() => setColSize(Number(column)));
+    };
+    const gridObserver = new ResizeObserver(recalculateSize);
+    // recalculate on changes to spanFn - aka "adaptive sizing" or "column count"
     createEffect(
         on(
             () => props.spanFn,
             () => {
-                if (!collapsed()) {
-                    const columns = getComputedStyle(
-                        grid!
-                    ).gridTemplateColumns.split(" ");
-                    const column = columns[0].replace("px", "");
-                    setColSize(Number(column));
-                }
+                if (!collapsed()) recalculateSize();
             },
             { defer: true }
         )
