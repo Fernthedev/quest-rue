@@ -270,7 +270,7 @@ Il2CppClass* GetClass(ProtoClassInfo const& classInfo) {
     LOG_INFO("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
 
     auto klass = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
-    if(classInfo.generics_size() <= 0)
+    if(!klass || classInfo.generics_size() <= 0)
         return klass;
     // no MakeGenericMethod for classes in bshook
     auto runtimeClass = il2cpp_utils::GetSystemType(klass);

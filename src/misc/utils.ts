@@ -5,7 +5,6 @@ import {
     ProtoDataPayload,
     ProtoTypeInfo,
     ProtoTypeInfo_Primitive,
-    ProtoGenericInfo,
 } from "./proto/il2cpp";
 
 export function createUpdatingSignal<T>(val: () => T, options?: SignalOptions<T>): Signal<T> {
@@ -322,7 +321,6 @@ const primitiveStringMap = new TwoWayMap({
     double: ProtoTypeInfo_Primitive.DOUBLE,
     string: ProtoTypeInfo_Primitive.STRING,
     type: ProtoTypeInfo_Primitive.TYPE,
-    // generic generally is Twhatnot
     pointer: ProtoTypeInfo_Primitive.PTR,
     void: ProtoTypeInfo_Primitive.VOID,
     unknown: ProtoTypeInfo_Primitive.UNKNOWN,
