@@ -21,12 +21,11 @@ function adaptiveSpanSize(
         return;
     }
 
-    let span = 1;
+    element.style.setProperty("grid-column", `span 1`);
+    if (maxCols == 1) return;
 
-    if (maxCols !== 1) {
-        const width = (element?.clientWidth ?? 1) - 1;
-        span = Math.min(Math.ceil(width / colSize), maxCols);
-    }
+    const width = (element?.clientWidth ?? 1) - 1;
+    const span = Math.min(Math.ceil(width / colSize), maxCols);
 
     element.style.setProperty("grid-column", `span ${span}`);
 }
@@ -89,14 +88,20 @@ export default function ObjectView(props: {
     const [search, setSearch] = createSignal<string>("");
     // TODO: Store in localStorage
     const [adaptiveSize, setAdaptiveSize] = createSignal(true);
-    const [columnCount, setColumnCount] = createSignal<number>(3);
+    const [columnCount, setColumnCount] = createSignal<number>(2);
+    const [deferredColumnCount, setDeferredColumnCount] = createSignal<number>(2);
+
+    createEffect(() => {
+        document.documentElement.style.setProperty('--type-grid-columns', columnCount().toString());
+        setDeferredColumnCount(columnCount());
+    })
 
     const spanFn = createMemo<SpanFn>(() => {
-        const maxColumnCount = columnCount();
-        const adaptive = adaptiveSize();
+        const adapt = adaptiveSize();
+        const cols = deferredColumnCount();
 
         return (e: HTMLDivElement, colSize: number) =>
-            adaptiveSpanSize(e, colSize, maxColumnCount, adaptive);
+            adaptiveSpanSize(e, colSize, cols, adapt);
     });
 
     const columnRadioSelect = (
@@ -125,63 +130,60 @@ export default function ObjectView(props: {
                             value={search()}
                         />
 
-                        {/* TODO: Remove this when fixed column counts are implemented */}
-                        <Show when={adaptiveSize()}>
-                            <div class="btn-group btn-group-horizontal px-4">
-                                <input
-                                    type="radio"
-                                    name="grid-size"
-                                    data-title="1"
-                                    value={"1"}
-                                    onChange={columnRadioSelect}
-                                    class="btn btn-sm"
-                                    checked={columnCount() === 1}
-                                />
-                                <input
-                                    type="radio"
-                                    name="grid-size"
-                                    data-title="2"
-                                    value={2}
-                                    id="2"
-                                    class="btn btn-sm"
-                                    onChange={columnRadioSelect}
-                                    checked={columnCount() === 2}
-                                />
-                                <input
-                                    type="radio"
-                                    name="grid-size"
-                                    data-title="3"
-                                    value={3}
-                                    id="3"
-                                    class="btn btn-sm"
-                                    onChange={columnRadioSelect}
-                                    checked={columnCount() === 3}
-                                />
-                                <input
-                                    type="radio"
-                                    name="grid-size"
-                                    data-title="4"
-                                    id="4"
-                                    value={4}
-                                    class="btn btn-sm"
-                                    onChange={columnRadioSelect}
-                                    checked={columnCount() === 4}
-                                />
+                        <div class="btn-group btn-group-horizontal px-4">
+                            <input
+                                type="radio"
+                                name="grid-size"
+                                data-title="1"
+                                value={"1"}
+                                onChange={columnRadioSelect}
+                                class="btn btn-sm"
+                                checked={columnCount() === 1}
+                            />
+                            <input
+                                type="radio"
+                                name="grid-size"
+                                data-title="2"
+                                value={2}
+                                id="2"
+                                class="btn btn-sm"
+                                onChange={columnRadioSelect}
+                                checked={columnCount() === 2}
+                            />
+                            <input
+                                type="radio"
+                                name="grid-size"
+                                data-title="3"
+                                value={3}
+                                id="3"
+                                class="btn btn-sm"
+                                onChange={columnRadioSelect}
+                                checked={columnCount() === 3}
+                            />
+                            <input
+                                type="radio"
+                                name="grid-size"
+                                data-title="4"
+                                id="4"
+                                value={4}
+                                class="btn btn-sm"
+                                onChange={columnRadioSelect}
+                                checked={columnCount() === 4}
+                            />
 
-                                <label for="4" hidden>
-                                    4
-                                </label>
-                                <label for="3" hidden>
-                                    3
-                                </label>
-                                <label for="2" hidden>
-                                    2
-                                </label>
-                                <label for="1" hidden>
-                                    1
-                                </label>
-                            </div>
-                        </Show>
+                            <label for="4" hidden>
+                                4
+                            </label>
+                            <label for="3" hidden>
+                                3
+                            </label>
+                            <label for="2" hidden>
+                                2
+                            </label>
+                            <label for="1" hidden>
+                                1
+                            </label>
+                        </div>
                     </div>
 
                     {/* A11Y <3 */}

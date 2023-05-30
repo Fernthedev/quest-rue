@@ -1,3 +1,7 @@
+:root {
+    --type-grid-columns: 2
+}
+
 .expanded {
     margin-left: -0.5rem;
     width: calc(100% + 1rem);
@@ -24,7 +28,8 @@
     display: grid;
     justify-items: stretch;
 
-    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+    /* grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); */
+    grid-template-columns: repeat(var(--type-grid-columns), minmax(0, 1fr));
     gap: 4px;
     margin-bottom: 4px;
 }

@@ -6,6 +6,7 @@ import {
     createEffect,
     createMemo,
     createSignal,
+    on,
 } from "solid-js";
 import { PacketJSON } from "../../misc/events";
 import { ProtoClassDetails, ProtoMethodInfo } from "../../misc/proto/il2cpp";
@@ -43,7 +44,7 @@ export function TypeSection(props: {
             } cursor-pointer`
     );
 
-    // due to auto-fill all the grids will have the same size columns
+    // due to the set count all the grids will have the same size columns
     let grid: HTMLDivElement | undefined;
     const [colSize, setColSize] = createSignal<number>(0);
     const gridObserver = new ResizeObserver(() => {
@@ -51,6 +52,21 @@ export function TypeSection(props: {
         const column = columns[0].replace("px", "");
         setColSize(Number(column));
     });
+    createEffect(
+        on(
+            () => props.spanFn,
+            () => {
+                if (!collapsed()) {
+                    const columns = getComputedStyle(
+                        grid!
+                    ).gridTemplateColumns.split(" ");
+                    const column = columns[0].replace("px", "");
+                    setColSize(Number(column));
+                }
+            },
+            { defer: true }
+        )
+    );
     // loses observation after collapsing
     createEffect(() => {
         if (!collapsed()) gridObserver.observe(grid!);
