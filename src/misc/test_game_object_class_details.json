@@ -1,0 +1,4353 @@
+{
+    "classDetails": {
+        "clazz": {
+            "namespaze": "UnityEngine",
+            "clazz": "GameObject",
+            "generics": []
+        },
+        "fields": [],
+        "properties": [
+            {
+                "name": "transform",
+                "getterId": 520826586240,
+                "type": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Transform",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "layer",
+                "getterId": 520826586320,
+                "setterId": 520826586400,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 4 },
+                    "size": 4,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "active",
+                "getterId": 520826586480,
+                "setterId": 520826586560,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "activeSelf",
+                "getterId": 520826586720,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "activeInHierarchy",
+                "getterId": 520826586800,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "isStatic",
+                "getterId": 520826586960,
+                "setterId": 520826587040,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "isStaticBatchable",
+                "getterId": 520826587120,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "tag",
+                "getterId": 520826587200,
+                "setterId": 520826587280,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 8 },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "scene",
+                "getterId": 520826588720,
+                "type": {
+                    "Info": {
+                        "$case": "structInfo",
+                        "structInfo": {
+                            "clazz": {
+                                "namespaze": "UnityEngine.SceneManagement",
+                                "clazz": "Scene",
+                                "generics": []
+                            },
+                            "fieldOffsets": {
+                                "0": {
+                                    "name": "m_Handle",
+                                    "id": 517106562024,
+                                    "type": {
+                                        "Info": {
+                                            "$case": "primitiveInfo",
+                                            "primitiveInfo": 4
+                                        },
+                                        "size": 4,
+                                        "isByref": false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "size": 4,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "sceneCullingMask",
+                "getterId": 520826588800,
+                "type": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 5 },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "gameObject",
+                "getterId": 520826588880,
+                "type": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "GameObject",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            }
+        ],
+        "methods": [
+            {
+                "name": "CreatePrimitive",
+                "id": 520826583040,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "GameObject",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponent",
+                "id": 520826583120,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "genericInfo",
+                        "genericInfo": { "genericIndex": 623, "name": "T" }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponent",
+                "id": 520826583200,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentFastPath",
+                "id": 520826583280,
+                "args": {
+                    "oneFurtherThanResultValue": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 5
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentByName",
+                "id": 520826583360,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponent",
+                "id": 520826583440,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInChildren",
+                "id": 520826583520,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInChildren",
+                "id": 520826583600,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInChildren",
+                "id": 520826583680,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "genericInfo",
+                        "genericInfo": { "genericIndex": 624, "name": "T" }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInChildren",
+                "id": 520826583760,
+                "args": {
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "genericInfo",
+                        "genericInfo": { "genericIndex": 625, "name": "T" }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInParent",
+                "id": 520826583840,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentInParent",
+                "id": 520826583920,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "genericInfo",
+                        "genericInfo": { "genericIndex": 626, "name": "T" }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInternal",
+                "id": 520826584000,
+                "args": {
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    },
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "recursive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    },
+                    "resultList": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "useSearchTypeAsArrayReturnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    },
+                    "reverse": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "System",
+                            "clazz": "Array",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponents",
+                "id": 520826584080,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Component",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponents",
+                "id": 520826584160,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "genericInfo",
+                                    "genericInfo": {
+                                        "genericIndex": 627,
+                                        "name": "T"
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponents",
+                "id": 520826584240,
+                "args": {
+                    "results": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System.Collections.Generic",
+                                "clazz": "List`1",
+                                "generics": [
+                                    {
+                                        "Info": {
+                                            "$case": "classInfo",
+                                            "classInfo": {
+                                                "namespaze": "UnityEngine",
+                                                "clazz": "Component",
+                                                "generics": []
+                                            }
+                                        },
+                                        "size": 8,
+                                        "isByref": false
+                                    }
+                                ]
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponents",
+                "id": 520826584320,
+                "args": {
+                    "results": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System.Collections.Generic",
+                                "clazz": "List`1",
+                                "generics": [
+                                    {
+                                        "Info": {
+                                            "$case": "genericInfo",
+                                            "genericInfo": {
+                                                "genericIndex": 628,
+                                                "name": "T"
+                                            }
+                                        },
+                                        "size": 8,
+                                        "isByref": false
+                                    }
+                                ]
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584400,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Component",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584480,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Component",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584560,
+                "args": {
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "genericInfo",
+                                    "genericInfo": {
+                                        "genericIndex": 629,
+                                        "name": "T"
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584640,
+                "args": {
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    },
+                    "results": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System.Collections.Generic",
+                                "clazz": "List`1",
+                                "generics": [
+                                    {
+                                        "Info": {
+                                            "$case": "genericInfo",
+                                            "genericInfo": {
+                                                "genericIndex": 630,
+                                                "name": "T"
+                                            }
+                                        },
+                                        "size": 8,
+                                        "isByref": false
+                                    }
+                                ]
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584720,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "genericInfo",
+                                    "genericInfo": {
+                                        "genericIndex": 631,
+                                        "name": "T"
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInChildren",
+                "id": 520826584800,
+                "args": {
+                    "results": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System.Collections.Generic",
+                                "clazz": "List`1",
+                                "generics": [
+                                    {
+                                        "Info": {
+                                            "$case": "genericInfo",
+                                            "genericInfo": {
+                                                "genericIndex": 632,
+                                                "name": "T"
+                                            }
+                                        },
+                                        "size": 8,
+                                        "isByref": false
+                                    }
+                                ]
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInParent",
+                "id": 520826584880,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Component",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInParent",
+                "id": 520826584960,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Component",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInParent",
+                "id": 520826585040,
+                "args": {
+                    "results": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System.Collections.Generic",
+                                "clazz": "List`1",
+                                "generics": [
+                                    {
+                                        "Info": {
+                                            "$case": "genericInfo",
+                                            "genericInfo": {
+                                                "genericIndex": 633,
+                                                "name": "T"
+                                            }
+                                        },
+                                        "size": 8,
+                                        "isByref": false
+                                    }
+                                ]
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInParent",
+                "id": 520826585120,
+                "args": {
+                    "includeInactive": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "genericInfo",
+                                    "genericInfo": {
+                                        "genericIndex": 634,
+                                        "name": "T"
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "GetComponentsInParent",
+                "id": 520826585200,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "genericInfo",
+                                    "genericInfo": {
+                                        "genericIndex": 635,
+                                        "name": "T"
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "TryGetComponent",
+                "id": 520826585280,
+                "args": {
+                    "component": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 636, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": true
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "TryGetComponent",
+                "id": 520826585360,
+                "args": {
+                    "component": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Component",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": true
+                    },
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "TryGetComponentInternal",
+                "id": 520826585440,
+                "args": {
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "TryGetComponentFastPath",
+                "id": 520826585520,
+                "args": {
+                    "oneFurtherThanResultValue": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 5
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "FindWithTag",
+                "id": 520826585600,
+                "args": {
+                    "tag": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "GameObject",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessageUpwards",
+                "id": 520826585680,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessage",
+                "id": 520826585760,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "BroadcastMessage",
+                "id": 520826585840,
+                "args": {
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    },
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "AddComponentInternal",
+                "id": 520826585920,
+                "args": {
+                    "className": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "Internal_AddComponentWithType",
+                "id": 520826586000,
+                "args": {
+                    "componentType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "AddComponent",
+                "id": 520826586080,
+                "args": {
+                    "componentType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 9
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "Component",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "AddComponent",
+                "id": 520826586160,
+                "args": {},
+                "returnType": {
+                    "Info": {
+                        "$case": "genericInfo",
+                        "genericInfo": { "genericIndex": 637, "name": "T" }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SetActive",
+                "id": 520826586640,
+                "args": {
+                    "value": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SetActiveRecursively",
+                "id": 520826586880,
+                "args": {
+                    "state": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "CompareTag",
+                "id": 520826587360,
+                "args": {
+                    "tag": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 0 },
+                    "size": 1,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "FindGameObjectWithTag",
+                "id": 520826587440,
+                "args": {
+                    "tag": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "GameObject",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "FindGameObjectsWithTag",
+                "id": 520826587520,
+                "args": {
+                    "tag": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "arrayInfo",
+                        "arrayInfo": {
+                            "memberType": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "GameObject",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessageUpwards",
+                "id": 520826587600,
+                "args": {
+                    "value": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    },
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessageUpwards",
+                "id": 520826587680,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "value": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessageUpwards",
+                "id": 520826587760,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessage",
+                "id": 520826587840,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "value": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessage",
+                "id": 520826587920,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "value": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "SendMessage",
+                "id": 520826588000,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "BroadcastMessage",
+                "id": 520826588080,
+                "args": {
+                    "options": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    },
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "parameter": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "BroadcastMessage",
+                "id": 520826588160,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "parameter": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "System",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "BroadcastMessage",
+                "id": 520826588240,
+                "args": {
+                    "methodName": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": ".ctor",
+                "id": 520826588320,
+                "args": {
+                    "name": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": ".ctor",
+                "id": 520826588400,
+                "args": {},
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": ".ctor",
+                "id": 520826588480,
+                "args": {
+                    "name": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "components": {
+                        "Info": {
+                            "$case": "arrayInfo",
+                            "arrayInfo": {
+                                "memberType": {
+                                    "Info": {
+                                        "$case": "primitiveInfo",
+                                        "primitiveInfo": 9
+                                    },
+                                    "size": 8,
+                                    "isByref": false
+                                }
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "Internal_CreateGameObject",
+                "id": 520826588560,
+                "args": {
+                    "name": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    },
+                    "self": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "GameObject",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "Find",
+                "id": 520826588640,
+                "args": {
+                    "name": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                "returnType": {
+                    "Info": {
+                        "$case": "classInfo",
+                        "classInfo": {
+                            "namespaze": "UnityEngine",
+                            "clazz": "GameObject",
+                            "generics": []
+                        }
+                    },
+                    "size": 8,
+                    "isByref": false
+                }
+            },
+            {
+                "name": "get_scene_Injected",
+                "id": 520826588960,
+                "args": {
+                    "ret": {
+                        "Info": {
+                            "$case": "structInfo",
+                            "structInfo": {
+                                "clazz": {
+                                    "namespaze": "UnityEngine.SceneManagement",
+                                    "clazz": "Scene",
+                                    "generics": []
+                                },
+                                "fieldOffsets": {
+                                    "0": {
+                                        "name": "m_Handle",
+                                        "id": 517106562024,
+                                        "type": {
+                                            "Info": {
+                                                "$case": "primitiveInfo",
+                                                "primitiveInfo": 4
+                                            },
+                                            "size": 4,
+                                            "isByref": false
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "size": 8,
+                        "isByref": true
+                    }
+                },
+                "returnType": {
+                    "Info": { "$case": "primitiveInfo", "primitiveInfo": 11 },
+                    "size": 0,
+                    "isByref": false
+                }
+            }
+        ],
+        "interfaces": [],
+        "parent": {
+            "clazz": {
+                "namespaze": "UnityEngine",
+                "clazz": "Object",
+                "generics": []
+            },
+            "fields": [
+                {
+                    "name": "m_CachedPtr",
+                    "id": 521015987384,
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 5
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                }
+            ],
+            "properties": [
+                {
+                    "name": "name",
+                    "getterId": 520826597936,
+                    "setterId": 520826598016,
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "hideFlags",
+                    "getterId": 520826599296,
+                    "setterId": 520826599376,
+                    "type": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                }
+            ],
+            "methods": [
+                {
+                    "name": "GetInstanceID",
+                    "id": 520826597376,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "GetHashCode",
+                    "id": 520826597456,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Equals",
+                    "id": 520826597536,
+                    "args": {
+                        "other": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "System",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "op_Implicit",
+                    "id": 520826597616,
+                    "args": {
+                        "exists": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "CompareBaseObjects",
+                    "id": 520826597696,
+                    "args": {
+                        "rhs": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "lhs": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "IsNativeObjectAlive",
+                    "id": 520826597776,
+                    "args": {
+                        "o": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "GetCachedPtr",
+                    "id": 520826597856,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 5
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598096,
+                    "args": {
+                        "position": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        },
+                        "original": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "rotation": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598176,
+                    "args": {
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "position": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        },
+                        "rotation": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        },
+                        "original": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598256,
+                    "args": {
+                        "original": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598336,
+                    "args": {
+                        "original": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "instantiateInWorldSpace": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        },
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598416,
+                    "args": {
+                        "original": {
+                            "Info": {
+                                "$case": "genericInfo",
+                                "genericInfo": {
+                                    "genericIndex": 643,
+                                    "name": "T"
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 643, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598496,
+                    "args": {
+                        "original": {
+                            "Info": {
+                                "$case": "genericInfo",
+                                "genericInfo": {
+                                    "genericIndex": 644,
+                                    "name": "T"
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "rotation": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        },
+                        "position": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 644, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598576,
+                    "args": {
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "rotation": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        },
+                        "position": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        },
+                        "original": {
+                            "Info": {
+                                "$case": "genericInfo",
+                                "genericInfo": {
+                                    "genericIndex": 645,
+                                    "name": "T"
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 645, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598656,
+                    "args": {
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "original": {
+                            "Info": {
+                                "$case": "genericInfo",
+                                "genericInfo": {
+                                    "genericIndex": 646,
+                                    "name": "T"
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 646, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Instantiate",
+                    "id": 520826598736,
+                    "args": {
+                        "worldPositionStays": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        },
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "original": {
+                            "Info": {
+                                "$case": "genericInfo",
+                                "genericInfo": {
+                                    "genericIndex": 647,
+                                    "name": "T"
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 647, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Destroy",
+                    "id": 520826598816,
+                    "args": {
+                        "t": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 6
+                            },
+                            "size": 4,
+                            "isByref": false
+                        },
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Destroy",
+                    "id": 520826598896,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "DestroyImmediate",
+                    "id": 520826598976,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "allowDestroyingAssets": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "DestroyImmediate",
+                    "id": 520826599056,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "FindObjectsOfType",
+                    "id": 520826599136,
+                    "args": {
+                        "type": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 9
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "arrayInfo",
+                            "arrayInfo": {
+                                "memberType": {
+                                    "Info": {
+                                        "$case": "classInfo",
+                                        "classInfo": {
+                                            "namespaze": "UnityEngine",
+                                            "clazz": "Object",
+                                            "generics": []
+                                        }
+                                    },
+                                    "size": 8,
+                                    "isByref": false
+                                }
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "DontDestroyOnLoad",
+                    "id": 520826599216,
+                    "args": {
+                        "target": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "FindObjectsOfType",
+                    "id": 520826599456,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "arrayInfo",
+                            "arrayInfo": {
+                                "memberType": {
+                                    "Info": {
+                                        "$case": "genericInfo",
+                                        "genericInfo": {
+                                            "genericIndex": 648,
+                                            "name": "T"
+                                        }
+                                    },
+                                    "size": 8,
+                                    "isByref": false
+                                }
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "FindObjectOfType",
+                    "id": 520826599536,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "genericInfo",
+                            "genericInfo": { "genericIndex": 649, "name": "T" }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "CheckNullArgument",
+                    "id": 520826599616,
+                    "args": {
+                        "message": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 8
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "arg": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "System",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "FindObjectOfType",
+                    "id": 520826599696,
+                    "args": {
+                        "type": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 9
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "ToString",
+                    "id": 520826599776,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "op_Equality",
+                    "id": 520826599856,
+                    "args": {
+                        "x": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "y": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "op_Inequality",
+                    "id": 520826599936,
+                    "args": {
+                        "y": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "x": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 0
+                        },
+                        "size": 1,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "GetOffsetOfInstanceIDInCPlusPlusObject",
+                    "id": 520826600016,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 4
+                        },
+                        "size": 4,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_CloneSingle",
+                    "id": 520826600096,
+                    "args": {
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_CloneSingleWithParent",
+                    "id": 520826600176,
+                    "args": {
+                        "worldPositionStays": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        },
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_InstantiateSingle",
+                    "id": 520826600256,
+                    "args": {
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "rot": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        },
+                        "pos": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_InstantiateSingleWithParent",
+                    "id": 520826600336,
+                    "args": {
+                        "rot": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 16,
+                            "isByref": false
+                        },
+                        "pos": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 12,
+                            "isByref": false
+                        },
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "ToString",
+                    "id": 520826600416,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "GetName",
+                    "id": 520826600496,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 8
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "SetName",
+                    "id": 520826600576,
+                    "args": {
+                        "obj": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "name": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 8
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "FindObjectFromInstanceID",
+                    "id": 520826600656,
+                    "args": {
+                        "instanceID": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 4
+                            },
+                            "size": 4,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": ".ctor",
+                    "id": 520826600736,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": ".cctor",
+                    "id": 520826600816,
+                    "args": {},
+                    "returnType": {
+                        "Info": {
+                            "$case": "primitiveInfo",
+                            "primitiveInfo": 11
+                        },
+                        "size": 0,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_InstantiateSingle_Injected",
+                    "id": 520826600896,
+                    "args": {
+                        "rot": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 8,
+                            "isByref": true
+                        },
+                        "pos": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 8,
+                            "isByref": true
+                        },
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                },
+                {
+                    "name": "Internal_InstantiateSingleWithParent_Injected",
+                    "id": 520826600976,
+                    "args": {
+                        "rot": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Quaternion",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 520797402904,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 520797402936,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 520797402968,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "12": {
+                                            "name": "w",
+                                            "id": 520797403000,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 8,
+                            "isByref": true
+                        },
+                        "pos": {
+                            "Info": {
+                                "$case": "structInfo",
+                                "structInfo": {
+                                    "clazz": {
+                                        "namespaze": "UnityEngine",
+                                        "clazz": "Vector3",
+                                        "generics": []
+                                    },
+                                    "fieldOffsets": {
+                                        "0": {
+                                            "name": "x",
+                                            "id": 521015992248,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "4": {
+                                            "name": "y",
+                                            "id": 521015992280,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        },
+                                        "8": {
+                                            "name": "z",
+                                            "id": 521015992312,
+                                            "type": {
+                                                "Info": {
+                                                    "$case": "primitiveInfo",
+                                                    "primitiveInfo": 6
+                                                },
+                                                "size": 4,
+                                                "isByref": false
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 8,
+                            "isByref": true
+                        },
+                        "parent": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Transform",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        },
+                        "data": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "UnityEngine",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    "returnType": {
+                        "Info": {
+                            "$case": "classInfo",
+                            "classInfo": {
+                                "namespaze": "UnityEngine",
+                                "clazz": "Object",
+                                "generics": []
+                            }
+                        },
+                        "size": 8,
+                        "isByref": false
+                    }
+                }
+            ],
+            "interfaces": [],
+            "parent": {
+                "clazz": {
+                    "namespaze": "System",
+                    "clazz": "Object",
+                    "generics": []
+                },
+                "fields": [],
+                "properties": [],
+                "methods": [
+                    {
+                        "name": "Equals",
+                        "id": 522835609984,
+                        "args": {
+                            "obj": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        },
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "Equals",
+                        "id": 522835610064,
+                        "args": {
+                            "objA": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            },
+                            "objB": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        },
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 0
+                            },
+                            "size": 1,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": ".ctor",
+                        "id": 522835610144,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 11
+                            },
+                            "size": 0,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "Finalize",
+                        "id": 522835610224,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 11
+                            },
+                            "size": 0,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "GetHashCode",
+                        "id": 522835610304,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 4
+                            },
+                            "size": 4,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "GetType",
+                        "id": 522835610384,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 9
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "MemberwiseClone",
+                        "id": 522835610464,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "classInfo",
+                                "classInfo": {
+                                    "namespaze": "System",
+                                    "clazz": "Object",
+                                    "generics": []
+                                }
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "ToString",
+                        "id": 522835610544,
+                        "args": {},
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 8
+                            },
+                            "size": 8,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "InternalGetHashCode",
+                        "id": 522835610624,
+                        "args": {
+                            "o": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        },
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 4
+                            },
+                            "size": 4,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "FieldGetter",
+                        "id": 522835610704,
+                        "args": {
+                            "val": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": true
+                            },
+                            "fieldName": {
+                                "Info": {
+                                    "$case": "primitiveInfo",
+                                    "primitiveInfo": 8
+                                },
+                                "size": 8,
+                                "isByref": false
+                            },
+                            "typeName": {
+                                "Info": {
+                                    "$case": "primitiveInfo",
+                                    "primitiveInfo": 8
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        },
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 11
+                            },
+                            "size": 0,
+                            "isByref": false
+                        }
+                    },
+                    {
+                        "name": "FieldSetter",
+                        "id": 522835610784,
+                        "args": {
+                            "typeName": {
+                                "Info": {
+                                    "$case": "primitiveInfo",
+                                    "primitiveInfo": 8
+                                },
+                                "size": 8,
+                                "isByref": false
+                            },
+                            "fieldName": {
+                                "Info": {
+                                    "$case": "primitiveInfo",
+                                    "primitiveInfo": 8
+                                },
+                                "size": 8,
+                                "isByref": false
+                            },
+                            "val": {
+                                "Info": {
+                                    "$case": "classInfo",
+                                    "classInfo": {
+                                        "namespaze": "System",
+                                        "clazz": "Object",
+                                        "generics": []
+                                    }
+                                },
+                                "size": 8,
+                                "isByref": false
+                            }
+                        },
+                        "returnType": {
+                            "Info": {
+                                "$case": "primitiveInfo",
+                                "primitiveInfo": 11
+                            },
+                            "size": 0,
+                            "isByref": false
+                        }
+                    }
+                ],
+                "interfaces": []
+            }
+        }
+    },
+    "fieldValues": {},
+    "propertyValues": {}
+}
