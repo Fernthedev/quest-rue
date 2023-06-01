@@ -1,19 +1,12 @@
 #include "manager.hpp"
 #include "classutils.hpp"
-#include "main.hpp"
+#include "unity.hpp"
 #include "mem.hpp"
 
 #include <fmt/ranges.h>
 
 #include "packethandlers/socketlib_handler.hpp"
 #include "packethandlers/websocket_handler.hpp"
-
-#include "UnityEngine/Transform.hpp"
-#include "UnityEngine/Component.hpp"
-#include "UnityEngine/Object.hpp"
-#include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
-#include "UnityEngine/Resources.hpp"
 
 #include "sombrero/shared/linq.hpp"
 #include "sombrero/shared/linq_functional.hpp"
@@ -35,6 +28,14 @@ void Manager::Init() {
     handler = std::make_unique<WebSocketHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
+}
+
+bool Manager::tryValidatePtr(const void* ptr) {
+    if(asInt(ptr) <= 0 || asInt(ptr) > UINTPTR_MAX) {
+        LOG_INFO("invalid ptr was {}", fmt::ptr(ptr));
+        return false;
+    }
+    return true;
 }
 
 #pragma region parsing
@@ -81,180 +82,130 @@ void Manager::processMessage(const PacketWrapper& packet) {
 }
 
 void Manager::setField(const SetField& packet, uint64_t queryId) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+
     auto field = asPtr(FieldInfo, packet.fieldid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    FieldUtils::Set(field, object, packet.value());
+    if(!tryValidatePtr(field))
+        LOG_INFO("field info pointer was invalid");
+    else if(!tryValidatePtr(object))
+        LOG_INFO("instance pointer was invalid");
+    else {
+        FieldUtils::Set(field, object, packet.value());
 
-    PacketWrapper wrapper;
-    wrapper.set_queryresultid(queryId);
-    SetFieldResult& result = *wrapper.mutable_setfieldresult();
-    result.set_fieldid(asInt(field));
-
+        SetFieldResult& result = *wrapper.mutable_setfieldresult();
+        result.set_fieldid(asInt(field));
+    }
     handler->sendPacket(wrapper);
 }
 
 void Manager::getField(const GetField& packet, uint64_t queryId) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+
     auto field = asPtr(FieldInfo, packet.fieldid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    VALIDATE_PTR(field);
-    VALIDATE_PTR(object);
+    if(!tryValidatePtr(field))
+        LOG_INFO("field info pointer was invalid");
+    else if(!tryValidatePtr(object))
+        LOG_INFO("instance pointer was invalid");
+    else {
+        LOG_INFO("Getting field {} ({}) for object {} ({})", fmt::ptr(field), packet.fieldid(),
+                fmt::ptr(object), packet.objectaddress());
 
-    LOG_INFO("Getting field {} ({}) for object {} ({})", fmt::ptr(field), packet.fieldid(),
-             fmt::ptr(object), packet.objectaddress());
+        auto res = FieldUtils::Get(field, object);
 
-    auto res = FieldUtils::Get(field, object);
+        GetFieldResult& result = *wrapper.mutable_getfieldresult();
+        result.set_fieldid(asInt(field));
 
-    PacketWrapper wrapper;
-    wrapper.set_queryresultid(queryId);
-    GetFieldResult& result = *wrapper.mutable_getfieldresult();
-    result.set_fieldid(asInt(field));
-
-    *result.mutable_value() = res;
-
+        *result.mutable_value() = res;
+    }
     handler->sendPacket(wrapper);
 }
 
 void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(queryId);
+
     auto method = asPtr(const MethodInfo, packet.methodid());
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
-    if(int size = packet.generics_size()) {
-        std::vector<Il2CppClass*> generics{};
-        for(int i = 0; i < size; i++)
-            generics.push_back(GetClass(packet.generics(i)));
+    if(!tryValidatePtr(method))
+        LOG_INFO("method info pointer was invalid");
+    else if(!tryValidatePtr(object))
+        LOG_INFO("instance pointer was invalid");
+    else {
+        if(int size = packet.generics_size()) {
+            std::vector<Il2CppClass*> generics{};
+            for(int i = 0; i < size; i++)
+                generics.push_back(GetClass(packet.generics(i)));
 
-        method = il2cpp_utils::MakeGenericMethod(method, generics);
+            method = il2cpp_utils::MakeGenericMethod(method, generics);
+        }
+
+        std::vector<ProtoDataPayload> args{};
+        for(int i = 0; i < packet.args_size(); i++)
+            args.emplace_back(packet.args(i));
+
+        std::string err = "";
+        auto res = MethodUtils::Run(method, object, args, err);
+
+        InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
+        result.set_methodid(asInt(method));
+
+        if(!err.empty()) {
+            result.set_status(InvokeMethodResult::ERR);
+            result.set_error(err);
+            handler->sendPacket(wrapper);
+            return;
+        }
+
+        result.set_status(InvokeMethodResult::OK);
+        *result.mutable_result() = res;
     }
-
-    std::vector<ProtoDataPayload> args{};
-    for(int i = 0; i < packet.args_size(); i++)
-        args.emplace_back(packet.args(i));
-
-    std::string err = "";
-    auto res = MethodUtils::Run(method, object, args, err);
-
-    PacketWrapper wrapper;
-    wrapper.set_queryresultid(queryId);
-    InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-    result.set_methodid(asInt(method));
-
-    if(!err.empty()) {
-        result.set_status(InvokeMethodResult::ERR);
-        result.set_error(err);
-        handler->sendPacket(wrapper);
-        return;
-    }
-
-    result.set_status(InvokeMethodResult::OK);
-    *result.mutable_result() = res;
     handler->sendPacket(wrapper);
-}
-
-ProtoScene ReadScene(Scene obj) {
-    ProtoScene protoObj;
-    protoObj.set_handle(obj.m_Handle);
-    protoObj.set_name(obj.get_name());
-    protoObj.set_isloaded(obj.get_isLoaded());
-    return protoObj;
-}
-
-ProtoTransform ReadTransform(Transform* obj) {
-    ProtoTransform protoObj;
-    protoObj.set_address(asInt(obj));
-    protoObj.set_name(obj->get_name());
-
-    protoObj.set_childcount(obj->get_childCount());
-    protoObj.set_parent(asInt(obj->GetParent()));
-    return protoObj;
-}
-
-ProtoGameObject ReadGameObject(GameObject* obj) {
-    ProtoGameObject protoObj;
-    protoObj.set_address(asInt(obj));
-    protoObj.set_name(obj->get_name());
-
-    protoObj.set_active(obj->get_active());
-    protoObj.set_layer(obj->get_layer());
-    if(obj->get_scene().IsValid())
-        *protoObj.mutable_scene() = ReadScene(obj->get_scene());
-    protoObj.set_tag(obj->get_tag());
-    *protoObj.mutable_transform() = ReadTransform(obj->get_transform());
-    return protoObj;
 }
 
 void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
     PacketWrapper wrapper;
-    SearchObjectsResult& result = *wrapper.mutable_searchobjectsresult();
     wrapper.set_queryresultid(id);
 
-    std::string name = packet.name();
-    bool searchName = name.length() > 0;
+    std::string name = packet.has_name() ? packet.name() : "";
 
-    const ProtoClassInfo& componentInfo = packet.componentclass();
-    std::string namespaceName = componentInfo.namespaze();
-    if(namespaceName == "Global" || namespaceName == "GlobalNamespace")
-        namespaceName = "";
-    auto const& className = componentInfo.clazz();
-
-    Il2CppClass* klass = il2cpp_utils::GetClassFromName(namespaceName, className);
+    Il2CppClass* klass = GetClass(packet.componentclass());
     if(!klass) {
-        LOG_INFO("Could not find class {}.{}", namespaceName, className);
+        LOG_INFO("Could not find class {}", packet.componentclass().DebugString());
+        handler->sendPacket(wrapper);
         return;
     }
 
-    auto objects = Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType(klass));
-
-    std::span<Object*> res = objects.ref_to();
-    std::vector<Object*> namedObjs;
-
-    if(searchName) {
-        LOG_INFO("Searching for name {}", name);
-        for(auto const& obj : res) {
-            if(obj->get_name() == name)
-                namedObjs.push_back(obj);
-        }
-        res = std::span<Object*>(namedObjs);
-    }
-
-    for(auto const& obj : res) {
-        ProtoObject& found = *result.add_objects();
-        if(!searchName)
-            name = obj->get_name().operator std::string();
-        found.set_address(asInt(obj));
-        found.set_name(name);
-        *found.mutable_classinfo() = GetClassInfo(typeofinst(obj));
-    }
+    *wrapper.mutable_searchobjectsresult() = FindObjects(klass, name);
 
     handler->sendPacket(wrapper);
 }
 
 void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
     PacketWrapper wrapper;
-    GetAllGameObjectsResult& result = *wrapper.mutable_getallgameobjectsresult();
     wrapper.set_queryresultid(id);
-    auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
-    result.mutable_objects()->Reserve(objects.Length());
-    LOG_INFO("found {} game objects", objects.Length());
-    for (const auto& obj : objects) {
-        *result.add_objects() = ReadGameObject(obj);
-    }
+
+    *wrapper.mutable_getallgameobjectsresult() = FindAllGameObjects();
+
     handler->sendPacket(wrapper);
 }
 
 void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uint64_t id) {
     PacketWrapper wrapper;
-    GetGameObjectComponentsResult& result = *wrapper.mutable_getgameobjectcomponentsresult();
     wrapper.set_queryresultid(id);
 
-    for (const auto comp : reinterpret_cast<GameObject*>(packet.address())->GetComponents<Component*>()) {
-        ProtoComponent& found = *result.add_components();
+    auto gameObject = asPtr(UnityEngine::GameObject, packet.address());
 
-        found.set_address(asInt(comp));
-        found.set_name(comp->get_name());
-        *found.mutable_classinfo() = GetClassInfo(typeofinst(comp));
-    }
+    if(!tryValidatePtr(gameObject))
+        LOG_INFO("gameObject pointer was invalid");
+    else
+        *wrapper.mutable_getgameobjectcomponentsresult() = GetComponents(gameObject);
 
     handler->sendPacket(wrapper);
 }
@@ -262,36 +213,50 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
 void Manager::readMemory(const ReadMemory& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
-    ReadMemoryResult& result = *wrapper.mutable_readmemoryresult();
-    result.set_address(packet.address());
-    auto src = reinterpret_cast<void*>(packet.address());
-    auto size = packet.size();
-    if(mem::protect(src, size, mem::protection::read_write_execute)) {
-        result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_ERR);
-    } else {
-        result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_OK);
-        result.set_data(src, size);
+
+    auto src = asPtr(void, packet.address());
+
+    if(!tryValidatePtr(src))
+        LOG_INFO("src pointer was invalid");
+    else {
+        ReadMemoryResult& result = *wrapper.mutable_readmemoryresult();
+        result.set_address(packet.address());
+
+        auto size = packet.size();
+        if(mem::protect(src, size, mem::protection::read_write_execute)) {
+            result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_ERR);
+        } else {
+            result.set_status(ReadMemoryResult_Status::ReadMemoryResult_Status_OK);
+            result.set_data(src, size);
+        }
+        LOG_INFO("Result is {}", wrapper.DebugString());
     }
-    LOG_INFO("Result is {}", wrapper.DebugString());
     handler->sendPacket(wrapper);
 }
 
 void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
-    WriteMemoryResult& result = *wrapper.mutable_writememoryresult();
-    result.set_address(packet.address());
-    auto dst = reinterpret_cast<void*>(packet.address());
-    auto src = packet.data().data();
-    auto size = packet.data().size();
-    if(mem::protect(dst, size, mem::protection::read_write_execute)) {
-        result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_ERR);
-    } else {
-        result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_OK);
-        result.set_size(size);
-        memcpy(dst, src, size);
+
+    auto dst = asPtr(void, packet.address());
+
+    if(!tryValidatePtr(dst))
+        LOG_INFO("dst pointer was invalid");
+    else {
+        WriteMemoryResult& result = *wrapper.mutable_writememoryresult();
+        result.set_address(packet.address());
+
+        auto src = packet.data().data();
+        auto size = packet.data().size();
+        if(mem::protect(dst, size, mem::protection::read_write_execute)) {
+            result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_ERR);
+        } else {
+            result.set_status(WriteMemoryResult_Status::WriteMemoryResult_Status_OK);
+            result.set_size(size);
+            memcpy(dst, src, size);
+        }
+        LOG_INFO("Result is {}", wrapper.DebugString());
     }
-    LOG_INFO("Result is {}", wrapper.DebugString());
     handler->sendPacket(wrapper);
 }
 
@@ -335,23 +300,19 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
 
 // TODO: generics
 void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
-    using namespace Sombrero;
-
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
     auto result = wrapper.mutable_getclassdetailsresult();
 
-    const auto& classInfo = packet.classinfo();
-    auto clazz = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
-
-    if (!clazz) {
-        LOG_INFO("Could not find class {}::{}", classInfo.namespaze(), classInfo.clazz());
+    Il2CppClass* klass = GetClass(packet.classinfo());
+    if(!klass) {
+        LOG_INFO("Could not find class {}", packet.classinfo().DebugString());
         handler->sendPacket(wrapper);
         return;
     }
 
-    *result->mutable_classdetails() = getClassDetails_internal(clazz);
+    *result->mutable_classdetails() = getClassDetails_internal(klass);
 
     handler->sendPacket(wrapper);
 }
@@ -364,8 +325,11 @@ void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) 
 
     LOG_INFO("Requesting object {}", packet.address());
     auto instance = asPtr(Il2CppObject, packet.address());
-    VALIDATE_PTR(instance);
-    *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
+
+    if(!tryValidatePtr(instance))
+        LOG_INFO("instance pointer was invalid");
+    else
+        *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
 
     // TODO: field / property values
 

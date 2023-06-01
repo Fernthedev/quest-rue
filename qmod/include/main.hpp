@@ -16,13 +16,6 @@
 #define typeIsValuetype(type) il2cpp_functions::class_from_il2cpp_type(type)->valuetype
 #define klassIsValuetype(type) type->valuetype
 
-#define VALIDATE_PTR(p)                                                        \
-  if (asInt(p) < 0 || asInt(p) > UINTPTR_MAX)                                                \
-    PaperQLogger.fmtThrowError(                                                \
-        "Pointer address for variable {} {} ({}) is larger than maximum {} or smaller than 0", \
-        #p, \
-        fmt::ptr(p), asInt(p), UINTPTR_MAX);
-
 #define asInt(p) reinterpret_cast<std::uintptr_t>(p)
 #define asPtr(type, p) reinterpret_cast<type *>(p)
 
@@ -30,7 +23,7 @@ static inline auto PaperQLogger = Paper::Logger::WithContext<"QuestEditor", fals
 
 Logger& getLogger();
 
-#define LOG_INFO(...) PaperQLogger.fmtLog<Paper::LogLevel::INF>(__VA_ARGS__);
+#define LOG_INFO(...) PaperQLogger.fmtLog<Paper::LogLevel::INF>(__VA_ARGS__)
 
 std::string_view GetDataPath();
 

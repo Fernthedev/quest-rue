@@ -30,6 +30,7 @@ namespace ClassUtils {
     ProtoStructInfo GetStructInfo(Il2CppType const* structType);
     ProtoGenericInfo GetGenericInfo(Il2CppType const* genericType);
 
+    Il2CppClass* GetClass(ProtoClassInfo const& classInfo);
     Il2CppClass* GetClass(ProtoTypeInfo const& typeInfo);
     Il2CppType* GetType(ProtoTypeInfo const& typeInfo);
 }

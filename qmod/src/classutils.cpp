@@ -266,7 +266,7 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     return genericInfo;
 }
 
-Il2CppClass* GetClass(ProtoClassInfo const& classInfo) {
+Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
     LOG_INFO("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
 
     auto klass = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());

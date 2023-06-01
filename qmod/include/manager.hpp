@@ -8,6 +8,8 @@
 
 class Manager {
     private:
+    static bool tryValidatePtr(const void* ptr);
+
     void processMessage(const PacketWrapper& packet);
     void setField(const SetField& packet, uint64_t id);
     void getField(const GetField& packet, uint64_t id);
