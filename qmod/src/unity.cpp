@@ -57,7 +57,7 @@ GetGameObjectComponentsResult GetComponents(UnityEngine::GameObject* obj) {
 
 SearchObjectsResult FindObjects(Il2CppClass* klass, std::string name) {
     SearchObjectsResult result;
-    LOG_INFO("Searching for objects");
+    LOG_DEBUG("Searching for objects");
 
     auto objects = Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType(klass));
 
@@ -65,7 +65,7 @@ SearchObjectsResult FindObjects(Il2CppClass* klass, std::string name) {
     std::vector<Object*> namedObjs;
 
     if(!name.empty()) {
-        LOG_INFO("Searching for name {}", name);
+        LOG_DEBUG("Searching for name {}", name);
         StringW il2cppName(name);
         for(auto const& obj : res) {
             if(obj->get_name()->Contains(il2cppName))
@@ -89,7 +89,7 @@ GetAllGameObjectsResult FindAllGameObjects() {
 
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
     result.mutable_objects()->Reserve(objects.Length());
-    LOG_INFO("found {} game objects", objects.Length());
+    LOG_DEBUG("found {} game objects", objects.Length());
     for (const auto& obj : objects) {
         *result.add_objects() = ReadGameObject(obj);
     }

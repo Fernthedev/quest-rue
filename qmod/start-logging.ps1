@@ -15,6 +15,9 @@ Param(
     [Switch] $help,
 
     [Parameter(Mandatory=$false)]
+    [Switch] $trim,
+
+    [Parameter(Mandatory=$false)]
     [Switch] $excludeHeader
 )
 
@@ -66,6 +69,10 @@ if ($all -eq $false) {
     }
     $pattern += "AndroidRuntime|CRASH)"
     $command += " | Select-String -pattern `"$pattern`""
+}
+
+if ($trim -eq $true) {
+    $command += " | % {`$_ -replace `"^(?(?=.*\]:).*?\]: |.*?: )`", `"`"}"
 }
 
 if (![string]::IsNullOrEmpty($file)) {

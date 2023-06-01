@@ -139,11 +139,11 @@ Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     ProtoTypeInfo info;
-    LOG_INFO("Getting type info {}", il2cpp_functions::type_get_name(type));
-    LOG_INFO("Type enum {}", type->type);
+    LOG_DEBUG("Getting type info {}", il2cpp_functions::type_get_name(type));
+    LOG_DEBUG("Type enum {}", type->type);
 
     info.set_size(fieldTypeSize(type));
-    LOG_INFO("Found size {}", info.size());
+    LOG_DEBUG("Found size {}", info.size());
 
     static const std::set<Il2CppTypeEnum> nonClassReferences = {
         IL2CPP_TYPE_STRING,
@@ -221,7 +221,7 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
 
 ProtoClassInfo ClassUtils::GetClassInfo(Il2CppType const* type) {
     ProtoClassInfo classInfo;
-    LOG_INFO("Getting class info");
+    LOG_DEBUG("Getting class info");
 
     classInfo.set_namespaze(il2cpp_functions::class_get_namespace(classoftype(type)));
     classInfo.set_clazz(il2cpp_functions::class_get_name(classoftype(type)));
@@ -237,7 +237,7 @@ ProtoClassInfo ClassUtils::GetClassInfo(Il2CppType const* type) {
 
 ProtoArrayInfo ClassUtils::GetArrayInfo(Il2CppType const* type) {
     ProtoArrayInfo arrayInfo;
-    LOG_INFO("Getting array info");
+    LOG_DEBUG("Getting array info");
 
     *arrayInfo.mutable_membertype() = GetTypeInfo(type->data.type);
     return arrayInfo;
@@ -245,20 +245,20 @@ ProtoArrayInfo ClassUtils::GetArrayInfo(Il2CppType const* type) {
 
 ProtoStructInfo ClassUtils::GetStructInfo(Il2CppType const* type) {
     ProtoStructInfo structInfo;
-    LOG_INFO("Getting struct info");
+    LOG_DEBUG("Getting struct info");
 
     *structInfo.mutable_clazz() = GetClassInfo(type);
     for(auto const& field : GetFields(classoftype(type))) {
-        LOG_INFO("Field {} ({}) at offset {}", field->name, il2cpp_functions::type_get_name(field->type), field->offset - sizeof(Il2CppObject));
+        LOG_DEBUG("Field {} ({}) at offset {}", field->name, il2cpp_functions::type_get_name(field->type), field->offset - sizeof(Il2CppObject));
         structInfo.mutable_fieldoffsets()->insert({field->offset - sizeof(Il2CppObject), FieldUtils::GetFieldInfo(field)});
     }
-    LOG_INFO("Got struct info");
+    LOG_DEBUG("Got struct info");
     return structInfo;
 }
 
 ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     ProtoGenericInfo genericInfo;
-    LOG_INFO("Getting generic info");
+    LOG_DEBUG("Getting generic info");
 
     genericInfo.set_genericindex(type->data.genericParameterIndex);
     auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(type->data.genericParameterIndex);
@@ -267,7 +267,7 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
 }
 
 Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
-    LOG_INFO("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
+    LOG_DEBUG("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
 
     auto klass = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
     if(!klass || classInfo.generics_size() <= 0)
@@ -287,23 +287,23 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         return GetClass(typeInfo.classinfo());
     else if(typeInfo.has_arrayinfo()) {
         auto& arrayInfo = typeInfo.arrayinfo();
-        LOG_INFO("Getting class from array info");
+        LOG_DEBUG("Getting class from array info");
 
         auto elementClass = classoftype(GetType(arrayInfo.membertype()));
         return il2cpp_functions::bounded_array_class_get(elementClass, 1, false); // szarray
     } else if(typeInfo.has_structinfo()) {
-        LOG_INFO("Getting class from struct info");
+        LOG_DEBUG("Getting class from struct info");
 
         return GetClass(typeInfo.structinfo().clazz());
     } else if(typeInfo.has_genericinfo()) {
-        LOG_INFO("Getting class from generic info");
+        LOG_DEBUG("Getting class from generic info");
         // I don't think this should even come up
         Il2CppType type = {};
         type.data.genericParameterIndex = typeInfo.size();
         type.type = IL2CPP_TYPE_VAR; // hmm, mvar?
         return classoftype(&type); // only uses the above two fields for var/mvar
     } else if(typeInfo.has_primitiveinfo()) {
-        LOG_INFO("Getting class from primitive info");
+        LOG_DEBUG("Getting class from primitive info");
 
         switch (typeInfo.primitiveinfo()) {
         case ProtoTypeInfo::BOOLEAN:

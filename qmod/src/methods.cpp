@@ -185,7 +185,7 @@ ProtoDataPayload OutputData(ProtoTypeInfo& typeInfo, void* value) {
 
 ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
     if(method->return_type->type == IL2CPP_TYPE_VOID) {
-        LOG_INFO("void return");
+        LOG_DEBUG("void return");
         return VoidDataPayload();
     }
     size_t size = fieldTypeSize(method->return_type);
@@ -202,8 +202,8 @@ ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
 
 namespace MethodUtils {
     ProtoDataPayload Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences) {
-        LOG_INFO("Running method {}", method->name);
-        LOG_INFO("{} parameters", method->parameters_count);
+        LOG_DEBUG("Running method {}", method->name);
+        LOG_DEBUG("{} parameters", method->parameters_count);
 
         void* il2cppArgs[args.size()];
         // TODO: type checking?
@@ -224,9 +224,9 @@ namespace MethodUtils {
             return VoidDataPayload(method->return_type);
         }
 
-        LOG_INFO("Returning");
+        LOG_DEBUG("Returning");
         if(!ret) {
-            LOG_INFO("null pointer");
+            LOG_DEBUG("null pointer");
             return VoidDataPayload(method->return_type);
         }
         return HandleReturn(method, ret);
@@ -261,9 +261,9 @@ namespace MethodUtils {
 
 namespace FieldUtils {
     ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
-        LOG_INFO("Object", object->klass->name);
-        LOG_INFO("Getting field {}", field->name);
-        LOG_INFO("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
+        LOG_DEBUG("Object", object->klass->name);
+        LOG_DEBUG("Getting field {}", field->name);
+        LOG_DEBUG("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
         size_t size = fieldTypeSize(field->type);
         char ret[size];
@@ -276,8 +276,8 @@ namespace FieldUtils {
     }
 
     void Set(FieldInfo* field, Il2CppObject* object, ProtoDataPayload const& arg, bool derefReferences) {
-        LOG_INFO("Setting field {}", field->name);
-        LOG_INFO("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
+        LOG_DEBUG("Setting field {}", field->name);
+        LOG_DEBUG("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
         void* value = HandleType(arg.typeinfo(), (void*) arg.data().data(), arg.data().length());
 
@@ -291,7 +291,7 @@ namespace FieldUtils {
     ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
         ProtoFieldInfo info;
         info.set_name(field->name);
-        LOG_INFO("Field address: {} vs converted {} ({})", fmt::ptr(field),
+        LOG_DEBUG("Field address: {} vs converted {} ({})", fmt::ptr(field),
                  asInt(field), fmt::ptr((void *)asInt(field)));
         info.set_id(asInt(field));
         *info.mutable_type() = ClassUtils::GetTypeInfo(field->type);

@@ -42,7 +42,8 @@ bool Manager::tryValidatePtr(const void* ptr) {
 void Manager::processMessage(const PacketWrapper& packet) {
     scheduleFunction([this, packet]{
         auto id = packet.queryresultid();
-        LOG_INFO("Packet is {}", packet.DebugString());
+        LOG_INFO("Processing packet type {}", packet.Packet_case());
+        LOG_DEBUG("Packet is {}", packet.DebugString());
 
         switch(packet.Packet_case()) {
         case PacketWrapper::kInvokeMethod:
@@ -79,7 +80,7 @@ void Manager::processMessage(const PacketWrapper& packet) {
             getInstanceDetails(packet.getinstancedetails(), id);
             break;
         default:
-            LOG_INFO("Invalid packet type! {}", packet.Packet_case());
+            LOG_INFO("Invalid packet type!");
         }
     });
 }

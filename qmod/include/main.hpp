@@ -24,6 +24,8 @@ static inline auto PaperQLogger = Paper::Logger::WithContext<"QuestEditor", fals
 Logger& getLogger();
 
 #define LOG_INFO(...) PaperQLogger.fmtLog<Paper::LogLevel::INF>(__VA_ARGS__)
+#define LOG_DEBUG(...) PaperQLogger.fmtLog<Paper::LogLevel::DBG>(__VA_ARGS__)
+// #define LOG_DEBUG(...)
 
 std::string_view GetDataPath();
 
