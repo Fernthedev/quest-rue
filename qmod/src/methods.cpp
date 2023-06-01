@@ -12,7 +12,7 @@
 // so int*, Vector3*, Il2CppObject*
 
 inline void** pointerOffset(void* ptr, int offset) {
-    return (void**) ((char*) ptr) + offset;
+    return (void**) (((char*) ptr) + offset);
 }
 
 void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size);
