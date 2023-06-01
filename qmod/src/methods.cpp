@@ -108,7 +108,7 @@ std::string OutputClass(ProtoClassInfo& info, void* value, int size) {
 
 std::string OutputArray(ProtoArrayInfo& info, void* value, int size) {
     auto arr = *(Il2CppArray**) value;
-    if(arr->max_length <= 0)
+    if(!arr || arr->max_length <= 0)
         return "";
     info.set_length(arr->max_length);
 
@@ -160,6 +160,8 @@ std::string OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size
 }
 
 std::string OutputType(ProtoTypeInfo& typeInfo, void* value) {
+    if(!value)
+        return "";
     if(typeInfo.has_classinfo())
         return OutputClass(*typeInfo.mutable_classinfo(), value, typeInfo.size());
     else if(typeInfo.has_arrayinfo())
