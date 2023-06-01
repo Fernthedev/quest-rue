@@ -131,7 +131,7 @@ export default function ObjectView(props: {
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>
                     <span class="flex-1" />
-                    <div class="py-1">
+                    <div class="py-1 whitespace-nowrap">
                         <input
                             class="px-2 py-1"
                             placeholder="Search"
@@ -197,7 +197,7 @@ export default function ObjectView(props: {
 
                     {/* A11Y <3 */}
                     <label class="label">
-                        <span class="label-text text-base">
+                        <span class="label-text text-base whitespace-nowrap">
                             Adaptive Row Sizing
                         </span>
 

@@ -92,7 +92,6 @@ export function TypeSection(props: {
             } else {
                 map.set(method.name, [method]);
             }
-
             return map;
         }, new Map<string, ProtoMethodInfo[]>());
 
@@ -101,11 +100,10 @@ export function TypeSection(props: {
 
     const [expanded, setExpanded] = createUpdatingSignal(
         () =>
-            groupedMethods().reduce((ret, [name, methodInfos]) => {
+            groupedMethods().reduce((map, [name, methodInfos]) => {
                 // more than one method
-                if (methodInfos.length > 1) ret.set(name, false);
-
-                return ret;
+                if (methodInfos.length > 1) map.set(name, false);
+                return map;
             }, new Map<string, boolean>()),
         { equals: false }
     );

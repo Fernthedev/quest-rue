@@ -27,7 +27,7 @@ function GameObjectListItem(props: {
     addressTreeData: Accessor<Map<GameObjectIndex, [number, boolean]> | undefined>;
 }) {
     const object = createMemo(
-        () => gameObjectsStore.objectsMap!.get(props.item)![0]!
+        () => gameObjectsStore.objectsMap?.get(props.item)?.[0]
     );
 
     const highlighted = createMemo(
@@ -42,7 +42,7 @@ function GameObjectListItem(props: {
         props.updateAddressMap?.(
             props.addressMap()?.set(props.item, [highlighted(), !expanded()])
         );
-    const select = () => props.navigate(objectUrl(object().address));
+    const select = () => props.navigate(objectUrl(object()?.address));
 
     // [indent, hasChildren]
     const treeData = createMemo(() => props.addressTreeData()?.get(props.item) ?? [0, false]);
@@ -68,7 +68,7 @@ function GameObjectListItem(props: {
                 </span>
             </Show>
             <span role="link" tabIndex="0" onKeyPress={select} onClick={select}>
-                {object().name}
+                {object()?.name}
             </span>
         </div>
     );
