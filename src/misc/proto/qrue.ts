@@ -201,13 +201,19 @@ export function writeMemoryResult_StatusToJSON(object: WriteMemoryResult_Status)
 }
 
 export interface GetClassDetails {
-  /** TODO: Struct? */
   classInfo: ProtoClassInfo | undefined;
 }
 
 export interface GetClassDetailsResult {
-  /** TODO: Struct? */
   classDetails: ProtoClassDetails | undefined;
+}
+
+export interface GetInstanceClass {
+  address: bigint;
+}
+
+export interface GetInstanceClassResult {
+  classInfo: ProtoClassInfo | undefined;
 }
 
 export interface GetInstanceDetails {
@@ -256,6 +262,8 @@ export interface PacketWrapper {
     | { $case: "writeMemoryResult"; writeMemoryResult: WriteMemoryResult }
     | { $case: "getClassDetails"; getClassDetails: GetClassDetails }
     | { $case: "getClassDetailsResult"; getClassDetailsResult: GetClassDetailsResult }
+    | { $case: "getInstanceClass"; getInstanceClass: GetInstanceClass }
+    | { $case: "getInstanceClassResult"; getInstanceClassResult: GetInstanceClassResult }
     | { $case: "getInstanceDetails"; getInstanceDetails: GetInstanceDetails }
     | { $case: "getInstanceDetailsResult"; getInstanceDetailsResult: GetInstanceDetailsResult };
 }
@@ -1653,6 +1661,121 @@ export const GetClassDetailsResult = {
   },
 };
 
+function createBaseGetInstanceClass(): GetInstanceClass {
+  return { address: BigInt("0") };
+}
+
+export const GetInstanceClass = {
+  encode(message: GetInstanceClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== BigInt("0")) {
+      writer.uint32(8).uint64(message.address.toString());
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceClass {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceClass();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.address = longToBigint(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceClass {
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
+  },
+
+  toJSON(message: GetInstanceClass): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address.toString());
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceClass>, I>>(base?: I): GetInstanceClass {
+    return GetInstanceClass.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceClass>, I>>(object: I): GetInstanceClass {
+    const message = createBaseGetInstanceClass();
+    message.address = object.address ?? BigInt("0");
+    return message;
+  },
+};
+
+function createBaseGetInstanceClassResult(): GetInstanceClassResult {
+  return { classInfo: undefined };
+}
+
+export const GetInstanceClassResult = {
+  encode(message: GetInstanceClassResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.classInfo !== undefined) {
+      ProtoClassInfo.encode(message.classInfo, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceClassResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceClassResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.classInfo = ProtoClassInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceClassResult {
+    return { classInfo: isSet(object.classInfo) ? ProtoClassInfo.fromJSON(object.classInfo) : undefined };
+  },
+
+  toJSON(message: GetInstanceClassResult): unknown {
+    const obj: any = {};
+    message.classInfo !== undefined &&
+      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(base?: I): GetInstanceClassResult {
+    return GetInstanceClassResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(object: I): GetInstanceClassResult {
+    const message = createBaseGetInstanceClassResult();
+    message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
+      ? ProtoClassInfo.fromPartial(object.classInfo)
+      : undefined;
+    return message;
+  },
+};
+
 function createBaseGetInstanceDetails(): GetInstanceDetails {
   return { address: BigInt("0") };
 }
@@ -2056,11 +2179,17 @@ export const PacketWrapper = {
       case "getClassDetailsResult":
         GetClassDetailsResult.encode(message.Packet.getClassDetailsResult, writer.uint32(154).fork()).ldelim();
         break;
+      case "getInstanceClass":
+        GetInstanceClass.encode(message.Packet.getInstanceClass, writer.uint32(162).fork()).ldelim();
+        break;
+      case "getInstanceClassResult":
+        GetInstanceClassResult.encode(message.Packet.getInstanceClassResult, writer.uint32(170).fork()).ldelim();
+        break;
       case "getInstanceDetails":
-        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(162).fork()).ldelim();
+        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(178).fork()).ldelim();
         break;
       case "getInstanceDetailsResult":
-        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(170).fork()).ldelim();
+        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(186).fork()).ldelim();
         break;
     }
     return writer;
@@ -2242,12 +2371,32 @@ export const PacketWrapper = {
           }
 
           message.Packet = {
-            $case: "getInstanceDetails",
-            getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
+            $case: "getInstanceClass",
+            getInstanceClass: GetInstanceClass.decode(reader, reader.uint32()),
           };
           continue;
         case 21:
           if (tag !== 170) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getInstanceClassResult",
+            getInstanceClassResult: GetInstanceClassResult.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 22:
+          if (tag !== 178) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getInstanceDetails",
+            getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 23:
+          if (tag !== 186) {
             break;
           }
 
@@ -2319,6 +2468,13 @@ export const PacketWrapper = {
           $case: "getClassDetailsResult",
           getClassDetailsResult: GetClassDetailsResult.fromJSON(object.getClassDetailsResult),
         }
+        : isSet(object.getInstanceClass)
+        ? { $case: "getInstanceClass", getInstanceClass: GetInstanceClass.fromJSON(object.getInstanceClass) }
+        : isSet(object.getInstanceClassResult)
+        ? {
+          $case: "getInstanceClassResult",
+          getInstanceClassResult: GetInstanceClassResult.fromJSON(object.getInstanceClassResult),
+        }
         : isSet(object.getInstanceDetails)
         ? { $case: "getInstanceDetails", getInstanceDetails: GetInstanceDetails.fromJSON(object.getInstanceDetails) }
         : isSet(object.getInstanceDetailsResult)
@@ -2385,6 +2541,13 @@ export const PacketWrapper = {
     message.Packet?.$case === "getClassDetailsResult" &&
       (obj.getClassDetailsResult = message.Packet?.getClassDetailsResult
         ? GetClassDetailsResult.toJSON(message.Packet?.getClassDetailsResult)
+        : undefined);
+    message.Packet?.$case === "getInstanceClass" && (obj.getInstanceClass = message.Packet?.getInstanceClass
+      ? GetInstanceClass.toJSON(message.Packet?.getInstanceClass)
+      : undefined);
+    message.Packet?.$case === "getInstanceClassResult" &&
+      (obj.getInstanceClassResult = message.Packet?.getInstanceClassResult
+        ? GetInstanceClassResult.toJSON(message.Packet?.getInstanceClassResult)
         : undefined);
     message.Packet?.$case === "getInstanceDetails" && (obj.getInstanceDetails = message.Packet?.getInstanceDetails
       ? GetInstanceDetails.toJSON(message.Packet?.getInstanceDetails)
@@ -2564,6 +2727,26 @@ export const PacketWrapper = {
       message.Packet = {
         $case: "getClassDetailsResult",
         getClassDetailsResult: GetClassDetailsResult.fromPartial(object.Packet.getClassDetailsResult),
+      };
+    }
+    if (
+      object.Packet?.$case === "getInstanceClass" &&
+      object.Packet?.getInstanceClass !== undefined &&
+      object.Packet?.getInstanceClass !== null
+    ) {
+      message.Packet = {
+        $case: "getInstanceClass",
+        getInstanceClass: GetInstanceClass.fromPartial(object.Packet.getInstanceClass),
+      };
+    }
+    if (
+      object.Packet?.$case === "getInstanceClassResult" &&
+      object.Packet?.getInstanceClassResult !== undefined &&
+      object.Packet?.getInstanceClassResult !== null
+    ) {
+      message.Packet = {
+        $case: "getInstanceClassResult",
+        getInstanceClassResult: GetInstanceClassResult.fromPartial(object.Packet.getInstanceClassResult),
       };
     }
     if (

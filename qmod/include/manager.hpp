@@ -20,6 +20,7 @@ class Manager {
     void readMemory(const ReadMemory& packet, uint64_t id);
     void writeMemory(const WriteMemory& packet, uint64_t id);
     void getClassDetails(const GetClassDetails& packet, uint64_t id);
+    void getInstanceClass(const GetInstanceClass& packet, uint64_t id);
     void getInstanceDetails(const GetInstanceDetails& packet, uint64_t id);
 
     bool initialized;

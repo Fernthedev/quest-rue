@@ -72,6 +72,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
         case PacketWrapper::kGetClassDetails:
             getClassDetails(packet.getclassdetails(), id);
             break;
+        case PacketWrapper::kGetInstanceClass:
+            getInstanceClass(packet.getinstanceclass(), id);
+            break;
         case PacketWrapper::kGetInstanceDetails:
             getInstanceDetails(packet.getinstancedetails(), id);
             break;
@@ -317,20 +320,35 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) {
+void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
-    auto result = wrapper.mutable_getinstancedetailsresult();
+    auto instance = asPtr(Il2CppObject, packet.address());
+
+    if(!tryValidatePtr(instance))
+        LOG_INFO("instance pointer was invalid");
+    else {
+        auto result = wrapper.mutable_getinstanceclassresult();
+        *result->mutable_classinfo() = GetClassInfo(typeofinst(instance));
+    }
+
+    handler->sendPacket(wrapper);
+}
+
+void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
 
     LOG_INFO("Requesting object {}", packet.address());
     auto instance = asPtr(Il2CppObject, packet.address());
 
     if(!tryValidatePtr(instance))
         LOG_INFO("instance pointer was invalid");
-    else
+    else {
+        auto result = wrapper.mutable_getinstancedetailsresult();
         *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
-
+    }
     // TODO: field / property values
 
     handler->sendPacket(wrapper);

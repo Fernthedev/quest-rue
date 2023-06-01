@@ -58,7 +58,6 @@ message SearchObjectsResult {
 }
 
 message GetAllGameObjects {
-
 }
 
 message GetAllGameObjectsResult {
@@ -70,6 +69,7 @@ message GetGameObjectComponents {
     /// GameObject address
     uint64 address = 1;
 }
+
 message GetGameObjectComponentsResult {
     repeated ProtoComponent components = 1;
 }
@@ -105,13 +105,19 @@ message WriteMemoryResult {
 }
 
 message GetClassDetails {
-    // TODO: Struct?
     ProtoClassInfo classInfo = 1;
 }
 
 message GetClassDetailsResult {
-    // TODO: Struct?
     ProtoClassDetails classDetails = 1;
+}
+
+message GetInstanceClass {
+    uint64 address = 1;
+}
+
+message GetInstanceClassResult {
+    ProtoClassInfo classInfo = 1;
 }
 
 message GetInstanceDetails {
@@ -149,7 +155,9 @@ message PacketWrapper {
         WriteMemoryResult writeMemoryResult = 17;
         GetClassDetails getClassDetails = 18;
         GetClassDetailsResult getClassDetailsResult = 19;
-        GetInstanceDetails getInstanceDetails = 20;
-        GetInstanceDetailsResult getInstanceDetailsResult = 21;
+        GetInstanceClass getInstanceClass = 20;
+        GetInstanceClassResult getInstanceClassResult = 21;
+        GetInstanceDetails getInstanceDetails = 22;
+        GetInstanceDetailsResult getInstanceDetailsResult = 23;
     }
 }
