@@ -27,6 +27,8 @@ void* HandleArray(ProtoArrayInfo const& info, void* arg, int size) {
         return arg;
     auto elemTypeProto = info.membertype();
     auto elemClass = ClassUtils::GetClass(elemTypeProto);
+    if(!elemClass)
+        return nullptr;
     auto ret = il2cpp_functions::array_new(elemClass, len);
     void* values = pointerOffset(ret, sizeof(Il2CppArray));
     // for arrays with variable length data... just set size to the largest and align based on that I guess
@@ -62,7 +64,10 @@ void* HandlePrimitive(ProtoTypeInfo::Primitive info, void* arg, int size) {
     case ProtoTypeInfo::TYPE: {
         ProtoTypeInfo typeInfo;
         typeInfo.ParseFromArray(arg, size);
-        return il2cpp_utils::GetSystemType(ClassUtils::GetType(typeInfo));
+        auto type = ClassUtils::GetType(typeInfo);
+        if(!type)
+            return nullptr;
+        return il2cpp_utils::GetSystemType(type);
     } default:
         return arg;
     }

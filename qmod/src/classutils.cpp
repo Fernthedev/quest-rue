@@ -275,8 +275,12 @@ Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
     // no MakeGenericMethod for classes in bshook
     auto runtimeClass = il2cpp_utils::GetSystemType(klass);
     ArrayW<Il2CppReflectionType*> genericArgs(classInfo.generics_size());
-    for(int i = 0; i < genericArgs.Length(); i++)
-        genericArgs[i] = il2cpp_utils::GetSystemType(GetType(classInfo.generics(i)));
+    for(int i = 0; i < genericArgs.Length(); i++) {
+        auto genericType = GetType(classInfo.generics(i));
+        if(!genericType)
+            return nullptr;
+        genericArgs[i] = il2cpp_utils::GetSystemType(genericType);
+    }
 
     auto inflated = System::RuntimeType::MakeGenericType(runtimeClass, genericArgs);
     return il2cpp_functions::class_from_system_type((Il2CppReflectionType*) inflated);
@@ -289,8 +293,11 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         auto& arrayInfo = typeInfo.arrayinfo();
         LOG_DEBUG("Getting class from array info");
 
-        auto elementClass = classoftype(GetType(arrayInfo.membertype()));
-        return il2cpp_functions::bounded_array_class_get(elementClass, 1, false); // szarray
+        auto memberType = GetType(arrayInfo.membertype());
+        if(!memberType)
+            return nullptr;
+
+        return il2cpp_functions::bounded_array_class_get(classoftype(memberType), 1, false); // szarray
     } else if(typeInfo.has_structinfo()) {
         LOG_DEBUG("Getting class from struct info");
 
