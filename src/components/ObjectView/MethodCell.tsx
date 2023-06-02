@@ -61,7 +61,7 @@ export function MethodCell(props: {
             .concat([props.method.returnType!])
             .flatMap((t) => getAllGenerics(t))
             .filter((t) => {
-                // @ts-expect-error (getAllGenerics only returns with $case "genericInfo")
+                if (t.Info?.$case != "genericInfo") throw "Not generic"
                 const index: number = t.Info.genericInfo.genericIndex;
                 if (indices.has(index)) return false;
                 indices.add(index);
