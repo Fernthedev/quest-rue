@@ -28,9 +28,8 @@ using namespace UnityEngine;
 
 void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     static bool loaded;
-    if (!scene.IsValid() || loaded)
+    if(!scene.IsValid() || loaded)
         return;
-
     loaded = true;
 
     IL2CPP_CATCH_HANDLER(
@@ -81,6 +80,18 @@ MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &MainMenuViewController::Did
 
     MainMenuViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
+    if(firstActivation) {
+        auto cam = UnityEngine::Camera::get_main();
+        cam->get_gameObject()->AddComponent<QRUE::CameraController*>();
+    }
+}
+
+#include "GlobalNamespace/AudioTimeSyncController.hpp"
+
+MAKE_HOOK_MATCH(AudioTimeSyncController_Start, &AudioTimeSyncController::Start, void, AudioTimeSyncController* self) {
+
+    AudioTimeSyncController_Start(self);
+
     auto cam = UnityEngine::Camera::get_main();
     cam->get_gameObject()->AddComponent<QRUE::CameraController*>();
 }
@@ -111,6 +122,7 @@ extern "C" void load() {
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(getLogger(), DefaultScenesTransitionsFromInit_TransitionToNextScene);
     INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
+    INSTALL_HOOK(getLogger(), AudioTimeSyncController_Start);
     INSTALL_HOOK(getLogger(), VRInputModule_GetMousePointerEventData);
     LOG_INFO("Installed hooks!");
 #endif
