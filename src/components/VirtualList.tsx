@@ -68,9 +68,13 @@ export function VirtualList<T>(props: {
                     height: `max(${
                         props.items.length * props.itemHeight
                     }px, 100%)`,
-                    top: `${topIndex() * props.itemHeight}px`,
                 }}
             >
+                <div
+                    style={{
+                        height: `${topIndex() * props.itemHeight}px`,
+                    }}
+                />
                 <For each={renderableItems()}>
                     {(item) => {
                         // console.log(topIndex() + index())
