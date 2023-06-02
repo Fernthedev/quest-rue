@@ -9,6 +9,9 @@ import {
 } from "solid-js";
 import style from "./VirtualList.module.css";
 
+// In order for items to be able to update without changing the scroll position,
+// T needs to be a type that can be compared as equal (so that <For> can remember)
+// ex. number or string as opposed to array or object
 export function VirtualList<T>(props: {
     itemHeight: number;
     items: T[];
@@ -22,12 +25,15 @@ export function VirtualList<T>(props: {
         () => Math.floor(height() / props.itemHeight) + 1
     );
 
+    // signal for the index of the first element shown
     const [topIndex, setTopIndex] = createSignal(0);
 
+    // track the height of the list container
     const listObserver = new ResizeObserver(([entry]) =>
         setHeight(entry.target.getBoundingClientRect().height)
     );
 
+    // update the first element shown when scrolled
     onMount(() => {
         listObserver.observe(container!);
         container!.addEventListener("scroll", () =>
@@ -37,6 +43,7 @@ export function VirtualList<T>(props: {
         );
     });
 
+    // cache rendered items to run the generator less
     const childrenCache = () => new Map<T, JSX.Element>();
 
     const buildFromCache = (key: T) => {
@@ -50,6 +57,8 @@ export function VirtualList<T>(props: {
         return element;
     };
 
+    // unfortunately we do need to clear the cache when props.items changes even though elements might stay the same
+    // as otherwise it would only ever grow if the list gets replaced repeatedly
     createEffect(
         on([() => props.generator, () => props.items], () => {
             childrenCache().clear();
@@ -62,6 +71,7 @@ export function VirtualList<T>(props: {
 
     return (
         <div ref={container} class={`${props.class ?? ""} ${style.container}`}>
+            {/* fixed height div to make the scroll bar the correct height */}
             <div
                 class={style.scroller}
                 style={{
@@ -70,6 +80,7 @@ export function VirtualList<T>(props: {
                     }px, 100%)`,
                 }}
             >
+                {/* never-seen div above the rendered elements to move them down to the correct position */}
                 <div
                     style={{
                         height: `${topIndex() * props.itemHeight}px`,
@@ -77,16 +88,9 @@ export function VirtualList<T>(props: {
                 />
                 <For each={renderableItems()}>
                     {(item) => {
-                        // console.log(topIndex() + index())
                         return (
-                            <div
-                                class={style.itemContainer}
-                                // not necessary?
-                                // style={{
-                                    // height: `${props.itemHeight}px`,
-                                    // top: `${topIndex() * props.itemHeight}px`,
-                                // }}
-                            >
+                            // does this need to have props.itemHeight in its style?
+                            <div class={style.itemContainer}>
                                 {buildFromCache(item)}
                             </div>
                         );
