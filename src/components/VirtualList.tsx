@@ -1,4 +1,12 @@
-import { JSX, createMemo, createSignal, onMount, For } from "solid-js";
+import {
+    JSX,
+    createMemo,
+    createSignal,
+    onMount,
+    For,
+    createEffect,
+    on,
+} from "solid-js";
 import style from "./VirtualList.module.css";
 
 export function VirtualList<T>(props: {
@@ -29,6 +37,29 @@ export function VirtualList<T>(props: {
         );
     });
 
+    const childrenCache = () => new Map<T, JSX.Element>();
+
+    const buildFromCache = (key: T) => {
+        const cache = childrenCache();
+        let element = cache.get(key);
+        if (!element) {
+            element = props.generator(key);
+            cache.set(key, element);
+        }
+
+        return element;
+    };
+
+    createEffect(
+        on([() => props.generator, () => props.items], () => {
+            childrenCache().clear();
+        })
+    );
+
+    const renderableItems = createMemo(() =>
+        props.items.slice(topIndex(), topIndex() + itemCount())
+    );
+
     return (
         <div ref={container} class={`${props.class ?? ""} ${style.container}`}>
             <div
@@ -37,25 +68,22 @@ export function VirtualList<T>(props: {
                     height: `max(${
                         props.items.length * props.itemHeight
                     }px, 100%)`,
+                    top: `${topIndex() * props.itemHeight}px`,
                 }}
             >
-                <For
-                    each={props.items.slice(
-                        topIndex(),
-                        topIndex() + itemCount()
-                    )}
-                >
+                <For each={renderableItems()}>
                     {(item) => {
                         // console.log(topIndex() + index())
                         return (
                             <div
                                 class={style.itemContainer}
-                                style={{
-                                    height: `${props.itemHeight}px`,
-                                    top: `${topIndex() * props.itemHeight}px`,
-                                }}
+                                // not necessary?
+                                // style={{
+                                    // height: `${props.itemHeight}px`,
+                                    // top: `${topIndex() * props.itemHeight}px`,
+                                // }}
                             >
-                                {props.generator(item)}
+                                {buildFromCache(item)}
                             </div>
                         );
                     }}
