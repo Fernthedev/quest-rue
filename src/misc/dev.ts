@@ -1,47 +1,67 @@
-import { ProtoTypeInfo_Primitive } from "./proto/il2cpp";
-import { PacketWrapper } from "./proto/qrue";
-import { stringToProtoData } from "./utils";
+import { GetClassDetailsResult, GetInstanceDetailsResult, PacketWrapper } from "./proto/qrue";
+import { ProtoGameObject } from "./proto/unity";
 
-export function devPacketResponse(p: PacketWrapper, callback: (response: PacketWrapper) => void) {
+let test_data_in_main_menu: Promise<{ items: ProtoGameObject[] }>;
+let test_game_object_class_details:
+    | Promise<GetClassDetailsResult | GetInstanceDetailsResult>;
+
+export async function devSetup() {
+    test_data_in_main_menu ??= import(
+        "../misc/test_data_in_main_menu.json"
+    ) as any;
+    test_game_object_class_details ??= import(
+        "../misc/test_game_object_class_details.json"
+    ) as any;
+}
+
+export async function devPacketResponse(
+    p: PacketWrapper,
+    callback: (response: PacketWrapper) => void
+) {
     switch (p.Packet?.$case) {
-        case "getAllGameObjects":
+        case "getAllGameObjects": {
             console.log("mock get game objects response");
-            import("../misc/test_data_in_main_menu.json").then(main_menu_json => {
-                const items = main_menu_json.items;
-                callback({
-                    queryResultId: p.queryResultId,
-                    Packet: {
-                        $case: "getAllGameObjectsResult",
-                        getAllGameObjectsResult: {
-                            objects: items
-                        }
-                    }
-                });
+            const main_menu_json = await test_data_in_main_menu!;
+            const items = main_menu_json.items;
+            callback({
+                queryResultId: p.queryResultId,
+                Packet: {
+                    $case: "getAllGameObjectsResult",
+                    getAllGameObjectsResult: {
+                        objects: items,
+                    },
+                },
             });
+
             break;
-        case "getInstanceDetails":
+        }
+        case "getInstanceDetails": {
             console.log("mock get instance details response");
-            import("../misc/test_game_object_class_details.json").then(class_details => {
-                callback({
-                    queryResultId: p.queryResultId,
-                    Packet: {
-                        $case: "getInstanceDetailsResult",
-                        getInstanceDetailsResult: class_details
-                    }
-                });
+            const class_details =
+                (await test_game_object_class_details!) as GetInstanceDetailsResult;
+            callback({
+                queryResultId: p.queryResultId,
+                Packet: {
+                    $case: "getInstanceDetailsResult",
+                    getInstanceDetailsResult: class_details,
+                },
             });
+
             break;
-        case "getClassDetails":
+        }
+        case "getClassDetails": {
             console.log("mock get class details response");
-            import("../misc/test_game_object_class_details.json").then(class_details => {
-                callback({
-                    queryResultId: p.queryResultId,
-                    Packet: {
-                        $case: "getClassDetailsResult",
-                        getClassDetailsResult: class_details
-                    }
-                });
+            const class_details = await test_game_object_class_details! as GetClassDetailsResult;
+
+            callback({
+                queryResultId: p.queryResultId,
+                Packet: {
+                    $case: "getClassDetailsResult",
+                    getClassDetailsResult: class_details,
+                },
             });
+
             break;
+        }
     }
 }

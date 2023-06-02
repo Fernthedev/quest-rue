@@ -1,9 +1,4 @@
-import {
-    Show,
-    For,
-    createEffect,
-    createMemo,
-} from "solid-js";
+import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
@@ -75,7 +70,9 @@ export function MethodCell(props: {
         const resultData = result();
         if (!resultData?.error) return;
 
-        toast.error(`${props.method.name} threw an exception: ${resultData.error}`);
+        toast.error(
+            `${props.method.name} threw an exception: ${resultData.error}`
+        );
     });
 
     return (
