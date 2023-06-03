@@ -23,6 +23,9 @@ dependencies:
   protobufjs:
     specifier: ^7.2.3
     version: 7.2.3
+  solid-heroicons:
+    specifier: ^3.2.3
+    version: 3.2.3(solid-js@1.7.6)
   solid-js:
     specifier: ^1.7.6
     version: 1.7.6
@@ -2987,6 +2990,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /solid-heroicons@3.2.3(solid-js@1.7.6):
+    resolution: {integrity: sha512-CGWuTGil6pM1Md2T9tVg98oKdl/U7TNHoyT2ogrN4PuZAEx7oNXTGuvdLgg8CQXSqe+Ht7EHQl1nwTWG5NPwzA==}
+    peerDependencies:
+      solid-js: '>= ^1.2.5'
+    dependencies:
+      solid-js: 1.7.6
+    dev: false
 
   /solid-js@1.7.6:
     resolution: {integrity: sha512-DXVOTjUh/bIAhE0fIqu3ezGLyQaez7v8EOw3uPLIi87DmLjg+hsuCAgKyNIZ+o4jUetOk3ZORccvJmE1yZUk8g==}

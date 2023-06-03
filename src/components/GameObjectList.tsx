@@ -19,12 +19,17 @@ import { objectUrl } from "../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
+import { plus } from "solid-heroicons/solid";
+import { Icon } from "solid-heroicons";
+
 function GameObjectListItem(props: {
     item: GameObjectIndex;
     navigate: Navigator;
     addressMap: Accessor<Map<GameObjectIndex, [boolean, boolean]> | undefined>;
     updateAddressMap?: (map?: Map<GameObjectIndex, [boolean, boolean]>) => void;
-    addressTreeData: Accessor<Map<GameObjectIndex, [number, boolean]> | undefined>;
+    addressTreeData: Accessor<
+        Map<GameObjectIndex, [number, boolean]> | undefined
+    >;
 }) {
     const object = createMemo(
         () => gameObjectsStore.objectsMap?.get(props.item)?.[0]
@@ -45,7 +50,9 @@ function GameObjectListItem(props: {
     const select = () => props.navigate(objectUrl(object()?.address));
 
     // [indent, hasChildren]
-    const treeData = createMemo(() => props.addressTreeData()?.get(props.item) ?? [0, false]);
+    const treeData = createMemo(
+        () => props.addressTreeData()?.get(props.item) ?? [0, false]
+    );
 
     return (
         <div
@@ -196,6 +203,30 @@ export default function GameObjectList() {
         // setSearch(""); // TODO: Is this necessary?
     }
 
+    const refreshButton = (
+        <button class="flex-0 p-2" onClick={refresh}>
+            <Show
+                when={requesting()}
+                fallback={
+                    <img
+                        src="/src/assets/refresh.svg"
+                        elementtiming={"Refresh icon"}
+                        fetchpriority={"auto"}
+                        alt="Refresh"
+                    />
+                }
+            >
+                <img
+                    src="/src/assets/loading.svg"
+                    class="animate-spin"
+                    elementtiming={"Spinning icon"}
+                    fetchpriority={"auto"}
+                    alt="Loading"
+                />
+            </Show>
+        </button>
+    );
+
     return (
         <div class="flex flex-col items-stretch h-full">
             <div class="px-2 py-2 flex gap-2 justify-center">
@@ -207,27 +238,8 @@ export default function GameObjectList() {
                     }}
                     class="flex-1 w-0"
                 />
-                <button class="flex-0 p-2" onClick={refresh}>
-                    <Show
-                        when={requesting()}
-                        fallback={
-                            <img
-                                src="/src/assets/refresh.svg"
-                                elementtiming={"Refresh icon"}
-                                fetchpriority={"auto"}
-                                alt="Refresh"
-                            />
-                        }
-                    >
-                        <img
-                            src="/src/assets/loading.svg"
-                            class="animate-spin"
-                            elementtiming={"Spinning icon"}
-                            fetchpriority={"auto"}
-                            alt="Loading"
-                        />
-                    </Show>
-                </button>
+                {refreshButton}
+                <AddGameObject />
             </div>
             <Show when={!requesting()} fallback="Loading...">
                 <Show
@@ -251,5 +263,66 @@ export default function GameObjectList() {
                 </Show>
             </Show>
         </div>
+    );
+}
+function AddGameObject() {
+    const [name, setName] = createSignal("GameObjectClone");
+    const [childOfSelected, setChildOfSelected] = createSignal(false);
+
+    const create = () => {
+        console.log("Create");
+    };
+
+    return (
+        <button class="dropdown dropdown-bottom dropdown-end flex-0 p-2">
+            <Icon path={plus} style={{ height: "1.5rem", width: "1.5rem" }} />
+
+            <div
+                class="
+                flex-col
+                gap-2 justify-center 
+                p-2 shadow menu dropdown-content
+                bg-neutral-200 dark:bg-zinc-900
+                z-10 rounded-box h-60"
+            >
+                <h4 class="label-text text-base break-after-right">
+                    Create new game object
+                </h4>
+                <input
+                    placeholder="New Game Object"
+                    value={name()}
+                    onInput={(e) => {
+                        setName(e.currentTarget.value);
+                    }}
+                    class="flex-1 mx-2 max-h-10 min-w-80"
+                />
+
+                {/* A11Y <3 */}
+                <label class="label">
+                    <span class="label-text text-base whitespace-nowrap">
+                        Child of selected GameObject
+                    </span>
+                    <input
+                        type="checkbox"
+                        checked={childOfSelected()}
+                        aria-checked={childOfSelected()}
+                        class="mx-2"
+                        onChange={(e) => {
+                            return setChildOfSelected(e.currentTarget.checked);
+                        }}
+                    />
+                </label>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                    class="w-80 btn mx-2 flex-0"
+                    onClick={create}
+                    onKeyPress={create}
+                    role="button"
+                    tabIndex={0}
+                >
+                    Create
+                </a>
+            </div>
+        </button>
     );
 }
