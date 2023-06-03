@@ -1,3 +1,4 @@
+import toast from "solid-toast";
 import { sendPacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
@@ -76,10 +77,15 @@ export function useRequestAndResponsePacket<
 
             if (!packet) throw "Packet is undefined why!";
 
-            batch(() => {
-                setValue(() => packet);
+            if (union.Packet?.$case == "inputError") {
+                toast.error(`Error in input: ${union.Packet.inputError}`);
                 setLoading(false);
-            });
+            } else {
+                batch(() => {
+                    setValue(() => packet);
+                    setLoading(false);
+                });
+            }
 
             expectedQueryID.value = undefined;
         }

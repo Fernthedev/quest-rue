@@ -137,27 +137,28 @@ message GetInstanceDetailsResult {
 message PacketWrapper {
     uint64 queryResultId = 1;
     oneof Packet {
-        SetField setField = 2;
-        SetFieldResult setFieldResult = 3;
-        GetField getField = 4;
-        GetFieldResult getFieldResult = 5;
-        InvokeMethod invokeMethod = 6;
-        InvokeMethodResult invokeMethodResult = 7;
-        SearchObjects searchObjects = 8;
-        SearchObjectsResult searchObjectsResult = 9;
-        GetAllGameObjects getAllGameObjects = 10;
-        GetAllGameObjectsResult getAllGameObjectsResult = 11;
-        GetGameObjectComponents getGameObjectComponents = 12;
-        GetGameObjectComponentsResult getGameObjectComponentsResult = 13;
-        ReadMemory readMemory = 14;
-        ReadMemoryResult readMemoryResult = 15;
-        WriteMemory writeMemory = 16;
-        WriteMemoryResult writeMemoryResult = 17;
-        GetClassDetails getClassDetails = 18;
-        GetClassDetailsResult getClassDetailsResult = 19;
-        GetInstanceClass getInstanceClass = 20;
-        GetInstanceClassResult getInstanceClassResult = 21;
-        GetInstanceDetails getInstanceDetails = 22;
-        GetInstanceDetailsResult getInstanceDetailsResult = 23;
+        string inputError = 2;
+        SetField setField = 3;
+        SetFieldResult setFieldResult = 4;
+        GetField getField = 5;
+        GetFieldResult getFieldResult = 6;
+        InvokeMethod invokeMethod = 7;
+        InvokeMethodResult invokeMethodResult = 8;
+        SearchObjects searchObjects = 9;
+        SearchObjectsResult searchObjectsResult = 10;
+        GetAllGameObjects getAllGameObjects = 11;
+        GetAllGameObjectsResult getAllGameObjectsResult = 12;
+        GetGameObjectComponents getGameObjectComponents = 13;
+        GetGameObjectComponentsResult getGameObjectComponentsResult = 14;
+        ReadMemory readMemory = 15;
+        ReadMemoryResult readMemoryResult = 16;
+        WriteMemory writeMemory = 17;
+        WriteMemoryResult writeMemoryResult = 18;
+        GetClassDetails getClassDetails = 19;
+        GetClassDetailsResult getClassDetailsResult = 20;
+        GetInstanceClass getInstanceClass = 21;
+        GetInstanceClassResult getInstanceClassResult = 22;
+        GetInstanceDetails getInstanceDetails = 23;
+        GetInstanceDetailsResult getInstanceDetailsResult = 24;
     }
 }

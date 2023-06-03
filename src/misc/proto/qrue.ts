@@ -244,6 +244,7 @@ export interface GetInstanceDetailsResult_PropertyValuesEntry {
 export interface PacketWrapper {
   queryResultId: bigint;
   Packet?:
+    | { $case: "inputError"; inputError: string }
     | { $case: "setField"; setField: SetField }
     | { $case: "setFieldResult"; setFieldResult: SetFieldResult }
     | { $case: "getField"; getField: GetField }
@@ -2124,72 +2125,75 @@ export const PacketWrapper = {
       writer.uint32(8).uint64(message.queryResultId.toString());
     }
     switch (message.Packet?.$case) {
+      case "inputError":
+        writer.uint32(18).string(message.Packet.inputError);
+        break;
       case "setField":
-        SetField.encode(message.Packet.setField, writer.uint32(18).fork()).ldelim();
+        SetField.encode(message.Packet.setField, writer.uint32(26).fork()).ldelim();
         break;
       case "setFieldResult":
-        SetFieldResult.encode(message.Packet.setFieldResult, writer.uint32(26).fork()).ldelim();
+        SetFieldResult.encode(message.Packet.setFieldResult, writer.uint32(34).fork()).ldelim();
         break;
       case "getField":
-        GetField.encode(message.Packet.getField, writer.uint32(34).fork()).ldelim();
+        GetField.encode(message.Packet.getField, writer.uint32(42).fork()).ldelim();
         break;
       case "getFieldResult":
-        GetFieldResult.encode(message.Packet.getFieldResult, writer.uint32(42).fork()).ldelim();
+        GetFieldResult.encode(message.Packet.getFieldResult, writer.uint32(50).fork()).ldelim();
         break;
       case "invokeMethod":
-        InvokeMethod.encode(message.Packet.invokeMethod, writer.uint32(50).fork()).ldelim();
+        InvokeMethod.encode(message.Packet.invokeMethod, writer.uint32(58).fork()).ldelim();
         break;
       case "invokeMethodResult":
-        InvokeMethodResult.encode(message.Packet.invokeMethodResult, writer.uint32(58).fork()).ldelim();
+        InvokeMethodResult.encode(message.Packet.invokeMethodResult, writer.uint32(66).fork()).ldelim();
         break;
       case "searchObjects":
-        SearchObjects.encode(message.Packet.searchObjects, writer.uint32(66).fork()).ldelim();
+        SearchObjects.encode(message.Packet.searchObjects, writer.uint32(74).fork()).ldelim();
         break;
       case "searchObjectsResult":
-        SearchObjectsResult.encode(message.Packet.searchObjectsResult, writer.uint32(74).fork()).ldelim();
+        SearchObjectsResult.encode(message.Packet.searchObjectsResult, writer.uint32(82).fork()).ldelim();
         break;
       case "getAllGameObjects":
-        GetAllGameObjects.encode(message.Packet.getAllGameObjects, writer.uint32(82).fork()).ldelim();
+        GetAllGameObjects.encode(message.Packet.getAllGameObjects, writer.uint32(90).fork()).ldelim();
         break;
       case "getAllGameObjectsResult":
-        GetAllGameObjectsResult.encode(message.Packet.getAllGameObjectsResult, writer.uint32(90).fork()).ldelim();
+        GetAllGameObjectsResult.encode(message.Packet.getAllGameObjectsResult, writer.uint32(98).fork()).ldelim();
         break;
       case "getGameObjectComponents":
-        GetGameObjectComponents.encode(message.Packet.getGameObjectComponents, writer.uint32(98).fork()).ldelim();
+        GetGameObjectComponents.encode(message.Packet.getGameObjectComponents, writer.uint32(106).fork()).ldelim();
         break;
       case "getGameObjectComponentsResult":
-        GetGameObjectComponentsResult.encode(message.Packet.getGameObjectComponentsResult, writer.uint32(106).fork())
+        GetGameObjectComponentsResult.encode(message.Packet.getGameObjectComponentsResult, writer.uint32(114).fork())
           .ldelim();
         break;
       case "readMemory":
-        ReadMemory.encode(message.Packet.readMemory, writer.uint32(114).fork()).ldelim();
+        ReadMemory.encode(message.Packet.readMemory, writer.uint32(122).fork()).ldelim();
         break;
       case "readMemoryResult":
-        ReadMemoryResult.encode(message.Packet.readMemoryResult, writer.uint32(122).fork()).ldelim();
+        ReadMemoryResult.encode(message.Packet.readMemoryResult, writer.uint32(130).fork()).ldelim();
         break;
       case "writeMemory":
-        WriteMemory.encode(message.Packet.writeMemory, writer.uint32(130).fork()).ldelim();
+        WriteMemory.encode(message.Packet.writeMemory, writer.uint32(138).fork()).ldelim();
         break;
       case "writeMemoryResult":
-        WriteMemoryResult.encode(message.Packet.writeMemoryResult, writer.uint32(138).fork()).ldelim();
+        WriteMemoryResult.encode(message.Packet.writeMemoryResult, writer.uint32(146).fork()).ldelim();
         break;
       case "getClassDetails":
-        GetClassDetails.encode(message.Packet.getClassDetails, writer.uint32(146).fork()).ldelim();
+        GetClassDetails.encode(message.Packet.getClassDetails, writer.uint32(154).fork()).ldelim();
         break;
       case "getClassDetailsResult":
-        GetClassDetailsResult.encode(message.Packet.getClassDetailsResult, writer.uint32(154).fork()).ldelim();
+        GetClassDetailsResult.encode(message.Packet.getClassDetailsResult, writer.uint32(162).fork()).ldelim();
         break;
       case "getInstanceClass":
-        GetInstanceClass.encode(message.Packet.getInstanceClass, writer.uint32(162).fork()).ldelim();
+        GetInstanceClass.encode(message.Packet.getInstanceClass, writer.uint32(170).fork()).ldelim();
         break;
       case "getInstanceClassResult":
-        GetInstanceClassResult.encode(message.Packet.getInstanceClassResult, writer.uint32(170).fork()).ldelim();
+        GetInstanceClassResult.encode(message.Packet.getInstanceClassResult, writer.uint32(178).fork()).ldelim();
         break;
       case "getInstanceDetails":
-        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(178).fork()).ldelim();
+        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(186).fork()).ldelim();
         break;
       case "getInstanceDetailsResult":
-        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(186).fork()).ldelim();
+        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(194).fork()).ldelim();
         break;
     }
     return writer;
@@ -2214,38 +2218,45 @@ export const PacketWrapper = {
             break;
           }
 
-          message.Packet = { $case: "setField", setField: SetField.decode(reader, reader.uint32()) };
+          message.Packet = { $case: "inputError", inputError: reader.string() };
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.Packet = { $case: "setFieldResult", setFieldResult: SetFieldResult.decode(reader, reader.uint32()) };
+          message.Packet = { $case: "setField", setField: SetField.decode(reader, reader.uint32()) };
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.Packet = { $case: "getField", getField: GetField.decode(reader, reader.uint32()) };
+          message.Packet = { $case: "setFieldResult", setFieldResult: SetFieldResult.decode(reader, reader.uint32()) };
           continue;
         case 5:
           if (tag !== 42) {
             break;
           }
 
-          message.Packet = { $case: "getFieldResult", getFieldResult: GetFieldResult.decode(reader, reader.uint32()) };
+          message.Packet = { $case: "getField", getField: GetField.decode(reader, reader.uint32()) };
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.Packet = { $case: "invokeMethod", invokeMethod: InvokeMethod.decode(reader, reader.uint32()) };
+          message.Packet = { $case: "getFieldResult", getFieldResult: GetFieldResult.decode(reader, reader.uint32()) };
           continue;
         case 7:
           if (tag !== 58) {
+            break;
+          }
+
+          message.Packet = { $case: "invokeMethod", invokeMethod: InvokeMethod.decode(reader, reader.uint32()) };
+          continue;
+        case 8:
+          if (tag !== 66) {
             break;
           }
 
@@ -2254,15 +2265,15 @@ export const PacketWrapper = {
             invokeMethodResult: InvokeMethodResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 8:
-          if (tag !== 66) {
+        case 9:
+          if (tag !== 74) {
             break;
           }
 
           message.Packet = { $case: "searchObjects", searchObjects: SearchObjects.decode(reader, reader.uint32()) };
           continue;
-        case 9:
-          if (tag !== 74) {
+        case 10:
+          if (tag !== 82) {
             break;
           }
 
@@ -2271,8 +2282,8 @@ export const PacketWrapper = {
             searchObjectsResult: SearchObjectsResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 10:
-          if (tag !== 82) {
+        case 11:
+          if (tag !== 90) {
             break;
           }
 
@@ -2281,8 +2292,8 @@ export const PacketWrapper = {
             getAllGameObjects: GetAllGameObjects.decode(reader, reader.uint32()),
           };
           continue;
-        case 11:
-          if (tag !== 90) {
+        case 12:
+          if (tag !== 98) {
             break;
           }
 
@@ -2291,8 +2302,8 @@ export const PacketWrapper = {
             getAllGameObjectsResult: GetAllGameObjectsResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 12:
-          if (tag !== 98) {
+        case 13:
+          if (tag !== 106) {
             break;
           }
 
@@ -2301,8 +2312,8 @@ export const PacketWrapper = {
             getGameObjectComponents: GetGameObjectComponents.decode(reader, reader.uint32()),
           };
           continue;
-        case 13:
-          if (tag !== 106) {
+        case 14:
+          if (tag !== 114) {
             break;
           }
 
@@ -2311,15 +2322,15 @@ export const PacketWrapper = {
             getGameObjectComponentsResult: GetGameObjectComponentsResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 14:
-          if (tag !== 114) {
+        case 15:
+          if (tag !== 122) {
             break;
           }
 
           message.Packet = { $case: "readMemory", readMemory: ReadMemory.decode(reader, reader.uint32()) };
           continue;
-        case 15:
-          if (tag !== 122) {
+        case 16:
+          if (tag !== 130) {
             break;
           }
 
@@ -2328,15 +2339,15 @@ export const PacketWrapper = {
             readMemoryResult: ReadMemoryResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 16:
-          if (tag !== 130) {
+        case 17:
+          if (tag !== 138) {
             break;
           }
 
           message.Packet = { $case: "writeMemory", writeMemory: WriteMemory.decode(reader, reader.uint32()) };
           continue;
-        case 17:
-          if (tag !== 138) {
+        case 18:
+          if (tag !== 146) {
             break;
           }
 
@@ -2345,8 +2356,8 @@ export const PacketWrapper = {
             writeMemoryResult: WriteMemoryResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 18:
-          if (tag !== 146) {
+        case 19:
+          if (tag !== 154) {
             break;
           }
 
@@ -2355,8 +2366,8 @@ export const PacketWrapper = {
             getClassDetails: GetClassDetails.decode(reader, reader.uint32()),
           };
           continue;
-        case 19:
-          if (tag !== 154) {
+        case 20:
+          if (tag !== 162) {
             break;
           }
 
@@ -2365,8 +2376,8 @@ export const PacketWrapper = {
             getClassDetailsResult: GetClassDetailsResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 20:
-          if (tag !== 162) {
+        case 21:
+          if (tag !== 170) {
             break;
           }
 
@@ -2375,8 +2386,8 @@ export const PacketWrapper = {
             getInstanceClass: GetInstanceClass.decode(reader, reader.uint32()),
           };
           continue;
-        case 21:
-          if (tag !== 170) {
+        case 22:
+          if (tag !== 178) {
             break;
           }
 
@@ -2385,8 +2396,8 @@ export const PacketWrapper = {
             getInstanceClassResult: GetInstanceClassResult.decode(reader, reader.uint32()),
           };
           continue;
-        case 22:
-          if (tag !== 178) {
+        case 23:
+          if (tag !== 186) {
             break;
           }
 
@@ -2395,8 +2406,8 @@ export const PacketWrapper = {
             getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
           };
           continue;
-        case 23:
-          if (tag !== 186) {
+        case 24:
+          if (tag !== 194) {
             break;
           }
 
@@ -2417,7 +2428,9 @@ export const PacketWrapper = {
   fromJSON(object: any): PacketWrapper {
     return {
       queryResultId: isSet(object.queryResultId) ? BigInt(object.queryResultId) : BigInt("0"),
-      Packet: isSet(object.setField)
+      Packet: isSet(object.inputError)
+        ? { $case: "inputError", inputError: String(object.inputError) }
+        : isSet(object.setField)
         ? { $case: "setField", setField: SetField.fromJSON(object.setField) }
         : isSet(object.setFieldResult)
         ? { $case: "setFieldResult", setFieldResult: SetFieldResult.fromJSON(object.setFieldResult) }
@@ -2489,6 +2502,7 @@ export const PacketWrapper = {
   toJSON(message: PacketWrapper): unknown {
     const obj: any = {};
     message.queryResultId !== undefined && (obj.queryResultId = message.queryResultId.toString());
+    message.Packet?.$case === "inputError" && (obj.inputError = message.Packet?.inputError);
     message.Packet?.$case === "setField" &&
       (obj.setField = message.Packet?.setField ? SetField.toJSON(message.Packet?.setField) : undefined);
     message.Packet?.$case === "setFieldResult" && (obj.setFieldResult = message.Packet?.setFieldResult
@@ -2566,6 +2580,13 @@ export const PacketWrapper = {
   fromPartial<I extends Exact<DeepPartial<PacketWrapper>, I>>(object: I): PacketWrapper {
     const message = createBasePacketWrapper();
     message.queryResultId = object.queryResultId ?? BigInt("0");
+    if (
+      object.Packet?.$case === "inputError" &&
+      object.Packet?.inputError !== undefined &&
+      object.Packet?.inputError !== null
+    ) {
+      message.Packet = { $case: "inputError", inputError: object.Packet.inputError };
+    }
     if (
       object.Packet?.$case === "setField" && object.Packet?.setField !== undefined && object.Packet?.setField !== null
     ) {

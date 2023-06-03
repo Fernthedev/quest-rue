@@ -85,6 +85,10 @@ void Manager::processMessage(const PacketWrapper& packet) {
     });
 }
 
+#define INPUT_ERROR(...) \
+{ LOG_INFO(__VA_ARGS__); \
+wrapper.set_inputerror(fmt::format(__VA_ARGS__)); }
+
 void Manager::setField(const SetField& packet, uint64_t queryId) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
@@ -93,9 +97,9 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(field))
-        LOG_INFO("field info pointer was invalid");
+        INPUT_ERROR("field info pointer was invalid")
     else if(!tryValidatePtr(object))
-        LOG_INFO("instance pointer was invalid");
+        INPUT_ERROR("instance pointer was invalid")
     else {
         FieldUtils::Set(field, object, packet.value());
 
@@ -113,12 +117,11 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(field))
-        LOG_INFO("field info pointer was invalid");
+        INPUT_ERROR("field info pointer was invalid")
     else if(!tryValidatePtr(object))
-        LOG_INFO("instance pointer was invalid");
+        INPUT_ERROR("instance pointer was invalid")
     else {
-        LOG_INFO("Getting field {} ({}) for object {} ({})", fmt::ptr(field), packet.fieldid(),
-                fmt::ptr(object), packet.objectaddress());
+        LOG_DEBUG("Getting field {} for object {}", packet.fieldid(), packet.objectaddress());
 
         auto res = FieldUtils::Get(field, object);
 
@@ -138,9 +141,9 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(method))
-        LOG_INFO("method info pointer was invalid");
+        INPUT_ERROR("method info pointer was invalid")
     else if(!tryValidatePtr(object))
-        LOG_INFO("instance pointer was invalid");
+        INPUT_ERROR("instance pointer was invalid")
     else {
         bool validGenerics = true;
         if(int size = packet.generics_size()) {
@@ -148,6 +151,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
             for(int i = 0; i < size; i++) {
                 auto clazz = GetClass(packet.generics(i));
                 if(!clazz) {
+                    INPUT_ERROR("generic {} was invalid", packet.generics(i).ShortDebugString())
                     validGenerics = false;
                     break;
                 } else
@@ -189,7 +193,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
 
     Il2CppClass* klass = GetClass(packet.componentclass());
     if(!klass) {
-        LOG_INFO("Could not find class {}", packet.componentclass().DebugString());
+        INPUT_ERROR("Could not find class {}", packet.componentclass().DebugString())
         handler->sendPacket(wrapper);
         return;
     }
@@ -215,7 +219,7 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
     auto gameObject = asPtr(UnityEngine::GameObject, packet.address());
 
     if(!tryValidatePtr(gameObject))
-        LOG_INFO("gameObject pointer was invalid");
+        INPUT_ERROR("gameObject pointer was invalid")
     else
         *wrapper.mutable_getgameobjectcomponentsresult() = GetComponents(gameObject);
 
@@ -229,7 +233,7 @@ void Manager::readMemory(const ReadMemory& packet, uint64_t id) {
     auto src = asPtr(void, packet.address());
 
     if(!tryValidatePtr(src))
-        LOG_INFO("src pointer was invalid");
+        INPUT_ERROR("src pointer was invalid")
     else {
         ReadMemoryResult& result = *wrapper.mutable_readmemoryresult();
         result.set_address(packet.address());
@@ -253,7 +257,7 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     auto dst = asPtr(void, packet.address());
 
     if(!tryValidatePtr(dst))
-        LOG_INFO("dst pointer was invalid");
+        INPUT_ERROR("dst pointer was invalid")
     else {
         WriteMemoryResult& result = *wrapper.mutable_writememoryresult();
         result.set_address(packet.address());
@@ -319,7 +323,7 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
 
     Il2CppClass* klass = GetClass(packet.classinfo());
     if(!klass) {
-        LOG_INFO("Could not find class {}", packet.classinfo().DebugString());
+        INPUT_ERROR("Could not find class {}", packet.classinfo().DebugString())
         handler->sendPacket(wrapper);
         return;
     }
@@ -336,7 +340,7 @@ void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
     auto instance = asPtr(Il2CppObject, packet.address());
 
     if(!tryValidatePtr(instance))
-        LOG_INFO("instance pointer was invalid");
+        INPUT_ERROR("instance pointer was invalid")
     else {
         auto result = wrapper.mutable_getinstanceclassresult();
         *result->mutable_classinfo() = GetClassInfo(typeofinst(instance));
@@ -353,7 +357,7 @@ void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) 
     auto instance = asPtr(Il2CppObject, packet.address());
 
     if(!tryValidatePtr(instance))
-        LOG_INFO("instance pointer was invalid");
+        INPUT_ERROR("instance pointer was invalid")
     else {
         auto result = wrapper.mutable_getinstancedetailsresult();
         *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
