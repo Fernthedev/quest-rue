@@ -179,11 +179,11 @@ function bytesToRealValue(
     typeInfo: PacketJSON<ProtoTypeInfo>,
     baseOffset: number
 ) {
-    console.log("primitive info:", typeInfo.Info);
+    // console.log("primitive info:", typeInfo.Info);
     // console.log("struct info:", typeInfo.structInfo);
     // console.log("class info:", typeInfo.classInfo);
     const arr = new Uint8Array(bytes.buffer);
-    console.log("bytes:", [...arr].join(","));
+    // console.log("bytes:", [...arr].join(","));
 
     switch (typeInfo.Info?.$case) {
         case "classInfo": {
@@ -259,10 +259,10 @@ function bytesToRealValue(
 
 export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
     if (!data) return "";
-    console.log(
-        "full packet bytes:",
-        [...ProtoDataPayload.encode(data).finish()].join(",")
-    );
+    // console.log(
+    //     "full packet bytes:",
+    //     [...ProtoDataPayload.encode(data).finish()].join(",")
+    // );
     if (data.data?.length == 0) return "";
     const typeInfo = data.typeInfo!;
     const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
@@ -359,7 +359,6 @@ export function stringToProtoType(input: string): ProtoTypeInfo {
     } else if (input.includes("::")) {
         let genericsTypes: ProtoTypeInfo[] | undefined;
 
-        // eslint-disable-next-line prefer-const
         let [namespaze, clazz] = input.split("::", 2);
         if (clazz.includes("<") && clazz.endsWith(">")) {
             let generics: string;
