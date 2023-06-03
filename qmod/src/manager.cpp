@@ -142,33 +142,41 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     else if(!tryValidatePtr(object))
         LOG_INFO("instance pointer was invalid");
     else {
+        bool validGenerics = true;
         if(int size = packet.generics_size()) {
             std::vector<Il2CppClass*> generics{};
-            for(int i = 0; i < size; i++)
-                generics.push_back(GetClass(packet.generics(i)));
-
-            method = il2cpp_utils::MakeGenericMethod(method, generics);
+            for(int i = 0; i < size; i++) {
+                auto clazz = GetClass(packet.generics(i));
+                if(!clazz) {
+                    validGenerics = false;
+                    break;
+                } else
+                    generics.push_back(clazz);
+            }
+            if(validGenerics)
+                method = il2cpp_utils::MakeGenericMethod(method, generics);
         }
+        if(validGenerics) {
+            std::vector<ProtoDataPayload> args{};
+            for(int i = 0; i < packet.args_size(); i++)
+                args.emplace_back(packet.args(i));
 
-        std::vector<ProtoDataPayload> args{};
-        for(int i = 0; i < packet.args_size(); i++)
-            args.emplace_back(packet.args(i));
+            std::string err = "";
+            auto res = MethodUtils::Run(method, object, args, err);
 
-        std::string err = "";
-        auto res = MethodUtils::Run(method, object, args, err);
+            InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
+            result.set_methodid(asInt(method));
 
-        InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
-        result.set_methodid(asInt(method));
+            if(!err.empty()) {
+                result.set_status(InvokeMethodResult::ERR);
+                result.set_error(err);
+                handler->sendPacket(wrapper);
+                return;
+            }
 
-        if(!err.empty()) {
-            result.set_status(InvokeMethodResult::ERR);
-            result.set_error(err);
-            handler->sendPacket(wrapper);
-            return;
+            result.set_status(InvokeMethodResult::OK);
+            *result.mutable_result() = res;
         }
-
-        result.set_status(InvokeMethodResult::OK);
-        *result.mutable_result() = res;
     }
     handler->sendPacket(wrapper);
 }

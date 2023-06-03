@@ -3,7 +3,8 @@ import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
 import {
-    getAllGenerics,
+    createUpdatingSignal,
+    getGenerics,
     protoDataToString,
     stringToProtoData,
     stringToProtoType,
@@ -26,17 +27,32 @@ export function MethodCell(props: {
         if (element) props.spanFn(element, props.colSize);
     });
 
-    const args = createMemo(() => Object.entries(props.method.args));
+    const args = createMemo(() =>
+        Object.entries(props.method.args).concat([
+            ["ret", props.method.returnType!],
+        ])
+    );
+
+    const [latestArgs, setLatestArgs] = createUpdatingSignal(args, {
+        equals: false,
+    });
 
     const argInputs = createMemo(() => args().map(() => ""));
     const [result, resultLoading, runMethod] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
-        const argsData = argInputs().map((str, index) =>
-            stringToProtoData(str, Object.values(props.method.args!)[index])
-        );
         const genericsData = genericInputs().map((str) =>
             stringToProtoType(str)
+        );
+        setLatestArgs((prev) => {
+            genericArgs().forEach(([, argsIndex], genericInputsIndex) => {
+                if (genericInputsIndex != -1)
+                    prev[argsIndex][1] = genericsData[genericInputsIndex];
+            });
+            return prev;
+        });
+        const argsData = argInputs().map((str, index) =>
+            stringToProtoData(str, latestArgs()[index][1])
         );
         runMethod({
             $case: "invokeMethod",
@@ -54,10 +70,12 @@ export function MethodCell(props: {
         const indices = new Set<number>();
         const ret = args()
             .map(([, t]) => t)
-            .concat([props.method.returnType!])
-            .flatMap((t) => getAllGenerics(t))
-            .filter((t) => {
-                if (t.Info?.$case != "genericInfo") throw "Not generic";
+            .flatMap((t, i) => getGenerics(i, t))
+            .filter(([t]) => {
+                if (t.Info?.$case != "genericInfo") {
+                    console.log("bad type", t, args());
+                    throw "Non generic ProtoTypeInfo in generics";
+                }
                 const index: number = t.Info.genericInfo.genericIndex;
                 if (indices.has(index)) return false;
                 indices.add(index);
@@ -85,7 +103,7 @@ export function MethodCell(props: {
             <Show when={genericArgs().length > 0}>
                 {"<"}
                 <For each={genericArgs()}>
-                    {(type, index) => (
+                    {([type], index) => (
                         <InputCell
                             input
                             type={type}
@@ -98,7 +116,7 @@ export function MethodCell(props: {
                 {">"}
             </Show>
             {"("}
-            <For each={Object.entries(props.method.args ?? {})}>
+            <For each={latestArgs().slice(0, -1)}>
                 {([name, type], index) => (
                     <InputCell
                         input
@@ -121,7 +139,7 @@ export function MethodCell(props: {
             <InputCell
                 output
                 value={protoDataToString(result()?.result)}
-                type={props.method.returnType!}
+                type={latestArgs().at(-1)![1]}
             />
         </span>
     );

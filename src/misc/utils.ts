@@ -7,7 +7,10 @@ import {
     ProtoTypeInfo_Primitive,
 } from "./proto/il2cpp";
 
-export function createUpdatingSignal<T>(val: () => T, options?: SignalOptions<T>): Signal<T> {
+export function createUpdatingSignal<T>(
+    val: () => T,
+    options?: SignalOptions<T>
+): Signal<T> {
     const [valAccessor, valSetter] = createSignal(val(), options);
     createEffect(() => valSetter(() => val())); // typescript is so stupid sometimes
     return [valAccessor, valSetter];
@@ -28,9 +31,9 @@ function stringifyQuotesless(obj: unknown) {
 
 export function errorHandle<R, T extends () => R>(func: T) {
     try {
-        return func()
+        return func();
     } catch (e) {
-        toast.error(`Suffered from error: ${e}`)
+        toast.error(`Suffered from error: ${e}`);
         throw e;
     }
 }
@@ -47,21 +50,24 @@ function parseShallow(jsonStr: string) {
 }
 
 function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
-    let dataArray = new Uint8Array(typeInfo.size!);
+    let dataArray: Uint8Array | undefined;
+    const size = (bytes: number) => {
+        if (!dataArray) dataArray = new Uint8Array(bytes);
+        return dataArray;
+    };
+    const defSize = () => size(typeInfo.size!);
 
     switch (typeInfo.Info?.$case) {
-        case "classInfo": {
-            const value = BigInt(input);
-            new DataView(dataArray.buffer).setBigInt64(0, value, true);
+        case "classInfo":
+            new DataView(size(8).buffer).setBigInt64(0, BigInt(input), true);
             break;
-        }
         case "structInfo": {
             const struct: { [key: string]: string } = parseShallow(input);
             const fields = typeInfo.Info.structInfo.fieldOffsets!;
             for (const offset in fields) {
                 const field = fields[offset];
                 const string = struct[field.name!];
-                dataArray.set(
+                defSize().set(
                     stringToBytes(string, field.type!),
                     Number(offset)
                 );
@@ -81,63 +87,63 @@ function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
                 if (bytes.length > largest) largest = bytes.length;
             }
             typeInfo.Info.arrayInfo.memberType!.size = largest;
-            dataArray = new Uint8Array(elems.length * largest);
             for (let i = 0; i < elems.length; i++)
-                dataArray.set(elems[i], i * largest);
+                size(elems.length * largest).set(elems[i], i * largest);
             break;
         }
         case "primitiveInfo": {
             switch (typeInfo.Info.primitiveInfo) {
                 case ProtoTypeInfo_Primitive.BOOLEAN:
-                    new DataView(dataArray.buffer).setUint8(
+                    new DataView(size(1).buffer).setUint8(
                         0,
                         Number(input == "true")
                     );
                     break;
                 case ProtoTypeInfo_Primitive.CHAR:
-                    new Uint16Array(dataArray.buffer)[0] = input.charCodeAt(0);
+                    new Uint16Array(size(2).buffer)[0] = input.charCodeAt(0);
                     break;
                 case ProtoTypeInfo_Primitive.BYTE:
-                    new DataView(dataArray.buffer).setInt8(0, Number(input));
+                    new DataView(size(1).buffer).setInt8(0, Number(input));
                     break;
                 case ProtoTypeInfo_Primitive.SHORT:
-                    new DataView(dataArray.buffer).setInt16(
+                    new DataView(size(2).buffer).setInt16(
                         0,
                         Number(input),
                         true
                     );
                     break;
                 case ProtoTypeInfo_Primitive.INT:
-                    new DataView(dataArray.buffer).setInt32(
+                    new DataView(size(4).buffer).setInt32(
                         0,
                         Number(input),
                         true
                     );
                     break;
                 case ProtoTypeInfo_Primitive.LONG:
-                    new DataView(dataArray.buffer).setBigInt64(
+                    new DataView(size(8).buffer).setBigInt64(
                         0,
                         BigInt(input),
                         true
                     );
                     break;
                 case ProtoTypeInfo_Primitive.FLOAT:
-                    new DataView(dataArray.buffer).setFloat32(
+                    new DataView(size(4).buffer).setFloat32(
                         0,
                         Number(input),
                         true
                     );
                     break;
                 case ProtoTypeInfo_Primitive.DOUBLE:
-                    new DataView(dataArray.buffer).setFloat64(
+                    new DataView(size(8).buffer).setFloat64(
                         0,
                         Number(input),
                         true
                     );
                     break;
                 case ProtoTypeInfo_Primitive.STRING: {
-                    dataArray = new Uint8Array(input.length * 2);
-                    const utf16Arr = new Uint16Array(dataArray.buffer);
+                    const utf16Arr = new Uint16Array(
+                        size(input.length * 2).buffer
+                    );
                     for (let i = 0; i < input.length; i++)
                         utf16Arr[i] = input.charCodeAt(i);
                     break;
@@ -148,7 +154,7 @@ function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
                     ).finish();
                     break;
                 case ProtoTypeInfo_Primitive.PTR:
-                    new DataView(dataArray.buffer).setBigInt64(
+                    new DataView(size(8).buffer).setBigInt64(
                         0,
                         BigInt(input),
                         true
@@ -161,7 +167,7 @@ function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
         }
     }
 
-    return dataArray;
+    return dataArray ?? new Uint8Array(0);
 }
 
 export function stringToProtoData(
@@ -179,16 +185,11 @@ function bytesToRealValue(
     typeInfo: PacketJSON<ProtoTypeInfo>,
     baseOffset: number
 ) {
-    // console.log("primitive info:", typeInfo.Info);
-    // console.log("struct info:", typeInfo.structInfo);
-    // console.log("class info:", typeInfo.classInfo);
     const arr = new Uint8Array(bytes.buffer);
-    // console.log("bytes:", [...arr].join(","));
 
     switch (typeInfo.Info?.$case) {
-        case "classInfo": {
+        case "classInfo":
             return bytes.getBigInt64(baseOffset, true);
-        }
         case "structInfo": {
             const struct: Record<string, unknown> = {};
             const fields = typeInfo.Info.structInfo.fieldOffsets!;
@@ -249,7 +250,7 @@ function bytesToRealValue(
                 case ProtoTypeInfo_Primitive.UNKNOWN:
                     return "unknown";
                 case ProtoTypeInfo_Primitive.VOID:
-                    return "void";
+                    return "";
             }
         }
     }
@@ -259,27 +260,15 @@ function bytesToRealValue(
 
 export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
     if (!data) return "";
-    // console.log(
-    //     "full packet bytes:",
-    //     [...ProtoDataPayload.encode(data).finish()].join(",")
-    // );
-    if (data.data?.length == 0) return "";
     const typeInfo = data.typeInfo!;
+    // fill with zeroes if left empty
+    if (!data.data || data.data?.length == 0)
+        data.data = new Uint8Array(typeInfo.size!);
     const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
-    // let bytes: DataView
-    // if (data.typeInfo?.classInfo || data.typeInfo?.structInfo)
-    //     bytes = new DataView(data.data!.buffer);
-    // else
-    //     bytes = new DataView(data.data!.buffer.slice(30)); // wtf
     const ret = bytesToRealValue(bytes, typeInfo, 0);
     if (typeof ret === "string") return ret;
-    if (typeof ret === "bigint") {
-        // TODO: Fix?
-        // if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo === ProtoTypeInfo_Primitive.PTR) {
-        //     return ret.toString(16)
-        // }
-        return ret.toString();
-    }// TODO:: better nested bigints
+    if (typeof ret === "bigint") return ret.toString();
+    // TODO:: better nested bigints
     return JSON.stringify(ret, (_, value) =>
         typeof value === "bigint" ? value.toString() : value
     );
@@ -425,37 +414,31 @@ export function protoTypeToString(type?: Partial<PacketJSON<ProtoTypeInfo>>) {
     return proto;
 }
 
-export function getAllGenerics(type?: PacketJSON<ProtoTypeInfo>) {
-    let ret: PacketJSON<ProtoTypeInfo>[] = [];
-    if (type == undefined) return ret;
+export function getGenerics(
+    index: number,
+    type?: PacketJSON<ProtoTypeInfo>
+): [ProtoTypeInfo, number][] {
+    if (type == undefined) return [];
 
     switch (type.Info?.$case) {
-        case "classInfo": {
-            for (const generic of type.Info.classInfo.generics ?? [])
-                ret = ret.concat(getAllGenerics(generic));
-            break;
-        }
-        case "arrayInfo": {
-            ret = ret.concat(getAllGenerics(type.Info.arrayInfo.memberType));
-            break;
-        }
-        case "structInfo": {
-            for (const generic of type.Info.structInfo.clazz?.generics ?? [])
-                ret = ret.concat(getAllGenerics(generic));
-            for (const field of Object.values(
-                type.Info.structInfo.fieldOffsets ?? {}
-            ))
-                ret = ret.concat(getAllGenerics(field.type));
-            break;
-        }
+        case "classInfo":
+            return (
+                type.Info.classInfo.generics?.flatMap((t) =>
+                    getGenerics(-1, t)
+                ) ?? []
+            );
+        case "arrayInfo":
+            return getGenerics(-1, type.Info.arrayInfo.memberType);
+        case "structInfo":
+            return (
+                type.Info.structInfo.clazz?.generics?.flatMap((t) =>
+                    getGenerics(-1, t)
+                ) ?? []
+            );
         case "genericInfo":
             type.isByref = false;
-            ret = [type];
-            break;
-        case "primitiveInfo": {
-            break;
-        }
+            return [[type, index]];
     }
 
-    return ret;
+    return [];
 }

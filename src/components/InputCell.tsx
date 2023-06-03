@@ -130,7 +130,10 @@ export default function InputCell(props: {
                     img="navigate.svg"
                     // False positive
                     // eslint-disable-next-line solid/reactivity
-                    onClick={() => navigate(objectUrl(BigInt(props.value!)))}
+                    onClick={() => {
+                        if (props.value != "0")
+                            navigate(objectUrl(BigInt(props.value!)));
+                    }}
                     tooltip="Select as object"
                 />
             </Show>
