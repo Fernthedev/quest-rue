@@ -9,7 +9,6 @@ const mobile =
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
     plugins: [
-        solidPlugin(),
         devtools({
             /* additional options */
             autoname: true, // e.g. enable autoname
@@ -20,6 +19,7 @@ export default defineConfig(async () => ({
                 jsxLocation: true,
             },
         }),
+        solidPlugin(),
     ],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

@@ -8,14 +8,14 @@ module.exports = {
         themes: [
             {
                 light: {
-                    ...require("daisyui/src/colors/themes")[
+                    ...require("daisyui/src/theming/themes")[
                         "[data-theme=light]"
                     ],
                     primary: "#1d4ed8",
                     // "primary-focus": "mediumblue",
                 },
                 dark: {
-                    ...require("daisyui/src/colors/themes")[
+                    ...require("daisyui/src/theming/themes")[
                         "[data-theme=dark]"
                     ],
                     primary: "#1d4ed8", // blue-700
