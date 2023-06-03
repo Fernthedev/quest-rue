@@ -44,6 +44,7 @@ export default function ObjectView(props: {
     const [details, detailsLoading, requestDetails] =
         useRequestAndResponsePacket<GetInstanceDetailsResult>();
 
+    // request the instance data on select
     createEffect(() => {
         if (!props.selectedAddress) return;
 
@@ -57,23 +58,24 @@ export default function ObjectView(props: {
 
     const classDetails = createMemo(() => {
         if (!props.selectedAddress) return undefined;
-        console.log("detail", details(), details()?.classDetails);
         return details()?.classDetails;
     });
-    const className = createMemo(() =>
-        classDetails()
-            ? protoTypeToString({
-                  Info: {
-                      $case: "classInfo",
-                      classInfo: classDetails()!.clazz!,
-                  },
-              })
-            : ""
-    );
+    const className = createMemo(() => {
+        const details = classDetails();
+        if (!details?.clazz) return "";
+
+        protoTypeToString({
+            Info: {
+                $case: "classInfo",
+                classInfo: details.clazz,
+            },
+        });
+    });
     const interfaces = createMemo(() => {
-        if (!classDetails()) return "";
-        return classDetails()
-            ?.interfaces?.map((info) =>
+        const details = classDetails();
+        if (!details?.interfaces) return "";
+        return details?.interfaces
+            .map((info) =>
                 protoTypeToString({
                     Info: {
                         $case: "classInfo",
@@ -91,19 +93,18 @@ export default function ObjectView(props: {
     const [deferredColumnCount, setDeferredColumnCount] = createSignal(2);
 
     let container: HTMLDivElement | undefined;
-    createEffect(on(columnCount, () => {
-        if (container) {
-            container.style.setProperty('--type-grid-columns', columnCount().toString());
-            setDeferredColumnCount(columnCount());
-        }
-    }));
-    // doesn't react to columnCount ????
-    // createEffect(() => {
-        // if (container) {
-        //     container.style.setProperty('--type-grid-columns', columnCount().toString());
-        //     setDeferredColumnCount(columnCount());
-        // }
-    // })
+    createEffect(
+        on(columnCount, () => {
+            if (container) {
+                const count = columnCount()
+                container.style.setProperty(
+                    "--type-grid-columns",
+                    count.toString()
+                );
+                setDeferredColumnCount(count);
+            }
+        })
+    );
 
     const spanFn = createMemo<SpanFn>(() => {
         const adapt = adaptiveSize();
@@ -119,14 +120,16 @@ export default function ObjectView(props: {
             target: HTMLInputElement;
         }
     ) => {
-        if (!e.currentTarget.checked)
-            return;
+        if (!e.currentTarget.checked) return;
         setColumnCount(Number.parseInt(e.currentTarget.value));
     };
 
     return (
         <Show when={props.selectedAddress} fallback={globalFallback} keyed>
-            <div class={`p-4 w-full h-full overflow-x-hidden ${styles.viewContainer}`} ref={container}>
+            <div
+                class={`p-4 w-full h-full overflow-x-hidden ${styles.viewContainer}`}
+                ref={container}
+            >
                 <div class="flex gap-4 mb-1 items-end">
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>

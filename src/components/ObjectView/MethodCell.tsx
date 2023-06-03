@@ -20,12 +20,13 @@ export function MethodCell(props: {
     address: bigint;
     spanFn: SpanFn;
 }) {
+    // update element size
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (element) props.spanFn(element, props.colSize);
     });
 
-    const args = createMemo(() => Object.entries(props.method.args ?? {}));
+    const args = createMemo(() => Object.entries(props.method.args));
 
     const argInputs = createMemo(() => args().map(() => ""));
     const [result, resultLoading, runMethod] =
@@ -56,7 +57,7 @@ export function MethodCell(props: {
             .concat([props.method.returnType!])
             .flatMap((t) => getAllGenerics(t))
             .filter((t) => {
-                if (t.Info?.$case != "genericInfo") throw "Not generic"
+                if (t.Info?.$case != "genericInfo") throw "Not generic";
                 const index: number = t.Info.genericInfo.genericIndex;
                 if (indices.has(index)) return false;
                 indices.add(index);

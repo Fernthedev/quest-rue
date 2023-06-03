@@ -21,11 +21,13 @@ export function PropertyCell(props: {
     address: bigint;
     spanFn: SpanFn;
 }) {
+    // update element span when colSize updates
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (element) props.spanFn(element, props.colSize);
     });
 
+    // run getter and get value
     const [value, valueLoading, requestGet] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function get() {
@@ -39,6 +41,8 @@ export function PropertyCell(props: {
             },
         });
     }
+
+    // run setter on input and check if no error
     const [valueSetter, valueSetting, requestSet] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     const [inputValue, setInputValue] = createSignal<string>("");

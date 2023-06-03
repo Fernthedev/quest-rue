@@ -14,10 +14,12 @@ export function FieldCell(props: {
     address: bigint;
     spanFn: SpanFn;
 }) {
+    // update element on resize
     let element: HTMLDivElement | undefined;
     createEffect(() => {
         if (element) props.spanFn(element, props.colSize);
     });
+    
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {

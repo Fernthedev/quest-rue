@@ -28,19 +28,18 @@ export function TypeSection(props: {
     search: string;
     spanFn: SpanFn;
 }) {
-    const className = createMemo(() =>
-        props.details?.clazz
-            ? props.details.clazz!.namespaze + "::" + props.details.clazz!.clazz
-            : ""
-    );
+    const className = createMemo(() => {
+        if (!props.details?.clazz) return "";
+        return `${props.details.clazz.namespaze}::${props.details.clazz.clazz}`;
+    });
 
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
 
     const headerClass = createMemo(
         () =>
-            `${styles.expanded} ${styles.header} ${
-                !collapsed() ? styles.rounded : ""
-            } cursor-pointer`
+            `${styles.expanded} ${styles.header} cursor-pointer
+            ${!collapsed() ? styles.rounded : ""}
+            `
     );
 
     // due to the set count all the grids will have the same size columns
