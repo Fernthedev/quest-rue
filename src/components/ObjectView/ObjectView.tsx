@@ -64,7 +64,7 @@ export default function ObjectView(props: {
         const details = classDetails();
         if (!details?.clazz) return "";
 
-        protoTypeToString({
+        return protoTypeToString({
             Info: {
                 $case: "classInfo",
                 classInfo: details.clazz,
@@ -96,7 +96,7 @@ export default function ObjectView(props: {
     createEffect(
         on(columnCount, () => {
             if (container) {
-                const count = columnCount()
+                const count = columnCount();
                 container.style.setProperty(
                     "--type-grid-columns",
                     count.toString()
