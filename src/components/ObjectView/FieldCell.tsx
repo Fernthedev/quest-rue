@@ -19,7 +19,7 @@ export function FieldCell(props: {
     createEffect(() => {
         if (element) props.spanFn(element, props.colSize);
     });
-    
+
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
@@ -36,6 +36,7 @@ export function FieldCell(props: {
     const [, valueSetting, requestSet] =
         useRequestAndResponsePacket<SetFieldResult>();
     function update(value: string) {
+        console.log("Field setter")
         const protoData = stringToProtoData(value, props.field.type!);
         requestSet({
             $case: "setField",

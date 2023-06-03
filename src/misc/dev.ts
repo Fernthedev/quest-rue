@@ -1,11 +1,17 @@
-import { GetClassDetailsResult, GetInstanceDetailsResult, PacketWrapper } from "./proto/qrue";
+import {
+    GetClassDetailsResult,
+    GetInstanceDetailsResult,
+    PacketWrapper,
+} from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
 
 let test_data_in_main_menu: Promise<{ items: ProtoGameObject[] }>;
-let test_game_object_class_details:
-    | Promise<GetClassDetailsResult | GetInstanceDetailsResult>;
+let test_game_object_class_details: Promise<
+    GetClassDetailsResult | GetInstanceDetailsResult
+>;
 
 export async function devSetup() {
+    if (import.meta.env.VITE_USE_QUEST_MOCK != "true") return;
     test_data_in_main_menu ??= import(
         "../misc/test_data_in_main_menu.json"
     ) as any;
@@ -51,7 +57,8 @@ export async function devPacketResponse(
         }
         case "getClassDetails": {
             console.log("mock get class details response");
-            const class_details = await test_game_object_class_details! as GetClassDetailsResult;
+            const class_details =
+                (await test_game_object_class_details!) as GetClassDetailsResult;
 
             callback({
                 queryResultId: p.queryResultId,

@@ -8,8 +8,7 @@ import { devSetup } from "./misc/dev";
 
 initializeEvents();
 
-if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
-    devSetup();
-}
+devSetup();
+
 
 render(() => <App />, document.getElementById("root") as HTMLElement);

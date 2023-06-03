@@ -174,9 +174,7 @@ export default function GameObjectList() {
 
     // refresh store
     requestGameObjects();
-    const [requesting, setRequesting] = createSignal<boolean>(
-        import.meta.env.VITE_USE_QUEST_MOCK != "true"
-    );
+    const [requesting, setRequesting] = createSignal<boolean>();
 
     const noEntries = () => (search() ? "No Results" : "Loading...");
 
@@ -193,7 +191,6 @@ export default function GameObjectList() {
 
     // refresh state
     function refresh() {
-        if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return;
         if (!requesting()) requestGameObjects();
         setRequesting(true);
         // setSearch(""); // TODO: Is this necessary?
