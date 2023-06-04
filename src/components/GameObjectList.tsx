@@ -14,13 +14,15 @@ import {
 import { GameObjectIndex, gameObjectsStore } from "../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
-import { requestGameObjects } from "../misc/commands";
+import { requestGameObjects, sendPacket } from "../misc/commands";
 import { objectUrl } from "../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
 import { plus } from "solid-heroicons/solid";
 import { Icon } from "solid-heroicons";
+import { PacketWrapper } from "../misc/proto/qrue";
+import { uniqueBigNumber } from "../misc/utils";
 
 function GameObjectListItem(props: {
     item: GameObjectIndex;
@@ -265,12 +267,29 @@ export default function GameObjectList() {
         </div>
     );
 }
-function AddGameObject() {
+function AddGameObject(props: { parent: bigint }) {
     const [name, setName] = createSignal("GameObjectClone");
     const [childOfSelected, setChildOfSelected] = createSignal(false);
 
     const create = () => {
-        console.log("Create");
+        sendPacket(
+            PacketWrapper.create({
+                queryResultId: uniqueBigNumber(),
+                Packet: {
+                    $case: "createGameObject",
+                    createGameObject: {
+                        object: {
+                            active: true,
+                            name: name(),
+                            transform: {
+                                name: name(),
+                                parent: childOfSelected() ? props.parent : 0n,
+                            },
+                        },
+                    },
+                },
+            })
+        );
     };
 
     return (
@@ -282,12 +301,10 @@ function AddGameObject() {
                 flex-col
                 gap-2 justify-center 
                 p-2 shadow menu dropdown-content
-                bg-neutral-200 dark:bg-zinc-900
+                bg-neutral-200 dark:bg-zinc-950
                 z-10 rounded-box h-60"
             >
-                <h4 class="label-text text-base break-after-right">
-                    Create new game object
-                </h4>
+                <h4 class="text-base">Create new game object</h4>
                 <input
                     placeholder="New Game Object"
                     value={name()}

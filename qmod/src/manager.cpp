@@ -11,6 +11,8 @@
 #include "sombrero/shared/linq.hpp"
 #include "sombrero/shared/linq_functional.hpp"
 
+#include "UnityEngine/Transform.hpp"
+
 #define MESSAGE_LOGGING
 
 using namespace ClassUtils;
@@ -79,6 +81,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
         case PacketWrapper::kGetInstanceDetails:
             getInstanceDetails(packet.getinstancedetails(), id);
             break;
+        case PacketWrapper::kCreateGameObject:
+            createGameObject(packet.creategameobject(), id);
+            break;
         default:
             LOG_INFO("Invalid packet type!");
         }
@@ -88,6 +93,19 @@ void Manager::processMessage(const PacketWrapper& packet) {
 #define INPUT_ERROR(...) \
 { LOG_INFO(__VA_ARGS__); \
 wrapper.set_inputerror(fmt::format(__VA_ARGS__)); }
+
+void Manager::createGameObject(const CreateGameObject& obj, uint64_t id) {
+    auto const &objectData = obj.object();
+    auto go = GameObject::New_ctor(objectData.name());
+    auto parent = objectData.transform().parent();
+    if (parent != 0) {
+        auto parentPtr = asPtr(UnityEngine::Transform, parent);
+        go->get_transform()->SetParent(parentPtr);
+    }
+
+    // Send new object list
+    this->getAllGameObjects({}, id);
+}
 
 void Manager::setField(const SetField& packet, uint64_t queryId) {
     PacketWrapper wrapper;

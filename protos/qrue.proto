@@ -133,6 +133,10 @@ message GetInstanceDetailsResult {
     map<uint64, bytes> propertyValues = 4;
 }
 
+message CreateGameObject {
+    ProtoGameObject object = 1;
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -160,5 +164,6 @@ message PacketWrapper {
         GetInstanceClassResult getInstanceClassResult = 22;
         GetInstanceDetails getInstanceDetails = 23;
         GetInstanceDetailsResult getInstanceDetailsResult = 24;
+        CreateGameObject createGameObject = 25;
     }
 }
