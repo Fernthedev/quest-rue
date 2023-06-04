@@ -10,6 +10,7 @@
     cursor: pointer;
     height: 27px;
     width: 100%;
+    display: flex;
 }
 .highlighted {
     @apply bg-zinc-300 dark:bg-zinc-900;

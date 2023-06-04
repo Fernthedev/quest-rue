@@ -71,14 +71,14 @@ function GameObjectListItem(props: {
                     role="checkbox"
                     tabIndex={"0"}
                     aria-checked={!expanded()}
-                    class="mr-1 inline-block w-4 text-center"
+                    class="mr-1 flex-0 w-4 text-center"
                     onKeyPress={toggle}
                     onClick={toggle}
                 >
                     {expanded() ? "-" : "+"}
                 </span>
             </Show>
-            <span role="link" tabIndex="0" onKeyPress={select} onClick={select}>
+            <span class="flex-1" role="link" tabIndex="0" onKeyPress={select} onClick={select}>
                 {object()?.name}
             </span>
         </div>
