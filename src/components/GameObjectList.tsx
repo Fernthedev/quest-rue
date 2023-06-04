@@ -17,9 +17,9 @@ import {
 import { GameObjectIndex, gameObjectsStore } from "../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
-import { requestGameObjects, sendPacket } from "../misc/commands";
+import { requestGameObjects } from "../misc/commands";
 import { objectUrl } from "../App";
-import { Navigator, useNavigate, useParams } from "@solidjs/router";
+import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
 import { plus } from "solid-heroicons/solid";
@@ -231,11 +231,6 @@ export default function GameObjectList() {
         </button>
     );
 
-    const routeParams = useParams<{ address?: string }>();
-    const selectedAddress = createMemo(() =>
-        routeParams.address ? BigInt(routeParams.address) : undefined
-    );
-
     return (
         <div class="flex flex-col items-stretch h-full">
             <div class="px-2 py-2 flex gap-2 justify-center">
@@ -248,7 +243,7 @@ export default function GameObjectList() {
                     class="flex-1 w-0"
                 />
                 {refreshButton}
-                <AddGameObject parent={selectedAddress()} />
+                <AddGameObject />
             </div>
             <Show when={!requesting()} fallback="Loading...">
                 <Show
@@ -274,9 +269,9 @@ export default function GameObjectList() {
         </div>
     );
 }
-function AddGameObject(props: { parent?: bigint }) {
-    const [name, setName] = createSignal("GameObjectClone");
-    const [childOfSelected, setChildOfSelected] = createSignal(false);
+function AddGameObject() {
+    const [name, setName] = createSignal("");
+    const [parent, setParent] = createSignal<bigint>();
 
     const [created, , requestCreate] =
         useRequestAndResponsePacket<CreateGameObjectResult>();
@@ -286,60 +281,53 @@ function AddGameObject(props: { parent?: bigint }) {
             $case: "createGameObject",
             createGameObject: {
                 name: name(),
-                parent: childOfSelected() ? props.parent : undefined,
+                parent: parent(),
             },
         });
 
     createEffect(on(created, () => requestGameObjects(), { defer: true }));
 
+    // there's some weird bug here that errors if the button is the parent instead of a div
+    // but also only if there's a button somewhere inside
+    // almost definitely related: https://github.com/solidjs/solid-start/issues/820
     return (
-        <button class="dropdown dropdown-bottom dropdown-end flex-0 p-2">
-            <Icon path={plus} style={{ height: "1.5rem", width: "1.5rem" }} />
+        <div class="dropdown dropdown-bottom dropdown-end flex-0">
+            <button class="p-2">
+                <Icon
+                    path={plus}
+                    style={{ height: "1.5rem", width: "1.5rem" }}
+                />
+            </button>
 
             <div
                 class="
-                flex-col
-                gap-2 justify-center
-                p-2 shadow menu dropdown-content
-                bg-neutral-200 dark:bg-zinc-950
-                z-10 rounded-box h-60"
+                dropdown-content shadow menu text-base
+                bg-neutral-200 dark:bg-zinc-900
+                justify-center gap-2 w-80 p-3
+                my-2 z-10 rounded-box cursor-auto"
             >
-                <h4 class="text-base">Create new game object</h4>
+                <h4 class="text-center">Create new game object</h4>
                 <input
-                    placeholder="New Game Object"
+                    placeholder="Name"
                     value={name()}
                     onInput={(e) => {
                         setName(e.currentTarget.value);
                     }}
-                    class="flex-1 mx-2 max-h-10 min-w-80"
                 />
-
-                {/* A11Y <3 */}
-                <label class="label">
-                    <span class="label-text text-base whitespace-nowrap">
-                        Child of selected GameObject
-                    </span>
-                    <input
-                        type="checkbox"
-                        checked={childOfSelected()}
-                        aria-checked={childOfSelected()}
-                        class="mx-2"
-                        onChange={(e) => {
-                            return setChildOfSelected(e.currentTarget.checked);
-                        }}
-                    />
-                </label>
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                    class="w-80 btn mx-2 flex-0"
-                    onClick={create}
-                    onKeyPress={create}
-                    role="button"
-                    tabIndex={0}
-                >
+                <input
+                    type="number"
+                    placeholder="Parent"
+                    value={parent()?.toString() ?? ""}
+                    onInput={(e) => {
+                        const val = e.currentTarget.value;
+                        if (val.length == 0) setParent(undefined);
+                        else setParent(BigInt(val));
+                    }}
+                />
+                <button onClick={create} onKeyPress={create}>
                     Create
-                </a>
+                </button>
             </div>
-        </button>
+        </div>
     );
 }
