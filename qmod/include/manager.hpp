@@ -22,7 +22,7 @@ class Manager {
     void getClassDetails(const GetClassDetails& packet, uint64_t id);
     void getInstanceClass(const GetInstanceClass& packet, uint64_t id);
     void getInstanceDetails(const GetInstanceDetails& packet, uint64_t id);
-    void createGameObject(const CreateGameObject &packet, uint64_t id);
+    void createGameObject(const CreateGameObject& packet, uint64_t id);
 
     bool initialized;
     std::unique_ptr<PacketHandler> handler;

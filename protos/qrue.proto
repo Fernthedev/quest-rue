@@ -134,7 +134,11 @@ message GetInstanceDetailsResult {
 }
 
 message CreateGameObject {
-    ProtoGameObject object = 1;
+    string name = 1;
+    optional uint64 parent = 2;
+}
+
+message CreateGameObjectResult {
 }
 
 // TODO: Rename?
@@ -165,5 +169,6 @@ message PacketWrapper {
         GetInstanceDetails getInstanceDetails = 23;
         GetInstanceDetailsResult getInstanceDetailsResult = 24;
         CreateGameObject createGameObject = 25;
+        CreateGameObjectResult createGameObjectResult = 26;
     }
 }

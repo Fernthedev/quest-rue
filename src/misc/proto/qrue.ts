@@ -241,7 +241,11 @@ export interface GetInstanceDetailsResult_PropertyValuesEntry {
 }
 
 export interface CreateGameObject {
-  object: ProtoGameObject | undefined;
+  name: string;
+  parent?: bigint | undefined;
+}
+
+export interface CreateGameObjectResult {
 }
 
 /** TODO: Rename? */
@@ -271,7 +275,8 @@ export interface PacketWrapper {
     | { $case: "getInstanceClassResult"; getInstanceClassResult: GetInstanceClassResult }
     | { $case: "getInstanceDetails"; getInstanceDetails: GetInstanceDetails }
     | { $case: "getInstanceDetailsResult"; getInstanceDetailsResult: GetInstanceDetailsResult }
-    | { $case: "createGameObject"; createGameObject: CreateGameObject };
+    | { $case: "createGameObject"; createGameObject: CreateGameObject }
+    | { $case: "createGameObjectResult"; createGameObjectResult: CreateGameObjectResult };
 }
 
 function createBaseSetField(): SetField {
@@ -2121,13 +2126,16 @@ export const GetInstanceDetailsResult_PropertyValuesEntry = {
 };
 
 function createBaseCreateGameObject(): CreateGameObject {
-  return { object: undefined };
+  return { name: "", parent: undefined };
 }
 
 export const CreateGameObject = {
   encode(message: CreateGameObject, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.object !== undefined) {
-      ProtoGameObject.encode(message.object, writer.uint32(10).fork()).ldelim();
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.parent !== undefined) {
+      writer.uint32(16).uint64(message.parent.toString());
     }
     return writer;
   },
@@ -2144,7 +2152,14 @@ export const CreateGameObject = {
             break;
           }
 
-          message.object = ProtoGameObject.decode(reader, reader.uint32());
+          message.name = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.parent = longToBigint(reader.uint64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2156,12 +2171,16 @@ export const CreateGameObject = {
   },
 
   fromJSON(object: any): CreateGameObject {
-    return { object: isSet(object.object) ? ProtoGameObject.fromJSON(object.object) : undefined };
+    return {
+      name: isSet(object.name) ? String(object.name) : "",
+      parent: isSet(object.parent) ? BigInt(object.parent) : undefined,
+    };
   },
 
   toJSON(message: CreateGameObject): unknown {
     const obj: any = {};
-    message.object !== undefined && (obj.object = message.object ? ProtoGameObject.toJSON(message.object) : undefined);
+    message.name !== undefined && (obj.name = message.name);
+    message.parent !== undefined && (obj.parent = message.parent.toString());
     return obj;
   },
 
@@ -2171,9 +2190,52 @@ export const CreateGameObject = {
 
   fromPartial<I extends Exact<DeepPartial<CreateGameObject>, I>>(object: I): CreateGameObject {
     const message = createBaseCreateGameObject();
-    message.object = (object.object !== undefined && object.object !== null)
-      ? ProtoGameObject.fromPartial(object.object)
-      : undefined;
+    message.name = object.name ?? "";
+    message.parent = object.parent ?? undefined;
+    return message;
+  },
+};
+
+function createBaseCreateGameObjectResult(): CreateGameObjectResult {
+  return {};
+}
+
+export const CreateGameObjectResult = {
+  encode(_: CreateGameObjectResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateGameObjectResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateGameObjectResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): CreateGameObjectResult {
+    return {};
+  },
+
+  toJSON(_: CreateGameObjectResult): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(base?: I): CreateGameObjectResult {
+    return CreateGameObjectResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(_: I): CreateGameObjectResult {
+    const message = createBaseCreateGameObjectResult();
     return message;
   },
 };
@@ -2260,6 +2322,9 @@ export const PacketWrapper = {
         break;
       case "createGameObject":
         CreateGameObject.encode(message.Packet.createGameObject, writer.uint32(202).fork()).ldelim();
+        break;
+      case "createGameObjectResult":
+        CreateGameObjectResult.encode(message.Packet.createGameObjectResult, writer.uint32(210).fork()).ldelim();
         break;
     }
     return writer;
@@ -2492,6 +2557,16 @@ export const PacketWrapper = {
             createGameObject: CreateGameObject.decode(reader, reader.uint32()),
           };
           continue;
+        case 26:
+          if (tag !== 210) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "createGameObjectResult",
+            createGameObjectResult: CreateGameObjectResult.decode(reader, reader.uint32()),
+          };
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2573,6 +2648,11 @@ export const PacketWrapper = {
         }
         : isSet(object.createGameObject)
         ? { $case: "createGameObject", createGameObject: CreateGameObject.fromJSON(object.createGameObject) }
+        : isSet(object.createGameObjectResult)
+        ? {
+          $case: "createGameObjectResult",
+          createGameObjectResult: CreateGameObjectResult.fromJSON(object.createGameObjectResult),
+        }
         : undefined,
     };
   },
@@ -2651,6 +2731,10 @@ export const PacketWrapper = {
     message.Packet?.$case === "createGameObject" && (obj.createGameObject = message.Packet?.createGameObject
       ? CreateGameObject.toJSON(message.Packet?.createGameObject)
       : undefined);
+    message.Packet?.$case === "createGameObjectResult" &&
+      (obj.createGameObjectResult = message.Packet?.createGameObjectResult
+        ? CreateGameObjectResult.toJSON(message.Packet?.createGameObjectResult)
+        : undefined);
     return obj;
   },
 
@@ -2879,6 +2963,16 @@ export const PacketWrapper = {
       message.Packet = {
         $case: "createGameObject",
         createGameObject: CreateGameObject.fromPartial(object.Packet.createGameObject),
+      };
+    }
+    if (
+      object.Packet?.$case === "createGameObjectResult" &&
+      object.Packet?.createGameObjectResult !== undefined &&
+      object.Packet?.createGameObjectResult !== null
+    ) {
+      message.Packet = {
+        $case: "createGameObjectResult",
+        createGameObjectResult: CreateGameObjectResult.fromPartial(object.Packet.createGameObjectResult),
       };
     }
     return message;

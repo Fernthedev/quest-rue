@@ -2,27 +2,29 @@ import {
     Accessor,
     Show,
     createDeferred,
+    createEffect,
     createMemo,
     createSignal,
+    on,
 } from "solid-js";
 import {
     GameObjectJSON,
     PacketWrapperCustomJSON,
     createEventEffect,
     getEvents,
+    useRequestAndResponsePacket,
 } from "../misc/events";
 import { GameObjectIndex, gameObjectsStore } from "../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
 import { requestGameObjects, sendPacket } from "../misc/commands";
 import { objectUrl } from "../App";
-import { Navigator, useNavigate } from "@solidjs/router";
+import { Navigator, useNavigate, useParams } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
 import { plus } from "solid-heroicons/solid";
 import { Icon } from "solid-heroicons";
-import { PacketWrapper } from "../misc/proto/qrue";
-import { uniqueBigNumber } from "../misc/utils";
+import { CreateGameObjectResult } from "../misc/proto/qrue";
 
 function GameObjectListItem(props: {
     item: GameObjectIndex;
@@ -229,6 +231,11 @@ export default function GameObjectList() {
         </button>
     );
 
+    const routeParams = useParams<{ address?: string }>();
+    const selectedAddress = createMemo(() =>
+        routeParams.address ? BigInt(routeParams.address) : undefined
+    );
+
     return (
         <div class="flex flex-col items-stretch h-full">
             <div class="px-2 py-2 flex gap-2 justify-center">
@@ -241,7 +248,7 @@ export default function GameObjectList() {
                     class="flex-1 w-0"
                 />
                 {refreshButton}
-                <AddGameObject />
+                <AddGameObject parent={selectedAddress()} />
             </div>
             <Show when={!requesting()} fallback="Loading...">
                 <Show
@@ -267,30 +274,23 @@ export default function GameObjectList() {
         </div>
     );
 }
-function AddGameObject(props: { parent: bigint }) {
+function AddGameObject(props: { parent?: bigint }) {
     const [name, setName] = createSignal("GameObjectClone");
     const [childOfSelected, setChildOfSelected] = createSignal(false);
 
-    const create = () => {
-        sendPacket(
-            PacketWrapper.create({
-                queryResultId: uniqueBigNumber(),
-                Packet: {
-                    $case: "createGameObject",
-                    createGameObject: {
-                        object: {
-                            active: true,
-                            name: name(),
-                            transform: {
-                                name: name(),
-                                parent: childOfSelected() ? props.parent : 0n,
-                            },
-                        },
-                    },
-                },
-            })
-        );
-    };
+    const [created, , requestCreate] =
+        useRequestAndResponsePacket<CreateGameObjectResult>();
+
+    const create = () =>
+        requestCreate({
+            $case: "createGameObject",
+            createGameObject: {
+                name: name(),
+                parent: childOfSelected() ? props.parent : undefined,
+            },
+        });
+
+    createEffect(on(created, () => requestGameObjects(), { defer: true }));
 
     return (
         <button class="dropdown dropdown-bottom dropdown-end flex-0 p-2">
@@ -299,7 +299,7 @@ function AddGameObject(props: { parent: bigint }) {
             <div
                 class="
                 flex-col
-                gap-2 justify-center 
+                gap-2 justify-center
                 p-2 shadow menu dropdown-content
                 bg-neutral-200 dark:bg-zinc-950
                 z-10 rounded-box h-60"

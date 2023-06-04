@@ -94,19 +94,6 @@ void Manager::processMessage(const PacketWrapper& packet) {
 { LOG_INFO(__VA_ARGS__); \
 wrapper.set_inputerror(fmt::format(__VA_ARGS__)); }
 
-void Manager::createGameObject(const CreateGameObject& obj, uint64_t id) {
-    auto const &objectData = obj.object();
-    auto go = GameObject::New_ctor(objectData.name());
-    auto parent = objectData.transform().parent();
-    if (parent != 0) {
-        auto parentPtr = asPtr(UnityEngine::Transform, parent);
-        go->get_transform()->SetParent(parentPtr);
-    }
-
-    // Send new object list
-    this->getAllGameObjects({}, id);
-}
-
 void Manager::setField(const SetField& packet, uint64_t queryId) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
@@ -241,6 +228,23 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
     else
         *wrapper.mutable_getgameobjectcomponentsresult() = GetComponents(gameObject);
 
+    handler->sendPacket(wrapper);
+}
+
+void Manager::createGameObject(const CreateGameObject& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    auto go = GameObject::New_ctor(packet.name());
+    auto parent = packet.has_parent() ? asPtr(UnityEngine::GameObject, packet.parent()) : nullptr;
+
+    if(packet.has_parent() && !tryValidatePtr(parent))
+        INPUT_ERROR("parent pointer was invalid")
+    else {
+        if(packet.has_parent())
+            go->get_transform()->SetParent(parent->get_transform());
+        *wrapper.mutable_creategameobjectresult() = CreateGameObjectResult{};
+    }
     handler->sendPacket(wrapper);
 }
 
