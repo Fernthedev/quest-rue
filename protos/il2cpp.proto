@@ -60,6 +60,8 @@ message ProtoFieldInfo {
     string name = 1;
     uint64 id = 2;
     ProtoTypeInfo type = 3;
+    // means the field cannot be set
+    bool literal = 4;
 }
 
 message ProtoPropertyInfo {
@@ -87,9 +89,13 @@ message ProtoClassDetails {
     repeated ProtoPropertyInfo properties = 3;
     repeated ProtoMethodInfo methods = 4;
 
-    repeated ProtoClassInfo interfaces = 5; /* nullable */
+    repeated ProtoFieldInfo staticFields = 5;
+    repeated ProtoPropertyInfo staticProperties = 6;
+    repeated ProtoMethodInfo staticMethods = 7;
 
-    optional ProtoClassDetails parent = 6; /* nullable */
+    repeated ProtoClassInfo interfaces = 8; /* nullable */
+
+    optional ProtoClassDetails parent = 9; /* nullable */
 }
 
 // Data Sending

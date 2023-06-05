@@ -2,6 +2,7 @@ import toast from "solid-toast";
 import { Signal, SignalOptions, createEffect, createSignal } from "solid-js";
 import { PacketJSON } from "./events";
 import {
+    ProtoClassInfo,
     ProtoDataPayload,
     ProtoTypeInfo,
     ProtoTypeInfo_Primitive,
@@ -372,39 +373,35 @@ export function stringToProtoType(input: string): ProtoTypeInfo {
     throw "Invalid type input: " + input;
 }
 
+function _protoClassToString(classInfo: ProtoClassInfo): string {
+    let ret = `${classInfo.clazz}`;
+    if (classInfo.generics?.length) {
+        ret += "<";
+        ret += classInfo.generics
+            ?.map((t) => protoTypeToString(t))
+            .join(", ");
+        ret += ">";
+    }
+    if (classInfo.namespaze)
+        return `${classInfo.namespaze}::${ret}`;
+    return ret;
+}
+
 function _protoTypeToString(type?: PacketJSON<ProtoTypeInfo>): string {
     switch (type?.Info?.$case) {
-        case "classInfo": {
-            let ret = `${type.Info.classInfo.clazz}`;
-            if (type.Info.classInfo.generics?.length) {
-                ret += "<";
-                ret += type.Info.classInfo.generics
-                    ?.map((t) => protoTypeToString(t))
-                    .join(", ");
-                ret += ">";
-            }
-            if (type.Info.classInfo.namespaze)
-                return `${type.Info.classInfo.namespaze}::${ret}`;
-            return ret;
-        }
-        case "arrayInfo": {
+        case "classInfo":
+            return _protoClassToString(type.Info.classInfo);
+        case "arrayInfo":
             return protoTypeToString(type.Info.arrayInfo.memberType!) + "[]";
-        }
-        case "structInfo": {
-            const ret = type.Info.structInfo.clazz!.clazz!;
-            if (type.Info.structInfo.clazz!.namespaze)
-                return `${type.Info.structInfo.clazz!.namespaze}::${ret}`;
-            break;
-        }
+        case "structInfo":
+            return _protoClassToString(type.Info.structInfo.clazz!);
         case "genericInfo":
             return type.Info.genericInfo.name;
-        case "primitiveInfo": {
+        case "primitiveInfo":
             if (primitiveStringMap.has(type.Info.primitiveInfo))
                 return primitiveStringMap.getStr(type.Info.primitiveInfo);
             break;
-        }
     }
-
     return "";
 }
 
@@ -436,7 +433,6 @@ export function getGenerics(
                 ) ?? []
             );
         case "genericInfo":
-            type.isByref = false;
             return [[type, index]];
     }
 

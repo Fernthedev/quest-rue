@@ -21,6 +21,12 @@ namespace ClassUtils {
 
     Il2CppClass* GetParent(Il2CppClass const* klass);
 
+    bool GetIsLiteral(FieldInfo const* field);
+
+    bool GetIsStatic(FieldInfo const* field);
+    bool GetIsStatic(PropertyInfo const* prop);
+    bool GetIsStatic(MethodInfo const* method);
+
     ProtoTypeInfo GetTypeInfo(Il2CppType const* type);
     inline ProtoTypeInfo GetTypeInfo(Il2CppClass const* klass) {
         return GetTypeInfo(typeofclass(klass));

@@ -16,6 +16,7 @@ import { MethodCell } from "./MethodCell";
 import { SpanFn, separator } from "./ObjectView";
 import { OverloadCell } from "./OverloadCell";
 import { createUpdatingSignal } from "../../misc/utils";
+import { SetStoreFunction } from "solid-js/store";
 
 interface OverloadInfo {
     name: string;
@@ -27,6 +28,8 @@ export function TypeSection(props: {
     selectedAddress: bigint;
     search: string;
     spanFn: SpanFn;
+    statics: boolean;
+    setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
 }) {
     const className = createMemo(() => {
         if (!props.details?.clazz) return "";
@@ -34,12 +37,6 @@ export function TypeSection(props: {
     });
 
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
-
-    const headerClass = createMemo(
-        () =>
-            `${styles.expanded} ${styles.header} cursor-pointer
-            ${!collapsed() ? styles.rounded : ""}`
-    );
 
     // due to the set count all the grids will have the same size columns
     let grid: HTMLDivElement | undefined;
@@ -71,14 +68,25 @@ export function TypeSection(props: {
             item.name?.toLocaleLowerCase().includes(search.toLocaleLowerCase())
         );
 
+    const fields = createMemo(() =>
+        props.statics ? props.details?.staticFields : props.details?.fields
+    );
+    const properties = createMemo(() =>
+        props.statics
+            ? props.details?.staticProperties
+            : props.details?.properties
+    );
+    const methods = createMemo(() =>
+        props.statics ? props.details?.staticMethods : props.details?.methods
+    );
     const filteredFields = createDeferred(() =>
-        filter(props.details?.fields ?? [], props.search)
+        filter(fields() ?? [], props.search)
     );
     const filteredProps = createDeferred(() =>
-        filter(props.details?.properties ?? [], props.search)
+        filter(properties() ?? [], props.search)
     );
     const filteredMethods = createDeferred(() =>
-        filter(props.details?.methods ?? [], props.search)
+        filter(methods() ?? [], props.search)
     );
 
     // Groups methods as [methodName, Methods[]]
@@ -106,23 +114,61 @@ export function TypeSection(props: {
         { equals: false }
     );
 
+    const addStatic = () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { parent, fields, properties, methods, ...smaller } =
+            props.details ?? {};
+        props.setStatics(className(), smaller);
+    };
+    const removeStatic = () => props.setStatics(className(), undefined!);
+
     return (
         <div>
             <div
                 role="checkbox"
                 tabIndex={"0"}
                 aria-checked={collapsed()}
-                class={headerClass()}
+                class={`${styles.expanded} ${styles.header}`}
+                classList={{ [styles.rounded]: !collapsed() }}
                 onKeyPress={() => setCollapsed(!collapsed())}
                 onClick={() => setCollapsed(!collapsed())}
             >
-                <span class="mr-1 inline-block w-4 text-center">
+                <text class="flex-none mr-1 inline-block w-4 text-center">
                     {collapsed() ? "+" : "-"}
-                </span>
-                {className()}
+                </text>
+                <text class="flex-1 min-w-0">{className()}</text>
+                <Show
+                    when={props.statics}
+                    fallback={
+                        <button
+                            class="flex-none btn-sm flex items-center min-h-0 h-5"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                addStatic();
+                            }}
+                        >
+                            View static members
+                        </button>
+                    }
+                >
+                    <button
+                        class="flex-none btn-sm flex items-center min-h-0 h-5"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            removeStatic();
+                        }}
+                    >
+                        X
+                    </button>
+                </Show>
             </div>
             <Show when={!collapsed()}>
-                <div class={`${styles.grid}`} ref={grid}>
+                <div class="h-1" />
+                <div
+                    class={`${styles.grid}`}
+                    classList={{ "mb-1": filteredFields().length > 0 }}
+                    ref={grid}
+                >
                     <For each={filteredFields()}>
                         {(item) => (
                             <FieldCell
@@ -134,7 +180,10 @@ export function TypeSection(props: {
                         )}
                     </For>
                 </div>
-                <div class={`${styles.grid}`}>
+                <div
+                    class={`${styles.grid}`}
+                    classList={{ "mb-1": filteredProps().length > 0 }}
+                >
                     <For each={filteredProps()}>
                         {(item) => (
                             <PropertyCell
@@ -146,7 +195,10 @@ export function TypeSection(props: {
                         )}
                     </For>
                 </div>
-                <div class={`${styles.grid}`}>
+                <div
+                    class={`${styles.grid}`}
+                    classList={{ "mb-1": groupedMethods().length > 0 }}
+                >
                     <For
                         each={groupedMethods()
                             .map<
@@ -189,6 +241,9 @@ export function TypeSection(props: {
                                             colSize={colSize()}
                                             spanFn={props.spanFn}
                                             address={props.selectedAddress}
+                                            highlight={expanded().has(
+                                                item.name
+                                            )}
                                         />
                                     }
                                 >
@@ -215,13 +270,15 @@ export function TypeSection(props: {
                     </For>
                 </div>
             </Show>
-            <Show when={props.details?.parent} fallback={<div class="h-20" />}>
+            <Show when={props.details?.parent}>
                 {separator()}
                 <TypeSection
                     details={props.details?.parent}
                     selectedAddress={props.selectedAddress}
                     search={props.search}
                     spanFn={props.spanFn}
+                    statics={props.statics}
+                    setStatics={props.setStatics}
                 />
             </Show>
         </div>

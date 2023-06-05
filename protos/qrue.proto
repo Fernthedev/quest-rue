@@ -120,17 +120,24 @@ message GetInstanceClassResult {
     ProtoClassInfo classInfo = 1;
 }
 
+message GetInstanceValues {
+    uint64 address = 1;
+}
+
+message GetInstanceValuesResult {
+    /* nullable */
+    map<uint64, bytes> fieldValues = 1;
+    /* nullable */
+    map<uint64, bytes> propertyValues = 2;
+}
+
 message GetInstanceDetails {
     uint64 address = 1;
 }
 
 message GetInstanceDetailsResult {
     ProtoClassDetails classDetails = 1;
-
-    /* nullable */
-    map<uint64, bytes> fieldValues = 3;
-    /* nullable */
-    map<uint64, bytes> propertyValues = 4;
+    GetInstanceValuesResult values = 2;
 }
 
 message CreateGameObject {
@@ -166,9 +173,11 @@ message PacketWrapper {
         GetClassDetailsResult getClassDetailsResult = 20;
         GetInstanceClass getInstanceClass = 21;
         GetInstanceClassResult getInstanceClassResult = 22;
-        GetInstanceDetails getInstanceDetails = 23;
-        GetInstanceDetailsResult getInstanceDetailsResult = 24;
-        CreateGameObject createGameObject = 25;
-        CreateGameObjectResult createGameObjectResult = 26;
+        GetInstanceValues getInstanceValues = 23;
+        GetInstanceValuesResult getInstanceValuesResult = 24;
+        GetInstanceDetails getInstanceDetails = 25;
+        GetInstanceDetailsResult getInstanceDetailsResult = 26;
+        CreateGameObject createGameObject = 27;
+        CreateGameObjectResult createGameObjectResult = 28;
     }
 }

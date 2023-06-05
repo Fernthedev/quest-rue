@@ -266,14 +266,17 @@ namespace MethodUtils {
 
 namespace FieldUtils {
     ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
-        LOG_DEBUG("Object", object->klass->name);
+        LOG_DEBUG("Object {}", object ? object->klass->name : "null");
         LOG_DEBUG("Getting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
 
         size_t size = fieldTypeSize(field->type);
         char ret[size];
         // in the case of either a value type or not, the value we want will be copied to what we return
-        il2cpp_functions::field_get_value(object, field, (void*) ret);
+        if(ClassUtils::GetIsStatic(field))
+            il2cpp_functions::field_static_get_value(field, (void*) ret);
+        else
+            il2cpp_functions::field_get_value(object, field, (void*) ret);
 
         // handles copying of string data if necessary
         auto typeInfo = ClassUtils::GetTypeInfo(field->type);
@@ -290,7 +293,10 @@ namespace FieldUtils {
         if(derefReferences && arg.typeinfo().has_classinfo())
             value = *(void**) value;
 
-        il2cpp_functions::field_set_value(object, field, value);
+        if(ClassUtils::GetIsStatic(field))
+            il2cpp_functions::field_static_set_value(field, value);
+        else
+            il2cpp_functions::field_set_value(object, field, value);
     }
 
     ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
@@ -300,6 +306,7 @@ namespace FieldUtils {
                  asInt(field), fmt::ptr((void *)asInt(field)));
         info.set_id(asInt(field));
         *info.mutable_type() = ClassUtils::GetTypeInfo(field->type);
+        info.set_literal(ClassUtils::GetIsLiteral(field));
         return info;
     }
 }

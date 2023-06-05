@@ -64,7 +64,12 @@ export function Resizable(
     return (
         <div class={`flex flex-${flexDir()}`} style={style()}>
             <Show when={before()}>{dragger}</Show>
-            <div class="flex-1 min-w-0">{props.children}</div>
+            <div
+                class="flex-1"
+                classList={{ "min-w-0": !vertical(), "min-h-0": vertical() }}
+            >
+                {props.children}
+            </div>
             <Show when={!before()}>{dragger}</Show>
         </div>
     );

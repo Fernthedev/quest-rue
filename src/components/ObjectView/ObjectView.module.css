@@ -17,6 +17,10 @@
 .header {
     @apply bg-zinc-400 dark:bg-zinc-800
         text-lg font-mono px-2;
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .rounded {
@@ -31,7 +35,6 @@
     /* grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); */
     grid-template-columns: repeat(var(--type-grid-columns), minmax(0, 1fr));
     gap: 4px;
-    margin-bottom: 4px;
 }
 
 .gridElement {
@@ -77,10 +80,17 @@
     content: "";
     width: 0;
     height: 100%;
-    margin-left: -5px; /* undo flex gap */
+    margin-left: -6px; /* undo .gridElement padding */
+    margin-right: 1px; /* add to gap to equal padding */
 
     @apply from-green-500 to-sky-600;
     border-image: linear-gradient(to bottom, var(--tw-gradient-stops)) 1;
     border-left: 4px solid;
     opacity: 0.5;
+}
+
+.highlighted {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    @apply bg-zinc-400 dark:bg-zinc-800
 }

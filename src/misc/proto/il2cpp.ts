@@ -153,7 +153,11 @@ export function protoTypeInfo_PrimitiveToJSON(object: ProtoTypeInfo_Primitive): 
 export interface ProtoFieldInfo {
   name: string;
   id: bigint;
-  type: ProtoTypeInfo | undefined;
+  type:
+    | ProtoTypeInfo
+    | undefined;
+  /** means the field cannot be set */
+  literal: boolean;
 }
 
 export interface ProtoPropertyInfo {
@@ -192,6 +196,9 @@ export interface ProtoClassDetails {
   fields: ProtoFieldInfo[];
   properties: ProtoPropertyInfo[];
   methods: ProtoMethodInfo[];
+  staticFields: ProtoFieldInfo[];
+  staticProperties: ProtoPropertyInfo[];
+  staticMethods: ProtoMethodInfo[];
   /** nullable */
   interfaces: ProtoClassInfo[];
   /** nullable */
@@ -780,7 +787,7 @@ export const ProtoTypeInfo = {
 };
 
 function createBaseProtoFieldInfo(): ProtoFieldInfo {
-  return { name: "", id: BigInt("0"), type: undefined };
+  return { name: "", id: BigInt("0"), type: undefined, literal: false };
 }
 
 export const ProtoFieldInfo = {
@@ -793,6 +800,9 @@ export const ProtoFieldInfo = {
     }
     if (message.type !== undefined) {
       ProtoTypeInfo.encode(message.type, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.literal === true) {
+      writer.uint32(32).bool(message.literal);
     }
     return writer;
   },
@@ -825,6 +835,13 @@ export const ProtoFieldInfo = {
 
           message.type = ProtoTypeInfo.decode(reader, reader.uint32());
           continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.literal = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -839,6 +856,7 @@ export const ProtoFieldInfo = {
       name: isSet(object.name) ? String(object.name) : "",
       id: isSet(object.id) ? BigInt(object.id) : BigInt("0"),
       type: isSet(object.type) ? ProtoTypeInfo.fromJSON(object.type) : undefined,
+      literal: isSet(object.literal) ? Boolean(object.literal) : false,
     };
   },
 
@@ -847,6 +865,7 @@ export const ProtoFieldInfo = {
     message.name !== undefined && (obj.name = message.name);
     message.id !== undefined && (obj.id = message.id.toString());
     message.type !== undefined && (obj.type = message.type ? ProtoTypeInfo.toJSON(message.type) : undefined);
+    message.literal !== undefined && (obj.literal = message.literal);
     return obj;
   },
 
@@ -861,6 +880,7 @@ export const ProtoFieldInfo = {
     message.type = (object.type !== undefined && object.type !== null)
       ? ProtoTypeInfo.fromPartial(object.type)
       : undefined;
+    message.literal = object.literal ?? false;
     return message;
   },
 };
@@ -1169,7 +1189,17 @@ export const ProtoMethodInfo_ArgsEntry = {
 };
 
 function createBaseProtoClassDetails(): ProtoClassDetails {
-  return { clazz: undefined, fields: [], properties: [], methods: [], interfaces: [], parent: undefined };
+  return {
+    clazz: undefined,
+    fields: [],
+    properties: [],
+    methods: [],
+    staticFields: [],
+    staticProperties: [],
+    staticMethods: [],
+    interfaces: [],
+    parent: undefined,
+  };
 }
 
 export const ProtoClassDetails = {
@@ -1186,11 +1216,20 @@ export const ProtoClassDetails = {
     for (const v of message.methods) {
       ProtoMethodInfo.encode(v!, writer.uint32(34).fork()).ldelim();
     }
+    for (const v of message.staticFields) {
+      ProtoFieldInfo.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    for (const v of message.staticProperties) {
+      ProtoPropertyInfo.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    for (const v of message.staticMethods) {
+      ProtoMethodInfo.encode(v!, writer.uint32(58).fork()).ldelim();
+    }
     for (const v of message.interfaces) {
-      ProtoClassInfo.encode(v!, writer.uint32(42).fork()).ldelim();
+      ProtoClassInfo.encode(v!, writer.uint32(66).fork()).ldelim();
     }
     if (message.parent !== undefined) {
-      ProtoClassDetails.encode(message.parent, writer.uint32(50).fork()).ldelim();
+      ProtoClassDetails.encode(message.parent, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -1235,10 +1274,31 @@ export const ProtoClassDetails = {
             break;
           }
 
-          message.interfaces.push(ProtoClassInfo.decode(reader, reader.uint32()));
+          message.staticFields.push(ProtoFieldInfo.decode(reader, reader.uint32()));
           continue;
         case 6:
           if (tag !== 50) {
+            break;
+          }
+
+          message.staticProperties.push(ProtoPropertyInfo.decode(reader, reader.uint32()));
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.staticMethods.push(ProtoMethodInfo.decode(reader, reader.uint32()));
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.interfaces.push(ProtoClassInfo.decode(reader, reader.uint32()));
+          continue;
+        case 9:
+          if (tag !== 74) {
             break;
           }
 
@@ -1261,6 +1321,15 @@ export const ProtoClassDetails = {
         ? object.properties.map((e: any) => ProtoPropertyInfo.fromJSON(e))
         : [],
       methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => ProtoMethodInfo.fromJSON(e)) : [],
+      staticFields: Array.isArray(object?.staticFields)
+        ? object.staticFields.map((e: any) => ProtoFieldInfo.fromJSON(e))
+        : [],
+      staticProperties: Array.isArray(object?.staticProperties)
+        ? object.staticProperties.map((e: any) => ProtoPropertyInfo.fromJSON(e))
+        : [],
+      staticMethods: Array.isArray(object?.staticMethods)
+        ? object.staticMethods.map((e: any) => ProtoMethodInfo.fromJSON(e))
+        : [],
       interfaces: Array.isArray(object?.interfaces)
         ? object.interfaces.map((e: any) => ProtoClassInfo.fromJSON(e))
         : [],
@@ -1286,6 +1355,21 @@ export const ProtoClassDetails = {
     } else {
       obj.methods = [];
     }
+    if (message.staticFields) {
+      obj.staticFields = message.staticFields.map((e) => e ? ProtoFieldInfo.toJSON(e) : undefined);
+    } else {
+      obj.staticFields = [];
+    }
+    if (message.staticProperties) {
+      obj.staticProperties = message.staticProperties.map((e) => e ? ProtoPropertyInfo.toJSON(e) : undefined);
+    } else {
+      obj.staticProperties = [];
+    }
+    if (message.staticMethods) {
+      obj.staticMethods = message.staticMethods.map((e) => e ? ProtoMethodInfo.toJSON(e) : undefined);
+    } else {
+      obj.staticMethods = [];
+    }
     if (message.interfaces) {
       obj.interfaces = message.interfaces.map((e) => e ? ProtoClassInfo.toJSON(e) : undefined);
     } else {
@@ -1308,6 +1392,9 @@ export const ProtoClassDetails = {
     message.fields = object.fields?.map((e) => ProtoFieldInfo.fromPartial(e)) || [];
     message.properties = object.properties?.map((e) => ProtoPropertyInfo.fromPartial(e)) || [];
     message.methods = object.methods?.map((e) => ProtoMethodInfo.fromPartial(e)) || [];
+    message.staticFields = object.staticFields?.map((e) => ProtoFieldInfo.fromPartial(e)) || [];
+    message.staticProperties = object.staticProperties?.map((e) => ProtoPropertyInfo.fromPartial(e)) || [];
+    message.staticMethods = object.staticMethods?.map((e) => ProtoMethodInfo.fromPartial(e)) || [];
     message.interfaces = object.interfaces?.map((e) => ProtoClassInfo.fromPartial(e)) || [];
     message.parent = (object.parent !== undefined && object.parent !== null)
       ? ProtoClassDetails.fromPartial(object.parent)

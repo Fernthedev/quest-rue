@@ -135,6 +135,26 @@ Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
     return il2cpp_functions::class_get_parent(const_cast<Il2CppClass*>(klass));
 }
 
+bool ClassUtils::GetIsLiteral(FieldInfo const* field) {
+    return (field->type->attrs & FIELD_ATTRIBUTE_LITERAL) != 0;
+}
+
+bool ClassUtils::GetIsStatic(FieldInfo const* field) {
+    return (field->type->attrs & FIELD_ATTRIBUTE_STATIC) != 0;
+}
+
+bool ClassUtils::GetIsStatic(PropertyInfo const* prop) {
+    if(prop->get)
+        return (prop->get->flags & METHOD_ATTRIBUTE_STATIC) != 0;
+    if(prop->set)
+        return (prop->set->flags & METHOD_ATTRIBUTE_STATIC) != 0;
+    return false;
+}
+
+bool ClassUtils::GetIsStatic(MethodInfo const* method) {
+    return (method->flags & METHOD_ATTRIBUTE_STATIC) != 0;
+}
+
 // from here, use type instead of class, as it is slightly more specific in cases such as byrefs
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {

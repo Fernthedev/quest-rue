@@ -78,6 +78,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
         case PacketWrapper::kGetInstanceClass:
             getInstanceClass(packet.getinstanceclass(), id);
             break;
+        case PacketWrapper::kGetInstanceValues:
+            getInstanceValues(packet.getinstancevalues(), id);
+            break;
         case PacketWrapper::kGetInstanceDetails:
             getInstanceDetails(packet.getinstancedetails(), id);
             break;
@@ -103,7 +106,9 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
 
     if(!tryValidatePtr(field))
         INPUT_ERROR("field info pointer was invalid")
-    else if(!tryValidatePtr(object))
+    else if(!GetIsLiteral(field))
+        INPUT_ERROR("literal fields cannot be set")
+    else if(!GetIsStatic(field) && !tryValidatePtr(object))
         INPUT_ERROR("instance pointer was invalid")
     else {
         FieldUtils::Set(field, object, packet.value());
@@ -123,7 +128,7 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
 
     if(!tryValidatePtr(field))
         INPUT_ERROR("field info pointer was invalid")
-    else if(!tryValidatePtr(object))
+    else if(!GetIsStatic(field) && !tryValidatePtr(object))
         INPUT_ERROR("instance pointer was invalid")
     else {
         LOG_DEBUG("Getting field {} for object {}", packet.fieldid(), packet.objectaddress());
@@ -147,7 +152,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
 
     if(!tryValidatePtr(method))
         INPUT_ERROR("method info pointer was invalid")
-    else if(!tryValidatePtr(object))
+    else if(!GetIsStatic(method) && !tryValidatePtr(object))
         INPUT_ERROR("instance pointer was invalid")
     else {
         bool validGenerics = true;
@@ -308,27 +313,37 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     // method to improve stack allocations
     while (currentClass != nullptr) {
         LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
-        *currentClassProto->mutable_clazz() = ClassUtils::GetClassInfo(typeofclass(currentClass));
+        *currentClassProto->mutable_clazz() = GetClassInfo(typeofclass(currentClass));
 
-        for (auto f : ClassUtils::GetFields(currentClass))
-            *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
+        for (auto f : GetFields(currentClass)) {
+            if(GetIsStatic(f))
+                *currentClassProto->add_staticfields() = FieldUtils::GetFieldInfo(f);
+            else
+                *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
+        }
 
         std::set<const MethodInfo*> propertyMethods = {};
-        for (auto p : ClassUtils::GetProperties(currentClass)) {
+        for (auto p : GetProperties(currentClass)) {
             propertyMethods.insert(p->get);
             propertyMethods.insert(p->set);
-            *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
+            if(GetIsStatic(p))
+                *currentClassProto->add_staticproperties() = MethodUtils::GetPropertyInfo(p);
+            else
+                *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
         }
 
-        for (const auto& m : ClassUtils::GetMethods(currentClass)) {
+        for (const auto& m : GetMethods(currentClass)) {
             if(propertyMethods.find(m) != propertyMethods.end()) continue;
-            *currentClassProto->add_methods() = MethodUtils::GetMethodInfo(m);
+            if(GetIsStatic(m))
+                *currentClassProto->add_staticmethods() = MethodUtils::GetMethodInfo(m);
+            else
+                *currentClassProto->add_methods() = MethodUtils::GetMethodInfo(m);
         }
 
-        for (auto i : ClassUtils::GetInterfaces(currentClass))
-            *currentClassProto->add_interfaces() = ClassUtils::GetClassInfo(typeofclass(i));
+        for (auto i : GetInterfaces(currentClass))
+            *currentClassProto->add_interfaces() = GetClassInfo(typeofclass(i));
 
-        currentClass = ClassUtils::GetParent(currentClass);
+        currentClass = GetParent(currentClass);
         if (currentClass)
             currentClassProto = currentClassProto->mutable_parent();
     }
@@ -371,21 +386,61 @@ void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
+GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, ProtoClassDetails* classDetails) {
+    GetInstanceValuesResult ret;
+
+    for(int i = 0; i < classDetails->fields_size(); i++) {
+        auto field = classDetails->fields(i);
+        auto fieldInfo = asPtr(FieldInfo, field.id());
+        (*ret.mutable_fieldvalues())[field.id()] = FieldUtils::Get(fieldInfo, instance).data();
+    }
+    for(int i = 0; i < classDetails->properties_size(); i++) {
+        auto prop = classDetails->properties(i);
+        if(!prop.has_getterid() || !prop.getterid())
+            continue;
+        auto getter = asPtr(MethodInfo, prop.getterid());
+        std::string err = "";
+        auto res = MethodUtils::Run(getter, instance, {}, err);
+        if(!err.empty())
+            LOG_INFO("getting property failed with error: {}", err);
+        else
+            (*ret.mutable_fieldvalues())[prop.getterid()] = res.data();
+    }
+
+    return ret;
+}
+
+void Manager::getInstanceValues(const GetInstanceValues& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    auto instance = asPtr(Il2CppObject, packet.address());
+
+    LOG_DEBUG("Requesting values of {}", packet.address());
+    if(!tryValidatePtr(instance))
+        INPUT_ERROR("instance pointer was invalid")
+    else {
+        auto details = getClassDetails_internal(instance->klass);
+        *wrapper.mutable_getinstancevaluesresult() = getInstanceValues_internal(instance, &details);
+    }
+    handler->sendPacket(wrapper);
+}
+
 void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
-    LOG_INFO("Requesting object {}", packet.address());
+    LOG_DEBUG("Requesting details of {}", packet.address());
     auto instance = asPtr(Il2CppObject, packet.address());
 
     if(!tryValidatePtr(instance))
         INPUT_ERROR("instance pointer was invalid")
     else {
         auto result = wrapper.mutable_getinstancedetailsresult();
-        *result->mutable_classdetails() = getClassDetails_internal(instance->klass);
+        auto classDetails = result->mutable_classdetails();
+        *classDetails = getClassDetails_internal(instance->klass);
+        *result->mutable_values() = getInstanceValues_internal(instance, classDetails);
     }
-    // TODO: field / property values
-
     handler->sendPacket(wrapper);
 }
 

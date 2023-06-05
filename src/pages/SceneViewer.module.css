@@ -2,7 +2,7 @@
     /* 700 */
     @apply bg-zinc-400 dark:bg-zinc-800;
     width: 100%;
-    height: 100vh;
+    height: 100%;
 }
 
 @media (max-width: 500px) {

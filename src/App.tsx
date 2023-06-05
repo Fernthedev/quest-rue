@@ -6,6 +6,7 @@ import toast, { Toaster } from "solid-toast";
 const SceneViewer = lazy(() => import("./pages/SceneViewer"));
 import ConnectMenu from "./pages/ConnectMenu";
 import { createEventEffect, getEvents } from "./misc/events";
+import { SettingsProvider } from "./components/Settings";
 
 export function objectUrl(address?: bigint) {
     return `/scene/${address ?? ""}`;
@@ -24,20 +25,25 @@ export default function App() {
 
     return (
         <div class="w-screen h-screen overflow-hidden">
-            <Router>
-                <Routes>
-                    <Route path="/scene/:address?" component={SceneViewer} />
-                    <Route
-                        path={"/"}
-                        component={ConnectMenu}
-                        data={() => true}
-                    />{" "}
-                    {/* redirect */}
-                </Routes>
-            </Router>
-            <div>
-                <Toaster />
-            </div>
+            <SettingsProvider>
+                <Router>
+                    <Routes>
+                        <Route
+                            path="/scene/:address?"
+                            component={SceneViewer}
+                        />
+                        <Route
+                            path={"/"}
+                            component={ConnectMenu}
+                            data={() => true}
+                        />{" "}
+                        {/* redirect */}
+                    </Routes>
+                </Router>
+                <div>
+                    <Toaster />
+                </div>
+            </SettingsProvider>
         </div>
     );
 }

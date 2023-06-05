@@ -20,6 +20,7 @@ export function MethodCell(props: {
     colSize: number;
     address: bigint;
     spanFn: SpanFn;
+    highlight: boolean;
 }) {
     // update element size
     let element: HTMLDivElement | undefined;
@@ -37,7 +38,7 @@ export function MethodCell(props: {
         equals: false,
     });
 
-    const argInputs = createMemo(() => args().map(() => ""));
+    const argInputs = createMemo(() => args().slice(0, -1).map(() => ""));
     const [result, resultLoading, runMethod] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
@@ -46,7 +47,7 @@ export function MethodCell(props: {
         );
         setLatestArgs((prev) => {
             genericArgs().forEach(([, argsIndex], genericInputsIndex) => {
-                if (genericInputsIndex != -1)
+                if (argsIndex != -1)
                     prev[argsIndex][1] = genericsData[genericInputsIndex];
             });
             return prev;
@@ -97,9 +98,15 @@ export function MethodCell(props: {
     return (
         <span
             ref={element}
-            class={`font-mono method ${styles.method} ${styles.gridElement}`}
+            class={`font-mono method overflow-hidden ${styles.method} ${styles.gridElement}`}
         >
-            {props.method.name}
+            <text
+                class={`pr-1 pl-2 -mx-2 ${
+                    props.highlight ? styles.highlighted : ""
+                }`}
+            >
+                {props.method.name}
+            </text>
             <Show when={genericArgs().length > 0}>
                 {"<"}
                 <For each={genericArgs()}>

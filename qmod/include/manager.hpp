@@ -21,6 +21,7 @@ class Manager {
     void writeMemory(const WriteMemory& packet, uint64_t id);
     void getClassDetails(const GetClassDetails& packet, uint64_t id);
     void getInstanceClass(const GetInstanceClass& packet, uint64_t id);
+    void getInstanceValues(const GetInstanceValues& packet, uint64_t id);
     void getInstanceDetails(const GetInstanceDetails& packet, uint64_t id);
     void createGameObject(const CreateGameObject& packet, uint64_t id);
 

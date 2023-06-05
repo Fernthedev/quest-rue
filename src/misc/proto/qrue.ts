@@ -216,28 +216,34 @@ export interface GetInstanceClassResult {
   classInfo: ProtoClassInfo | undefined;
 }
 
-export interface GetInstanceDetails {
+export interface GetInstanceValues {
   address: bigint;
 }
 
-export interface GetInstanceDetailsResult {
-  classDetails:
-    | ProtoClassDetails
-    | undefined;
+export interface GetInstanceValuesResult {
   /** nullable */
   fieldValues: { [key: bigint]: Uint8Array };
   /** nullable */
   propertyValues: { [key: bigint]: Uint8Array };
 }
 
-export interface GetInstanceDetailsResult_FieldValuesEntry {
+export interface GetInstanceValuesResult_FieldValuesEntry {
   key: bigint;
   value: Uint8Array;
 }
 
-export interface GetInstanceDetailsResult_PropertyValuesEntry {
+export interface GetInstanceValuesResult_PropertyValuesEntry {
   key: bigint;
   value: Uint8Array;
+}
+
+export interface GetInstanceDetails {
+  address: bigint;
+}
+
+export interface GetInstanceDetailsResult {
+  classDetails: ProtoClassDetails | undefined;
+  values: GetInstanceValuesResult | undefined;
 }
 
 export interface CreateGameObject {
@@ -273,6 +279,8 @@ export interface PacketWrapper {
     | { $case: "getClassDetailsResult"; getClassDetailsResult: GetClassDetailsResult }
     | { $case: "getInstanceClass"; getInstanceClass: GetInstanceClass }
     | { $case: "getInstanceClassResult"; getInstanceClassResult: GetInstanceClassResult }
+    | { $case: "getInstanceValues"; getInstanceValues: GetInstanceValues }
+    | { $case: "getInstanceValuesResult"; getInstanceValuesResult: GetInstanceValuesResult }
     | { $case: "getInstanceDetails"; getInstanceDetails: GetInstanceDetails }
     | { $case: "getInstanceDetailsResult"; getInstanceDetailsResult: GetInstanceDetailsResult }
     | { $case: "createGameObject"; createGameObject: CreateGameObject }
@@ -1787,6 +1795,327 @@ export const GetInstanceClassResult = {
   },
 };
 
+function createBaseGetInstanceValues(): GetInstanceValues {
+  return { address: BigInt("0") };
+}
+
+export const GetInstanceValues = {
+  encode(message: GetInstanceValues, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== BigInt("0")) {
+      writer.uint32(8).uint64(message.address.toString());
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValues {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceValues();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.address = longToBigint(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceValues {
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
+  },
+
+  toJSON(message: GetInstanceValues): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address.toString());
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceValues>, I>>(base?: I): GetInstanceValues {
+    return GetInstanceValues.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValues>, I>>(object: I): GetInstanceValues {
+    const message = createBaseGetInstanceValues();
+    message.address = object.address ?? BigInt("0");
+    return message;
+  },
+};
+
+function createBaseGetInstanceValuesResult(): GetInstanceValuesResult {
+  return { fieldValues: {}, propertyValues: {} };
+}
+
+export const GetInstanceValuesResult = {
+  encode(message: GetInstanceValuesResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    Object.entries(message.fieldValues).forEach(([key, value]) => {
+      GetInstanceValuesResult_FieldValuesEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
+    Object.entries(message.propertyValues).forEach(([key, value]) => {
+      GetInstanceValuesResult_PropertyValuesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceValuesResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          const entry1 = GetInstanceValuesResult_FieldValuesEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.fieldValues[entry1.key] = entry1.value;
+          }
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          const entry2 = GetInstanceValuesResult_PropertyValuesEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.propertyValues[entry2.key] = entry2.value;
+          }
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceValuesResult {
+    return {
+      fieldValues: isObject(object.fieldValues)
+        ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
+          acc[Number(key)] = bytesFromBase64(value as string);
+          return acc;
+        }, {})
+        : {},
+      propertyValues: isObject(object.propertyValues)
+        ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
+          acc[Number(key)] = bytesFromBase64(value as string);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: GetInstanceValuesResult): unknown {
+    const obj: any = {};
+    obj.fieldValues = {};
+    if (message.fieldValues) {
+      Object.entries(message.fieldValues).forEach(([k, v]) => {
+        obj.fieldValues[k] = base64FromBytes(v);
+      });
+    }
+    obj.propertyValues = {};
+    if (message.propertyValues) {
+      Object.entries(message.propertyValues).forEach(([k, v]) => {
+        obj.propertyValues[k] = base64FromBytes(v);
+      });
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(base?: I): GetInstanceValuesResult {
+    return GetInstanceValuesResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(object: I): GetInstanceValuesResult {
+    const message = createBaseGetInstanceValuesResult();
+    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = value;
+        }
+        return acc;
+      },
+      {},
+    );
+    message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = value;
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseGetInstanceValuesResult_FieldValuesEntry(): GetInstanceValuesResult_FieldValuesEntry {
+  return { key: BigInt("0"), value: new Uint8Array() };
+}
+
+export const GetInstanceValuesResult_FieldValuesEntry = {
+  encode(message: GetInstanceValuesResult_FieldValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== BigInt("0")) {
+      writer.uint32(8).uint64(message.key.toString());
+    }
+    if (message.value.length !== 0) {
+      writer.uint32(18).bytes(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult_FieldValuesEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceValuesResult_FieldValuesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.key = longToBigint(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceValuesResult_FieldValuesEntry {
+    return {
+      key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
+    };
+  },
+
+  toJSON(message: GetInstanceValuesResult_FieldValuesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key.toString());
+    message.value !== undefined &&
+      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
+    base?: I,
+  ): GetInstanceValuesResult_FieldValuesEntry {
+    return GetInstanceValuesResult_FieldValuesEntry.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
+    object: I,
+  ): GetInstanceValuesResult_FieldValuesEntry {
+    const message = createBaseGetInstanceValuesResult_FieldValuesEntry();
+    message.key = object.key ?? BigInt("0");
+    message.value = object.value ?? new Uint8Array();
+    return message;
+  },
+};
+
+function createBaseGetInstanceValuesResult_PropertyValuesEntry(): GetInstanceValuesResult_PropertyValuesEntry {
+  return { key: BigInt("0"), value: new Uint8Array() };
+}
+
+export const GetInstanceValuesResult_PropertyValuesEntry = {
+  encode(message: GetInstanceValuesResult_PropertyValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== BigInt("0")) {
+      writer.uint32(8).uint64(message.key.toString());
+    }
+    if (message.value.length !== 0) {
+      writer.uint32(18).bytes(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult_PropertyValuesEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetInstanceValuesResult_PropertyValuesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.key = longToBigint(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.bytes();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetInstanceValuesResult_PropertyValuesEntry {
+    return {
+      key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
+    };
+  },
+
+  toJSON(message: GetInstanceValuesResult_PropertyValuesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key.toString());
+    message.value !== undefined &&
+      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
+    base?: I,
+  ): GetInstanceValuesResult_PropertyValuesEntry {
+    return GetInstanceValuesResult_PropertyValuesEntry.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
+    object: I,
+  ): GetInstanceValuesResult_PropertyValuesEntry {
+    const message = createBaseGetInstanceValuesResult_PropertyValuesEntry();
+    message.key = object.key ?? BigInt("0");
+    message.value = object.value ?? new Uint8Array();
+    return message;
+  },
+};
+
 function createBaseGetInstanceDetails(): GetInstanceDetails {
   return { address: BigInt("0") };
 }
@@ -1844,7 +2173,7 @@ export const GetInstanceDetails = {
 };
 
 function createBaseGetInstanceDetailsResult(): GetInstanceDetailsResult {
-  return { classDetails: undefined, fieldValues: {}, propertyValues: {} };
+  return { classDetails: undefined, values: undefined };
 }
 
 export const GetInstanceDetailsResult = {
@@ -1852,13 +2181,9 @@ export const GetInstanceDetailsResult = {
     if (message.classDetails !== undefined) {
       ProtoClassDetails.encode(message.classDetails, writer.uint32(10).fork()).ldelim();
     }
-    Object.entries(message.fieldValues).forEach(([key, value]) => {
-      GetInstanceDetailsResult_FieldValuesEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
-    });
-    Object.entries(message.propertyValues).forEach(([key, value]) => {
-      GetInstanceDetailsResult_PropertyValuesEntry.encode({ key: key as any, value }, writer.uint32(34).fork())
-        .ldelim();
-    });
+    if (message.values !== undefined) {
+      GetInstanceValuesResult.encode(message.values, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -1876,25 +2201,12 @@ export const GetInstanceDetailsResult = {
 
           message.classDetails = ProtoClassDetails.decode(reader, reader.uint32());
           continue;
-        case 3:
-          if (tag !== 26) {
+        case 2:
+          if (tag !== 18) {
             break;
           }
 
-          const entry3 = GetInstanceDetailsResult_FieldValuesEntry.decode(reader, reader.uint32());
-          if (entry3.value !== undefined) {
-            message.fieldValues[entry3.key] = entry3.value;
-          }
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          const entry4 = GetInstanceDetailsResult_PropertyValuesEntry.decode(reader, reader.uint32());
-          if (entry4.value !== undefined) {
-            message.propertyValues[entry4.key] = entry4.value;
-          }
+          message.values = GetInstanceValuesResult.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1908,18 +2220,7 @@ export const GetInstanceDetailsResult = {
   fromJSON(object: any): GetInstanceDetailsResult {
     return {
       classDetails: isSet(object.classDetails) ? ProtoClassDetails.fromJSON(object.classDetails) : undefined,
-      fieldValues: isObject(object.fieldValues)
-        ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
-          acc[Number(key)] = bytesFromBase64(value as string);
-          return acc;
-        }, {})
-        : {},
-      propertyValues: isObject(object.propertyValues)
-        ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
-          acc[Number(key)] = bytesFromBase64(value as string);
-          return acc;
-        }, {})
-        : {},
+      values: isSet(object.values) ? GetInstanceValuesResult.fromJSON(object.values) : undefined,
     };
   },
 
@@ -1927,18 +2228,8 @@ export const GetInstanceDetailsResult = {
     const obj: any = {};
     message.classDetails !== undefined &&
       (obj.classDetails = message.classDetails ? ProtoClassDetails.toJSON(message.classDetails) : undefined);
-    obj.fieldValues = {};
-    if (message.fieldValues) {
-      Object.entries(message.fieldValues).forEach(([k, v]) => {
-        obj.fieldValues[k] = base64FromBytes(v);
-      });
-    }
-    obj.propertyValues = {};
-    if (message.propertyValues) {
-      Object.entries(message.propertyValues).forEach(([k, v]) => {
-        obj.propertyValues[k] = base64FromBytes(v);
-      });
-    }
+    message.values !== undefined &&
+      (obj.values = message.values ? GetInstanceValuesResult.toJSON(message.values) : undefined);
     return obj;
   },
 
@@ -1951,176 +2242,9 @@ export const GetInstanceDetailsResult = {
     message.classDetails = (object.classDetails !== undefined && object.classDetails !== null)
       ? ProtoClassDetails.fromPartial(object.classDetails)
       : undefined;
-    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[Number(key)] = value;
-        }
-        return acc;
-      },
-      {},
-    );
-    message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[Number(key)] = value;
-        }
-        return acc;
-      },
-      {},
-    );
-    return message;
-  },
-};
-
-function createBaseGetInstanceDetailsResult_FieldValuesEntry(): GetInstanceDetailsResult_FieldValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array() };
-}
-
-export const GetInstanceDetailsResult_FieldValuesEntry = {
-  encode(message: GetInstanceDetailsResult_FieldValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.key !== BigInt("0")) {
-      writer.uint32(8).uint64(message.key.toString());
-    }
-    if (message.value.length !== 0) {
-      writer.uint32(18).bytes(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceDetailsResult_FieldValuesEntry {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetInstanceDetailsResult_FieldValuesEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.key = longToBigint(reader.uint64() as Long);
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.bytes();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetInstanceDetailsResult_FieldValuesEntry {
-    return {
-      key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
-    };
-  },
-
-  toJSON(message: GetInstanceDetailsResult_FieldValuesEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined &&
-      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GetInstanceDetailsResult_FieldValuesEntry>, I>>(
-    base?: I,
-  ): GetInstanceDetailsResult_FieldValuesEntry {
-    return GetInstanceDetailsResult_FieldValuesEntry.fromPartial(base ?? {});
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetInstanceDetailsResult_FieldValuesEntry>, I>>(
-    object: I,
-  ): GetInstanceDetailsResult_FieldValuesEntry {
-    const message = createBaseGetInstanceDetailsResult_FieldValuesEntry();
-    message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array();
-    return message;
-  },
-};
-
-function createBaseGetInstanceDetailsResult_PropertyValuesEntry(): GetInstanceDetailsResult_PropertyValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array() };
-}
-
-export const GetInstanceDetailsResult_PropertyValuesEntry = {
-  encode(message: GetInstanceDetailsResult_PropertyValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.key !== BigInt("0")) {
-      writer.uint32(8).uint64(message.key.toString());
-    }
-    if (message.value.length !== 0) {
-      writer.uint32(18).bytes(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceDetailsResult_PropertyValuesEntry {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetInstanceDetailsResult_PropertyValuesEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.key = longToBigint(reader.uint64() as Long);
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.bytes();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetInstanceDetailsResult_PropertyValuesEntry {
-    return {
-      key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
-    };
-  },
-
-  toJSON(message: GetInstanceDetailsResult_PropertyValuesEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined &&
-      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GetInstanceDetailsResult_PropertyValuesEntry>, I>>(
-    base?: I,
-  ): GetInstanceDetailsResult_PropertyValuesEntry {
-    return GetInstanceDetailsResult_PropertyValuesEntry.fromPartial(base ?? {});
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetInstanceDetailsResult_PropertyValuesEntry>, I>>(
-    object: I,
-  ): GetInstanceDetailsResult_PropertyValuesEntry {
-    const message = createBaseGetInstanceDetailsResult_PropertyValuesEntry();
-    message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array();
+    message.values = (object.values !== undefined && object.values !== null)
+      ? GetInstanceValuesResult.fromPartial(object.values)
+      : undefined;
     return message;
   },
 };
@@ -2314,17 +2438,23 @@ export const PacketWrapper = {
       case "getInstanceClassResult":
         GetInstanceClassResult.encode(message.Packet.getInstanceClassResult, writer.uint32(178).fork()).ldelim();
         break;
+      case "getInstanceValues":
+        GetInstanceValues.encode(message.Packet.getInstanceValues, writer.uint32(186).fork()).ldelim();
+        break;
+      case "getInstanceValuesResult":
+        GetInstanceValuesResult.encode(message.Packet.getInstanceValuesResult, writer.uint32(194).fork()).ldelim();
+        break;
       case "getInstanceDetails":
-        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(186).fork()).ldelim();
+        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(202).fork()).ldelim();
         break;
       case "getInstanceDetailsResult":
-        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(194).fork()).ldelim();
+        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(210).fork()).ldelim();
         break;
       case "createGameObject":
-        CreateGameObject.encode(message.Packet.createGameObject, writer.uint32(202).fork()).ldelim();
+        CreateGameObject.encode(message.Packet.createGameObject, writer.uint32(218).fork()).ldelim();
         break;
       case "createGameObjectResult":
-        CreateGameObjectResult.encode(message.Packet.createGameObjectResult, writer.uint32(210).fork()).ldelim();
+        CreateGameObjectResult.encode(message.Packet.createGameObjectResult, writer.uint32(226).fork()).ldelim();
         break;
     }
     return writer;
@@ -2533,8 +2663,8 @@ export const PacketWrapper = {
           }
 
           message.Packet = {
-            $case: "getInstanceDetails",
-            getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
+            $case: "getInstanceValues",
+            getInstanceValues: GetInstanceValues.decode(reader, reader.uint32()),
           };
           continue;
         case 24:
@@ -2543,8 +2673,8 @@ export const PacketWrapper = {
           }
 
           message.Packet = {
-            $case: "getInstanceDetailsResult",
-            getInstanceDetailsResult: GetInstanceDetailsResult.decode(reader, reader.uint32()),
+            $case: "getInstanceValuesResult",
+            getInstanceValuesResult: GetInstanceValuesResult.decode(reader, reader.uint32()),
           };
           continue;
         case 25:
@@ -2553,12 +2683,32 @@ export const PacketWrapper = {
           }
 
           message.Packet = {
-            $case: "createGameObject",
-            createGameObject: CreateGameObject.decode(reader, reader.uint32()),
+            $case: "getInstanceDetails",
+            getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
           };
           continue;
         case 26:
           if (tag !== 210) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getInstanceDetailsResult",
+            getInstanceDetailsResult: GetInstanceDetailsResult.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 27:
+          if (tag !== 218) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "createGameObject",
+            createGameObject: CreateGameObject.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 28:
+          if (tag !== 226) {
             break;
           }
 
@@ -2638,6 +2788,13 @@ export const PacketWrapper = {
         ? {
           $case: "getInstanceClassResult",
           getInstanceClassResult: GetInstanceClassResult.fromJSON(object.getInstanceClassResult),
+        }
+        : isSet(object.getInstanceValues)
+        ? { $case: "getInstanceValues", getInstanceValues: GetInstanceValues.fromJSON(object.getInstanceValues) }
+        : isSet(object.getInstanceValuesResult)
+        ? {
+          $case: "getInstanceValuesResult",
+          getInstanceValuesResult: GetInstanceValuesResult.fromJSON(object.getInstanceValuesResult),
         }
         : isSet(object.getInstanceDetails)
         ? { $case: "getInstanceDetails", getInstanceDetails: GetInstanceDetails.fromJSON(object.getInstanceDetails) }
@@ -2720,6 +2877,13 @@ export const PacketWrapper = {
     message.Packet?.$case === "getInstanceClassResult" &&
       (obj.getInstanceClassResult = message.Packet?.getInstanceClassResult
         ? GetInstanceClassResult.toJSON(message.Packet?.getInstanceClassResult)
+        : undefined);
+    message.Packet?.$case === "getInstanceValues" && (obj.getInstanceValues = message.Packet?.getInstanceValues
+      ? GetInstanceValues.toJSON(message.Packet?.getInstanceValues)
+      : undefined);
+    message.Packet?.$case === "getInstanceValuesResult" &&
+      (obj.getInstanceValuesResult = message.Packet?.getInstanceValuesResult
+        ? GetInstanceValuesResult.toJSON(message.Packet?.getInstanceValuesResult)
         : undefined);
     message.Packet?.$case === "getInstanceDetails" && (obj.getInstanceDetails = message.Packet?.getInstanceDetails
       ? GetInstanceDetails.toJSON(message.Packet?.getInstanceDetails)
@@ -2933,6 +3097,26 @@ export const PacketWrapper = {
       message.Packet = {
         $case: "getInstanceClassResult",
         getInstanceClassResult: GetInstanceClassResult.fromPartial(object.Packet.getInstanceClassResult),
+      };
+    }
+    if (
+      object.Packet?.$case === "getInstanceValues" &&
+      object.Packet?.getInstanceValues !== undefined &&
+      object.Packet?.getInstanceValues !== null
+    ) {
+      message.Packet = {
+        $case: "getInstanceValues",
+        getInstanceValues: GetInstanceValues.fromPartial(object.Packet.getInstanceValues),
+      };
+    }
+    if (
+      object.Packet?.$case === "getInstanceValuesResult" &&
+      object.Packet?.getInstanceValuesResult !== undefined &&
+      object.Packet?.getInstanceValuesResult !== null
+    ) {
+      message.Packet = {
+        $case: "getInstanceValuesResult",
+        getInstanceValuesResult: GetInstanceValuesResult.fromPartial(object.Packet.getInstanceValuesResult),
       };
     }
     if (
