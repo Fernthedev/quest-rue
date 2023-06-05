@@ -38,8 +38,7 @@ export function TypeSection(props: {
     const headerClass = createMemo(
         () =>
             `${styles.expanded} ${styles.header} cursor-pointer
-            ${!collapsed() ? styles.rounded : ""}
-            `
+            ${!collapsed() ? styles.rounded : ""}`
     );
 
     // due to the set count all the grids will have the same size columns

@@ -6,6 +6,7 @@ import styles from "./SceneViewer.module.css";
 import { isConnected } from "../misc/commands";
 import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
+import { Resizable } from "../components/Resizable";
 
 export default function SceneViewer() {
     const navigate = useNavigate();
@@ -29,9 +30,11 @@ export default function SceneViewer() {
                 <ObjectView selectedAddress={address()} />
             </div>
 
-            <div class={`${styles.gameObjectList}`}>
-                <GameObjectList />
-            </div>
+            <Resizable direction="left" size={350} minSize={250} maxSize={750}>
+                <div class={`${styles.gameObjectList}`}>
+                    <GameObjectList />
+                </div>
+            </Resizable>
         </div>
     );
 }
