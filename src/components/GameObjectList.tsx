@@ -63,7 +63,7 @@ function GameObjectListItem(props: {
             class={`${styles.listItem} ${
                 highlighted() ? styles.highlighted : ""
             }`}
-            style={{ "padding-left": `${treeData()[0]}rem` }}
+            style={{ "padding-left": `${(treeData()[0] as number) + 0.25}rem` }}
             // role="listitem"
         >
             <Show when={treeData()[1]}>
@@ -78,7 +78,13 @@ function GameObjectListItem(props: {
                     {expanded() ? "-" : "+"}
                 </span>
             </Show>
-            <span class="flex-1" role="link" tabIndex="0" onKeyPress={select} onClick={select}>
+            <span
+                class="flex-1"
+                role="link"
+                tabIndex="0"
+                onKeyPress={select}
+                onClick={select}
+            >
                 {object()?.name}
             </span>
         </div>
@@ -233,7 +239,7 @@ export default function GameObjectList() {
 
     return (
         <div class="flex flex-col items-stretch h-full">
-            <div class="px-2 py-2 flex gap-2 justify-center">
+            <div class="flex gap-2 p-2 justify-center">
                 <input
                     placeholder="Search"
                     value={search()}
@@ -269,6 +275,7 @@ export default function GameObjectList() {
         </div>
     );
 }
+
 function AddGameObject() {
     const [name, setName] = createSignal("");
     const [parent, setParent] = createSignal<bigint>();
@@ -293,10 +300,7 @@ function AddGameObject() {
     return (
         <div class="dropdown dropdown-bottom dropdown-end flex-0">
             <button class="p-2">
-                <Icon
-                    path={plus}
-                    style={{ height: "1.5rem", width: "1.5rem" }}
-                />
+                <Icon path={plus} class="w-6 h-6" />
             </button>
 
             <div

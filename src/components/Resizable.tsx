@@ -17,6 +17,7 @@ export function Resizable(
     );
 
     const flexDir = createMemo(() => (vertical() ? "col" : "row"));
+    const sizeClass = createMemo(() => (vertical() ? "h-1" : "w-1"));
     const cursor = createMemo(() =>
         vertical() ? "cursor-ns-resize" : "cursor-ew-resize"
     );
@@ -27,7 +28,7 @@ export function Resizable(
     // clamp here, not in mouse event, to keep the edge and the real mouse position in sync
     const style = createMemo(() => {
         let s = size();
-        if (props.minSize) s = Math.max(s, props.minSize);
+        s = Math.max(s, props.minSize ?? 4);
         if (props.maxSize) s = Math.min(s, props.maxSize);
         return vertical() ? { height: `${s}px` } : { width: `${s}px` };
     });
@@ -52,7 +53,7 @@ export function Resizable(
     // declare here to not do so twice in the two <Show> blocks
     const dragger = (
         <div
-            class={`flex-none w-1 bg-blue-200 dark:bg-zinc-500 ${cursor()}`}
+            class={`flex-none ${sizeClass()} bg-blue-200 dark:bg-zinc-500 ${cursor()}`}
             onMouseDown={add}
             role="none"
         />
@@ -63,7 +64,7 @@ export function Resizable(
     return (
         <div class={`flex flex-${flexDir()}`} style={style()}>
             <Show when={before()}>{dragger}</Show>
-            <div class="flex-1">{props.children}</div>
+            <div class="flex-1 min-w-0">{props.children}</div>
             <Show when={!before()}>{dragger}</Show>
         </div>
     );
