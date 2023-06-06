@@ -195,8 +195,7 @@ function GameObjectScenes(props: {
 }) {
     return (
         <div
-            style={{ "padding-left": "0.25rem" }}
-            class="flex flex-col divide-y-0 gap-2 h-full"
+            class="flex flex-col flex-1 gap-2 min-h-0"
         >
             <For each={[...props.filteredScenes().values()]}>
                 {(scene) => {
@@ -205,14 +204,15 @@ function GameObjectScenes(props: {
                     const sceneObjects = () => props.objects().get(scene)!;
 
                     return (
-                        <div>
+                        // equal space with expanded ones, otherwise be small
+                        <div class="min-h-0 flex flex-col" classList={{"flex-1": expanded(), "h-min": !expanded()}}>
                             <div
                                 role="checkbox"
                                 tabIndex={"0"}
                                 aria-checked={!expanded()}
                                 onKeyPress={toggle}
                                 onClick={toggle}
-                                class={`bg-slate-500 flex ${styles.rounded} ${styles.header}`}
+                                class={`bg-slate-500 flex-none flex ${styles.header}`}
                             >
                                 <Icon
                                     path={expanded() ? minus : plus}
@@ -223,7 +223,7 @@ function GameObjectScenes(props: {
 
                             <Show when={expanded()}>
                                 <VirtualList
-                                    class={`${styles.list} w-full`}
+                                    class={`${styles.list} w-full flex-1`}
                                     items={[...sceneObjects().keys()]}
                                     itemHeight={29}
                                     generator={props.generator}
@@ -364,8 +364,8 @@ function AddGameObject() {
 
 function matchesSearch(obj: GameObjectJSON, search: string) {
     return (
-        obj.name.toLocaleUpperCase().includes(search) ||
-        obj.scene?.name.includes(search)
+        obj.name.toLocaleUpperCase().includes(search)
+        // || obj.scene?.name.includes(search)
     );
 }
 
