@@ -1,5 +1,7 @@
 import {
     Accessor,
+    For,
+    JSX,
     Show,
     createDeferred,
     createEffect,
@@ -22,121 +24,12 @@ import { objectUrl } from "../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
-import { plus } from "solid-heroicons/solid";
+import { minus, plus } from "solid-heroicons/solid";
 import { Icon } from "solid-heroicons";
 import { CreateGameObjectResult } from "../misc/proto/qrue";
 
-function GameObjectListItem(props: {
-    item: GameObjectIndex;
-    navigate: Navigator;
-    addressMap: Accessor<Map<GameObjectIndex, [boolean, boolean]> | undefined>;
-    updateAddressMap?: (map?: Map<GameObjectIndex, [boolean, boolean]>) => void;
-    addressTreeData: Accessor<
-        Map<GameObjectIndex, [number, boolean]> | undefined
-    >;
-}) {
-    const object = createMemo(
-        () => gameObjectsStore.objectsMap?.get(props.item)?.[0]
-    );
-
-    const highlighted = createMemo(
-        () => props.addressMap()?.get(props.item)?.[0] ?? false
-    );
-    const expanded = createMemo(() => {
-        const map = props.addressMap();
-        return map ? map.get(props.item)?.[1] : true;
-    });
-
-    const toggle = () =>
-        props.updateAddressMap?.(
-            props.addressMap()?.set(props.item, [highlighted(), !expanded()])
-        );
-    const select = () => props.navigate(objectUrl(object()?.address));
-
-    // [indent, hasChildren]
-    const treeData = createMemo(
-        () => props.addressTreeData()?.get(props.item) ?? [0, false]
-    );
-
-    return (
-        <div
-            class={`${styles.listItem} ${
-                highlighted() ? styles.highlighted : ""
-            }`}
-            style={{ "padding-left": `${(treeData()[0] as number) + 0.25}rem` }}
-            // role="listitem"
-        >
-            <Show when={treeData()[1]}>
-                <span
-                    role="checkbox"
-                    tabIndex={"0"}
-                    aria-checked={!expanded()}
-                    class="mr-1 flex-0 w-4 text-center"
-                    onKeyPress={toggle}
-                    onClick={toggle}
-                >
-                    {expanded() ? "-" : "+"}
-                </span>
-            </Show>
-            <span
-                class="flex-1"
-                role="link"
-                tabIndex="0"
-                onKeyPress={select}
-                onClick={select}
-            >
-                {object()?.name}
-            </span>
-        </div>
-    );
-}
-
-function inSearch(
-    object: GameObjectJSON,
-    addressMap: Map<
-        GameObjectIndex,
-        [selfMatches: boolean, childMatches: boolean]
-    >,
-    searchLower: string,
-    matchChild = false
-): boolean {
-    if (addressMap.has(object.transform!.address!)) return true;
-
-    let childMatches = false;
-    let selfMatches = false;
-    if (object.name?.toLocaleLowerCase().includes(searchLower))
-        selfMatches = true;
-
-    for (const addr of gameObjectsStore.childrenMap?.get(
-        object.transform!.address!
-    ) ?? []) {
-        const child = gameObjectsStore.objectsMap!.get(addr)![0];
-        if (inSearch(child, addressMap, searchLower, selfMatches || matchChild))
-            childMatches = true;
-    }
-    if (childMatches || selfMatches || matchChild)
-        addressMap.set(object.transform!.address!, [
-            selfMatches && searchLower != "",
-            childMatches,
-        ]);
-    return childMatches || selfMatches;
-}
-
-function addChildren(
-    objectAddress: GameObjectIndex,
-    dataMap: Map<GameObjectIndex, [number, boolean]>,
-    filterMap?: Map<GameObjectIndex, [boolean, boolean]>,
-    parentIndent = 0
-) {
-    const children = gameObjectsStore.childrenMap?.get(objectAddress);
-    dataMap.set(objectAddress, [parentIndent, (children?.length ?? 0) > 0]);
-    if (filterMap?.get(objectAddress)?.[1] ?? true)
-        children
-            ?.filter((addr) => filterMap?.has(addr) ?? true)
-            ?.forEach((address) =>
-                addChildren(address, dataMap, filterMap, parentIndent + 1)
-            );
-}
+type TreeData = [indent: number, hasChildren: boolean];
+type AddressData = [highlight: boolean, expanded: boolean];
 
 export default function GameObjectList() {
     const navigate = useNavigate();
@@ -147,11 +40,11 @@ export default function GameObjectList() {
 
     // address -> [highlight, expand]
     const [searchAddresses, setSearchAddresses] = createSignal<
-        Map<GameObjectIndex, [boolean, boolean]> | undefined
+        Map<GameObjectIndex, AddressData> | undefined
     >(undefined, { equals: false });
 
     const rootObjects = createDeferred(() =>
-        [...(gameObjectsStore.objectsMap?.entries() ?? [])].filter(
+        Array.from(gameObjectsStore.objectsMap?.entries() ?? []).filter(
             ([, [o]]) => !o.transform?.parent
         )
     );
@@ -172,28 +65,49 @@ export default function GameObjectList() {
         },
         { timeoutMs: 1000 }
     );
+
+    const filteredScenes = createDeferred(
+        () =>
+            new Set<string>(
+                filteredRootObjects()
+                    ?.map(([, [obj]]) => obj.scene?.name)
+                    .filter((x) => x !== undefined && x !== "")
+                    .map((x) => x!) // make TS happy
+            )
+    );
     // #endregion
 
     // address -> [indentation, hasChildren]
-    const [addressTreeData, setAddressTreeData] = createSignal<
-        Map<GameObjectIndex, [number, boolean]> | undefined
-    >(undefined, { equals: false });
-
-    const objects = createMemo(() => {
+    const sceneObjects = createMemo(() => {
         const addresses = searchAddresses();
-        const newTreeData = new Map<GameObjectIndex, [number, boolean]>();
-        filteredRootObjects()?.forEach(([, [obj]]) =>
-            addChildren(obj.transform!.address, newTreeData, addresses)
-        ) ?? [];
-        setAddressTreeData(newTreeData);
-        return Array.from(newTreeData.keys());
+        const sceneTreeData = new Map<string, Map<GameObjectIndex, TreeData>>();
+        filteredRootObjects()?.forEach(([, [obj]]) => {
+            const sceneName = obj.scene?.name ?? "";
+            let treeData = sceneTreeData.get(sceneName);
+            if (treeData === undefined) {
+                treeData = new Map();
+                sceneTreeData.set(sceneName, treeData);
+            }
+
+            return addChildren(obj.transform!.address, treeData, addresses);
+        }) ?? [];
+        return sceneTreeData;
     });
+
+    const objects = createMemo(
+        () =>
+            new Map<GameObjectIndex, TreeData>(
+                [...sceneObjects().entries()].flatMap<
+                    [GameObjectIndex, TreeData]
+                >(([, o]) => [...o.entries()])
+            )
+    );
 
     // refresh store
     requestGameObjects();
     const [requesting, setRequesting] = createSignal<boolean>();
 
-    const noEntries = () => (search() ? "No Results" : "Loading...");
+    const noEntries = () => (search() == "" ? "No Results" : "Loading...");
 
     // update state
     createEventEffect<PacketWrapperCustomJSON>(
@@ -210,7 +124,6 @@ export default function GameObjectList() {
     function refresh() {
         if (!requesting()) requestGameObjects();
         setRequesting(true);
-        // setSearch(""); // TODO: Is this necessary?
     }
 
     const refreshButton = (
@@ -256,22 +169,134 @@ export default function GameObjectList() {
                     when={(filteredRootObjects()?.length ?? 0) > 0}
                     fallback={noEntries()}
                 >
-                    <VirtualList
-                        class={`${styles.list} w-full`}
-                        items={objects()}
-                        itemHeight={29}
+                    <GameObjectScenes
                         generator={(item) =>
                             GameObjectListItem({
                                 item: item,
                                 navigate: navigate,
                                 addressMap: searchAddresses,
                                 updateAddressMap: setSearchAddresses,
-                                addressTreeData: addressTreeData,
+                                addressTreeData: objects,
                             })
                         }
+                        objects={sceneObjects}
+                        filteredScenes={filteredScenes}
                     />
                 </Show>
             </Show>
+        </div>
+    );
+}
+
+function GameObjectScenes(props: {
+    generator: (item: bigint) => JSX.Element;
+    filteredScenes: Accessor<Set<string>>;
+    objects: Accessor<Map<string, Map<GameObjectIndex, TreeData>>>;
+}) {
+    return (
+        <div style={{ "padding-left": "1rem" }}>
+            <For each={[...props.filteredScenes().values()]}>
+                {(scene) => {
+                    const [expanded, setExpanded] = createSignal(true);
+                    const toggle = () => setExpanded((b) => !b);
+                    const sceneObjects = () => props.objects().get(scene)!;
+
+                    return (
+                        <div>
+                            <span
+                                role="checkbox"
+                                tabIndex={"0"}
+                                aria-checked={!expanded()}
+                                class="mr-1 flex"
+                                onKeyPress={toggle}
+                                onClick={toggle}
+                            >
+                                <Icon
+                                    path={expanded() ? minus : plus}
+                                    class="antialiased flex-0 w-4 h-4"
+                                />
+                                <h2 class="flex-1 text-lg">{scene}</h2>
+                            </span>
+
+                            <Show when={expanded()}>
+                                <div>
+                                    <VirtualList
+                                        class={`${styles.list} w-full`}
+                                        items={[...sceneObjects().keys()]}
+                                        itemHeight={29}
+                                        generator={props.generator}
+                                    />
+                                </div>
+                            </Show>
+                        </div>
+                    );
+                }}
+            </For>
+        </div>
+    );
+}
+
+function GameObjectListItem(props: {
+    item: GameObjectIndex;
+    navigate: Navigator;
+    addressMap: Accessor<Map<GameObjectIndex, AddressData> | undefined>;
+    updateAddressMap?: (map?: Map<GameObjectIndex, AddressData>) => void;
+    addressTreeData: Accessor<Map<GameObjectIndex, TreeData> | undefined>;
+}) {
+    const object = createMemo(
+        () => gameObjectsStore.objectsMap?.get(props.item)?.[0]
+    );
+
+    const highlighted = createMemo(
+        () => props.addressMap()?.get(props.item)?.[0] ?? false
+    );
+    const expanded = createMemo(() => {
+        const map = props.addressMap();
+        return map?.get(props.item)?.[1] ?? true;
+    });
+
+    const toggle = () =>
+        props.updateAddressMap?.(
+            props.addressMap()?.set(props.item, [highlighted(), !expanded()])
+        );
+    const select = () => props.navigate(objectUrl(object()?.address));
+
+    // [indent, hasChildren]
+    const treeData = createMemo<TreeData>(
+        () => props.addressTreeData()?.get(props.item) ?? [0, false]
+    );
+
+    const indent = createMemo(() => treeData()[0]);
+    const hasChildren = createMemo(() => treeData()[1]);
+
+    return (
+        <div
+            class={`${styles.listItem} ${
+                highlighted() ? styles.highlighted : ""
+            }`}
+            style={{ "padding-left": `${indent() + 0.25}rem` }}
+        >
+            <Show when={hasChildren()}>
+                <span
+                    role="checkbox"
+                    tabIndex={"0"}
+                    aria-checked={!expanded()}
+                    class="mr-1 flex-0 w-4 text-center"
+                    onKeyPress={toggle}
+                    onClick={toggle}
+                >
+                    {expanded() ? "-" : "+"}
+                </span>
+            </Show>
+            <span
+                class="flex-1"
+                role="link"
+                tabIndex="0"
+                onKeyPress={select}
+                onClick={select}
+            >
+                {object()?.name}
+            </span>
         </div>
     );
 }
@@ -334,4 +359,62 @@ function AddGameObject() {
             </div>
         </div>
     );
+}
+
+function matchesSearch(obj: GameObjectJSON, search: string) {
+    return (
+        obj.name.toLocaleUpperCase().includes(search) ||
+        obj.scene?.name.includes(search)
+    );
+}
+
+function inSearch(
+    object: GameObjectJSON,
+    addressMap: Map<
+        GameObjectIndex,
+        [selfMatches: boolean, childMatches: boolean]
+    >,
+    searchLower: string,
+    matchChild = false
+): boolean {
+    // nothing searched
+    if (searchLower === "") return true;
+
+    if (addressMap.has(object.transform!.address!)) return true;
+
+    let childMatches = false;
+    let selfMatches = false;
+    if (matchesSearch(object, searchLower)) {
+        selfMatches = true;
+    }
+
+    for (const addr of gameObjectsStore.childrenMap?.get(
+        object.transform!.address!
+    ) ?? []) {
+        const [child] = gameObjectsStore.objectsMap!.get(addr)!;
+        if (inSearch(child, addressMap, searchLower, selfMatches || matchChild))
+            childMatches = true;
+    }
+    if (childMatches || selfMatches || matchChild)
+        addressMap.set(object.transform!.address!, [
+            selfMatches && searchLower != "",
+            childMatches,
+        ]);
+    return childMatches || selfMatches;
+}
+
+function addChildren(
+    objectAddress: GameObjectIndex,
+    dataMap: Map<GameObjectIndex, TreeData>,
+    filterMap?: Map<GameObjectIndex, [boolean, boolean]>,
+    parentIndent = 0
+) {
+    const children = gameObjectsStore.childrenMap?.get(objectAddress);
+    dataMap.set(objectAddress, [parentIndent, (children?.length ?? 0) > 0]);
+    if (filterMap?.get(objectAddress)?.[1] ?? true)
+        children
+            ?.filter((addr) => filterMap?.has(addr) ?? true)
+            ?.forEach((address) =>
+                addChildren(address, dataMap, filterMap, parentIndent + 1)
+            );
 }
