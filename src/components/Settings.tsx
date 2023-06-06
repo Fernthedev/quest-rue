@@ -2,6 +2,8 @@ import { Icon } from "solid-heroicons";
 import { cog_6Tooth } from "solid-heroicons/solid";
 import { createContext, useContext, ParentProps } from "solid-js";
 import { createLocalSignal } from "../misc/utils";
+import Toggle from "./form/Toggle";
+import SegmentedControl from "./form/SegmentedControl";
 
 // TODO: Store in local storage
 
@@ -10,9 +12,16 @@ function makeSettingsContext(
     darkMode = true,
     columnCount = 2
 ) {
-    const [getRawInput, setRawInput] = createLocalSignal("rawInput", () => rawInput ? "true" : "false");
-    const [getDarkMode, setDarkMode] = createLocalSignal("darkMode", () => darkMode ? "true" : "false");
-    const [getColumnCount, setColumnCount] = createLocalSignal("columnCount", () => columnCount.toString());
+    const [getRawInput, setRawInput] = createLocalSignal("rawInput", () =>
+        rawInput ? "true" : "false"
+    );
+    const [getDarkMode, setDarkMode] = createLocalSignal("darkMode", () =>
+        darkMode ? "true" : "false"
+    );
+    const [getColumnCount, setColumnCount] = createLocalSignal(
+        "columnCount",
+        () => columnCount.toString()
+    );
 
     return {
         rawInput: getRawInput,
@@ -61,64 +70,28 @@ export function SettingsMenu() {
                 justify-center gap-2 w-60 p-3
                 my-2 z-10 rounded-box cursor-auto"
             >
-                <span class="flex items-center h-8">
-                    <label class="flex-1">Use raw input</label>
-                    <input
-                        type="checkbox"
-                        class="toggle flex-none"
-                        checked={rawInput() === "true"}
-                        onInput={(e) => setRawInput(e.currentTarget.checked ? "true" : "false")}
-                    />
-                </span>
-                <span class="flex items-center h-8">
-                    <label class="flex-1">Dark mode</label>
-                    <input
-                        type="checkbox"
-                        class="toggle flex-none"
-                        checked={darkMode() === "true"}
-                        onInput={(e) => setDarkMode(e.currentTarget.checked ? "true" : "false")}
-                    />
-                </span>
+                <Toggle
+                    title="Dark mode"
+                    checkedSignal={[
+                        () => darkMode() === "true",
+                        (b) => setDarkMode(b ? "true" : "false"),
+                    ]}
+                />
+                <Toggle
+                    title="Use raw input"
+                    checkedSignal={[
+                        () => rawInput() === "true",
+                        (b) => setRawInput(b ? "true" : "false"),
+                    ]}
+                />
+
                 <span class="flex items-center h-8">
                     <label class="flex-1">Columns</label>
-                    <div class="join flex-none">
-                        <input
-                            type="radio"
-                            name="grid-size"
-                            aria-label="1"
-                            value={"1"}
-                            onChange={columnRadioSelect}
-                            class="join-item btn btn-sm"
-                            checked={columnCount() === "1"}
-                        />
-                        <input
-                            type="radio"
-                            name="grid-size"
-                            aria-label="2"
-                            value={2}
-                            class="join-item btn btn-sm"
-                            onChange={columnRadioSelect}
-                            checked={columnCount() === "2"}
-                        />
-                        <input
-                            type="radio"
-                            name="grid-size"
-                            aria-label="3"
-                            value={3}
-                            class="join-item btn btn-sm"
-                            onChange={columnRadioSelect}
-                            checked={columnCount() === "3"}
-                        />
-                        <input
-                            type="radio"
-                            name="grid-size"
-                            aria-label="4"
-                            value={4}
-                            class="join-item btn btn-sm"
-                            onChange={columnRadioSelect}
-                            checked={columnCount() === "4"}
-                        />
-                    </div>
+                    <SegmentedControl
+                        values={["1", "2", "3", "4"]}
+                        onValueSelect={setColumnCount}
+                        selectedValue={columnCount()}
+                    />
                 </span>
             </div>
         </div>
