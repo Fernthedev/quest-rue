@@ -21,18 +21,15 @@ export function OverloadCell(props: {
         <span
             ref={element}
             class={`font-mono method ${styles.overload} ${styles.gridElement}`}
-            classList={{
-                [styles.highlighted]: props.expanded,
-            }}
         >
             <Icon
                 path={props.expanded ? minus : plus}
-                class="w-5 h-5 antialiased "
+                class="w-4 h-4 antialiased"
             />
             <button
                 aria-label={`${props.name} overloads`}
                 onClick={() => props.toggleFn()}
-                class="py-0 px-1 -mx-1"
+                class="py-0 px-1 -m-px"
             >
                 {`${props.name}(${props.count} overloads)`}
             </button>
