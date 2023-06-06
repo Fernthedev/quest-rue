@@ -63,7 +63,7 @@ export default function ObjectView(props: {
     });
     const className = createMemo(() => {
         const details = classDetails();
-        if (!details?.clazz) return "";
+        if (!details?.clazz) return "Unknown";
 
         return protoTypeToString({
             Info: {

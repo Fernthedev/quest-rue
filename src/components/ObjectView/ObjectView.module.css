@@ -60,7 +60,7 @@
     --tw-border-opacity: 0.4;
 }
 .overload {
-    @apply border-l-orange-500;
+    @apply border-l-indigo-500;
     --tw-border-opacity: 0.4;
 }
 
