@@ -44,7 +44,7 @@ export function FilterSettingsDropdown(
             >
                 <Toggle
                     class="h-8"
-                    title="Fields"
+                    title="Show Fields"
                     checkedSignal={[
                         () => props.settings.filterFields,
                         (b) => props.setSettings("filterFields", b),
@@ -52,7 +52,7 @@ export function FilterSettingsDropdown(
                 />
                 <Toggle
                     class="h-8"
-                    title="Getters"
+                    title="Show Getters"
                     checkedSignal={[
                         () => props.settings.filterGetters,
                         (b) => props.setSettings("filterGetters", b),
@@ -60,7 +60,7 @@ export function FilterSettingsDropdown(
                 />
                 <Toggle
                     class="h-8"
-                    title="Setters"
+                    title="Show Setters"
                     checkedSignal={[
                         () => props.settings.filterSetters,
                         (b) => props.setSettings("filterSetters", b),
@@ -68,7 +68,7 @@ export function FilterSettingsDropdown(
                 />
                 <Toggle
                     class="h-8"
-                    title="Methods"
+                    title="Show Methods"
                     checkedSignal={[
                         () => props.settings.filterMethods,
                         (b) => props.setSettings("filterMethods", b),
