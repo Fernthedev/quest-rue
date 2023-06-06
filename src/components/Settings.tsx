@@ -60,33 +60,26 @@ export function SettingsMenu() {
                 justify-center gap-2 w-60 p-3
                 my-2 z-10 rounded-box cursor-auto"
             >
-                <div class="h-8">
-                    <Toggle
-                        title="Dark mode"
-                        checkedSignal={[
-                            () => darkMode() === "true",
-                            (b) => setDarkMode(b ? "true" : "false"),
-                        ]}
-                    />
-                </div>
-                <div class="h-8">
-                    <Toggle
-                        title="Use raw input"
-                        checkedSignal={[
-                            () => rawInput() === "true",
-                            (b) => setRawInput(b ? "true" : "false"),
-                        ]}
-                    />
-                </div>
-
-                <div class="h-8">
-                    <SegmentedControl
-                        values={["1", "2", "3", "4"]}
-                        onValueSelect={setColumnCount}
-                        selectedValue={columnCount()}
-                        title="Columns"
-                    />
-                </div>
+                <Toggle
+                    title="Dark mode"
+                    checkedSignal={[
+                        () => darkMode() === "true",
+                        (b) => setDarkMode(b ? "true" : "false"),
+                    ]}
+                />
+                <Toggle
+                    title="Use raw input"
+                    checkedSignal={[
+                        () => rawInput() === "true",
+                        (b) => setRawInput(b ? "true" : "false"),
+                    ]}
+                />
+                <SegmentedControl
+                    values={["1", "2", "3", "4"]}
+                    onValueSelect={setColumnCount}
+                    selectedValue={columnCount()}
+                    title="Columns"
+                />
             </div>
         </div>
     );

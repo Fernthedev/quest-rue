@@ -21,7 +21,7 @@ export default function SegmentedControl(props: SegmentedControlProps) {
     };
 
     return (
-        <span class="flex items-center">
+        <span class="flex items-center h-8">
             <label class="flex-1">{props.title ?? props.id}</label>
             <div class="join flex-none">
                 <Index each={props.values}>
