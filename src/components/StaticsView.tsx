@@ -1,4 +1,4 @@
-import { SetStoreFunction } from "solid-js/store";
+import { SetStoreFunction, createStore } from "solid-js/store";
 import { ProtoClassDetails } from "../misc/proto/il2cpp";
 import {
     Show,
@@ -18,12 +18,23 @@ import { useRequestAndResponsePacket } from "../misc/events";
 import { GetClassDetailsResult } from "../misc/proto/qrue";
 import { protoTypeToString, stringToProtoType } from "../misc/utils";
 import toast from "solid-toast";
+import {
+    FilterSettings,
+    FilterSettingsDropdown,
+} from "./ObjectView/FilterSettings";
 
 export function StaticsView(props: {
-    statics: { [key: string]: ProtoClassDetails };
+    statics: Readonly<{ [key: string]: ProtoClassDetails }>;
     setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
 }) {
     const { columnCount } = useSettings();
+
+    const [filters, setFilters] = createStore<FilterSettings>({
+        filterFields: true,
+        filterGetters: true,
+        filterMethods: true,
+        filterSetters: true,
+    } satisfies FilterSettings);
 
     const emptyFallback = (
         <div class="w-full h-full flex-1">
@@ -103,12 +114,21 @@ export function StaticsView(props: {
         >
             <div class="flex gap-4 mb-1 items-end">
                 <span class="text-xl flex-1 -mr-2">Static Class Members</span>
-                <input
-                    class="px-2"
-                    placeholder="Search"
-                    onInput={(e) => setSearch(e.target.value)}
-                    value={search()}
-                />
+
+                <div class="whitespace-nowrap join">
+                    <input
+                        class="px-2 join-item"
+                        placeholder="Filter"
+                        onInput={(e) => setSearch(e.target.value)}
+                        value={search()}
+                    />
+                    <FilterSettingsDropdown
+                        class="join-item"
+                        settings={filters}
+                        setSettings={setFilters}
+                    />
+                </div>
+
                 <div class="whitespace-nowrap join">
                     <input
                         class="px-2 join-item"
@@ -143,6 +163,7 @@ export function StaticsView(props: {
                             search={search()}
                             statics={true}
                             setStatics={props.setStatics}
+                            filters={filters}
                         />
                     </div>
                 )}

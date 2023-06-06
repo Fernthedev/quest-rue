@@ -16,7 +16,8 @@ import { MethodCell } from "./MethodCell";
 import { SpanFn, separator } from "./ObjectView";
 import { OverloadCell } from "./OverloadCell";
 import { createUpdatingSignal } from "../../misc/utils";
-import { SetStoreFunction } from "solid-js/store";
+import { SetStoreFunction, Store } from "solid-js/store";
+import { FilterSettings } from "./FilterSettings";
 
 interface OverloadInfo {
     name: string;
@@ -30,6 +31,7 @@ export function TypeSection(props: {
     spanFn: SpanFn;
     statics: boolean;
     setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
+    filters: Store<FilterSettings>;
 }) {
     const className = createMemo(() => {
         if (!props.details?.clazz) return "";
@@ -80,13 +82,18 @@ export function TypeSection(props: {
         props.statics ? props.details?.staticMethods : props.details?.methods
     );
     const filteredFields = createDeferred(() =>
-        filter(fields() ?? [], props.search)
+        props.filters.filterFields ? filter(fields() ?? [], props.search) : []
     );
-    const filteredProps = createDeferred(() =>
-        filter(properties() ?? [], props.search)
-    );
+    const filteredProps = createDeferred(() => {
+        const applicableProperties = properties()?.filter(
+            (p) =>
+                (props.filters.filterGetters && p.getterId) ||
+                (props.filters.filterSetters && p.setterId)
+        );
+        return filter(applicableProperties ?? [], props.search);
+    });
     const filteredMethods = createDeferred(() =>
-        filter(methods() ?? [], props.search)
+        props.filters.filterMethods ? filter(methods() ?? [], props.search) : []
     );
 
     // Groups methods as [methodName, Methods[]]
@@ -279,6 +286,7 @@ export function TypeSection(props: {
                     spanFn={props.spanFn}
                     statics={props.statics}
                     setStatics={props.setStatics}
+                    filters={props.filters}
                 />
             </Show>
         </div>

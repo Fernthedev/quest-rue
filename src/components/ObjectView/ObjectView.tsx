@@ -1,10 +1,4 @@
-import {
-    Show,
-    createEffect,
-    createMemo,
-    createSignal,
-    on,
-} from "solid-js";
+import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
 import { useRequestAndResponsePacket } from "../../misc/events";
 import { GetInstanceDetailsResult } from "../../misc/proto/qrue";
 
@@ -13,7 +7,9 @@ import { protoTypeToString } from "../../misc/utils";
 import { TypeSection } from "./TypeSection";
 import { useSettings } from "../Settings";
 import { ProtoClassDetails } from "../../misc/proto/il2cpp";
-import { SetStoreFunction } from "solid-js/store";
+import { SetStoreFunction, createStore } from "solid-js/store";
+import Toggle from "../form/Toggle";
+import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 
@@ -42,6 +38,12 @@ export default function ObjectView(props: {
     setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
 }) {
     const { columnCount } = useSettings();
+    const [filters, setFilters] = createStore<FilterSettings>({
+        filterFields: true,
+        filterGetters: true,
+        filterMethods: true,
+        filterSetters: true,
+    } satisfies FilterSettings);
 
     const globalFallback = (
         <div class="absolute-centered">No Object Selected</div>
@@ -134,12 +136,17 @@ export default function ObjectView(props: {
                     </span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>
                     <span class="flex-1" />
-                    <div class="py-1 whitespace-nowrap">
+                    <div class="whitespace-nowrap flex flex-row join">
                         <input
-                            class="px-2 py-1"
-                            placeholder="Search"
+                            class="px-2 py-1 join-item"
+                            placeholder="Filter"
                             onInput={(e) => setSearch(e.target.value)}
                             value={search()}
+                        />
+                        <FilterSettingsDropdown
+                            class="join-item"
+                            settings={filters}
+                            setSettings={setFilters}
                         />
                     </div>
                 </div>
@@ -155,6 +162,7 @@ export default function ObjectView(props: {
                         search={search()}
                         statics={false}
                         setStatics={props.setStatics}
+                        filters={filters}
                     />
                 </Show>
             </div>
