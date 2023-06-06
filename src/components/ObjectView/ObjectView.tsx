@@ -1,4 +1,10 @@
-import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
+import {
+    Show,
+    createEffect,
+    createMemo,
+    createSignal,
+    on,
+} from "solid-js";
 import { useRequestAndResponsePacket } from "../../misc/events";
 import { GetInstanceDetailsResult } from "../../misc/proto/qrue";
 
@@ -33,7 +39,7 @@ export const separator = () => (
 
 export default function ObjectView(props: {
     selectedAddress: bigint | undefined;
-    setStatics: SetStoreFunction<{[key: string]: ProtoClassDetails}>;
+    setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
 }) {
     const { columnCount } = useSettings();
 
@@ -88,18 +94,19 @@ export default function ObjectView(props: {
     });
 
     const [search, setSearch] = createSignal("");
-    const [deferredColumnCount, setDeferredColumnCount] = createSignal(2);
+    const [deferredColumnCount, setDeferredColumnCount] = createSignal(
+        Number.parseInt(columnCount())
+    );
 
     let container: HTMLDivElement | undefined;
     createEffect(
         on(columnCount, () => {
             if (container) {
-                const count = Number.parseInt(columnCount());
                 container.style.setProperty(
                     "--type-grid-columns",
-                    count.toString()
+                    columnCount()
                 );
-                setDeferredColumnCount(count);
+                setDeferredColumnCount(Number.parseInt(columnCount()));
             }
         })
     );
@@ -114,14 +121,17 @@ export default function ObjectView(props: {
     return (
         <Show when={props.selectedAddress} fallback={globalFallback} keyed>
             <div
-                class={`p-4 w-full h-full overflow-x-hidden ${styles.viewContainer}`}
+                class={`p-4 w-full h-full overflow-x-hidden`}
                 ref={container}
+                style={{ "--type-grid-columns": columnCount() }}
             >
                 <div class="flex gap-4 mb-1 items-end pr-10">
                     <span class="text-lg flex-0 -mr-2">Selected:</span>
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg flex-0 -mx-2">at</span>
-                    <span class="text-xl font-mono flex-0">{props.selectedAddress?.toString()}</span>
+                    <span class="text-xl font-mono flex-0">
+                        {props.selectedAddress?.toString()}
+                    </span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>
                     <span class="flex-1" />
                     <div class="py-1 whitespace-nowrap">

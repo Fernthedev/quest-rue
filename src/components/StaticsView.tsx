@@ -79,12 +79,11 @@ export function StaticsView(props: {
     createEffect(
         on(columnCount, () => {
             if (container) {
-                const count = Number.parseInt(columnCount());
                 container.style.setProperty(
                     "--type-grid-columns",
-                    count.toString()
+                    columnCount()
                 );
-                setDeferredColumnCount(count);
+                setDeferredColumnCount(Number.parseInt(columnCount()));
             }
         })
     );
@@ -98,8 +97,9 @@ export function StaticsView(props: {
 
     return (
         <div
-            class={`p-4 w-full h-full flex flex-col overflow-x-hidden ${styles.viewContainer}`}
+            class={`p-4 w-full h-full flex flex-col overflow-x-hidden`}
             ref={container}
+            style={{ "--type-grid-columns": columnCount() }}
         >
             <div class="flex gap-4 mb-1 items-end">
                 <span class="text-xl flex-1 -mr-2">Static Class Members</span>
