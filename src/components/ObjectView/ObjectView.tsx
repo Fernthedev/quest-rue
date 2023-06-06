@@ -44,7 +44,7 @@ export default function ObjectView(props: {
         filterMethods: true,
         filterSetters: true,
         filterByParameterName: false,
-        filterByTypes: false
+        filterByTypes: false,
     } satisfies FilterSettings);
 
     const globalFallback = (
@@ -142,7 +142,9 @@ export default function ObjectView(props: {
                         <input
                             class="px-2 py-1 join-item"
                             placeholder="Filter"
-                            onInput={(e) => setSearch(e.target.value)}
+                            onInput={(e) =>
+                                setSearch(e.target.value.toLocaleLowerCase())
+                            }
                             value={search()}
                         />
                         <FilterSettingsDropdown

@@ -423,6 +423,17 @@ export function protoTypeToString(type?: Partial<PacketJSON<ProtoTypeInfo>>) {
     return proto;
 }
 
+export function stringToPrimitive(
+    str: string
+): ProtoTypeInfo_Primitive | undefined {
+    return primitiveStringMap.get(str);
+}
+export function primitiveToString(
+    primitive: ProtoTypeInfo_Primitive
+): string | undefined {
+    return primitiveStringMap.getStr(primitive);
+}
+
 export function getGenerics(
     index: number,
     type?: PacketJSON<ProtoTypeInfo>

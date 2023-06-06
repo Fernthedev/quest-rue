@@ -8,16 +8,27 @@ import {
     on,
 } from "solid-js";
 import { PacketJSON } from "../../misc/events";
-import { ProtoClassDetails, ProtoMethodInfo } from "../../misc/proto/il2cpp";
+import {
+    ProtoClassDetails,
+    ProtoFieldInfo,
+    ProtoMethodInfo,
+    ProtoPropertyInfo,
+    ProtoTypeInfo,
+} from "../../misc/proto/il2cpp";
 import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
 import { MethodCell } from "./MethodCell";
 import { SpanFn, separator } from "./ObjectView";
 import { OverloadCell } from "./OverloadCell";
-import { createUpdatingSignal } from "../../misc/utils";
+import { createUpdatingSignal, stringToPrimitive } from "../../misc/utils";
 import { SetStoreFunction, Store } from "solid-js/store";
-import { FilterSettings } from "./FilterSettings";
+import {
+    FilterSettings,
+    filterFields,
+    filterMethods,
+    filterProperties,
+} from "./FilterSettings";
 
 interface OverloadInfo {
     name: string;
@@ -65,11 +76,6 @@ export function TypeSection(props: {
         if (!collapsed()) gridObserver.observe(grid!);
     });
 
-    const filter = <T extends { name?: string }>(list: T[], search: string) =>
-        list.filter((item) =>
-            item.name?.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-        );
-
     const fields = createMemo(() =>
         props.statics ? props.details?.staticFields : props.details?.fields
     );
@@ -82,18 +88,17 @@ export function TypeSection(props: {
         props.statics ? props.details?.staticMethods : props.details?.methods
     );
     const filteredFields = createDeferred(() =>
-        props.filters.filterFields ? filter(fields() ?? [], props.search) : []
+        filterFields(fields() ?? [], props.search, props.filters)
     );
     const filteredProps = createDeferred(() => {
-        const applicableProperties = properties()?.filter(
-            (p) =>
-                (props.filters.filterGetters && p.getterId) ||
-                (props.filters.filterSetters && p.setterId)
+        return filterProperties(
+            properties() ?? [],
+            props.search,
+            props.filters
         );
-        return filter(applicableProperties ?? [], props.search);
     });
     const filteredMethods = createDeferred(() =>
-        props.filters.filterMethods ? filter(methods() ?? [], props.search) : []
+        filterMethods(methods() ?? [], props.search, props.filters)
     );
 
     // Groups methods as [methodName, Methods[]]

@@ -3,6 +3,13 @@ import Toggle from "../form/Toggle";
 import { SetStoreFunction, Store } from "solid-js/store";
 import { magnifyingGlass } from "solid-heroicons/solid";
 import { JSX } from "solid-js";
+import {
+    ProtoFieldInfo,
+    ProtoMethodInfo,
+    ProtoPropertyInfo,
+    ProtoTypeInfo,
+} from "../../misc/proto/il2cpp";
+import { stringToPrimitive } from "../../misc/utils";
 
 export interface FilterSettings {
     filterFields: boolean;
@@ -86,4 +93,122 @@ export function FilterSettingsDropdown(
             </div>
         </div>
     );
+}
+
+function typeMatches(type: Readonly<ProtoTypeInfo>, search: string): boolean {
+    switch (type.Info?.$case) {
+        case "arrayInfo": {
+            return (
+                (type.Info.arrayInfo.memberType &&
+                    typeMatches(type.Info.arrayInfo.memberType, search)) ??
+                false
+            );
+        }
+        case "classInfo": {
+            return (
+                type.Info.classInfo.clazz
+                    .toLocaleLowerCase()
+                    .includes(search) ||
+                type.Info.classInfo.namespaze
+                    .toLocaleLowerCase()
+                    .includes(search) ||
+                type.Info.classInfo.generics.some((e) => typeMatches(e, search))
+            );
+        }
+        case "genericInfo": {
+            return type.Info.genericInfo.name
+                .toLocaleLowerCase()
+                .includes(search);
+        }
+        case "primitiveInfo": {
+            return stringToPrimitive(search) !== undefined;
+        }
+        case "structInfo": {
+            const clazzInfo = type.Info.structInfo.clazz;
+            return (
+                (clazzInfo?.clazz.toLocaleLowerCase().includes(search) ||
+                    clazzInfo?.namespaze
+                        .toLocaleLowerCase()
+                        .includes(search)) ??
+                false
+            );
+        }
+    }
+
+    return false;
+}
+
+export function filterMethods(
+    list: ProtoMethodInfo[],
+    search: string,
+    settings: Readonly<FilterSettings>
+) {
+    if (!settings.filterMethods) return [];
+
+    return list.filter((item) => {
+        const nameMatches = item.name?.toLocaleLowerCase().includes(search);
+        const parameterMatches =
+            settings.filterByParameterName &&
+            Object.entries(item.args).some(
+                ([argName, argData]) =>
+                    argName.toLocaleLowerCase().includes(search) ||
+                    (settings.filterByTypes && typeMatches(argData, search))
+            );
+        const retTypeMatches =
+            settings.filterByTypes &&
+            item.returnType &&
+            typeMatches(item.returnType, search);
+
+        return (
+            nameMatches ||
+            parameterMatches ||
+            retTypeMatches ||
+            parameterMatches
+        );
+    });
+}
+export function filterProperties(
+    list: ProtoPropertyInfo[],
+    search: string,
+    settings: Readonly<FilterSettings>
+) {
+    if (!settings.filterGetters && !settings.filterSetters) return [];
+
+    return list.filter((item) => {
+        const matchGetter = settings.filterGetters && item.getterId;
+        const matchSetter = settings.filterSetters && item.setterId;
+
+        if (!matchGetter && !matchSetter) return false;
+
+        const matchesName = item.name
+            ?.toLocaleLowerCase()
+            .includes(search.toLocaleLowerCase());
+
+        const matchesType =
+            settings.filterByTypes &&
+            item.type &&
+            typeMatches(item.type, search);
+
+        return matchesName || matchesType;
+    });
+}
+export function filterFields(
+    list: Readonly<ProtoFieldInfo[]>,
+    search: string,
+    settings: Readonly<FilterSettings>
+) {
+    if (!settings.filterFields) return [];
+
+    return list.filter((item) => {
+        const matchesName = item.name
+            ?.toLocaleLowerCase()
+            .includes(search.toLocaleLowerCase());
+
+        const matchesType =
+            settings.filterByTypes &&
+            item.type &&
+            typeMatches(item.type, search);
+
+        return matchesName || matchesType;
+    });
 }
