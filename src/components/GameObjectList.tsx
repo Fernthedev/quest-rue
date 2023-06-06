@@ -36,7 +36,7 @@ export default function GameObjectList() {
 
     /// Handle search
     // #region search
-    const [search, setSearch] = createSignal<string>("");
+    const [search, setSearch] = createSignal("");
 
     // address -> [highlight, expand]
     const [searchAddresses, setSearchAddresses] = createSignal<
@@ -77,7 +77,6 @@ export default function GameObjectList() {
     );
     // #endregion
 
-    // address -> [indentation, hasChildren]
     const sceneObjects = createMemo(() => {
         const addresses = searchAddresses();
         const sceneTreeData = new Map<string, Map<GameObjectIndex, TreeData>>();
@@ -88,18 +87,16 @@ export default function GameObjectList() {
                 treeData = new Map();
                 sceneTreeData.set(sceneName, treeData);
             }
-
-            return addChildren(obj.transform!.address, treeData, addresses);
-        }) ?? [];
+            addChildren(obj.transform!.address, treeData, addresses);
+        });
         return sceneTreeData;
     });
 
-    const objects = createMemo(
+    // address -> [indentation, hasChildren]
+    const objectsTreeData = createMemo(
         () =>
             new Map<GameObjectIndex, TreeData>(
-                [...sceneObjects().entries()].flatMap<
-                    [GameObjectIndex, TreeData]
-                >(([, o]) => [...o.entries()])
+                [...sceneObjects().values()].flatMap((o) => [...o.entries()])
             )
     );
 
@@ -107,7 +104,7 @@ export default function GameObjectList() {
     requestGameObjects();
     const [requesting, setRequesting] = createSignal<boolean>();
 
-    const noEntries = () => (search() == "" ? "No Results" : "Loading...");
+    const noEntries = () => (search() != "" ? "No Results" : "Loading...");
 
     // update state
     createEventEffect<PacketWrapperCustomJSON>(
@@ -176,7 +173,7 @@ export default function GameObjectList() {
                                 navigate: navigate,
                                 addressMap: searchAddresses,
                                 updateAddressMap: setSearchAddresses,
-                                addressTreeData: objects,
+                                addressTreeData: objectsTreeData,
                             })
                         }
                         objects={sceneObjects}
@@ -194,18 +191,22 @@ function GameObjectScenes(props: {
     objects: Accessor<Map<string, Map<GameObjectIndex, TreeData>>>;
 }) {
     return (
-        <div
-            class="flex flex-col flex-1 gap-2 min-h-0"
-        >
+        <div class="flex flex-col flex-1 gap-2 min-h-0">
             <For each={[...props.filteredScenes().values()]}>
                 {(scene) => {
                     const [expanded, setExpanded] = createSignal(true);
                     const toggle = () => setExpanded((b) => !b);
-                    const sceneObjects = () => props.objects().get(scene)!;
+                    const sceneObjects = () => props.objects().get(scene);
 
                     return (
                         // equal space with expanded ones, otherwise be small
-                        <div class="min-h-0 flex flex-col" classList={{"flex-1": expanded(), "h-min": !expanded()}}>
+                        <div
+                            class="min-h-0 flex flex-col"
+                            classList={{
+                                "flex-1": expanded(),
+                                "h-min": !expanded(),
+                            }}
+                        >
                             <div
                                 role="checkbox"
                                 tabIndex={"0"}
@@ -224,7 +225,7 @@ function GameObjectScenes(props: {
                             <Show when={expanded()}>
                                 <VirtualList
                                     class={`${styles.list} w-full flex-1`}
-                                    items={[...sceneObjects().keys()]}
+                                    items={[...sceneObjects()?.keys() ?? []]}
                                     itemHeight={29}
                                     generator={props.generator}
                                 />
@@ -363,12 +364,11 @@ function AddGameObject() {
 }
 
 function matchesSearch(obj: GameObjectJSON, search: string) {
-    return (
-        obj.name.toLocaleUpperCase().includes(search)
-        // || obj.scene?.name.includes(search)
-    );
+    return obj.name.toLocaleLowerCase().includes(search);
+    // || obj.scene?.name.includes(search)
 }
 
+// ALSO RESPONSIBLE FOR CALCULATING HIGHLIGHTED/EXPANDED DATA
 function inSearch(
     object: GameObjectJSON,
     addressMap: Map<
@@ -378,16 +378,12 @@ function inSearch(
     searchLower: string,
     matchChild = false
 ): boolean {
-    // nothing searched
-    if (searchLower === "") return true;
-
     if (addressMap.has(object.transform!.address!)) return true;
 
     let childMatches = false;
     let selfMatches = false;
-    if (matchesSearch(object, searchLower)) {
+    if (matchesSearch(object, searchLower))
         selfMatches = true;
-    }
 
     for (const addr of gameObjectsStore.childrenMap?.get(
         object.transform!.address!
