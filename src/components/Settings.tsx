@@ -1,6 +1,7 @@
 import { Icon } from "solid-heroicons";
 import { cog_6Tooth } from "solid-heroicons/solid";
-import { createSignal, createContext, useContext, ParentProps } from "solid-js";
+import { createContext, useContext, ParentProps } from "solid-js";
+import { createLocalSignal } from "../misc/utils";
 
 // TODO: Store in local storage
 
@@ -9,9 +10,10 @@ function makeSettingsContext(
     darkMode = true,
     columnCount = 2
 ) {
-    const [getRawInput, setRawInput] = createSignal(rawInput);
-    const [getDarkMode, setDarkMode] = createSignal(darkMode);
-    const [getColumnCount, setColumnCount] = createSignal(columnCount);
+    const [getRawInput, setRawInput] = createLocalSignal("rawInput", () => rawInput ? "true" : "false");
+    const [getDarkMode, setDarkMode] = createLocalSignal("darkMode", () => darkMode ? "true" : "false");
+    const [getColumnCount, setColumnCount] = createLocalSignal("columnCount", () => columnCount.toString());
+
     return {
         rawInput: getRawInput,
         setRawInput: setRawInput,
@@ -43,7 +45,7 @@ export function SettingsMenu() {
         }
     ) => {
         if (!e.currentTarget.checked) return;
-        setColumnCount(Number.parseInt(e.currentTarget.value));
+        setColumnCount(e.currentTarget.value);
     };
 
     return (
@@ -64,8 +66,8 @@ export function SettingsMenu() {
                     <input
                         type="checkbox"
                         class="toggle flex-none"
-                        checked={rawInput()}
-                        onInput={(e) => setRawInput(e.currentTarget.checked)}
+                        checked={rawInput() === "true"}
+                        onInput={(e) => setRawInput(e.currentTarget.checked ? "true" : "false")}
                     />
                 </span>
                 <span class="flex items-center h-8">
@@ -73,8 +75,8 @@ export function SettingsMenu() {
                     <input
                         type="checkbox"
                         class="toggle flex-none"
-                        checked={darkMode()}
-                        onInput={(e) => setDarkMode(e.currentTarget.checked)}
+                        checked={darkMode() === "true"}
+                        onInput={(e) => setDarkMode(e.currentTarget.checked ? "true" : "false")}
                     />
                 </span>
                 <span class="flex items-center h-8">
@@ -87,7 +89,7 @@ export function SettingsMenu() {
                             value={"1"}
                             onChange={columnRadioSelect}
                             class="join-item btn btn-sm"
-                            checked={columnCount() === 1}
+                            checked={columnCount() === "1"}
                         />
                         <input
                             type="radio"
@@ -96,7 +98,7 @@ export function SettingsMenu() {
                             value={2}
                             class="join-item btn btn-sm"
                             onChange={columnRadioSelect}
-                            checked={columnCount() === 2}
+                            checked={columnCount() === "2"}
                         />
                         <input
                             type="radio"
@@ -105,7 +107,7 @@ export function SettingsMenu() {
                             value={3}
                             class="join-item btn btn-sm"
                             onChange={columnRadioSelect}
-                            checked={columnCount() === 3}
+                            checked={columnCount() === "3"}
                         />
                         <input
                             type="radio"
@@ -114,7 +116,7 @@ export function SettingsMenu() {
                             value={4}
                             class="join-item btn btn-sm"
                             onChange={columnRadioSelect}
-                            checked={columnCount() === 4}
+                            checked={columnCount() === "4"}
                         />
                     </div>
                 </span>

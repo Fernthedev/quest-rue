@@ -13,7 +13,22 @@ export function createUpdatingSignal<T>(
     options?: SignalOptions<T>
 ): Signal<T> {
     const [valAccessor, valSetter] = createSignal(val(), options);
+    // reset the value with dependencies
     createEffect(() => valSetter(() => val())); // typescript is so stupid sometimes
+    return [valAccessor, valSetter];
+}
+export function createLocalSignal(
+    key: string,
+    defaultVal: () => string,
+    options?: SignalOptions<string>
+): Signal<string> {
+    const [valAccessor, valSetter] = createSignal(
+        localStorage.getItem(key) ?? defaultVal(),
+        options
+    );
+    createEffect(() => {
+        localStorage.setItem(key, valAccessor());
+    });
     return [valAccessor, valSetter];
 }
 
@@ -377,13 +392,10 @@ function _protoClassToString(classInfo: ProtoClassInfo): string {
     let ret = `${classInfo.clazz}`;
     if (classInfo.generics?.length) {
         ret += "<";
-        ret += classInfo.generics
-            ?.map((t) => protoTypeToString(t))
-            .join(", ");
+        ret += classInfo.generics?.map((t) => protoTypeToString(t)).join(", ");
         ret += ">";
     }
-    if (classInfo.namespaze)
-        return `${classInfo.namespaze}::${ret}`;
+    if (classInfo.namespaze) return `${classInfo.namespaze}::${ret}`;
     return ret;
 }
 

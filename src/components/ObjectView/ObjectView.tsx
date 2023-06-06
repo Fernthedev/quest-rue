@@ -94,7 +94,7 @@ export default function ObjectView(props: {
     createEffect(
         on(columnCount, () => {
             if (container) {
-                const count = columnCount();
+                const count = Number.parseInt(columnCount());
                 container.style.setProperty(
                     "--type-grid-columns",
                     count.toString()
