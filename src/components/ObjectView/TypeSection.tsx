@@ -39,34 +39,42 @@ export function TypeSection(props: {
     const [collapsed, setCollapsed] = createSignal<boolean>(false);
 
     // due to the set count all the grids will have the same size columns
-    let grid: HTMLDivElement | undefined;
+    let methodGrid: HTMLDivElement | undefined;
+    let fieldGrid: HTMLDivElement | undefined;
+    let propGrid: HTMLDivElement | undefined;
     const [colSize, setColSize] = createSignal<number>(0);
-    const recalculateSize = () => {
-        const columns = getComputedStyle(grid!).gridTemplateColumns.split(" ");
+    const recalculateSize = (element: HTMLDivElement) => {
+        const columns =
+            getComputedStyle(element).gridTemplateColumns.split(" ");
         const column = columns[0].replace("px", "");
         setColSize(0);
         requestAnimationFrame(() => setColSize(Number(column)));
     };
-    const gridObserver = new ResizeObserver(recalculateSize);
+    const methodGridObserver = new ResizeObserver(() =>
+        recalculateSize(methodGrid!)
+    );
     // recalculate on changes to spanFn - aka "adaptive sizing" or "column count"
     createEffect(
         on(
             () => props.spanFn,
             () => {
-                if (!collapsed()) recalculateSize();
+                if (!collapsed()) recalculateSize(methodGrid!);
             },
             { defer: true }
         )
     );
     // loses observation after collapsing
     createEffect(() => {
-        if (!collapsed()) gridObserver.observe(grid!);
+        if (!collapsed()) methodGridObserver.observe(methodGrid!);
     });
 
-    const filter = <T extends { name?: string }>(list: T[], search: string) =>
-        list.filter((item) =>
+    const filter = <T extends { name?: string }>(list: T[], search: string) => {
+        if (search.length === 0) return list;
+
+        return list.filter((item) =>
             item.name?.toLocaleLowerCase().includes(search.toLocaleLowerCase())
         );
+    };
 
     const fields = createMemo(() =>
         props.statics ? props.details?.staticFields : props.details?.fields
@@ -122,6 +130,50 @@ export function TypeSection(props: {
     };
     const removeStatic = () => props.setStatics(className(), undefined!);
 
+    createEffect(() => {
+        const expandedMap = expanded();
+        const methodColSize = colSize();
+
+        const methodCount: number = groupedMethods().reduce<number>(
+            (acc, [name, methods]) => {
+                if (!expandedMap.get(name)) return acc + 1;
+
+                const methodsGroupSize: number = methods.length + 1; // * methodColSize;
+
+                return acc + methodsGroupSize;
+            },
+            0
+        );
+
+        console.log("Method size", methodCount);
+
+        const rowCount =
+            methodCount > 15 ? Math.floor(methodCount / 2) : methodCount;
+
+        methodGrid?.style.setProperty("--object-count", rowCount.toString());
+    });
+    createEffect(() => {
+        const propCount = filteredProps().length;
+
+        console.log("Property size", propCount, filteredProps().length);
+
+        const rowCount = propCount > 30 ? Math.floor(propCount / 2) : propCount;
+
+        propGrid?.style.setProperty(
+            "--object-count",
+            Math.round(rowCount / 2).toString()
+        );
+    });
+    createEffect(() => {
+        const fieldCount = filteredFields().length;
+
+        console.log("Field size", fieldCount);
+        const rowCount =
+            fieldCount > 30 ? Math.floor(fieldCount / 2) : fieldCount;
+
+        fieldGrid?.style.setProperty("--object-count", rowCount.toString());
+    });
+
     return (
         <div>
             <div
@@ -167,7 +219,7 @@ export function TypeSection(props: {
                 <div
                     class={`${styles.grid}`}
                     classList={{ "mb-1": filteredFields().length > 0 }}
-                    ref={grid}
+                    ref={fieldGrid}
                 >
                     <For each={filteredFields()}>
                         {(item) => (
@@ -183,6 +235,7 @@ export function TypeSection(props: {
                 <div
                     class={`${styles.grid}`}
                     classList={{ "mb-1": filteredProps().length > 0 }}
+                    ref={propGrid}
                 >
                     <For each={filteredProps()}>
                         {(item) => (
@@ -198,6 +251,7 @@ export function TypeSection(props: {
                 <div
                     class={`${styles.grid}`}
                     classList={{ "mb-1": groupedMethods().length > 0 }}
+                    ref={methodGrid}
                 >
                     <For
                         each={groupedMethods()

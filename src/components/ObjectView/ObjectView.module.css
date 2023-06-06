@@ -1,5 +1,5 @@
 .viewContainer {
-    --type-grid-columns: 2
+    --type-grid-columns: 2;
 }
 
 .expanded {
@@ -29,8 +29,13 @@
 }
 
 .grid {
+    /* --object-count: 10; */
+
     display: grid;
     justify-items: stretch;
+
+    grid-template-rows: repeat(var(--object-count), auto);
+    grid-auto-flow: column dense;
 
     /* grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); */
     grid-template-columns: repeat(var(--type-grid-columns), minmax(0, 1fr));
@@ -92,5 +97,5 @@
 .highlighted {
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
-    @apply bg-zinc-400 dark:bg-zinc-800
+    @apply bg-zinc-400 dark:bg-zinc-800;
 }
