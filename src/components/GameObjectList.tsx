@@ -198,6 +198,10 @@ function GameObjectScenes(props: {
                     const toggle = () => setExpanded((b) => !b);
                     const sceneObjects = () => props.objects().get(scene);
 
+                    if (!sceneObjects()) {
+                        return <></>
+                    }
+
                     return (
                         // equal space with expanded ones, otherwise be small
                         <div
