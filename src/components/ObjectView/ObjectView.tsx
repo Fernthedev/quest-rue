@@ -43,6 +43,8 @@ export default function ObjectView(props: {
         filterGetters: true,
         filterMethods: true,
         filterSetters: true,
+        filterByParameterName: false,
+        filterByTypes: false
     } satisfies FilterSettings);
 
     const globalFallback = (

@@ -34,6 +34,8 @@ export function StaticsView(props: {
         filterGetters: true,
         filterMethods: true,
         filterSetters: true,
+        filterByParameterName: false,
+        filterByTypes: false
     } satisfies FilterSettings);
 
     const emptyFallback = (

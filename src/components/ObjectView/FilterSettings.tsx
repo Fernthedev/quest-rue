@@ -9,6 +9,8 @@ export interface FilterSettings {
     filterGetters: boolean;
     filterSetters: boolean;
     filterMethods: boolean;
+    filterByTypes: boolean;
+    filterByParameterName: boolean;
 }
 
 export function FilterSettingsDropdown(
@@ -30,7 +32,7 @@ export function FilterSettingsDropdown(
                 class="
                 dropdown-content shadow menu text-base
                 bg-neutral-400 dark:bg-zinc-800
-                justify-center gap-2 w-60 p-3
+                justify-center gap-2 w-80 p-3
                 my-2 z-20 rounded-box cursor-auto"
             >
                 <Toggle
@@ -63,6 +65,22 @@ export function FilterSettingsDropdown(
                     checkedSignal={[
                         () => props.settings.filterMethods,
                         (b) => props.setSettings("filterMethods", b),
+                    ]}
+                />
+                <Toggle
+                    class="h-8"
+                    title="Filter by parameter name"
+                    checkedSignal={[
+                        () => props.settings.filterByParameterName,
+                        (b) => props.setSettings("filterByParameterName", b),
+                    ]}
+                />
+                <Toggle
+                    class="h-8"
+                    title="Filter by type"
+                    checkedSignal={[
+                        () => props.settings.filterByTypes,
+                        (b) => props.setSettings("filterByTypes", b),
                     ]}
                 />
             </div>
