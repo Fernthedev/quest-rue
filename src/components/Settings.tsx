@@ -47,16 +47,6 @@ export function SettingsMenu() {
         setColumnCount,
     } = useSettings();
 
-    const columnRadioSelect = (
-        e: Event & {
-            currentTarget: HTMLInputElement;
-            target: HTMLInputElement;
-        }
-    ) => {
-        if (!e.currentTarget.checked) return;
-        setColumnCount(e.currentTarget.value);
-    };
-
     return (
         <div class="absolute top-2 right-5 dropdown dropdown-bottom dropdown-end flex-0">
             <button class="p-2" title="Settings">
@@ -85,14 +75,13 @@ export function SettingsMenu() {
                     ]}
                 />
 
-                <span class="flex items-center h-8">
-                    <label class="flex-1">Columns</label>
-                    <SegmentedControl
-                        values={["1", "2", "3", "4"]}
-                        onValueSelect={setColumnCount}
-                        selectedValue={columnCount()}
-                    />
-                </span>
+                
+                <SegmentedControl
+                    values={["1", "2", "3", "4"]}
+                    onValueSelect={setColumnCount}
+                    selectedValue={columnCount()}
+                    title="Columns"
+                />
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { Accessor, For, Index } from "solid-js";
+import { Accessor, For, Index, JSX } from "solid-js";
 
 interface SegmentedControlProps {
     values: string[];
@@ -21,21 +21,24 @@ export default function SegmentedControl(props: SegmentedControlProps) {
     };
 
     return (
-        <div class="join flex-none">
-            <Index each={props.values}>
-                {(item) => (
-                    <input
-                        type="radio"
-                        tabIndex={0}
-                        name={props.id}
-                        aria-label={item()}
-                        value={item()}
-                        class="join-item btn btn-sm"
-                        onChange={radioSelect}
-                        checked={item() === props.selectedValue}
-                    />
-                )}
-            </Index>
-        </div>
+        <span class="flex items-center">
+            <label class="flex-1">{props.title ?? props.id}</label>
+            <div class="join flex-none">
+                <Index each={props.values}>
+                    {(item) => (
+                        <input
+                            type="radio"
+                            tabIndex={0}
+                            name={props.id}
+                            aria-label={item()}
+                            value={item()}
+                            class="join-item btn btn-sm"
+                            onChange={radioSelect}
+                            checked={item() === props.selectedValue}
+                        />
+                    )}
+                </Index>
+            </div>
+        </span>
     );
 }

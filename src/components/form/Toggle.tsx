@@ -11,7 +11,7 @@ export default function Toggle(props: ToggleProps) {
     const setChecked = (b: boolean) => props.checkedSignal[1](b);
 
     return (
-        <span class="flex items-center h-8">
+        <span class="flex items-center">
             <label class="flex-1">{props.title}</label>
             <input
                 type="checkbox"
