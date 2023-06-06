@@ -21,24 +21,21 @@ export default function SegmentedControl(props: SegmentedControlProps) {
     };
 
     return (
-        <span class="flex items-center h-8">
-            <label class="flex-1">Columns</label>
-            <div class="join flex-none">
-                <Index each={props.values}>
-                    {(item) => (
-                        <input
-                            type="radio"
-                            tabIndex={0}
-                            name={props.id}
-                            aria-label={item()}
-                            value={item()}
-                            class="join-item btn btn-sm"
-                            onChange={radioSelect}
-                            checked={item() === props.selectedValue}
-                        />
-                    )}
-                </Index>
-            </div>
-        </span>
+        <div class="join flex-none">
+            <Index each={props.values}>
+                {(item) => (
+                    <input
+                        type="radio"
+                        tabIndex={0}
+                        name={props.id}
+                        aria-label={item()}
+                        value={item()}
+                        class="join-item btn btn-sm"
+                        onChange={radioSelect}
+                        checked={item() === props.selectedValue}
+                    />
+                )}
+            </Index>
+        </div>
     );
 }
