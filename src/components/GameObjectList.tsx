@@ -194,7 +194,10 @@ function GameObjectScenes(props: {
     objects: Accessor<Map<string, Map<GameObjectIndex, TreeData>>>;
 }) {
     return (
-        <div style={{ "padding-left": "1rem" }}>
+        <div
+            style={{ "padding-left": "0.25rem" }}
+            class="flex flex-col divide-y-0 gap-2 h-full"
+        >
             <For each={[...props.filteredScenes().values()]}>
                 {(scene) => {
                     const [expanded, setExpanded] = createSignal(true);
@@ -203,20 +206,20 @@ function GameObjectScenes(props: {
 
                     return (
                         <div>
-                            <span
+                            <div
                                 role="checkbox"
                                 tabIndex={"0"}
                                 aria-checked={!expanded()}
-                                class="mr-1 flex"
                                 onKeyPress={toggle}
                                 onClick={toggle}
+                                class={`bg-slate-500 flex ${styles.rounded} ${styles.header}`}
                             >
                                 <Icon
                                     path={expanded() ? minus : plus}
                                     class="antialiased flex-0 w-4 h-4"
                                 />
-                                <h2 class="flex-1 text-lg">{scene}</h2>
-                            </span>
+                                <h2 class="flex-1">{scene}</h2>
+                            </div>
 
                             <Show when={expanded()}>
                                 <div>
@@ -274,14 +277,14 @@ function GameObjectListItem(props: {
             class={`${styles.listItem} ${
                 highlighted() ? styles.highlighted : ""
             }`}
-            style={{ "padding-left": `${indent() + 0.25}rem` }}
+            style={{ "padding-left": `${indent() + 1}rem` }}
         >
             <Show when={hasChildren()}>
                 <span
+                    class="mr-1 flex-0 w-4 text-center"
                     role="checkbox"
                     tabIndex={"0"}
                     aria-checked={!expanded()}
-                    class="mr-1 flex-0 w-4 text-center"
                     onKeyPress={toggle}
                     onClick={toggle}
                 >

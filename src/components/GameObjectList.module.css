@@ -16,3 +16,16 @@
     @apply bg-zinc-300 dark:bg-zinc-900;
     font-weight: bolder;
 }
+
+.header {
+    @apply bg-zinc-600 dark:bg-zinc-900
+        text-lg font-mono px-2;
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.rounded {
+    border-radius: 8px;
+}
