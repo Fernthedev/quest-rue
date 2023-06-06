@@ -1,6 +1,8 @@
 import { createEffect } from "solid-js";
 import styles from "./ObjectView.module.css";
 import { SpanFn } from "./ObjectView";
+import { Icon } from "solid-heroicons";
+import { minus, plus } from "solid-heroicons/solid";
 
 export function OverloadCell(props: {
     name: string;
@@ -19,7 +21,14 @@ export function OverloadCell(props: {
         <span
             ref={element}
             class={`font-mono method ${styles.overload} ${styles.gridElement}`}
+            classList={{
+                [styles.highlighted]: props.expanded,
+            }}
         >
+            <Icon
+                path={props.expanded ? minus : plus}
+                class="w-5 h-5 antialiased "
+            />
             <button
                 aria-label={`${props.name} overloads`}
                 onClick={() => props.toggleFn()}
@@ -27,7 +36,6 @@ export function OverloadCell(props: {
             >
                 {`${props.name}(${props.count} overloads)`}
             </button>
-            {props.expanded ? "-" : "+"}
         </span>
     );
 }

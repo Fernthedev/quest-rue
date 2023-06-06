@@ -1,5 +1,5 @@
 .viewContainer {
-    --type-grid-columns: 2
+    --type-grid-columns: 2;
 }
 
 .expanded {
@@ -60,8 +60,8 @@
     --tw-border-opacity: 0.4;
 }
 .overload {
-    @apply border-l-rose-500;
-    --tw-border-opacity: 0.4;
+    @apply border-l-yellow-500;
+    --tw-border-opacity: 0.8;
 }
 
 .propertyGetter {
@@ -92,5 +92,5 @@
 .highlighted {
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
-    @apply bg-zinc-400 dark:bg-zinc-800
+    @apply bg-zinc-400 dark:bg-zinc-700;
 }
