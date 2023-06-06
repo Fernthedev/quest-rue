@@ -121,7 +121,7 @@ function typeMatches(type: Readonly<ProtoTypeInfo>, search: string): boolean {
                 .includes(search);
         }
         case "primitiveInfo": {
-            return stringToPrimitive(search) !== undefined;
+            return stringToPrimitive(search) === type.Info.primitiveInfo;
         }
         case "structInfo": {
             const clazzInfo = type.Info.structInfo.clazz;
