@@ -1,6 +1,6 @@
 import { Accessor, For, Index, JSX } from "solid-js";
 
-interface SegmentedControlProps {
+interface SegmentedControlProps extends JSX.HTMLAttributes<HTMLSpanElement> {
     values: string[];
     onValueSelect: (s: string) => void;
     selectedValue: string;
@@ -21,7 +21,7 @@ export default function SegmentedControl(props: SegmentedControlProps) {
     };
 
     return (
-        <span class="flex items-center h-8">
+        <span {...props} class={`flex items-center ${props.class}`}>
             <label class="flex-1">{props.title ?? props.id}</label>
             <div class="join flex-none">
                 <Index each={props.values}>

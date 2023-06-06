@@ -1,6 +1,6 @@
-import { Accessor } from "solid-js";
+import { Accessor, JSX } from "solid-js";
 
-interface ToggleProps {
+interface ToggleProps extends JSX.HTMLAttributes<HTMLSpanElement> {
     checkedSignal: [Accessor<boolean>, (b: boolean) => void];
     disabled?: boolean;
     title?: string;
@@ -11,7 +11,7 @@ export default function Toggle(props: ToggleProps) {
     const setChecked = (b: boolean) => props.checkedSignal[1](b);
 
     return (
-        <span class="flex items-center h-8">
+        <span {...props} class={`flex items-center ${props.class ?? ""}`}>
             <label class="flex-1">{props.title}</label>
             <input
                 type="checkbox"

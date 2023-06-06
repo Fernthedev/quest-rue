@@ -61,6 +61,7 @@ export function SettingsMenu() {
                 my-2 z-10 rounded-box cursor-auto"
             >
                 <Toggle
+                    class="h-8"
                     title="Dark mode"
                     checkedSignal={[
                         () => darkMode() === "true",
@@ -68,6 +69,7 @@ export function SettingsMenu() {
                     ]}
                 />
                 <Toggle
+                    class="h-8"
                     title="Use raw input"
                     checkedSignal={[
                         () => rawInput() === "true",
@@ -75,6 +77,7 @@ export function SettingsMenu() {
                     ]}
                 />
                 <SegmentedControl
+                    class={"h-8"}
                     values={["1", "2", "3", "4"]}
                     onValueSelect={setColumnCount}
                     selectedValue={columnCount()}
