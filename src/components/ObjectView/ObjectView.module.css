@@ -59,6 +59,10 @@
     @apply border-l-fuchsia-500;
     --tw-border-opacity: 0.4;
 }
+.method {
+    @apply border-l-fuchsia-500;
+    --tw-border-opacity: 0.4;
+}
 .overload {
     @apply border-l-indigo-500;
     --tw-border-opacity: 0.4;
@@ -75,6 +79,7 @@
 
 .propertyBoth {
     border-left: none;
+    --tw-border-opacity: 0.4;
 }
 .propertyBoth::before {
     content: "";
@@ -86,12 +91,9 @@
     @apply from-green-500 to-sky-600;
     border-image: linear-gradient(to bottom, var(--tw-gradient-stops)) 1;
     border-left: 4px solid;
-    opacity: 0.5;
+    opacity: var(--tw-border-opacity);
 }
 
 .highlighted {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    @apply bg-zinc-500 dark:bg-zinc-700;
-    --tw-bg-opacity: 0.6;
+    --tw-border-opacity: 0.9;
 }

@@ -38,7 +38,11 @@ export function MethodCell(props: {
         equals: false,
     });
 
-    const argInputs = createMemo(() => args().slice(0, -1).map(() => ""));
+    const argInputs = createMemo(() =>
+        args()
+            .slice(0, -1)
+            .map(() => "")
+    );
     const [result, resultLoading, runMethod] =
         useRequestAndResponsePacket<InvokeMethodResult>();
     function run() {
@@ -99,14 +103,9 @@ export function MethodCell(props: {
         <span
             ref={element}
             class={`font-mono method overflow-hidden ${styles.method} ${styles.gridElement}`}
+            classList={{[styles.highlighted]: props.highlight}}
         >
-            <text
-                class={`pr-1 pl-2 -mx-2 ${
-                    props.highlight ? styles.highlighted : ""
-                }`}
-            >
-                {props.method.name}
-            </text>
+            <text class="pr-1 pl-2 -mx-2">{props.method.name}</text>
             <Show when={genericArgs().length > 0}>
                 {"<"}
                 <For each={genericArgs()}>
