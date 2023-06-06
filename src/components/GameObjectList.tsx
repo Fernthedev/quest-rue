@@ -222,14 +222,12 @@ function GameObjectScenes(props: {
                             </div>
 
                             <Show when={expanded()}>
-                                <div>
-                                    <VirtualList
-                                        class={`${styles.list} w-full`}
-                                        items={[...sceneObjects().keys()]}
-                                        itemHeight={29}
-                                        generator={props.generator}
-                                    />
-                                </div>
+                                <VirtualList
+                                    class={`${styles.list} w-full`}
+                                    items={[...sceneObjects().keys()]}
+                                    itemHeight={29}
+                                    generator={props.generator}
+                                />
                             </Show>
                         </div>
                     );
