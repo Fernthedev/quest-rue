@@ -24,10 +24,10 @@ function makeSettingsContext(
     );
 
     return {
-        rawInput: getRawInput,
-        setRawInput: setRawInput,
-        darkMode: getDarkMode,
-        setDarkMode: setDarkMode,
+        rawInput: () => getRawInput() == "true",
+        setRawInput: (val: boolean) => setRawInput(val ? "true" : "false"),
+        darkMode: () => getDarkMode() == "true",
+        setDarkMode: (val: boolean) => setDarkMode(val ? "true" : "false"),
         columnCount: getColumnCount,
         setColumnCount: setColumnCount,
     } as const;
@@ -63,18 +63,12 @@ export function SettingsMenu() {
                 <Toggle
                     class="h-8"
                     title="Dark mode"
-                    checkedSignal={[
-                        () => darkMode() === "true",
-                        (b) => setDarkMode(b ? "true" : "false"),
-                    ]}
+                    checkedSignal={[darkMode, setDarkMode]}
                 />
                 <Toggle
                     class="h-8"
                     title="Use raw input"
-                    checkedSignal={[
-                        () => rawInput() === "true",
-                        (b) => setRawInput(b ? "true" : "false"),
-                    ]}
+                    checkedSignal={[rawInput, setRawInput]}
                 />
                 <SegmentedControl
                     class={"h-8"}

@@ -207,10 +207,7 @@ export function TypeSection(props: {
                 >
                     <For
                         each={groupedMethods()
-                            .map<
-                                | OverloadInfo
-                                | (OverloadInfo | ProtoMethodInfo)[]
-                            >(([name, methodInfos]) => {
+                            .map(([name, methodInfos]) => {
                                 if (methodInfos.length == 1) {
                                     return methodInfos;
                                 }

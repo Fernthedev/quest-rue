@@ -117,6 +117,51 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+.solid-select-container {
+    width: 100%;
+}
+
+.solid-select-control {
+    border: none;
+    padding: 0px;
+    color: #0f0f0f;
+    background-color: #ffffff;
+}
+
+.solid-select-placeholder,
+.solid-select-single-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    padding-left: 2px;
+}
+
+.solid-select-input {
+    border: 1px solid transparent;
+    line-height: 16px;
+    padding: 2px;
+}
+
+.solid-select-list {
+    @apply bg-neutral-400 dark:bg-zinc-800
+    space-y-1;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.solid-select-option,
+.solid-select-list-placeholder {
+    padding: 0.25rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 8px;
+}
+.solid-select-option[data-focused="true"] {
+    @apply bg-neutral-500 dark:bg-zinc-700;
+}
+.solid-select-option:hover {
+    @apply bg-neutral-600 dark:bg-zinc-600;
+}
 
 @media (prefers-color-scheme: dark) {
     :root {
@@ -135,6 +180,11 @@ input::-webkit-inner-spin-button {
         background-color: #0f0f0fff;
     }
     button:active {
+        background-color: #0f0f0fff;
+    }
+
+    .solid-select-control {
+        color: #ffffff;
         background-color: #0f0f0fff;
     }
 }

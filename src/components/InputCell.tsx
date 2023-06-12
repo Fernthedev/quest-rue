@@ -6,6 +6,8 @@ import styles from "./InputCell.module.css";
 import { errorHandle, protoTypeToString } from "../misc/utils";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
+import { Select, createOptions } from "@thisbeyond/solid-select";
+import { useSettings } from "./Settings";
 
 export function ActionButton(props: {
     img: "refresh.svg" | "enter.svg" | "navigate.svg";
@@ -59,6 +61,8 @@ export default function InputCell(props: {
     input?: boolean;
     output?: boolean;
 }) {
+    const { rawInput } = useSettings();
+
     const inputType = createMemo(() => {
         if (props.type.Info?.$case == "classInfo") return "number";
 
@@ -104,6 +108,8 @@ export default function InputCell(props: {
 
     const navigate = useNavigate();
 
+    const opts = createOptions(["placeholder 1", "placeholder 2", "hi"]);
+
     return (
         <span
             class={styles.inputParent}
@@ -113,17 +119,29 @@ export default function InputCell(props: {
                 "max-width": `${maxWidth()}px`,
             }}
         >
-            <input
-                class={styles.input}
-                type={inputType()}
-                onInput={(e) => {
-                    props.onInput?.(e.target.value);
-                }}
-                value={props.value ?? ""}
-                disabled={!props.input}
-                placeholder={detail()}
-                title={detail()}
-            />
+            <Show
+                when={props.type.Info?.$case == "classInfo" && props.input && !rawInput()}
+                fallback={
+                    <input
+                        class={styles.input}
+                        type={inputType()}
+                        onInput={(e) => {
+                            props.onInput?.(e.target.value);
+                        }}
+                        value={props.value ?? ""}
+                        disabled={!props.input}
+                        placeholder={detail()}
+                        title={detail()}
+                    />
+                }
+            >
+                <Select
+                    onInput={(str: string) => props.onInput?.(str)}
+                    initialValue={props.value ?? ""}
+                    placeholder={detail()}
+                    {...opts}
+                />
+            </Show>
             <Show when={props.type.Info?.$case == "classInfo" && props.output}>
                 <ActionButton
                     class="small-button"

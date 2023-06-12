@@ -91,7 +91,7 @@ export function PropertyCell(props: {
             ref={element}
             class={`font-mono ${
                 propertyBoth() || propertySetter() || propertyGetter()
-            } ${styles.gridElement}`}
+            } ${styles.gridElement} overflow-visible`}
         >
             {props.prop.name + " = "}
             <InputCell

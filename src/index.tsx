@@ -1,6 +1,8 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 
+import "@thisbeyond/solid-select/style.css";
+// higher priority
 import "./styles.css";
 import App from "./App";
 import { initializeEvents } from "./misc/events";
