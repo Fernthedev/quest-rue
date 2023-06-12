@@ -11,7 +11,6 @@ import {
 import { useSettings } from "./Settings";
 import { SpanFn, adaptiveSpanSize, separator } from "./ObjectView/ObjectView";
 import { TypeSection } from "./ObjectView/TypeSection";
-import styles from "./ObjectView/ObjectView.module.css";
 import { Icon } from "solid-heroicons";
 import { plus } from "solid-heroicons/solid";
 import { useRequestAndResponsePacket } from "../misc/events";
@@ -41,7 +40,7 @@ export function StaticsView(props: {
     const emptyFallback = (
         <div class="w-full h-full flex-1">
             {separator()}
-            <div class="relative w-full h-full">
+            <div class="relative w-full h-full min-h-6">
                 <div class="absolute-centered">No Static Classes Selected</div>
             </div>
         </div>

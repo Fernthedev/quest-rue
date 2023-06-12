@@ -8,7 +8,6 @@ import { TypeSection } from "./TypeSection";
 import { useSettings } from "../Settings";
 import { ProtoClassDetails } from "../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
-import Toggle from "../form/Toggle";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;

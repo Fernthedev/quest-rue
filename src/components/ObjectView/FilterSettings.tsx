@@ -1,8 +1,8 @@
 import { Icon } from "solid-heroicons";
 import Toggle from "../form/Toggle";
 import { SetStoreFunction, Store } from "solid-js/store";
-import { magnifyingGlass } from "solid-heroicons/solid";
-import { JSX } from "solid-js";
+import { adjustmentsHorizontal } from "solid-heroicons/solid";
+import { JSX, createMemo, onCleanup, onMount } from "solid-js";
 import {
     ProtoFieldInfo,
     ProtoMethodInfo,
@@ -26,13 +26,35 @@ export function FilterSettingsDropdown(
         setSettings: SetStoreFunction<FilterSettings>;
     } & JSX.HTMLAttributes<HTMLDivElement>
 ) {
+    let parent: HTMLDivElement | undefined;
+    let child: HTMLDivElement | undefined;
+
+    const callback = () => {
+        if (parent && child) {
+            const showing = getComputedStyle(child).visibility != "hidden";
+            parent.style.overflow = showing ? "visible" : "hidden";
+        }
+    };
+
+    onMount(() => document.addEventListener("click", callback));
+    onCleanup(() => document.removeEventListener("click", callback));
+
+    const propsFn = () => props;
+    const divProps = createMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { settings, setSettings, ...ret } = propsFn();
+        return ret;
+    });
+
     return (
         <div
-            {...props}
+            {...divProps()}
+            ref={parent}
             class={`dropdown dropdown-bottom dropdown-end flex-0 ${props.class}`}
+            style={{ overflow: "hidden" }}
         >
             <button class="p-2" title="Settings">
-                <Icon path={magnifyingGlass} class="w-6 h-6" />
+                <Icon path={adjustmentsHorizontal} class="w-6 h-6" />
             </button>
 
             <div
@@ -41,6 +63,7 @@ export function FilterSettingsDropdown(
                 bg-neutral-400 dark:bg-zinc-800
                 justify-center gap-2 w-80 p-3
                 my-2 z-20 rounded-box cursor-auto"
+                ref={child}
             >
                 <Toggle
                     class="h-8"
