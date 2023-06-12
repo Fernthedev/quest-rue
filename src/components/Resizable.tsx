@@ -25,11 +25,16 @@ export function Resizable(
     // reset to size in props if that is changed externally
     const [size, setSize] = createUpdatingSignal(() => props.size);
 
+    // helper function to clamp a size to that of the properties
+    const clamp = (size: number) => {
+        size = Math.max(size, props.minSize ?? 4);
+        if (props.maxSize) size = Math.min(size, props.maxSize);
+        return size;
+    }
+
     // clamp here, not in mouse event, to keep the edge and the real mouse position in sync
     const style = createMemo(() => {
-        let s = size();
-        s = Math.max(s, props.minSize ?? 4);
-        if (props.maxSize) s = Math.min(s, props.maxSize);
+        const s = clamp(size());
         return vertical() ? { height: `${s}px` } : { width: `${s}px` };
     });
 
@@ -44,6 +49,8 @@ export function Resizable(
     const remove = () => {
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", remove);
+        // clamp here as well
+        setSize(clamp(size()));
     };
     const add = () => {
         document.addEventListener("mousemove", move);
