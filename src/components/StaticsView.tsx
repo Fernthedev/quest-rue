@@ -57,7 +57,7 @@ export function StaticsView(props: {
         if (classInput() in props.statics) return;
 
         const input = stringToProtoType(classInput());
-        if (input.Info?.$case != "classInfo") {
+        if (input?.Info?.$case != "classInfo") {
             toast.error("Invalid class name");
             return;
         }

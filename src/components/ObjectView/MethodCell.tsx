@@ -1,10 +1,11 @@
 import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
-import { ProtoMethodInfo } from "../../misc/proto/il2cpp";
+import { ProtoMethodInfo, ProtoTypeInfo } from "../../misc/proto/il2cpp";
 import {
     createUpdatingSignal,
     getGenerics,
+    getInstantiation,
     protoDataToString,
     stringToProtoData,
     stringToProtoType,
@@ -38,6 +39,29 @@ export function MethodCell(props: {
         equals: false,
     });
 
+    function updateGenerics(requireValid: boolean) {
+        const genericsData = genericInputs().map<[number, ProtoTypeInfo]>(
+            ([index, str]) => [
+                index,
+                stringToProtoType(str, requireValid) ??
+                    genericArgsMap().get(index)!,
+            ]
+        );
+        const generics = genericsData.reduce(
+            (map, [index, type]) => map.set(index, type),
+            new Map<number, ProtoTypeInfo>()
+        );
+        // set from base args, not latest args
+        setLatestArgs(
+            args().map<[string, ProtoTypeInfo]>(([s, type]) => [
+                s,
+                getInstantiation(type, generics),
+            ])
+        );
+        console.log(latestArgs());
+        return genericsData;
+    }
+
     const argInputs = createMemo(() =>
         args()
             .slice(0, -1)
@@ -45,17 +69,9 @@ export function MethodCell(props: {
     );
     const [result, resultLoading, runMethod] =
         useRequestAndResponsePacket<InvokeMethodResult>();
+
     function run() {
-        const genericsData = genericInputs().map((str) =>
-            stringToProtoType(str)
-        );
-        setLatestArgs((prev) => {
-            genericArgs().forEach(([, argsIndex], genericInputsIndex) => {
-                if (argsIndex != -1)
-                    prev[argsIndex][1] = genericsData[genericInputsIndex];
-            });
-            return prev;
-        });
+        const genericsData = updateGenerics(true);
         const argsData = argInputs().map((str, index) =>
             stringToProtoData(str, latestArgs()[index][1])
         );
@@ -64,31 +80,38 @@ export function MethodCell(props: {
             invokeMethod: {
                 methodId: props.method.id,
                 objectAddress: props.address,
-                generics: genericsData,
+                generics: genericsData.map(([, t]) => t),
                 args: argsData,
             },
         });
     }
 
-    const genericArgs = createMemo(() => {
+    const genericArgsMap = createMemo(() => {
         // unique on genericParameterIndex
-        const indices = new Set<number>();
-        const ret = args()
-            .map(([, t]) => t)
-            .flatMap((t, i) => getGenerics(i, t))
-            .filter(([t]) => {
-                if (t.Info?.$case != "genericInfo") {
-                    console.log("bad type", t, args());
-                    throw "Non generic ProtoTypeInfo in generics";
-                }
-                const index: number = t.Info.genericInfo.genericIndex;
-                if (indices.has(index)) return false;
-                indices.add(index);
-                return true;
-            });
-        return ret;
+        return (
+            args()
+                .map(([, t]) => t)
+                .flatMap((t) => getGenerics(t))
+                // eslint-disable-next-line solid/reactivity
+                .reduce((map, t) => {
+                    if (t.Info?.$case != "genericInfo") {
+                        console.log("bad type", t, args());
+                        throw "Non generic ProtoTypeInfo in generics";
+                    }
+                    const index = t.Info.genericInfo.genericIndex;
+                    return map.set(index, t);
+                }, new Map<number, ProtoTypeInfo>())
+        );
     });
-    const genericInputs = createMemo(() => genericArgs().map(() => ""));
+    const genericArgs = createMemo(() => Array.from(genericArgsMap().values()));
+    const genericInputs = createMemo(() =>
+        genericArgs().map<[number, string]>((t: ProtoTypeInfo) => [
+            t.Info?.$case == "genericInfo"
+                ? t.Info.genericInfo.genericIndex
+                : -1,
+            "",
+        ])
+    );
 
     createEffect(() => {
         const resultData = result();
@@ -103,19 +126,20 @@ export function MethodCell(props: {
         <span
             ref={element}
             class={`font-mono method overflow-visible ${styles.method} ${styles.gridElement}`}
-            classList={{[styles.highlighted]: props.highlight}}
+            classList={{ [styles.highlighted]: props.highlight }}
         >
             <text class="pr-1 pl-2 -mx-2">{props.method.name}</text>
             <Show when={genericArgs().length > 0}>
                 {"<"}
                 <For each={genericArgs()}>
-                    {([type], index) => (
+                    {(type, index) => (
                         <InputCell
                             input
                             type={type}
-                            // False positive
-                            // eslint-disable-next-line solid/reactivity
-                            onInput={(str) => (genericInputs()[index()] = str)}
+                            onInput={(str) =>
+                                (genericInputs()[index()][1] = str)
+                            }
+                            onFocusExit={() => updateGenerics(false)}
                         />
                     )}
                 </For>
@@ -128,8 +152,6 @@ export function MethodCell(props: {
                         input
                         placeholder={name}
                         type={type!}
-                        // False positive
-                        // eslint-disable-next-line solid/reactivity
                         onInput={(str) => (argInputs()[index()] = str)}
                     />
                 )}

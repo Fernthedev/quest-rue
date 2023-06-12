@@ -166,7 +166,7 @@ function stringToBytes(input: string, typeInfo: PacketJSON<ProtoTypeInfo>) {
                 }
                 case ProtoTypeInfo_Primitive.TYPE:
                     dataArray = ProtoTypeInfo.encode(
-                        stringToProtoType(input)
+                        stringToProtoType(input)!
                     ).finish();
                     break;
                 case ProtoTypeInfo_Primitive.PTR:
@@ -331,7 +331,7 @@ const primitiveStringMap = new TwoWayMap({
     unknown: ProtoTypeInfo_Primitive.UNKNOWN,
 });
 
-export function stringToProtoType(input: string): ProtoTypeInfo {
+export function stringToProtoType(input: string, requireValid = true): ProtoTypeInfo | undefined {
     const byRef = input.startsWith("ref ");
     if (byRef) input = input.slice(4).trim();
 
@@ -347,7 +347,7 @@ export function stringToProtoType(input: string): ProtoTypeInfo {
             Info: {
                 $case: "arrayInfo",
                 arrayInfo: {
-                    memberType: stringToProtoType(input),
+                    memberType: stringToProtoType(input)!,
                 },
             },
         });
@@ -370,7 +370,7 @@ export function stringToProtoType(input: string): ProtoTypeInfo {
             [clazz, generics] = clazz.split("<", 2);
             genericsTypes = generics
                 .split(",")
-                .map((s) => stringToProtoType(s.trim()));
+                .map((s) => stringToProtoType(s.trim())!);
         }
 
         return ProtoTypeInfo.create({
@@ -385,7 +385,9 @@ export function stringToProtoType(input: string): ProtoTypeInfo {
             },
         });
     }
-    throw "Invalid type input: " + input;
+    if (requireValid)
+        throw "Invalid type input: " + input;
+    return undefined;
 }
 
 function _protoClassToString(classInfo: ProtoClassInfo): string {
@@ -434,30 +436,69 @@ export function primitiveToString(
     return primitiveStringMap.getStr(primitive);
 }
 
-export function getGenerics(
-    index: number,
-    type?: PacketJSON<ProtoTypeInfo>
-): [ProtoTypeInfo, number][] {
+export function getGenerics(type?: PacketJSON<ProtoTypeInfo>): ProtoTypeInfo[] {
     if (type == undefined) return [];
 
     switch (type.Info?.$case) {
         case "classInfo":
             return (
-                type.Info.classInfo.generics?.flatMap((t) =>
-                    getGenerics(-1, t)
-                ) ?? []
+                type.Info.classInfo.generics?.flatMap((t) => getGenerics(t)) ??
+                []
             );
         case "arrayInfo":
-            return getGenerics(-1, type.Info.arrayInfo.memberType);
+            return getGenerics(type.Info.arrayInfo.memberType);
         case "structInfo":
             return (
                 type.Info.structInfo.clazz?.generics?.flatMap((t) =>
-                    getGenerics(-1, t)
+                    getGenerics(t)
                 ) ?? []
             );
         case "genericInfo":
-            return [[type, index]];
+            return [{ ...type, isByref: false }];
     }
-
     return [];
+}
+
+export function getInstantiation(
+    type: PacketJSON<ProtoTypeInfo>,
+    generics: Map<number, ProtoTypeInfo>
+): ProtoTypeInfo {
+    let ret = ProtoTypeInfo.fromJSON(ProtoTypeInfo.toJSON(type));
+
+    switch (ret.Info?.$case) {
+        case "classInfo":
+            ret.Info.classInfo.generics = ret.Info.classInfo.generics.map(
+                (g) =>
+                    generics.get(
+                        g.Info?.$case == "genericInfo"
+                            ? g.Info?.genericInfo?.genericIndex
+                            : -1
+                    ) ?? g
+            );
+            return ret;
+        case "arrayInfo":
+            ret.Info.arrayInfo.memberType = getInstantiation(
+                ret.Info.arrayInfo.memberType!,
+                generics
+            );
+            return ret;
+        case "structInfo":
+            if (ret.Info.structInfo.clazz) {
+                ret.Info.structInfo.clazz.generics =
+                    ret.Info.structInfo.clazz.generics.map(
+                        (g) =>
+                            generics.get(
+                                g.Info?.$case == "genericInfo"
+                                    ? g.Info?.genericInfo?.genericIndex
+                                    : -1
+                            ) ?? g
+                    );
+            }
+            return ret;
+        case "genericInfo":
+            ret = generics.get(ret.Info.genericInfo.genericIndex) ?? ret;
+            ret.isByref = type.isByref;
+            return ret;
+    }
+    return ret;
 }

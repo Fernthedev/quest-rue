@@ -1,13 +1,14 @@
-import { Show, createMemo } from "solid-js";
+import { Show, createMemo, onMount, createEffect, on } from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import { errorHandle, protoTypeToString } from "../misc/utils";
+import { errorHandle, protoTypeToString, uniqueNumber } from "../misc/utils";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 import { Select, createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
+import { createFocusSignal } from "@solid-primitives/active-element";
 
 export function ActionButton(props: {
     img: "refresh.svg" | "enter.svg" | "navigate.svg";
@@ -60,6 +61,7 @@ export default function InputCell(props: {
     onInput?: (s: string) => void;
     input?: boolean;
     output?: boolean;
+    onFocusExit?: () => void;
 }) {
     const { rawInput } = useSettings();
 
@@ -106,9 +108,34 @@ export default function InputCell(props: {
             protoTypeToString(props.type)
     );
 
+    const id = uniqueNumber().toString();
+    onMount(() => {
+        const el = document.getElementById(id);
+        if (el) el.title = detail();
+    });
+
     const navigate = useNavigate();
 
+    const isBool = createMemo(
+        () =>
+            props.type.Info?.$case == "primitiveInfo" &&
+            props.type.Info.primitiveInfo == ProtoTypeInfo_Primitive.BOOLEAN
+    );
+    const bools = createOptions(["true", "false"]);
+
     const opts = createOptions(["placeholder 1", "placeholder 2", "hi"]);
+
+    let target: HTMLInputElement | undefined;
+    const focused = createFocusSignal(() => target!);
+    createEffect(
+        on(
+            focused,
+            () => {
+                if (!focused()) props.onFocusExit?.();
+            },
+            { defer: true }
+        )
+    );
 
     return (
         <span
@@ -120,9 +147,14 @@ export default function InputCell(props: {
             }}
         >
             <Show
-                when={props.type.Info?.$case == "classInfo" && props.input && !rawInput()}
+                when={
+                    props.input &&
+                    ((props.type.Info?.$case == "classInfo" && !rawInput()) ||
+                        isBool())
+                }
                 fallback={
                     <input
+                        ref={target}
                         class={styles.input}
                         type={inputType()}
                         onInput={(e) => {
@@ -135,12 +167,16 @@ export default function InputCell(props: {
                     />
                 }
             >
-                <Select
-                    onInput={(str: string) => props.onInput?.(str)}
-                    initialValue={props.value ?? ""}
-                    placeholder={detail()}
-                    {...opts}
-                />
+                {/* large negative margin to prevent the <Select> from affecting the flex distribution */}
+                <span ref={target} class="w-full -mr-60">
+                    <Select
+                        onInput={(str: string) => props.onInput?.(str)}
+                        initialValue={props.value ?? ""}
+                        placeholder={detail()}
+                        id={id}
+                        {...(isBool() ? bools : opts)}
+                    />
+                </span>
             </Show>
             <Show when={props.type.Info?.$case == "classInfo" && props.output}>
                 <ActionButton
