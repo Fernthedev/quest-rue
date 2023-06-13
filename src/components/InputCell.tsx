@@ -109,10 +109,6 @@ export default function InputCell(props: {
     );
 
     const id = uniqueNumber().toString();
-    onMount(() => {
-        const el = document.getElementById(id);
-        if (el) el.title = detail();
-    });
 
     const navigate = useNavigate();
 
@@ -169,11 +165,12 @@ export default function InputCell(props: {
             >
                 {/* large negative margin to prevent the <Select> from affecting the flex distribution */}
                 <span ref={target} class="w-full -mr-60">
-                    <Select
+                    <BetterSelect
                         onInput={(str: string) => props.onInput?.(str)}
                         initialValue={props.value ?? ""}
                         placeholder={detail()}
                         id={id}
+                        title={id}
                         {...(isBool() ? bools : opts)}
                     />
                 </span>
@@ -193,4 +190,16 @@ export default function InputCell(props: {
             </Show>
         </span>
     );
+}
+
+type SelectProps = Parameters<typeof Select>[0];
+function BetterSelect(props: SelectProps & { title: string }) {
+    let e: HTMLInputElement | undefined;
+
+    createEffect(() => {
+        if (!e) return;
+        e.title = props.title;
+    });
+
+    return <Select {...props} ref={e} />;
 }
