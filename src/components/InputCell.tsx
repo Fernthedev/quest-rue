@@ -1,4 +1,4 @@
-import { Show, createMemo, onMount, createEffect, on } from "solid-js";
+import { Show, createMemo, createEffect, on } from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
@@ -112,9 +112,6 @@ export default function InputCell(props: {
             protoTypeToString(props.type)
     );
 
-    // hack to set the title (tooltip) for a solid-select input
-    const id = uniqueNumber().toString();
-
     // useNavigate needs to be out here instead of in a callback fn
     const navigate = useNavigate();
 
@@ -178,8 +175,7 @@ export default function InputCell(props: {
                         onInput={(str: string) => props.onInput?.(str)}
                         initialValue={props.value ?? ""}
                         placeholder={detail()}
-                        id={id}
-                        title={id}
+                        title={detail()}
                         {...(isBool() ? bools : opts)}
                     />
                 </span>
@@ -203,13 +199,12 @@ export default function InputCell(props: {
 }
 
 type SelectProps = Parameters<typeof Select>[0];
-function BetterSelect(props: SelectProps & { title: string }) {
-    let e: HTMLInputElement | undefined;
-
+function BetterSelect(props: SelectProps & { title?: string }) {
+    const uniqId = uniqueNumber().toString();
     createEffect(() => {
-        if (!e) return;
-        e.title = props.title;
+        const e = document.getElementById(uniqId);
+        if (e) e.title = props.title ?? "";
     });
 
-    return <Select {...props} ref={e} />;
+    return <Select {...props} id={uniqId} />;
 }
