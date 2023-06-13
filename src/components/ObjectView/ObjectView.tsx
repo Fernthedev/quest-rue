@@ -97,6 +97,7 @@ export default function ObjectView(props: {
     });
 
     const [search, setSearch] = createSignal("");
+    // we need to make sure the span calculation happens after the grid has updated its column number
     const [deferredColumnCount, setDeferredColumnCount] = createSignal(
         Number.parseInt(columnCount())
     );

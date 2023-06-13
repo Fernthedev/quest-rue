@@ -5,8 +5,6 @@ import { createLocalSignal } from "../misc/utils";
 import Toggle from "./form/Toggle";
 import SegmentedControl from "./form/SegmentedControl";
 
-// TODO: Store in local storage
-
 function makeSettingsContext(
     rawInput = false,
     darkMode = true,
@@ -23,6 +21,7 @@ function makeSettingsContext(
         () => columnCount.toString()
     );
 
+    // convert to and from strings
     return {
         rawInput: () => getRawInput() == "true",
         setRawInput: (val: boolean) => setRawInput(val ? "true" : "false"),

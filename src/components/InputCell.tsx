@@ -65,6 +65,7 @@ export default function InputCell(props: {
 }) {
     const { rawInput } = useSettings();
 
+    // restrict values for some data types
     const inputType = createMemo(() => {
         if (props.type.Info?.$case == "classInfo") return "number";
 
@@ -82,6 +83,7 @@ export default function InputCell(props: {
 
         return "text";
     });
+    // some data types need more space than others
     const minWidth = createMemo(() => {
         if (props.type.Info?.$case == "structInfo") return 150;
         if (props.type.Info?.$case == "arrayInfo") return 150;
@@ -100,18 +102,23 @@ export default function InputCell(props: {
 
         return 100;
     });
+    // and others would look ugly if too big
     const maxWidth = createMemo(() => minWidth() * 2);
 
+    // placeholder and title (which is a tooltip)
     const detail = createMemo(
         () =>
             (props.placeholder ? props.placeholder + ": " : "") +
             protoTypeToString(props.type)
     );
 
+    // hack to set the title (tooltip) for a solid-select input
     const id = uniqueNumber().toString();
 
+    // useNavigate needs to be out here instead of in a callback fn
     const navigate = useNavigate();
 
+    // true/false selector for booleans
     const isBool = createMemo(
         () =>
             props.type.Info?.$case == "primitiveInfo" &&
@@ -121,6 +128,7 @@ export default function InputCell(props: {
 
     const opts = createOptions(["placeholder 1", "placeholder 2", "hi"]);
 
+    // track loss of focus (defer since it starts as false)
     let target: HTMLInputElement | undefined;
     const focused = createFocusSignal(() => target!);
     createEffect(
@@ -144,6 +152,7 @@ export default function InputCell(props: {
         >
             <Show
                 when={
+                    // use a <Select> for booleans or classes with raw input off
                     props.input &&
                     ((props.type.Info?.$case == "classInfo" && !rawInput()) ||
                         isBool())
@@ -175,6 +184,7 @@ export default function InputCell(props: {
                     />
                 </span>
             </Show>
+            {/* selection button for classes only */}
             <Show when={props.type.Info?.$case == "classInfo" && props.output}>
                 <ActionButton
                     class="small-button"

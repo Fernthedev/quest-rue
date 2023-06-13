@@ -47,7 +47,6 @@ export function PropertyCell(props: {
         useRequestAndResponsePacket<InvokeMethodResult>();
     const [inputValue, setInputValue] = createSignal<string>("");
     function set() {
-        console.log("Prop setter")
         const protoData = stringToProtoData(inputValue(), props.prop.type!);
         requestSet({
             $case: "invokeMethod",

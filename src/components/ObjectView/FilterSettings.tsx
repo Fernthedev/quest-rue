@@ -29,17 +29,18 @@ export function FilterSettingsDropdown(
     let parent: HTMLDivElement | undefined;
     let child: HTMLDivElement | undefined;
 
+    // prevent menu from causing overflow in parent containers when hidden
     const callback = () => {
         if (parent && child) {
             const showing = getComputedStyle(child).visibility != "hidden";
             parent.style.overflow = showing ? "visible" : "hidden";
         }
     };
-
     onMount(() => document.addEventListener("click", callback));
     onCleanup(() => document.removeEventListener("click", callback));
 
     const propsFn = () => props;
+    // separate the properties for the <div>
     const divProps = createMemo(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { settings, setSettings, ...ret } = propsFn();

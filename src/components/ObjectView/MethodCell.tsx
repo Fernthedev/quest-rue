@@ -29,16 +29,19 @@ export function MethodCell(props: {
         if (element) props.spanFn(element, props.colSize);
     });
 
+    // args and return type
     const args = createMemo(() =>
         Object.entries(props.method.args).concat([
             ["ret", props.method.returnType!],
         ])
     );
 
+    // args with types updated to the latest inputs for generics
     const [latestArgs, setLatestArgs] = createUpdatingSignal(args, {
         equals: false,
     });
 
+    // set latestArgs types to the current generic inputs
     function updateGenerics(requireValid: boolean) {
         const genericsData = genericInputs().map<[number, ProtoTypeInfo]>(
             ([index, str]) => [
@@ -58,7 +61,6 @@ export function MethodCell(props: {
                 getInstantiation(type, generics),
             ])
         );
-        console.log(latestArgs());
         return genericsData;
     }
 
@@ -86,8 +88,8 @@ export function MethodCell(props: {
         });
     }
 
+    // genericParameterIndex -> ProtoTypeInfo
     const genericArgsMap = createMemo(() => {
-        // unique on genericParameterIndex
         return (
             args()
                 .map(([, t]) => t)
@@ -103,9 +105,12 @@ export function MethodCell(props: {
                 }, new Map<number, ProtoTypeInfo>())
         );
     });
+    // all generic ProtoTypeInfos in order
     const genericArgs = createMemo(() => Array.from(genericArgsMap().values()));
+    // [genericParameterIndex, input value][]
     const genericInputs = createMemo(() =>
         genericArgs().map<[number, string]>((t: ProtoTypeInfo) => [
+            // the case should always be this but typescript moment
             t.Info?.$case == "genericInfo"
                 ? t.Info.genericInfo.genericIndex
                 : -1,
@@ -146,6 +151,7 @@ export function MethodCell(props: {
                 {">"}
             </Show>
             {"("}
+            {/* make sure to use latestArgs so that it updates with generic types */}
             <For each={latestArgs().slice(0, -1)}>
                 {([name, type], index) => (
                     <InputCell

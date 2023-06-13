@@ -20,6 +20,7 @@ export function FieldCell(props: {
         if (element) props.spanFn(element, props.colSize);
     });
 
+    // field getting
     const [value, valueLoading, requestValue] =
         useRequestAndResponsePacket<GetFieldResult>();
     function refresh() {
@@ -32,7 +33,10 @@ export function FieldCell(props: {
             },
         });
     }
+    // get initial value (to be moved)
     onMount(() => refresh());
+
+    // field setting
     const [, valueSetting, requestSet] =
         useRequestAndResponsePacket<SetFieldResult>();
     function update(value: string) {

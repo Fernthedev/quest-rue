@@ -54,7 +54,7 @@ function GameObjectListItem(props: {
     const select = () => props.navigate(objectUrl(object()?.address));
 
     // [indent, hasChildren]
-    const treeData = createMemo(
+    const treeData = createMemo<[number, boolean]>(
         () => props.addressTreeData()?.get(props.item) ?? [0, false]
     );
 
@@ -63,7 +63,7 @@ function GameObjectListItem(props: {
             class={`${styles.listItem} ${
                 highlighted() ? styles.highlighted : ""
             }`}
-            style={{ "padding-left": `${(treeData()[0] as number) + 0.25}rem` }}
+            style={{ "padding-left": `${(treeData()[0]) + 0.25}rem` }}
             // role="listitem"
         >
             <Show when={treeData()[1]}>
@@ -91,6 +91,8 @@ function GameObjectListItem(props: {
     );
 }
 
+// finds if an object should show up in search results and provides info for highlights/expansion
+// if self matches, it should be highlighted, if a child matches (or child of child), it should be expanded
 function inSearch(
     object: GameObjectJSON,
     addressMap: Map<
@@ -179,12 +181,13 @@ export default function GameObjectList() {
         Map<GameObjectIndex, [number, boolean]> | undefined
     >(undefined, { equals: false });
 
+    // calculate the indentation and children status for all objects in search and return all the transform addresses
     const objects = createMemo(() => {
         const addresses = searchAddresses();
         const newTreeData = new Map<GameObjectIndex, [number, boolean]>();
         filteredRootObjects()?.forEach(([, [obj]]) =>
             addChildren(obj.transform!.address, newTreeData, addresses)
-        ) ?? [];
+        );
         setAddressTreeData(newTreeData);
         return Array.from(newTreeData.keys());
     });
@@ -276,6 +279,7 @@ export default function GameObjectList() {
     );
 }
 
+// button and menu to create a new game object
 function AddGameObject() {
     const [name, setName] = createSignal("");
     const [parent, setParent] = createSignal<bigint>();

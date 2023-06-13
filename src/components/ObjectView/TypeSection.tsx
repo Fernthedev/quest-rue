@@ -55,7 +55,7 @@ export function TypeSection(props: {
         requestAnimationFrame(() => setColSize(Number(column)));
     };
     const gridObserver = new ResizeObserver(recalculateSize);
-    // recalculate on changes to spanFn - aka "adaptive sizing" or "column count"
+    // recalculate on changes to spanFn, aka if column count changes
     createEffect(
         on(
             () => props.spanFn,
@@ -110,6 +110,7 @@ export function TypeSection(props: {
         return Array.from(ret);
     });
 
+    // methodName with overloads -> isExpanded
     const [expanded, setExpanded] = createUpdatingSignal(
         () =>
             groupedMethods().reduce((map, [name, methodInfos]) => {
@@ -120,6 +121,7 @@ export function TypeSection(props: {
         { equals: false }
     );
 
+    // adds the current class to statics, trimming unnecessary data
     const addStatic = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { parent, fields, properties, methods, ...smaller } =
@@ -130,11 +132,13 @@ export function TypeSection(props: {
 
     return (
         <div>
+            {/* header div */}
             <div
                 role="checkbox"
                 tabIndex={"0"}
                 aria-checked={collapsed()}
                 class={`${styles.expanded} ${styles.header}`}
+                // squares bottom corners when collapsed
                 classList={{ [styles.rounded]: !collapsed() }}
                 onKeyPress={() => setCollapsed(!collapsed())}
                 onClick={() => setCollapsed(!collapsed())}
@@ -143,6 +147,7 @@ export function TypeSection(props: {
                     {collapsed() ? "+" : "-"}
                 </text>
                 <text class="flex-1 min-w-0">{className()}</text>
+                {/* button to either add or remove as a static depending on which view it's in */}
                 <Show
                     when={props.statics}
                     fallback={
@@ -169,6 +174,7 @@ export function TypeSection(props: {
                 </Show>
             </div>
             <Show when={!collapsed()}>
+                {/* spacing above, all the grids have 1 margin below if they have elements */}
                 <div class="h-1" />
                 <div
                     class={`${styles.grid}`}
@@ -206,6 +212,10 @@ export function TypeSection(props: {
                     classList={{ "mb-1": groupedMethods().length > 0 }}
                 >
                     <For
+                        // convert the [methodName, methods with that name[]][] to
+                        // a list with plain methods if there is only one method per name,
+                        // an overload cell of that name if the overload isn't expanded,
+                        // or an overload cell followed by all the methods otherwise
                         each={groupedMethods()
                             .map(([name, methodInfos]) => {
                                 if (methodInfos.length == 1) {
@@ -228,6 +238,7 @@ export function TypeSection(props: {
                             .flat()}
                     >
                         {(item) => {
+                            // shenanigans to distinguish between methods and overloads
                             const overload = createMemo(
                                 () => item as OverloadInfo
                             );
@@ -273,6 +284,7 @@ export function TypeSection(props: {
                     </For>
                 </div>
             </Show>
+            {/* type section for parent type */}
             <Show when={props.details?.parent}>
                 {separator()}
                 <TypeSection
