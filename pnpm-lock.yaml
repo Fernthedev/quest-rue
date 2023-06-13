@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@solid-primitives/active-element':
+    specifier: ^2.0.15
+    version: 2.0.15(solid-js@1.7.6)
   '@solidjs/router':
     specifier: ^0.8.2
     version: 0.8.2(solid-js@1.7.6)
@@ -14,6 +17,9 @@ dependencies:
   '@tauri-apps/api':
     specifier: ^1.3.0
     version: 1.3.0
+  '@thisbeyond/solid-select':
+    specifier: ^0.14.0
+    version: 0.14.0(solid-js@1.7.6)
   daisyui:
     specifier: ^3.0.1
     version: 3.0.1(postcss@8.4.24)
@@ -814,6 +820,16 @@ packages:
       solid-js: 1.7.6
     dev: true
 
+  /@solid-primitives/active-element@2.0.15(solid-js@1.7.6):
+    resolution: {integrity: sha512-ShHOjC59Ng6QIMvKjWs8XpIksGmP93dZC0AmagCXEbWzkqQieAaiyCkEezuXOK3tiVke0HItRByv90eBn9QPXA==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      '@solid-primitives/event-listener': 2.2.13(solid-js@1.7.6)
+      '@solid-primitives/utils': 6.2.0(solid-js@1.7.6)
+      solid-js: 1.7.6
+    dev: false
+
   /@solid-primitives/bounds@0.0.111(solid-js@1.7.6):
     resolution: {integrity: sha512-9JdG6oAbTJr5cA2tLrVfchixpY37KOuFrjvw1pBSLf7PUbIN6c7AvvWhSI4Q5njvLwWWZG0NdcpCZ4VwXYst/g==}
     peerDependencies:
@@ -851,7 +867,6 @@ packages:
     dependencies:
       '@solid-primitives/utils': 6.2.0(solid-js@1.7.6)
       solid-js: 1.7.6
-    dev: true
 
   /@solid-primitives/keyboard@1.2.3(solid-js@1.7.6):
     resolution: {integrity: sha512-8EBUk1lARIXVhSs9H2t0rclCuyX1y56Kf9J8VVmlPDSh1L+nSIU0wcDGVeVy3HWG6W8pRoRD7kwlQvXhdW2LAQ==}
@@ -956,7 +971,6 @@ packages:
       solid-js: ^1.6.12
     dependencies:
       solid-js: 1.7.6
-    dev: true
 
   /@solidjs/meta@0.28.5(solid-js@1.7.6):
     resolution: {integrity: sha512-52luJR6hVNMA1K8Od5OD0d8WVz/svqZG4is8lrDimiUGxdia3DzuLF+pK56dnEzbNt9cA42qVFL134U9LkC9Gg==}
@@ -1087,6 +1101,14 @@ packages:
       '@tauri-apps/cli-win32-ia32-msvc': 1.3.1
       '@tauri-apps/cli-win32-x64-msvc': 1.3.1
     dev: true
+
+  /@thisbeyond/solid-select@0.14.0(solid-js@1.7.6):
+    resolution: {integrity: sha512-ecq4U3Vnc/nJbU84ARuPg2scNuYt994ljF5AmBlzuZW87x43mWiGJ5hEWufIJJMpDT6CcnCIx/xbrdDkaDEHQw==}
+    peerDependencies:
+      solid-js: ^1.5
+    dependencies:
+      solid-js: 1.7.6
+    dev: false
 
   /@types/babel__core@7.20.1:
     resolution: {integrity: sha512-aACu/U/omhdk15O4Nfb+fHgH/z3QsfQzpnvRZhYhThms83ZnAOZz7zZAWO7mn2yyNQaA4xTO8GLK3uqFU4bYYw==}
