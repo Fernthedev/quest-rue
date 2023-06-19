@@ -2,7 +2,7 @@ import { Icon } from "solid-heroicons";
 import Toggle from "../form/Toggle";
 import { SetStoreFunction, Store } from "solid-js/store";
 import { adjustmentsHorizontal } from "solid-heroicons/solid";
-import { JSX, createMemo, onCleanup, onMount } from "solid-js";
+import { JSX, createMemo, onCleanup, onMount, splitProps } from "solid-js";
 import {
     ProtoFieldInfo,
     ProtoMethodInfo,
@@ -39,17 +39,12 @@ export function FilterSettingsDropdown(
     onMount(() => document.addEventListener("click", callback));
     onCleanup(() => document.removeEventListener("click", callback));
 
-    const propsFn = () => props;
     // separate the properties for the <div>
-    const divProps = createMemo(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { settings, setSettings, ...ret } = propsFn();
-        return ret;
-    });
-
+    const [, divProps] = splitProps(props, ["settings", "setSettings"]);
+    
     return (
         <div
-            {...divProps()}
+            {...divProps}
             ref={parent}
             class={`dropdown dropdown-bottom dropdown-end flex-0 ${props.class}`}
             style={{ overflow: "hidden" }}
