@@ -134,7 +134,7 @@ export default function ObjectView(props: {
                     <span class="text-xl font-mono flex-0">{className()}</span>
                     <span class="text-lg flex-0 -mx-2">at</span>
                     <span class="text-xl font-mono flex-0">
-                        {props.selectedAddress?.toString()}
+                        0x{props.selectedAddress?.toString(16)}
                     </span>
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>
                     <span class="flex-1" />

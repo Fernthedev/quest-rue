@@ -9,6 +9,8 @@ import { useNavigate } from "@solidjs/router";
 import { Select, createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
 import { createFocusSignal } from "@solid-primitives/active-element";
+import { Match } from "solid-js";
+import { Switch } from "solid-js";
 
 export function ActionButton(props: {
     img: "refresh.svg" | "enter.svg" | "navigate.svg";

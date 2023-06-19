@@ -284,6 +284,7 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
     const ret = bytesToRealValue(bytes, typeInfo, 0);
     if (typeof ret === "string") return ret;
     if (typeof ret === "bigint") return ret.toString();
+    if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo.toString(16))
     // TODO:: better nested bigints
     return JSON.stringify(ret, (_, value) =>
         typeof value === "bigint" ? value.toString() : value
