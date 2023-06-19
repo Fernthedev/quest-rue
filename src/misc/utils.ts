@@ -282,12 +282,15 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
         data.data = new Uint8Array(typeInfo.size!);
     const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
     const ret = bytesToRealValue(bytes, typeInfo, 0);
+    if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo.toString(16))
     if (typeof ret === "string") return ret;
     if (typeof ret === "bigint") return ret.toString();
-    if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo.toString(16))
     // TODO:: better nested bigints
+    // TODO: Format pointers in structs as base16
     return JSON.stringify(ret, (_, value) =>
-        typeof value === "bigint" ? value.toString() : value
+        {
+            return typeof value === "bigint" ? value.toString() : value;
+        }
     );
 }
 
