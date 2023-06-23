@@ -13,7 +13,9 @@ export default function ConnectMenu() {
 
     // Utility for dismissing existing toasts
     // There might be a smarter way to do this
-    const [_connectingToast, setConnectingToast] = createSignal<string | undefined>();
+    const [_connectingToast, setConnectingToast] = createSignal<
+        string | undefined
+    >();
 
     if (redirect) {
         createEventEffect(getEvents().CONNECTED_EVENT, () => {
@@ -33,31 +35,36 @@ export default function ConnectMenu() {
         e.preventDefault();
 
         const promise = connect(ip(), Number.parseInt(port()));
-        const id = toast.loading(`Connecting to ${ip()}:${port()}`);
-        // Dismiss existing toast
-        setConnectingToast((prev) => {
-            if (!prev) return;
-            toast.dismiss(prev);
-
-            return id;
+        const id = toast.promise(promise, {
+            loading: `Connecting to ${ip()}:${port()}`,
+            success: "Connected successfully!",
+            error: "Failed to connect",
         });
+        // const id = toast.loading(`Connecting to ${ip()}:${port()}`);
+        // Dismiss existing toast
+        // setConnectingToast((prev) => {
+        //     if (!prev) return;
+        //     toast.dismiss(prev);
+
+        //     return id;
+        // });
 
         // Ignore error, toast is created in App.tsx
-        try {
-            const val = await promise;
-            console.log("Finished waiting");
-        } catch (e) {
-            /* ignore */
-        }
+        // try {
+        //     await promise;
+        //     console.log("Finished waiting");
+        // } catch (e) {
+        //     /* ignore */
+        // }
 
         // Dismiss toast
-        toast.dismiss(id);
+        // console.log("Dismissing toast")
+        // toast.dismiss(id);
     };
 
     return (
         <form
             onSubmit={(e) => submit(e)}
-
             class={`${styles.wrapper} absolute-centered`}
         >
             <text class="text-center">Enter your Quest IP Address</text>

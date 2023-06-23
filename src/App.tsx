@@ -13,9 +13,6 @@ export function objectUrl(address?: bigint) {
 }
 
 export default function App() {
-    createEventEffect(getEvents().CONNECTED_EVENT, () => {
-        toast.success("Connected successfully");
-    });
     createEventEffect(getEvents().DISCONNECTED_EVENT, () => {
         toast.error("Disconnected from Quest");
     });
