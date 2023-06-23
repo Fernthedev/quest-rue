@@ -1,5 +1,5 @@
 import { Icon } from "solid-heroicons";
-import { cog_6Tooth } from "solid-heroicons/solid";
+import { cog_6Tooth } from "solid-heroicons/outline";
 import { createContext, useContext, ParentProps } from "solid-js";
 import { createLocalSignal } from "../misc/utils";
 import Toggle from "./form/Toggle";

@@ -2,7 +2,7 @@ import { createEffect } from "solid-js";
 import styles from "./ObjectView.module.css";
 import { SpanFn } from "./ObjectView";
 import { Icon } from "solid-heroicons";
-import { minus, plus } from "solid-heroicons/solid";
+import { minus, plus } from "solid-heroicons/outline";
 
 export function OverloadCell(props: {
     name: string;

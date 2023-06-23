@@ -22,7 +22,7 @@ import { objectUrl } from "../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "./VirtualList";
 
-import { plus } from "solid-heroicons/solid";
+import { plus } from "solid-heroicons/outline";
 import { Icon } from "solid-heroicons";
 import { CreateGameObjectResult } from "../misc/proto/qrue";
 

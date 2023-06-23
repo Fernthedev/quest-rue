@@ -1,4 +1,4 @@
-import { Show, createMemo, createEffect, on } from "solid-js";
+import { Show, createMemo, createEffect, on, JSX } from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
@@ -9,11 +9,11 @@ import { useNavigate } from "@solidjs/router";
 import { Select, createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
 import { createFocusSignal } from "@solid-primitives/active-element";
-import { Match } from "solid-js";
-import { Switch } from "solid-js";
+import { Icon } from "solid-heroicons";
+import { bookmark, chevronDoubleRight } from "solid-heroicons/outline";
 
 export function ActionButton(props: {
-    img: "refresh.svg" | "enter.svg" | "navigate.svg";
+    img: { path: JSX.Element; outline: boolean; mini: boolean } | "enter.svg" | "refresh.svg";
     onClick: () => void;
     loading?: boolean;
     class?: string;
@@ -21,6 +21,13 @@ export function ActionButton(props: {
     tooltip?: string;
 }) {
     const classes = createMemo(() => props.class);
+
+    const icon = createMemo(() => typeof props.img == "string" ? (<img
+        src={`/src/assets/${props.img}`}
+        elementtiming={"Action"}
+        fetchpriority={"auto"}
+        alt="Action"
+    />) : <Icon path={props.img} />);
 
     return (
         <button
@@ -33,17 +40,7 @@ export function ActionButton(props: {
             onClick={() => errorHandle(() => props.onClick())}
             title={props.tooltip}
         >
-            <Show
-                when={props.loading}
-                fallback={
-                    <img
-                        src={"/src/assets/" + props.img}
-                        elementtiming={"Action"}
-                        fetchpriority={"auto"}
-                        alt="Action"
-                    />
-                }
-            >
+            <Show when={props.loading} fallback={icon()}>
                 <img
                     src="/src/assets/loading.svg"
                     class="animate-spin"
@@ -159,7 +156,7 @@ export default function InputCell(props: {
                 fallback={
                     <input
                         ref={target}
-                        class={styles.input}
+                        class="small-input w-0 flex-1"
                         type={inputType()}
                         onInput={(e) => {
                             props.onInput?.(e.target.value);
@@ -183,16 +180,18 @@ export default function InputCell(props: {
                 </span>
             </Show>
             {/* selection button for classes only */}
-            <Show when={props.type.Info?.$case == "classInfo" && props.output}>
+            <Show
+                when={
+                    props.type.Info?.$case == "classInfo" &&
+                    props.output &&
+                    props.value &&
+                    props.value != "0"
+                }
+            >
                 <ActionButton
                     class="small-button"
-                    img="navigate.svg"
-                    // False positive
-                    // eslint-disable-next-line solid/reactivity
-                    onClick={() => {
-                        if (props.value != "0")
-                            navigate(objectUrl(BigInt(props.value!)));
-                    }}
+                    img={chevronDoubleRight}
+                    onClick={() => navigate(objectUrl(BigInt(props.value!)))}
                     tooltip="Select as object"
                 />
             </Show>

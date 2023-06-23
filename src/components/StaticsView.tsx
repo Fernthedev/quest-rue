@@ -12,7 +12,7 @@ import { useSettings } from "./Settings";
 import { SpanFn, adaptiveSpanSize, separator } from "./ObjectView/ObjectView";
 import { TypeSection } from "./ObjectView/TypeSection";
 import { Icon } from "solid-heroicons";
-import { plus } from "solid-heroicons/solid";
+import { plus } from "solid-heroicons/outline";
 import { useRequestAndResponsePacket } from "../misc/events";
 import { GetClassDetailsResult } from "../misc/proto/qrue";
 import { protoTypeToString, stringToProtoType } from "../misc/utils";

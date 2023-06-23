@@ -1,8 +1,8 @@
 import { Icon } from "solid-heroicons";
 import Toggle from "../form/Toggle";
 import { SetStoreFunction, Store } from "solid-js/store";
-import { adjustmentsHorizontal } from "solid-heroicons/solid";
-import { JSX, createMemo, onCleanup, onMount, splitProps } from "solid-js";
+import { adjustmentsHorizontal } from "solid-heroicons/outline";
+import { JSX, onCleanup, onMount, splitProps } from "solid-js";
 import {
     ProtoFieldInfo,
     ProtoMethodInfo,
@@ -41,7 +41,7 @@ export function FilterSettingsDropdown(
 
     // separate the properties for the <div>
     const [, divProps] = splitProps(props, ["settings", "setSettings"]);
-    
+
     return (
         <div
             {...divProps}

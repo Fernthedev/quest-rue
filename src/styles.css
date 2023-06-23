@@ -99,6 +99,10 @@ input:not(.toggle):hover {
     border-bottom-right-radius: 0;
 }
 
+input:placeholder-shown {
+    text-overflow: ellipsis;
+}
+
 input,
 button {
     outline: none;
@@ -107,7 +111,8 @@ button {
 .small-button {
     padding: 2px;
 }
-.small-button > img {
+.small-button > img,
+.small-button > svg {
     width: 18px;
     height: 18px;
 }
@@ -117,6 +122,12 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+.small-input {
+    padding: 2px;
+    line-height: 16px;
+}
+
 .solid-select-container {
     width: 100%;
 }
