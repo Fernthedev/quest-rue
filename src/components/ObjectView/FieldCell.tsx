@@ -41,7 +41,7 @@ export function FieldCell(props: {
     const [, valueSetting, requestSet] =
         useRequestAndResponsePacket<SetFieldResult>();
     function update(value: string) {
-        console.log("Field setter")
+        console.log("Field setter");
         const protoData = stringToProtoData(value, props.field.type!);
         requestSet({
             $case: "setField",
@@ -59,8 +59,8 @@ export function FieldCell(props: {
         >
             {props.field.name + " = "}
             <InputCell
-                input
-                output
+                isInput
+                isOutput
                 onInput={update}
                 value={protoDataToString(value()?.value)}
                 type={props.field.type!}

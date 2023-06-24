@@ -94,8 +94,8 @@ export function PropertyCell(props: {
         >
             {props.prop.name + " = "}
             <InputCell
-                input={Boolean(props.prop.setterId)}
-                output
+                isInput={Boolean(props.prop.setterId)}
+                isOutput
                 onInput={setInputValue}
                 value={inputValue()}
                 type={props.prop.type!}

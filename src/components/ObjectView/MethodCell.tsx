@@ -139,7 +139,7 @@ export function MethodCell(props: {
                 <For each={genericArgs()}>
                     {(type, index) => (
                         <InputCell
-                            input
+                            isInput
                             type={type}
                             onInput={(str) =>
                                 (genericInputs()[index()][1] = str)
@@ -155,7 +155,7 @@ export function MethodCell(props: {
             <For each={latestArgs().slice(0, -1)}>
                 {([name, type], index) => (
                     <InputCell
-                        input
+                        isInput
                         placeholder={name}
                         type={type!}
                         onInput={(str) => (argInputs()[index()] = str)}
@@ -171,7 +171,7 @@ export function MethodCell(props: {
                 tooltip="Invoke"
             />
             <InputCell
-                output
+                isOutput
                 value={protoDataToString(result()?.result)}
                 type={latestArgs().at(-1)![1]}
             />

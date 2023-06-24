@@ -10,7 +10,12 @@ import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import { errorHandle, protoTypeToString, uniqueNumber } from "../misc/utils";
+import {
+    errorHandle,
+    isProtoTypeConvertibleTo,
+    protoTypeToString,
+    uniqueNumber,
+} from "../misc/utils";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 import { Select, createOptions } from "@thisbeyond/solid-select";
@@ -77,19 +82,20 @@ export default function InputCell(props: {
     value?: string;
     placeholder?: string;
     onInput?: (s: string) => void;
-    input?: boolean;
-    output?: boolean;
+    isInput?: boolean; // receives user input
+    isOutput?: boolean;
     onFocusExit?: () => void;
 }) {
     const { rawInput } = useSettings();
 
-    const hasValue = createMemo(() => props.value && props.value != "0");
+    // bool for when a field/prop has a non-null value
+    const hasValue = createMemo(() => props.value && props.value != "0x0");
 
     // either an input for a variable OR an output where a varaible name could be written
     // (variable names can be entered into outputs once they have a value instead of after saving it)
     const variableInput = createMemo(
         () =>
-            ((props.input && !rawInput()) || hasValue()) &&
+            ((props.isInput && !rawInput()) || hasValue()) &&
             props.type.Info?.$case == "classInfo"
     );
 
@@ -146,12 +152,16 @@ export default function InputCell(props: {
             props.type.Info?.$case == "primitiveInfo" &&
             props.type.Info.primitiveInfo == ProtoTypeInfo_Primitive.BOOLEAN
     );
-    const bools = createOptions(["true", "false"]);
 
-    // todo: filter variables by type
-    const opts = createMemo(() =>
-        createOptions(Object.values(variables).map(([name]) => name))
-    );
+    const opts = createMemo(() => {
+        if (isBool()) return createOptions(["true", "false"]);
+
+        const validEntries = Object.values(variables).filter(
+            ([_variable, type]) => isProtoTypeConvertibleTo(props.type, type)
+        );
+
+        return createOptions(validEntries.map(([name]) => name));
+    });
 
     // track loss of focus (defer since it starts as false)
     let target: HTMLInputElement | undefined;
@@ -171,7 +181,9 @@ export default function InputCell(props: {
     const onInput = (val: string) => {
         if (variableInput()) {
             setVarName(val);
-            if (props.input) props.onInput?.(variables[val][0]);
+            if (props.isInput) {
+                props.onInput?.(variables[val][0]);
+            }
         } else props.onInput?.(val);
     };
 
@@ -188,7 +200,7 @@ export default function InputCell(props: {
                 <Show
                     when={
                         // use a <Select> for inputting booleans or classes with raw input off
-                        props.input && (variableInput() || isBool())
+                        props.isInput && (variableInput() || isBool())
                     }
                     fallback={
                         <input
@@ -199,7 +211,7 @@ export default function InputCell(props: {
                                 onInput(e.target.value);
                             }}
                             value={props.value ?? ""}
-                            disabled={!variableInput() && !props.input}
+                            disabled={!variableInput() && !props.isInput}
                             placeholder={detail()}
                             title={detail()}
                         />
@@ -211,7 +223,7 @@ export default function InputCell(props: {
                             initialValue={props.value ?? ""}
                             placeholder={detail()}
                             title={detail()}
-                            {...(isBool() ? bools : opts())}
+                            {...opts()}
                         />
                     </span>
                 </Show>
@@ -220,7 +232,7 @@ export default function InputCell(props: {
             <Show
                 when={
                     props.type.Info?.$case == "classInfo" &&
-                    props.output &&
+                    props.isOutput &&
                     hasValue()
                 }
             >

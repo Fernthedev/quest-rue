@@ -4,6 +4,7 @@ import { PacketJSON } from "./events";
 import {
     ProtoClassInfo,
     ProtoDataPayload,
+    ProtoStructInfo,
     ProtoTypeInfo,
     ProtoTypeInfo_Primitive,
 } from "./proto/il2cpp";
@@ -282,7 +283,10 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
         data.data = new Uint8Array(typeInfo.size!);
     const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
     const ret = bytesToRealValue(bytes, typeInfo, 0);
-    if (data.typeInfo?.Info?.$case == "primitiveInfo" && data.typeInfo.Info.primitiveInfo == ProtoTypeInfo_Primitive.LONG)
+    if (
+        data.typeInfo?.Info?.$case == "primitiveInfo" &&
+        data.typeInfo.Info.primitiveInfo == ProtoTypeInfo_Primitive.LONG
+    )
         return ret.toString();
     if (typeof ret === "string") return ret;
     if (typeof ret === "bigint") return `0x${ret.toString(16)}`;
@@ -506,4 +510,76 @@ export function getInstantiation(
             return ret;
     }
     return ret;
+}
+
+export function isProtoTypeConvertibleTo(
+    targetType: ProtoTypeInfo,
+    typeToCheck: ProtoTypeInfo
+): boolean {
+    // TODO: Should we be more strict with primitives?
+    if (targetType.Info?.$case === "primitiveInfo") {
+        return typeToCheck.Info?.$case === "primitiveInfo";
+    }
+
+    if (targetType.Info?.$case === "arrayInfo") {
+        if (typeToCheck.Info?.$case !== "arrayInfo") return false;
+
+        const arrayT1 = targetType.Info.arrayInfo.memberType;
+        const arrayT2 = typeToCheck.Info.arrayInfo.memberType;
+
+        return (
+            arrayT1 === arrayT2 || // same
+            (arrayT1 !== undefined &&
+                arrayT2 !== undefined &&
+                isProtoTypeConvertibleTo(arrayT1, arrayT2))
+        );
+    }
+
+    if (targetType.Info?.$case === "structInfo") {
+        if (typeToCheck.Info?.$case !== "structInfo") return false;
+
+        const structT1 = targetType.Info.structInfo;
+        const structT2 = typeToCheck.Info.structInfo;
+
+        return protoClassMatch(structT1.clazz, structT2.clazz);
+    }
+    if (targetType.Info?.$case === "classInfo") {
+        if (typeToCheck.Info?.$case !== "classInfo") return false;
+
+        const clazzT1 = targetType.Info.classInfo;
+        const clazzT2 = typeToCheck.Info.classInfo;
+
+        return protoClassMatch(clazzT1, clazzT2);
+    }
+
+    return false;
+}
+
+function protoClassMatch(
+    clazzT1: ProtoClassInfo | undefined,
+    clazzT2: ProtoClassInfo | undefined
+) {
+    if (clazzT1 === clazzT2) return true;
+    if (typeof clazzT1 !== typeof clazzT2) return false;
+
+    const namespaceMatch = clazzT1?.namespaze === clazzT2?.namespaze;
+    const nameMatch = clazzT1?.clazz === clazzT2?.clazz;
+    const clazzGenericsMatch = protoGenericsMatch(clazzT1, clazzT2);
+
+    return namespaceMatch && nameMatch && clazzGenericsMatch;
+}
+
+function protoGenericsMatch(
+    clazzT1: ProtoClassInfo | undefined,
+    clazzT2: ProtoClassInfo | undefined
+) {
+    return (
+        clazzT1 !== undefined &&
+        clazzT2 !== undefined &&
+        clazzT1.generics.length === clazzT2.generics.length &&
+        clazzT1.generics.every((g1, i) => {
+            const g2 = clazzT2.generics[i];
+            return isProtoTypeConvertibleTo(g1, g2);
+        })
+    );
 }
