@@ -108,6 +108,12 @@ input:not(.toggle):hover {
     border-bottom-right-radius: 0;
 }
 
+input:not(.toggle).invalid {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: #d82f2f;
+}
+
 input:placeholder-shown {
     text-overflow: ellipsis;
 }

@@ -2,12 +2,20 @@ import { ProtoTypeInfo } from "../misc/proto/il2cpp";
 import { useNavigate } from "@solidjs/router";
 import { objectUrl } from "../App";
 import { ActionButton } from "./InputCell";
-import { For, Show, createMemo, createSignal } from "solid-js";
+import {
+    For,
+    Show,
+    createEffect,
+    createMemo,
+    createSignal,
+    on,
+} from "solid-js";
 import { protoTypeToString } from "../misc/utils";
 import { useSettings } from "./Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
 import { variables, setVariables } from "../misc/globals";
+import { createFocusSignal } from "@solid-primitives/active-element";
 
 function VariableCell(props: { addr: string }) {
     const { rawInput } = useSettings();
@@ -16,18 +24,45 @@ function VariableCell(props: { addr: string }) {
 
     const name = createMemo(() => variables[props.addr]?.[0] ?? "");
 
-    const updateName = (val: string) =>
-        addVariable(props.addr, variables[props.addr][1], val);
+    const [validName, setValidName] = createSignal(true);
+
+    // if the new name is unique, update it, otherwise enable invalid input css
+    const updateName = (val: string) => {
+        const isValid =
+            Object.entries(variables).find(
+                ([addr, [name]]) => addr != props.addr && name == val.trim()
+            ) == undefined;
+        setValidName(isValid);
+        if (isValid) updateVariable(props.addr, variables[props.addr][1], val);
+    };
+
+    // reset value to last valid name if focus is exited while it still has an invalid name
+    let input: HTMLInputElement | undefined;
+    const focused = createFocusSignal(() => input!);
+    createEffect(
+        on(
+            focused,
+            () => {
+                if (!focused() && !validName()) {
+                    setValidName(true);
+                    input!.value = name();
+                }
+            },
+            { defer: true }
+        )
+    );
 
     return (
         <span>
             <span class="flex gap-1">
                 <input
                     class="small-input flex-1 min-w-0"
+                    classList={{ invalid: !validName() }}
                     onInput={(e) => {
                         updateName(e.target.value);
                     }}
                     value={name()}
+                    ref={input}
                 />
                 <ActionButton
                     class="small-button min-w-max"
@@ -118,11 +153,35 @@ function removeVariable(address: string) {
     setVariables({ [address]: undefined! });
 }
 
+function firstFree(beginning = "Unnamed Variable", ignoreAddress?: string) {
+    const usedNums = Object.entries(variables).reduce((set, [addr, [name]]) => {
+        if (ignoreAddress && addr == ignoreAddress) return set;
+        if (name.startsWith(beginning)) {
+            const end = name.substring(beginning.length).trimStart();
+            if (!isNaN(Number(end))) set.add(Number(end));
+        }
+        return set;
+    }, new Set<number>());
+    let ret = 0;
+    for (let i = 0; ; i++) {
+        if (!usedNums.has(i)) {
+            ret = i;
+            break;
+        }
+    }
+    if (ret == 0) return beginning;
+    return `${beginning} ${ret}`;
+}
+
+function updateVariable(address: string, type: ProtoTypeInfo, name?: string) {
+    setVariables({ [address]: [firstFree(name, address), type] });
+}
+
 export function addVariable(
     address: string,
     type: ProtoTypeInfo,
     name?: string
 ) {
     if (!(address in variables))
-        setVariables({ [address]: [name ?? "Unnamed Variable", type] });
+        setVariables({ [address]: [firstFree(name), type] });
 }
