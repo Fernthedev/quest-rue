@@ -182,7 +182,9 @@ export default function InputCell(props: {
         if (variableInput()) {
             setVarName(val);
             if (props.isInput) {
-                props.onInput?.(variables[val][0]);
+                const addr = Object.entries(variables).find(([, [name]]) => name == val)?.[0]
+                if (addr)
+                    props.onInput?.(addr);
             }
         } else props.onInput?.(val);
     };
@@ -219,7 +221,7 @@ export default function InputCell(props: {
                 >
                     <span ref={target} class="w-full">
                         <BetterSelect
-                            onInput={onInput}
+                            onChange={onInput}
                             initialValue={props.value ?? ""}
                             placeholder={detail()}
                             title={detail()}
