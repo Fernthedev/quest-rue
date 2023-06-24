@@ -156,8 +156,8 @@ export default function InputCell(props: {
     const opts = createMemo(() => {
         if (isBool()) return createOptions(["true", "false"]);
 
-        const validEntries = Object.values(variables).filter(
-            ([_variable, type]) => isProtoTypeConvertibleTo(props.type, type)
+        const validEntries = Object.values(variables).filter(([, type]) =>
+            isProtoTypeConvertibleTo(props.type, type)
         );
 
         return createOptions(validEntries.map(([name]) => name));

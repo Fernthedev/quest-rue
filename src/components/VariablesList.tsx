@@ -123,5 +123,6 @@ export function addVariable(
     type: ProtoTypeInfo,
     name?: string
 ) {
-    setVariables({ [address]: [name ?? "Unnamed Variable", type] });
+    if (!(address in variables))
+        setVariables({ [address]: [name ?? "Unnamed Variable", type] });
 }

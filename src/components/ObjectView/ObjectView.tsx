@@ -9,6 +9,8 @@ import { useSettings } from "../Settings";
 import { ProtoClassDetails } from "../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
+import { ActionButton } from "../InputCell";
+import { addVariable } from "../VariablesList";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 
@@ -136,6 +138,27 @@ export default function ObjectView(props: {
                     <span class="text-xl font-mono flex-0">
                         0x{props.selectedAddress?.toString(16)}
                     </span>
+                    <ActionButton
+                        class="small-button"
+                        img="save.svg"
+                        onClick={() => {
+                            const details = classDetails();
+                            if (props.selectedAddress && details) {
+                                addVariable(
+                                    `0x${props.selectedAddress.toString(16)}`,
+                                    {
+                                        Info: {
+                                            $case: "classInfo",
+                                            classInfo: details.clazz!,
+                                        },
+                                        size: 8,
+                                        isByref: false,
+                                    }
+                                );
+                            }
+                        }}
+                        tooltip="Save variable"
+                    />
                     <span class="text-lg font-mono flex-0">{interfaces()}</span>
                     <span class="flex-1" />
                     <div class="whitespace-nowrap flex flex-row join">
