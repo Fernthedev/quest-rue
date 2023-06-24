@@ -1,4 +1,11 @@
-import { Show, createMemo, createEffect, on, JSX } from "solid-js";
+import {
+    Show,
+    createMemo,
+    createEffect,
+    on,
+    JSX,
+    createSignal,
+} from "solid-js";
 import { PacketJSON } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
@@ -10,10 +17,16 @@ import { Select, createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
 import { createFocusSignal } from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
-import { bookmark, chevronDoubleRight } from "solid-heroicons/outline";
+import { chevronDoubleRight } from "solid-heroicons/outline";
+import { addVariable } from "./VariablesList";
+import { variables } from "../misc/globals";
 
 export function ActionButton(props: {
-    img: { path: JSX.Element; outline: boolean; mini: boolean } | "enter.svg" | "refresh.svg";
+    img:
+        | { path: JSX.Element; outline: boolean; mini: boolean }
+        | "enter.svg"
+        | "save.svg"
+        | "refresh.svg";
     onClick: () => void;
     loading?: boolean;
     class?: string;
@@ -22,12 +35,18 @@ export function ActionButton(props: {
 }) {
     const classes = createMemo(() => props.class);
 
-    const icon = createMemo(() => typeof props.img == "string" ? (<img
-        src={`/src/assets/${props.img}`}
-        elementtiming={"Action"}
-        fetchpriority={"auto"}
-        alt="Action"
-    />) : <Icon path={props.img} />);
+    const icon = createMemo(() =>
+        typeof props.img == "string" ? (
+            <img
+                src={`/src/assets/${props.img}`}
+                elementtiming={"Action"}
+                fetchpriority={"auto"}
+                alt="Action"
+            />
+        ) : (
+            <Icon path={props.img} />
+        )
+    );
 
     return (
         <button
@@ -64,10 +83,18 @@ export default function InputCell(props: {
 }) {
     const { rawInput } = useSettings();
 
+    const hasValue = createMemo(() => props.value && props.value != "0");
+
+    // either an input for a variable OR an output where a varaible name could be written
+    // (variable names can be entered into outputs once they have a value instead of after saving it)
+    const variableInput = createMemo(
+        () =>
+            ((props.input && !rawInput()) || hasValue()) &&
+            props.type.Info?.$case == "classInfo"
+    );
+
     // restrict values for some data types
     const inputType = createMemo(() => {
-        if (props.type.Info?.$case == "classInfo") return "number";
-
         if (props.type.Info?.$case == "primitiveInfo") {
             switch (props.type.Info.primitiveInfo) {
                 case ProtoTypeInfo_Primitive.BYTE:
@@ -79,7 +106,6 @@ export default function InputCell(props: {
                     return "number";
             }
         }
-
         return "text";
     });
     // some data types need more space than others
@@ -122,7 +148,10 @@ export default function InputCell(props: {
     );
     const bools = createOptions(["true", "false"]);
 
-    const opts = createOptions(["placeholder 1", "placeholder 2", "hi"]);
+    // todo: filter variables by type
+    const opts = createMemo(() =>
+        createOptions(Object.values(variables).map(([name]) => name))
+    );
 
     // track loss of focus (defer since it starts as false)
     let target: HTMLInputElement | undefined;
@@ -137,6 +166,15 @@ export default function InputCell(props: {
         )
     );
 
+    const [varName, setVarName] = createSignal<string>();
+
+    const onInput = (val: string) => {
+        if (variableInput()) {
+            setVarName(val);
+            if (props.input) props.onInput?.(variables[val][0]);
+        } else props.onInput?.(val);
+    };
+
     return (
         <span
             class={styles.inputParent}
@@ -146,53 +184,61 @@ export default function InputCell(props: {
                 "max-width": `${maxWidth()}px`,
             }}
         >
-            <Show
-                when={
-                    // use a <Select> for booleans or classes with raw input off
-                    props.input &&
-                    ((props.type.Info?.$case == "classInfo" && !rawInput()) ||
-                        isBool())
-                }
-                fallback={
-                    <input
-                        ref={target}
-                        class="small-input w-0 flex-1"
-                        type={inputType()}
-                        onInput={(e) => {
-                            props.onInput?.(e.target.value);
-                        }}
-                        value={props.value ?? ""}
-                        disabled={!props.input}
-                        placeholder={detail()}
-                        title={detail()}
-                    />
-                }
-            >
-                {/* large negative margin to prevent the <Select> from affecting the flex distribution */}
-                <span ref={target} class="w-full -mr-60">
-                    <BetterSelect
-                        onInput={(str: string) => props.onInput?.(str)}
-                        initialValue={props.value ?? ""}
-                        placeholder={detail()}
-                        title={detail()}
-                        {...(isBool() ? bools : opts)}
-                    />
-                </span>
-            </Show>
+            <span class="flex flex-1 w-0 min-w-0">
+                <Show
+                    when={
+                        // use a <Select> for inputting booleans or classes with raw input off
+                        props.input && (variableInput() || isBool())
+                    }
+                    fallback={
+                        <input
+                            ref={target}
+                            class="small-input w-full"
+                            type={inputType()}
+                            onInput={(e) => {
+                                onInput(e.target.value);
+                            }}
+                            value={props.value ?? ""}
+                            disabled={!variableInput() && !props.input}
+                            placeholder={detail()}
+                            title={detail()}
+                        />
+                    }
+                >
+                    <span ref={target} class="w-full">
+                        <BetterSelect
+                            onInput={onInput}
+                            initialValue={props.value ?? ""}
+                            placeholder={detail()}
+                            title={detail()}
+                            {...(isBool() ? bools : opts())}
+                        />
+                    </span>
+                </Show>
+            </span>
             {/* selection button for classes only */}
             <Show
                 when={
                     props.type.Info?.$case == "classInfo" &&
                     props.output &&
-                    props.value &&
-                    props.value != "0"
+                    hasValue()
                 }
             >
+                <span class="w-1" />
                 <ActionButton
                     class="small-button"
                     img={chevronDoubleRight}
                     onClick={() => navigate(objectUrl(BigInt(props.value!)))}
                     tooltip="Select as object"
+                />
+                <span class="w-1" />
+                <ActionButton
+                    class="small-button"
+                    img="save.svg"
+                    onClick={() =>
+                        addVariable(props.value!, props.type, varName())
+                    }
+                    tooltip="Save variable"
                 />
             </Show>
         </span>

@@ -137,7 +137,7 @@ export function TypeSection(props: {
                 role="checkbox"
                 tabIndex={"0"}
                 aria-checked={collapsed()}
-                class={`${styles.expanded} ${styles.header}`}
+                class={`${styles.expanded} header`}
                 // squares bottom corners when collapsed
                 classList={{ [styles.rounded]: !collapsed() }}
                 onKeyPress={() => setCollapsed(!collapsed())}

@@ -11,6 +11,7 @@ import { StaticsView } from "../components/StaticsView";
 import { SettingsMenu } from "../components/Settings";
 import { createStore } from "solid-js/store";
 import { ProtoClassDetails } from "../misc/proto/il2cpp";
+import { VariablesList } from "../components/VariablesList";
 
 export default function SceneViewer() {
     const navigate = useNavigate();
@@ -33,6 +34,12 @@ export default function SceneViewer() {
     );
     return (
         <div class="flex w-full h-full">
+            <Resizable direction="right" size={275} minSize={150} maxSize={600}>
+                <div class={`${styles.variableList}`}>
+                    <VariablesList />
+                </div>
+            </Resizable>
+
             <div class="flex flex-col flex-1">
                 <div class="relative flex-1 overflow-auto">
                     <ObjectView

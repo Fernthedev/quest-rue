@@ -5,6 +5,14 @@
     height: 100%;
 }
 
+.variableList {
+    /* 700 */
+    @apply bg-zinc-400 dark:bg-zinc-800;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
 @media (max-width: 500px) {
     .gameObjectList {
         width: 100%;

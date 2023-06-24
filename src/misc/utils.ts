@@ -282,16 +282,15 @@ export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
         data.data = new Uint8Array(typeInfo.size!);
     const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
     const ret = bytesToRealValue(bytes, typeInfo, 0);
-    if (typeInfo.Info?.$case === "primitiveInfo" && typeInfo.Info.primitiveInfo.toString(16))
+    if (data.typeInfo?.Info?.$case == "primitiveInfo" && data.typeInfo.Info.primitiveInfo == ProtoTypeInfo_Primitive.LONG)
+        return ret.toString();
     if (typeof ret === "string") return ret;
-    if (typeof ret === "bigint") return ret.toString();
+    if (typeof ret === "bigint") return `0x${ret.toString(16)}`;
     // TODO:: better nested bigints
     // TODO: Format pointers in structs as base16
-    return JSON.stringify(ret, (_, value) =>
-        {
-            return typeof value === "bigint" ? value.toString() : value;
-        }
-    );
+    return JSON.stringify(ret, (_, value) => {
+        return typeof value === "bigint" ? value.toString() : value;
+    });
 }
 
 class TwoWayMap {
@@ -335,7 +334,10 @@ const primitiveStringMap = new TwoWayMap({
     unknown: ProtoTypeInfo_Primitive.UNKNOWN,
 });
 
-export function stringToProtoType(input: string, requireValid = true): ProtoTypeInfo | undefined {
+export function stringToProtoType(
+    input: string,
+    requireValid = true
+): ProtoTypeInfo | undefined {
     const byRef = input.startsWith("ref ");
     if (byRef) input = input.slice(4).trim();
 
@@ -389,8 +391,7 @@ export function stringToProtoType(input: string, requireValid = true): ProtoType
             },
         });
     }
-    if (requireValid)
-        throw "Invalid type input: " + input;
+    if (requireValid) throw "Invalid type input: " + input;
     return undefined;
 }
 
