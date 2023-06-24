@@ -268,7 +268,7 @@ namespace FieldUtils {
     ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
         LOG_DEBUG("Object {}", object ? object->klass->name : "null");
         LOG_DEBUG("Getting field {}", field->name);
-        LOG_DEBUG("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
+        LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
         size_t size = fieldTypeSize(field->type);
         char ret[size];
@@ -285,7 +285,7 @@ namespace FieldUtils {
 
     void Set(FieldInfo* field, Il2CppObject* object, ProtoDataPayload const& arg, bool derefReferences) {
         LOG_DEBUG("Setting field {}", field->name);
-        LOG_DEBUG("Field type: {} = {}", field->type->type, il2cpp_functions::type_get_name(field->type));
+        LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
         void* value = HandleType(arg.typeinfo(), (void*) arg.data().data(), arg.data().length());
 

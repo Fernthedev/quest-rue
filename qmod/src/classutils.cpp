@@ -160,7 +160,7 @@ bool ClassUtils::GetIsStatic(MethodInfo const* method) {
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     ProtoTypeInfo info;
     LOG_DEBUG("Getting type info {}", il2cpp_functions::type_get_name(type));
-    LOG_DEBUG("Type enum {}", type->type);
+    LOG_DEBUG("Type enum {}", (int) type->type);
 
     info.set_size(fieldTypeSize(type));
     LOG_DEBUG("Found size {}", info.size());

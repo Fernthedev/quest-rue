@@ -44,7 +44,7 @@ bool Manager::tryValidatePtr(const void* ptr) {
 void Manager::processMessage(const PacketWrapper& packet) {
     scheduleFunction([this, packet]{
         auto id = packet.queryresultid();
-        LOG_INFO("Processing packet type {}", packet.Packet_case());
+        LOG_INFO("Processing packet type {}", (int) packet.Packet_case());
         LOG_DEBUG("Packet is {}", packet.DebugString());
 
         switch(packet.Packet_case()) {
