@@ -1,18 +1,18 @@
 .list {
-    @apply font-sans overflow-ellipsis text-lg text-left whitespace-nowrap
+  @apply font-sans overflow-ellipsis text-lg text-left whitespace-nowrap
         mx-auto;
-    /* divide-y-2 divide-x-2 divide-blue-200 dark:divide-zinc-600  */
+  /* divide-y-2 divide-x-2 divide-blue-200 dark:divide-zinc-600  */
 }
 .list > div {
-    @apply divide-y-2 divide-blue-200 dark:divide-zinc-600;
+  @apply divide-y-2 divide-blue-200 dark:divide-zinc-600;
 }
 .listItem {
-    cursor: pointer;
-    height: 27px;
-    width: 100%;
-    display: flex;
+  cursor: pointer;
+  height: 27px;
+  width: 100%;
+  display: flex;
 }
 .highlighted {
-    @apply bg-zinc-300 dark:bg-zinc-900;
-    font-weight: bolder;
+  @apply bg-zinc-300 dark:bg-zinc-900;
+  font-weight: bolder;
 }

@@ -1,86 +1,86 @@
 .expanded {
-    margin-left: -0.5rem;
-    width: calc(100% + 1rem);
+  margin-left: -0.5rem;
+  width: calc(100% + 1rem);
 }
 
 .separator {
-    @apply bg-zinc-700 dark:bg-zinc-500;
+  @apply bg-zinc-700 dark:bg-zinc-500;
 
-    /* margin: 5px 0 5px -0.5rem; */
-    height: 2px;
+  /* margin: 5px 0 5px -0.5rem; */
+  height: 2px;
 }
 
 .rounded {
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .grid {
-    display: grid;
-    justify-items: stretch;
+  display: grid;
+  justify-items: stretch;
 
-    /* grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); */
-    grid-template-columns: repeat(var(--type-grid-columns), minmax(0, 1fr));
-    gap: 4px;
+  /* grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); */
+  grid-template-columns: repeat(var(--type-grid-columns), minmax(0, 1fr));
+  gap: 4px;
 }
 
 .gridElement {
-    min-width: min-content;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    gap: 0.25rem;
-    border-left: 4px solid;
-    padding-left: 6px;
+  min-width: min-content;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 0.25rem;
+  border-left: 4px solid;
+  padding-left: 6px;
 }
 .gridElement > :not(input) {
-    flex-grow: 0;
-    width: max-content;
+  flex-grow: 0;
+  width: max-content;
 }
 
 .field {
-    @apply border-l-orange-400;
-    --tw-border-opacity: 0.4;
+  @apply border-l-orange-400;
+  --tw-border-opacity: 0.4;
 }
 .method {
-    @apply border-l-fuchsia-500;
-    --tw-border-opacity: 0.4;
+  @apply border-l-fuchsia-500;
+  --tw-border-opacity: 0.4;
 }
 .method {
-    @apply border-l-fuchsia-500;
-    --tw-border-opacity: 0.4;
+  @apply border-l-fuchsia-500;
+  --tw-border-opacity: 0.4;
 }
 .overload {
-    @apply border-l-indigo-500;
-    --tw-border-opacity: 0.4;
+  @apply border-l-indigo-500;
+  --tw-border-opacity: 0.4;
 }
 
 .propertyGetter {
-    @apply border-l-green-500;
-    --tw-border-opacity: 0.4;
+  @apply border-l-green-500;
+  --tw-border-opacity: 0.4;
 }
 .propertySetter {
-    @apply border-l-sky-600;
-    --tw-border-opacity: 0.4;
+  @apply border-l-sky-600;
+  --tw-border-opacity: 0.4;
 }
 
 .propertyBoth {
-    border-left: none;
-    --tw-border-opacity: 0.4;
+  border-left: none;
+  --tw-border-opacity: 0.4;
 }
 .propertyBoth::before {
-    content: "";
-    width: 0;
-    height: 100%;
-    margin-left: -6px; /* undo .gridElement padding */
-    margin-right: 1px; /* add to gap to equal padding */
+  content: "";
+  width: 0;
+  height: 100%;
+  margin-left: -6px; /* undo .gridElement padding */
+  margin-right: 1px; /* add to gap to equal padding */
 
-    @apply from-green-500 to-sky-600;
-    border-image: linear-gradient(to bottom, var(--tw-gradient-stops)) 1;
-    border-left: 4px solid;
-    opacity: var(--tw-border-opacity);
+  @apply from-green-500 to-sky-600;
+  border-image: linear-gradient(to bottom, var(--tw-gradient-stops)) 1;
+  border-left: 4px solid;
+  opacity: var(--tw-border-opacity);
 }
 
 .highlighted {
-    --tw-border-opacity: 0.9;
+  --tw-border-opacity: 0.9;
 }

@@ -9,38 +9,31 @@ import { createEventEffect, getEvents } from "./misc/events";
 import { SettingsProvider } from "./components/Settings";
 
 export function objectUrl(address?: bigint) {
-    return `/scene/${address ?? ""}`;
+  return `/scene/${address ?? ""}`;
 }
 
 export default function App() {
-    createEventEffect(getEvents().DISCONNECTED_EVENT, () => {
-        toast.error("Disconnected from Quest");
-    });
-    createEventEffect(getEvents().ERROR_EVENT, (e) => {
-        toast.error(`Suffered error: ${e}`);
-    });
+  createEventEffect(getEvents().DISCONNECTED_EVENT, () => {
+    toast.error("Disconnected from Quest");
+  });
+  createEventEffect(getEvents().ERROR_EVENT, (e) => {
+    toast.error(`Suffered error: ${e}`);
+  });
 
-    return (
-        <div class="w-screen h-screen overflow-hidden">
-            <SettingsProvider>
-                <Router>
-                    <Routes>
-                        <Route
-                            path="/scene/:address?"
-                            component={SceneViewer}
-                        />
-                        <Route
-                            path={"/"}
-                            component={ConnectMenu}
-                            data={() => true}
-                        />{" "}
-                        {/* redirect */}
-                    </Routes>
-                </Router>
-                <div>
-                    <Toaster />
-                </div>
-            </SettingsProvider>
+  return (
+    <div class="w-screen h-screen overflow-hidden">
+      <SettingsProvider>
+        <Router>
+          <Routes>
+            <Route path="/scene/:address?" component={SceneViewer} />
+            <Route path={"/"} component={ConnectMenu} data={() => true} />{" "}
+            {/* redirect */}
+          </Routes>
+        </Router>
+        <div>
+          <Toaster />
         </div>
-    );
+      </SettingsProvider>
+    </div>
+  );
 }

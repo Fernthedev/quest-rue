@@ -1,9 +1,9 @@
 .wrapper {
-    @apply bg-zinc-400 dark:bg-zinc-800;
+  @apply bg-zinc-400 dark:bg-zinc-800;
 
-    display: flex;
-    flex-flow: column wrap;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 8px;
+  display: flex;
+  flex-flow: column wrap;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
 }

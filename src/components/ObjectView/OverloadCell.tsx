@@ -5,35 +5,32 @@ import { Icon } from "solid-heroicons";
 import { minus, plus } from "solid-heroicons/outline";
 
 export function OverloadCell(props: {
-    name: string;
-    count: number;
-    colSize: number;
-    spanFn: SpanFn;
-    toggleFn: () => void;
-    expanded: boolean;
+  name: string;
+  count: number;
+  colSize: number;
+  spanFn: SpanFn;
+  toggleFn: () => void;
+  expanded: boolean;
 }) {
-    let element: HTMLDivElement | undefined;
-    createEffect(() => {
-        if (element) props.spanFn(element, props.colSize);
-    });
+  let element: HTMLDivElement | undefined;
+  createEffect(() => {
+    if (element) props.spanFn(element, props.colSize);
+  });
 
-    return (
-        <span
-            ref={element}
-            class={`font-mono method ${styles.overload} ${styles.gridElement}`}
-            classList={{[styles.highlighted]: props.expanded}}
-        >
-            <Icon
-                path={props.expanded ? minus : plus}
-                class="w-4 h-4 antialiased"
-            />
-            <button
-                aria-label={`${props.name} overloads`}
-                onClick={() => props.toggleFn()}
-                class="py-0 px-1 -m-px"
-            >
-                {`${props.name}(${props.count} overloads)`}
-            </button>
-        </span>
-    );
+  return (
+    <span
+      ref={element}
+      class={`font-mono method ${styles.overload} ${styles.gridElement}`}
+      classList={{ [styles.highlighted]: props.expanded }}
+    >
+      <Icon path={props.expanded ? minus : plus} class="w-4 h-4 antialiased" />
+      <button
+        aria-label={`${props.name} overloads`}
+        onClick={() => props.toggleFn()}
+        class="py-0 px-1 -m-px"
+      >
+        {`${props.name}(${props.count} overloads)`}
+      </button>
+    </span>
+  );
 }

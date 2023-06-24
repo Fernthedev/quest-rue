@@ -1,15 +1,15 @@
 .container {
-    overflow: auto;
-    height: 100%;
+  overflow: auto;
+  height: 100%;
 }
 
 .scroller {
-    width: 100%;
-    min-width: max-content;
+  width: 100%;
+  min-width: max-content;
 }
 
 .itemContainer {
-    width: 100%;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
+  width: 100%;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }

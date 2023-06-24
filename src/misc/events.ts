@@ -14,21 +14,21 @@ export type PacketWrapperCustomJSON = PacketJSON<PacketWrapper>;
 let Events: ReturnType<typeof buildEvents> | undefined = undefined;
 
 export function initializeEvents() {
-    Events ??= buildEvents();
+  Events ??= buildEvents();
 }
 
 export function getEvents() {
-    return Events!;
+  return Events!;
 }
 
 function buildEvents() {
-    return {
-        // PACKET EVENTS
-        ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
-        CONNECTED_EVENT: new EventListener<void>(),
-        DISCONNECTED_EVENT: new EventListener<CloseEvent>(),
-        ERROR_EVENT: new EventListener<Event>(),
-    } as const;
+  return {
+    // PACKET EVENTS
+    ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
+    CONNECTED_EVENT: new EventListener<void>(),
+    DISCONNECTED_EVENT: new EventListener<CloseEvent>(),
+    ERROR_EVENT: new EventListener<Event>(),
+  } as const;
 }
 
 export type PacketTypes = PacketWrapper["Packet"];
@@ -45,71 +45,70 @@ export type PacketJSON<T> = T; // ReturnType<T["toObject"]>;
  * @param allowUnexpectedPackets Listen to packets with any id without having to initiate a request
  */
 export function useRequestAndResponsePacket<
-    TTResponse,
-    TRequest extends PacketTypes = PacketTypes,
-    TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
+  TTResponse,
+  TRequest extends PacketTypes = PacketTypes,
+  TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
 >(
-    once = false,
-    allowConcurrent = false,
-    allowUnexpectedPackets = false
+  once = false,
+  allowConcurrent = false,
+  allowUnexpectedPackets = false
 ): [Accessor<TResponse | undefined>, Accessor<boolean>, (p: TRequest) => void] {
-    const [val, setValue] = createSignal<TResponse | undefined>(undefined);
-    const [loading, setLoading] = createSignal<boolean>(false);
+  const [val, setValue] = createSignal<TResponse | undefined>(undefined);
+  const [loading, setLoading] = createSignal<boolean>(false);
 
-    // We use reference here since it's not necessary to call it "state", that is handled by `val`
-    const expectedQueryID: { value: bigint | undefined } = {
-        value: undefined,
-    };
+  // We use reference here since it's not necessary to call it "state", that is handled by `val`
+  const expectedQueryID: { value: bigint | undefined } = {
+    value: undefined,
+  };
 
-    // Create the listener
-    // onMount is likely not necessary
-    const listener = getEvents().ALL_PACKETS;
-    const callback = listener.addListener((union) => {
-        if (
-            allowUnexpectedPackets ||
-            (expectedQueryID.value &&
-                union.queryResultId === expectedQueryID.value)
-        ) {
-            // it's guaranteed to exist ok
-            const packet: TResponse = (union.Packet as Record<string, unknown>)[
-                union.Packet!.$case!
-            ]! as unknown as TResponse;
+  // Create the listener
+  // onMount is likely not necessary
+  const listener = getEvents().ALL_PACKETS;
+  const callback = listener.addListener((union) => {
+    if (
+      allowUnexpectedPackets ||
+      (expectedQueryID.value && union.queryResultId === expectedQueryID.value)
+    ) {
+      // it's guaranteed to exist ok
+      const packet: TResponse = (union.Packet as Record<string, unknown>)[
+        union.Packet!.$case!
+      ]! as unknown as TResponse;
 
-            if (!packet) throw "Packet is undefined why!";
+      if (!packet) throw "Packet is undefined why!";
 
-            if (union.Packet?.$case == "inputError") {
-                toast.error(`Error in input: ${union.Packet.inputError}`);
-                setLoading(false);
-            } else {
-                batch(() => {
-                    setValue(() => packet);
-                    setLoading(false);
-                });
-            }
+      if (union.Packet?.$case == "inputError") {
+        toast.error(`Error in input: ${union.Packet.inputError}`);
+        setLoading(false);
+      } else {
+        batch(() => {
+          setValue(() => packet);
+          setLoading(false);
+        });
+      }
 
-            expectedQueryID.value = undefined;
-        }
-    }, once);
+      expectedQueryID.value = undefined;
+    }
+  }, once);
 
-    onCleanup(() => {
-        listener.removeListener(callback);
-    });
+  onCleanup(() => {
+    listener.removeListener(callback);
+  });
 
-    // Return the state and a callback for invoking reads
+  // Return the state and a callback for invoking reads
 
-    const refetch = (p: TRequest) => {
-        if (!untrack(loading) || allowConcurrent) {
-            const randomId = uniqueBigNumber();
-            expectedQueryID.value = randomId;
-            setLoading(true);
-            sendPacket({
-                queryResultId: randomId,
-                Packet: p,
-            });
-        }
-    };
+  const refetch = (p: TRequest) => {
+    if (!untrack(loading) || allowConcurrent) {
+      const randomId = uniqueBigNumber();
+      expectedQueryID.value = randomId;
+      setLoading(true);
+      sendPacket({
+        queryResultId: randomId,
+        Packet: p,
+      });
+    }
+  };
 
-    return [val, loading, refetch];
+  return [val, loading, refetch];
 }
 
 // TODO: An experiment, didn't work out. Maybe retry at a later date.
@@ -177,74 +176,74 @@ export function useRequestAndResponsePacket<
  * @returns The current state value
  */
 export function createSignalEvent<T>(
-    listener: EventListener<T>,
-    once = false
+  listener: EventListener<T>,
+  once = false
 ): Accessor<T | undefined> {
-    const [val, setValue] = createSignal<T | undefined>(undefined);
+  const [val, setValue] = createSignal<T | undefined>(undefined);
 
-    const callback = listener.addListener((v) => {
-        setValue(() => v);
-    }, once);
+  const callback = listener.addListener((v) => {
+    setValue(() => v);
+  }, once);
 
-    onCleanup(() => {
-        listener.removeListener(callback);
-    });
+  onCleanup(() => {
+    listener.removeListener(callback);
+  });
 
-    return val;
+  return val;
 }
 
 export function createEventEffect<T>(
-    listener: EventListener<T>,
-    callback: (value: T) => void | Promise<void>,
-    once = false
+  listener: EventListener<T>,
+  callback: (value: T) => void | Promise<void>,
+  once = false
 ) {
-    const id = listener.addListener(callback, once);
+  const id = listener.addListener(callback, once);
 
-    onCleanup(() => {
-        listener.removeListener(id);
-    });
+  onCleanup(() => {
+    listener.removeListener(id);
+  });
 }
 
 export type ListenerCallbackFunction<T> = (value: T) => void;
 
 export class EventListener<T> {
-    // callback/wrapper, callback id
-    private otherListeners: (
-        | [ListenerCallbackFunction<T>, ListenerCallbackFunction<T> | undefined]
-        | undefined
-    )[] = [];
+  // callback/wrapper, callback id
+  private otherListeners: (
+    | [ListenerCallbackFunction<T>, ListenerCallbackFunction<T> | undefined]
+    | undefined
+  )[] = [];
 
-    addListener(
-        callback: ListenerCallbackFunction<T>,
-        once = false
-    ): ListenerCallbackFunction<T> {
-        const index = this.otherListeners.length++;
-        if (once) {
-            const onceWrapper = (v: T) => {
-                callback(v);
-                this.removeListener(callback);
-            };
+  addListener(
+    callback: ListenerCallbackFunction<T>,
+    once = false
+  ): ListenerCallbackFunction<T> {
+    const index = this.otherListeners.length++;
+    if (once) {
+      const onceWrapper = (v: T) => {
+        callback(v);
+        this.removeListener(callback);
+      };
 
-            this.otherListeners[index] = [onceWrapper, callback];
-            return onceWrapper;
-        }
-
-        this.otherListeners[index] = [callback, undefined];
-        return callback;
+      this.otherListeners[index] = [onceWrapper, callback];
+      return onceWrapper;
     }
 
-    removeListener(callback: ListenerCallbackFunction<T>) {
-        const index = this.otherListeners.findIndex(
-            (e) => e && (e[0] === callback || (e[1] && e[1] === callback))
-        );
-        if (index >= 0) this.otherListeners[index] = undefined;
-    }
+    this.otherListeners[index] = [callback, undefined];
+    return callback;
+  }
 
-    invoke(value: T) {
-        this.otherListeners.forEach((callback) => {
-            if (!callback) return;
+  removeListener(callback: ListenerCallbackFunction<T>) {
+    const index = this.otherListeners.findIndex(
+      (e) => e && (e[0] === callback || (e[1] && e[1] === callback))
+    );
+    if (index >= 0) this.otherListeners[index] = undefined;
+  }
 
-            callback[0](value);
-        });
-    }
+  invoke(value: T) {
+    this.otherListeners.forEach((callback) => {
+      if (!callback) return;
+
+      callback[0](value);
+    });
+  }
 }

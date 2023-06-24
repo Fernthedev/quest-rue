@@ -50,9 +50,7 @@ export interface ProtoGameObject {
   name: string;
   active: boolean;
   layer: number;
-  scene:
-    | ProtoScene
-    | undefined;
+  scene: ProtoScene | undefined;
   /** optional */
   tag?: string | undefined;
   transform: ProtoTransform | undefined;
@@ -69,7 +67,10 @@ function createBaseProtoVector2(): ProtoVector2 {
 }
 
 export const ProtoVector2 = {
-  encode(message: ProtoVector2, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoVector2,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.x !== 0) {
       writer.uint32(13).float(message.x);
     }
@@ -80,7 +81,8 @@ export const ProtoVector2 = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoVector2 {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoVector2();
     while (reader.pos < end) {
@@ -110,7 +112,10 @@ export const ProtoVector2 = {
   },
 
   fromJSON(object: any): ProtoVector2 {
-    return { x: isSet(object.x) ? Number(object.x) : 0, y: isSet(object.y) ? Number(object.y) : 0 };
+    return {
+      x: isSet(object.x) ? Number(object.x) : 0,
+      y: isSet(object.y) ? Number(object.y) : 0,
+    };
   },
 
   toJSON(message: ProtoVector2): unknown {
@@ -120,11 +125,15 @@ export const ProtoVector2 = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoVector2>, I>>(base?: I): ProtoVector2 {
+  create<I extends Exact<DeepPartial<ProtoVector2>, I>>(
+    base?: I
+  ): ProtoVector2 {
     return ProtoVector2.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoVector2>, I>>(object: I): ProtoVector2 {
+  fromPartial<I extends Exact<DeepPartial<ProtoVector2>, I>>(
+    object: I
+  ): ProtoVector2 {
     const message = createBaseProtoVector2();
     message.x = object.x ?? 0;
     message.y = object.y ?? 0;
@@ -137,7 +146,10 @@ function createBaseProtoVector3(): ProtoVector3 {
 }
 
 export const ProtoVector3 = {
-  encode(message: ProtoVector3, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoVector3,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.x !== 0) {
       writer.uint32(13).float(message.x);
     }
@@ -151,7 +163,8 @@ export const ProtoVector3 = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoVector3 {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoVector3();
     while (reader.pos < end) {
@@ -203,11 +216,15 @@ export const ProtoVector3 = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoVector3>, I>>(base?: I): ProtoVector3 {
+  create<I extends Exact<DeepPartial<ProtoVector3>, I>>(
+    base?: I
+  ): ProtoVector3 {
     return ProtoVector3.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoVector3>, I>>(object: I): ProtoVector3 {
+  fromPartial<I extends Exact<DeepPartial<ProtoVector3>, I>>(
+    object: I
+  ): ProtoVector3 {
     const message = createBaseProtoVector3();
     message.x = object.x ?? 0;
     message.y = object.y ?? 0;
@@ -221,7 +238,10 @@ function createBaseProtoVector4(): ProtoVector4 {
 }
 
 export const ProtoVector4 = {
-  encode(message: ProtoVector4, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoVector4,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.x !== 0) {
       writer.uint32(13).float(message.x);
     }
@@ -238,7 +258,8 @@ export const ProtoVector4 = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoVector4 {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoVector4();
     while (reader.pos < end) {
@@ -299,11 +320,15 @@ export const ProtoVector4 = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoVector4>, I>>(base?: I): ProtoVector4 {
+  create<I extends Exact<DeepPartial<ProtoVector4>, I>>(
+    base?: I
+  ): ProtoVector4 {
     return ProtoVector4.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoVector4>, I>>(object: I): ProtoVector4 {
+  fromPartial<I extends Exact<DeepPartial<ProtoVector4>, I>>(
+    object: I
+  ): ProtoVector4 {
     const message = createBaseProtoVector4();
     message.x = object.x ?? 0;
     message.y = object.y ?? 0;
@@ -318,7 +343,10 @@ function createBaseProtoObject(): ProtoObject {
 }
 
 export const ProtoObject = {
-  encode(message: ProtoObject, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoObject,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -326,13 +354,17 @@ export const ProtoObject = {
       writer.uint32(18).string(message.name);
     }
     if (message.classInfo !== undefined) {
-      ProtoClassInfo.encode(message.classInfo, writer.uint32(26).fork()).ldelim();
+      ProtoClassInfo.encode(
+        message.classInfo,
+        writer.uint32(26).fork()
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoObject {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoObject();
     while (reader.pos < end) {
@@ -372,7 +404,9 @@ export const ProtoObject = {
     return {
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
       name: isSet(object.name) ? String(object.name) : "",
-      classInfo: isSet(object.classInfo) ? ProtoClassInfo.fromJSON(object.classInfo) : undefined,
+      classInfo: isSet(object.classInfo)
+        ? ProtoClassInfo.fromJSON(object.classInfo)
+        : undefined,
     };
   },
 
@@ -381,7 +415,9 @@ export const ProtoObject = {
     message.address !== undefined && (obj.address = message.address.toString());
     message.name !== undefined && (obj.name = message.name);
     message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
+      (obj.classInfo = message.classInfo
+        ? ProtoClassInfo.toJSON(message.classInfo)
+        : undefined);
     return obj;
   },
 
@@ -389,23 +425,34 @@ export const ProtoObject = {
     return ProtoObject.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoObject>, I>>(object: I): ProtoObject {
+  fromPartial<I extends Exact<DeepPartial<ProtoObject>, I>>(
+    object: I
+  ): ProtoObject {
     const message = createBaseProtoObject();
     message.address = object.address ?? BigInt("0");
     message.name = object.name ?? "";
-    message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
-      ? ProtoClassInfo.fromPartial(object.classInfo)
-      : undefined;
+    message.classInfo =
+      object.classInfo !== undefined && object.classInfo !== null
+        ? ProtoClassInfo.fromPartial(object.classInfo)
+        : undefined;
     return message;
   },
 };
 
 function createBaseProtoComponent(): ProtoComponent {
-  return { address: BigInt("0"), name: "", gameObject: BigInt("0"), classInfo: undefined };
+  return {
+    address: BigInt("0"),
+    name: "",
+    gameObject: BigInt("0"),
+    classInfo: undefined,
+  };
 }
 
 export const ProtoComponent = {
-  encode(message: ProtoComponent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoComponent,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -416,13 +463,17 @@ export const ProtoComponent = {
       writer.uint32(24).uint64(message.gameObject.toString());
     }
     if (message.classInfo !== undefined) {
-      ProtoClassInfo.encode(message.classInfo, writer.uint32(34).fork()).ldelim();
+      ProtoClassInfo.encode(
+        message.classInfo,
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoComponent {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoComponent();
     while (reader.pos < end) {
@@ -469,8 +520,12 @@ export const ProtoComponent = {
     return {
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
       name: isSet(object.name) ? String(object.name) : "",
-      gameObject: isSet(object.gameObject) ? BigInt(object.gameObject) : BigInt("0"),
-      classInfo: isSet(object.classInfo) ? ProtoClassInfo.fromJSON(object.classInfo) : undefined,
+      gameObject: isSet(object.gameObject)
+        ? BigInt(object.gameObject)
+        : BigInt("0"),
+      classInfo: isSet(object.classInfo)
+        ? ProtoClassInfo.fromJSON(object.classInfo)
+        : undefined,
     };
   },
 
@@ -478,24 +533,32 @@ export const ProtoComponent = {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address.toString());
     message.name !== undefined && (obj.name = message.name);
-    message.gameObject !== undefined && (obj.gameObject = message.gameObject.toString());
+    message.gameObject !== undefined &&
+      (obj.gameObject = message.gameObject.toString());
     message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
+      (obj.classInfo = message.classInfo
+        ? ProtoClassInfo.toJSON(message.classInfo)
+        : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoComponent>, I>>(base?: I): ProtoComponent {
+  create<I extends Exact<DeepPartial<ProtoComponent>, I>>(
+    base?: I
+  ): ProtoComponent {
     return ProtoComponent.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoComponent>, I>>(object: I): ProtoComponent {
+  fromPartial<I extends Exact<DeepPartial<ProtoComponent>, I>>(
+    object: I
+  ): ProtoComponent {
     const message = createBaseProtoComponent();
     message.address = object.address ?? BigInt("0");
     message.name = object.name ?? "";
     message.gameObject = object.gameObject ?? BigInt("0");
-    message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
-      ? ProtoClassInfo.fromPartial(object.classInfo)
-      : undefined;
+    message.classInfo =
+      object.classInfo !== undefined && object.classInfo !== null
+        ? ProtoClassInfo.fromPartial(object.classInfo)
+        : undefined;
     return message;
   },
 };
@@ -505,7 +568,10 @@ function createBaseProtoTransform(): ProtoTransform {
 }
 
 export const ProtoTransform = {
-  encode(message: ProtoTransform, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoTransform,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -522,7 +588,8 @@ export const ProtoTransform = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoTransform {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoTransform();
     while (reader.pos < end) {
@@ -578,16 +645,21 @@ export const ProtoTransform = {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address.toString());
     message.name !== undefined && (obj.name = message.name);
-    message.childCount !== undefined && (obj.childCount = Math.round(message.childCount));
+    message.childCount !== undefined &&
+      (obj.childCount = Math.round(message.childCount));
     message.parent !== undefined && (obj.parent = message.parent.toString());
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoTransform>, I>>(base?: I): ProtoTransform {
+  create<I extends Exact<DeepPartial<ProtoTransform>, I>>(
+    base?: I
+  ): ProtoTransform {
     return ProtoTransform.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoTransform>, I>>(object: I): ProtoTransform {
+  fromPartial<I extends Exact<DeepPartial<ProtoTransform>, I>>(
+    object: I
+  ): ProtoTransform {
     const message = createBaseProtoTransform();
     message.address = object.address ?? BigInt("0");
     message.name = object.name ?? "";
@@ -610,7 +682,10 @@ function createBaseProtoGameObject(): ProtoGameObject {
 }
 
 export const ProtoGameObject = {
-  encode(message: ProtoGameObject, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoGameObject,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -630,13 +705,17 @@ export const ProtoGameObject = {
       writer.uint32(50).string(message.tag);
     }
     if (message.transform !== undefined) {
-      ProtoTransform.encode(message.transform, writer.uint32(58).fork()).ldelim();
+      ProtoTransform.encode(
+        message.transform,
+        writer.uint32(58).fork()
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoGameObject {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoGameObject();
     while (reader.pos < end) {
@@ -706,9 +785,13 @@ export const ProtoGameObject = {
       name: isSet(object.name) ? String(object.name) : "",
       active: isSet(object.active) ? Boolean(object.active) : false,
       layer: isSet(object.layer) ? Number(object.layer) : 0,
-      scene: isSet(object.scene) ? ProtoScene.fromJSON(object.scene) : undefined,
+      scene: isSet(object.scene)
+        ? ProtoScene.fromJSON(object.scene)
+        : undefined,
       tag: isSet(object.tag) ? String(object.tag) : undefined,
-      transform: isSet(object.transform) ? ProtoTransform.fromJSON(object.transform) : undefined,
+      transform: isSet(object.transform)
+        ? ProtoTransform.fromJSON(object.transform)
+        : undefined,
     };
   },
 
@@ -718,30 +801,41 @@ export const ProtoGameObject = {
     message.name !== undefined && (obj.name = message.name);
     message.active !== undefined && (obj.active = message.active);
     message.layer !== undefined && (obj.layer = Math.round(message.layer));
-    message.scene !== undefined && (obj.scene = message.scene ? ProtoScene.toJSON(message.scene) : undefined);
+    message.scene !== undefined &&
+      (obj.scene = message.scene
+        ? ProtoScene.toJSON(message.scene)
+        : undefined);
     message.tag !== undefined && (obj.tag = message.tag);
     message.transform !== undefined &&
-      (obj.transform = message.transform ? ProtoTransform.toJSON(message.transform) : undefined);
+      (obj.transform = message.transform
+        ? ProtoTransform.toJSON(message.transform)
+        : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoGameObject>, I>>(base?: I): ProtoGameObject {
+  create<I extends Exact<DeepPartial<ProtoGameObject>, I>>(
+    base?: I
+  ): ProtoGameObject {
     return ProtoGameObject.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoGameObject>, I>>(object: I): ProtoGameObject {
+  fromPartial<I extends Exact<DeepPartial<ProtoGameObject>, I>>(
+    object: I
+  ): ProtoGameObject {
     const message = createBaseProtoGameObject();
     message.address = object.address ?? BigInt("0");
     message.name = object.name ?? "";
     message.active = object.active ?? false;
     message.layer = object.layer ?? 0;
-    message.scene = (object.scene !== undefined && object.scene !== null)
-      ? ProtoScene.fromPartial(object.scene)
-      : undefined;
+    message.scene =
+      object.scene !== undefined && object.scene !== null
+        ? ProtoScene.fromPartial(object.scene)
+        : undefined;
     message.tag = object.tag ?? undefined;
-    message.transform = (object.transform !== undefined && object.transform !== null)
-      ? ProtoTransform.fromPartial(object.transform)
-      : undefined;
+    message.transform =
+      object.transform !== undefined && object.transform !== null
+        ? ProtoTransform.fromPartial(object.transform)
+        : undefined;
     return message;
   },
 };
@@ -751,7 +845,10 @@ function createBaseProtoScene(): ProtoScene {
 }
 
 export const ProtoScene = {
-  encode(message: ProtoScene, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ProtoScene,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.handle !== 0) {
       writer.uint32(8).int32(message.handle);
     }
@@ -765,7 +862,8 @@ export const ProtoScene = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtoScene {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtoScene();
     while (reader.pos < end) {
@@ -821,7 +919,9 @@ export const ProtoScene = {
     return ProtoScene.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoScene>, I>>(object: I): ProtoScene {
+  fromPartial<I extends Exact<DeepPartial<ProtoScene>, I>>(
+    object: I
+  ): ProtoScene {
     const message = createBaseProtoScene();
     message.handle = object.handle ?? 0;
     message.name = object.name ?? "";
@@ -830,17 +930,36 @@ export const ProtoScene = {
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | bigint
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends { $case: string }
+  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
+      $case: T["$case"];
+    }
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function longToBigint(long: Long) {
   return BigInt(long.toString());

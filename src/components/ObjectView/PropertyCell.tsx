@@ -1,9 +1,9 @@
 import {
-    Accessor,
-    Show,
-    createEffect,
-    createMemo,
-    createSignal,
+  Accessor,
+  Show,
+  createEffect,
+  createMemo,
+  createSignal,
 } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
@@ -16,108 +16,108 @@ import styles from "./ObjectView.module.css";
 import { SpanFn } from "./ObjectView";
 
 export function PropertyCell(props: {
-    prop: PacketJSON<ProtoPropertyInfo>;
-    colSize: number;
-    address: bigint;
-    spanFn: SpanFn;
+  prop: PacketJSON<ProtoPropertyInfo>;
+  colSize: number;
+  address: bigint;
+  spanFn: SpanFn;
 }) {
-    // update element span when colSize updates
-    let element: HTMLDivElement | undefined;
-    createEffect(() => {
-        if (element) props.spanFn(element, props.colSize);
+  // update element span when colSize updates
+  let element: HTMLDivElement | undefined;
+  createEffect(() => {
+    if (element) props.spanFn(element, props.colSize);
+  });
+
+  // run getter and get value
+  const [value, valueLoading, requestGet] =
+    useRequestAndResponsePacket<InvokeMethodResult>();
+  function get() {
+    requestGet({
+      $case: "invokeMethod",
+      invokeMethod: {
+        generics: [],
+        methodId: props.prop.getterId!,
+        objectAddress: props.address,
+        args: [],
+      },
     });
+  }
 
-    // run getter and get value
-    const [value, valueLoading, requestGet] =
-        useRequestAndResponsePacket<InvokeMethodResult>();
-    function get() {
-        requestGet({
-            $case: "invokeMethod",
-            invokeMethod: {
-                generics: [],
-                methodId: props.prop.getterId!,
-                objectAddress: props.address,
-                args: [],
-            },
-        });
-    }
-
-    // run setter on input and check if no error
-    const [valueSetter, valueSetting, requestSet] =
-        useRequestAndResponsePacket<InvokeMethodResult>();
-    const [inputValue, setInputValue] = createSignal<string>("");
-    function set() {
-        const protoData = stringToProtoData(inputValue(), props.prop.type!);
-        requestSet({
-            $case: "invokeMethod",
-            invokeMethod: {
-                generics: [],
-                methodId: props.prop.setterId!,
-                objectAddress: props.address,
-                args: [protoData],
-            },
-        });
-    }
-    createEffect(() => setInputValue(protoDataToString(value()?.result)));
-
-    const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
-        const resultData = result();
-        if (!resultData?.error) return;
-
-        toast.error(`Property exception error: ${resultData.error}`);
-    };
-
-    // Error handle
-    createEffect(() => {
-        errorHandler(value);
+  // run setter on input and check if no error
+  const [valueSetter, valueSetting, requestSet] =
+    useRequestAndResponsePacket<InvokeMethodResult>();
+  const [inputValue, setInputValue] = createSignal<string>("");
+  function set() {
+    const protoData = stringToProtoData(inputValue(), props.prop.type!);
+    requestSet({
+      $case: "invokeMethod",
+      invokeMethod: {
+        generics: [],
+        methodId: props.prop.setterId!,
+        objectAddress: props.address,
+        args: [protoData],
+      },
     });
-    createEffect(() => {
-        errorHandler(valueSetter);
-    });
+  }
+  createEffect(() => setInputValue(protoDataToString(value()?.result)));
 
-    const propertyGetter = createMemo(
-        () => props.prop.getterId && styles.propertyGetter
-    );
-    const propertySetter = createMemo(
-        () => props.prop.setterId && styles.propertySetter
-    );
-    const propertyBoth = createMemo(
-        () => props.prop.getterId && props.prop.setterId && styles.propertyBoth
-    );
+  const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
+    const resultData = result();
+    if (!resultData?.error) return;
 
-    return (
-        <span
-            ref={element}
-            class={`font-mono ${
-                propertyBoth() || propertySetter() || propertyGetter()
-            } ${styles.gridElement} overflow-visible`}
-        >
-            {props.prop.name + " = "}
-            <InputCell
-                isInput={Boolean(props.prop.setterId)}
-                isOutput
-                onInput={setInputValue}
-                value={inputValue()}
-                type={props.prop.type!}
-            />
-            <Show when={props.prop.getterId}>
-                <ActionButton
-                    class={"small-button"}
-                    onClick={get}
-                    loading={valueLoading() || valueSetting()}
-                    img="refresh.svg"
-                    tooltip="Refresh"
-                />
-            </Show>
-            <Show when={props.prop.setterId}>
-                <ActionButton
-                    class={"small-button"}
-                    onClick={set}
-                    loading={valueLoading() || valueSetting()}
-                    img="enter.svg"
-                    tooltip="Set"
-                />
-            </Show>
-        </span>
-    );
+    toast.error(`Property exception error: ${resultData.error}`);
+  };
+
+  // Error handle
+  createEffect(() => {
+    errorHandler(value);
+  });
+  createEffect(() => {
+    errorHandler(valueSetter);
+  });
+
+  const propertyGetter = createMemo(
+    () => props.prop.getterId && styles.propertyGetter
+  );
+  const propertySetter = createMemo(
+    () => props.prop.setterId && styles.propertySetter
+  );
+  const propertyBoth = createMemo(
+    () => props.prop.getterId && props.prop.setterId && styles.propertyBoth
+  );
+
+  return (
+    <span
+      ref={element}
+      class={`font-mono ${
+        propertyBoth() || propertySetter() || propertyGetter()
+      } ${styles.gridElement} overflow-visible`}
+    >
+      {props.prop.name + " = "}
+      <InputCell
+        isInput={Boolean(props.prop.setterId)}
+        isOutput
+        onInput={setInputValue}
+        value={inputValue()}
+        type={props.prop.type!}
+      />
+      <Show when={props.prop.getterId}>
+        <ActionButton
+          class={"small-button"}
+          onClick={get}
+          loading={valueLoading() || valueSetting()}
+          img="refresh.svg"
+          tooltip="Refresh"
+        />
+      </Show>
+      <Show when={props.prop.setterId}>
+        <ActionButton
+          class={"small-button"}
+          onClick={set}
+          loading={valueLoading() || valueSetting()}
+          img="enter.svg"
+          tooltip="Set"
+        />
+      </Show>
+    </span>
+  );
 }

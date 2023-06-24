@@ -13,5 +13,4 @@ initializeEvents();
 
 devSetup();
 
-
 render(() => <App />, document.getElementById("root") as HTMLElement);
