@@ -156,11 +156,11 @@ export default function InputCell(props: {
     const opts = createMemo(() => {
         if (isBool()) return createOptions(["true", "false"]);
 
-        const validEntries = Object.values(variables).filter(([, type]) =>
+        const validEntries = Object.values(variables).filter(({ type }) =>
             isProtoTypeConvertibleTo(props.type, type)
         );
 
-        return createOptions(validEntries.map(([name]) => name));
+        return createOptions(validEntries.map(({ name }) => name));
     });
 
     // track loss of focus (defer since it starts as false)
@@ -179,14 +179,19 @@ export default function InputCell(props: {
     const [varName, setVarName] = createSignal<string>();
 
     const onInput = (val: string) => {
-        if (variableInput()) {
-            setVarName(val);
-            if (props.isInput) {
-                const addr = Object.entries(variables).find(([, [name]]) => name == val)?.[0]
-                if (addr)
-                    props.onInput?.(addr);
-            }
-        } else props.onInput?.(val);
+        if (!variableInput()) {
+            props.onInput?.(val);
+            return
+        }
+        
+        setVarName(val);
+        if (!props.isInput) return;
+
+        const addr = Object.entries(variables).find(
+            ([, { name }]) => name == val
+        )?.[0];
+        if (!addr) return;
+        props.onInput?.(addr);
     };
 
     return (

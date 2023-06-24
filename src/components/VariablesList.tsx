@@ -22,18 +22,21 @@ function VariableCell(props: { addr: string }) {
 
     const navigate = useNavigate();
 
-    const name = createMemo(() => variables[props.addr]?.[0] ?? "");
+    const name = createMemo(() => variables[props.addr]?.name ?? "");
 
-    const [validName, setValidName] = createSignal(true);
+    const isValidName = createMemo(() => {
+        const exists = Object.entries(variables).some(
+            ([addr, { name }]) => addr !== props.addr && name === name.trim()
+        );
+
+        return !exists;
+    });
 
     // if the new name is unique, update it, otherwise enable invalid input css
     const updateName = (val: string) => {
-        const isValid =
-            Object.entries(variables).find(
-                ([addr, [name]]) => addr != props.addr && name == val.trim()
-            ) == undefined;
-        setValidName(isValid);
-        if (isValid) updateVariable(props.addr, variables[props.addr][1], val);
+        if (isValidName()) {
+            updateVariable(props.addr, variables[props.addr].type, val.trim());
+        }
     };
 
     // reset value to last valid name if focus is exited while it still has an invalid name
@@ -43,8 +46,7 @@ function VariableCell(props: { addr: string }) {
         on(
             focused,
             () => {
-                if (!focused() && !validName()) {
-                    setValidName(true);
+                if (!focused() && !isValidName()) {
                     input!.value = name();
                 }
             },
@@ -57,9 +59,9 @@ function VariableCell(props: { addr: string }) {
             <span class="flex gap-1">
                 <input
                     class="small-input flex-1 min-w-0"
-                    classList={{ invalid: !validName() }}
+                    classList={{ invalid: !isValidName() }}
                     onInput={(e) => {
-                        updateName(e.target.value);
+                        updateName(e.currentTarget.value);
                     }}
                     value={name()}
                     ref={input}
@@ -126,7 +128,7 @@ function TypeHeader(props: { type: ProtoTypeInfo; vars: string[] }) {
 export function VariablesList() {
     // typeInfo string -> typeInfo, variable addrs with that type
     const types = createMemo(() =>
-        Object.entries(variables).reduce((prev, [addr, [, type]]) => {
+        Object.entries(variables).reduce((prev, [addr, { type }]) => {
             const typeString = protoTypeToString(type);
             if (prev.has(typeString)) prev.get(typeString)![1].push(addr);
             else prev.set(typeString, [type, [addr]]);
@@ -154,14 +156,17 @@ function removeVariable(address: string) {
 }
 
 function firstFree(beginning = "Unnamed Variable", ignoreAddress?: string) {
-    const usedNums = Object.entries(variables).reduce((set, [addr, [name]]) => {
-        if (ignoreAddress && addr == ignoreAddress) return set;
-        if (name.startsWith(beginning)) {
-            const end = name.substring(beginning.length).trimStart();
-            if (!isNaN(Number(end))) set.add(Number(end));
-        }
-        return set;
-    }, new Set<number>());
+    const usedNums = Object.entries(variables).reduce(
+        (set, [addr, { name }]) => {
+            if (ignoreAddress && addr == ignoreAddress) return set;
+            if (name.startsWith(beginning)) {
+                const end = name.substring(beginning.length).trimStart();
+                if (!isNaN(Number(end))) set.add(Number(end));
+            }
+            return set;
+        },
+        new Set<number>()
+    );
     let ret = 0;
     for (let i = 0; ; i++) {
         if (!usedNums.has(i)) {
@@ -174,7 +179,12 @@ function firstFree(beginning = "Unnamed Variable", ignoreAddress?: string) {
 }
 
 function updateVariable(address: string, type: ProtoTypeInfo, name?: string) {
-    setVariables({ [address]: [firstFree(name, address), type] });
+    setVariables({
+        [address]: {
+            name: firstFree(name, address),
+            type,
+        },
+    });
 }
 
 export function addVariable(
@@ -183,5 +193,10 @@ export function addVariable(
     name?: string
 ) {
     if (!(address in variables))
-        setVariables({ [address]: [firstFree(name), type] });
+        setVariables({
+            [address]: {
+                name: firstFree(name),
+                type,
+            },
+        });
 }
