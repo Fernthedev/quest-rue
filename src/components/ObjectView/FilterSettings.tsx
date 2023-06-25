@@ -9,7 +9,7 @@ import {
   ProtoPropertyInfo,
   ProtoTypeInfo,
 } from "../../misc/proto/il2cpp";
-import { stringToPrimitive } from "../../misc/utils";
+import { stringToPrimitive } from "../../misc/types/type_format";
 
 export interface FilterSettings {
   filterFields: boolean;

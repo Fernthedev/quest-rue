@@ -2,14 +2,13 @@ import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
 import { InvokeMethodResult } from "../../misc/proto/qrue";
 import { ProtoMethodInfo, ProtoTypeInfo } from "../../misc/proto/il2cpp";
+import { createUpdatingSignal } from "../../misc/utils";
+import { stringToProtoData } from "../../misc/types/type_format";
 import {
-  createUpdatingSignal,
-  getGenerics,
-  getInstantiation,
   protoDataToString,
-  stringToProtoData,
   stringToProtoType,
-} from "../../misc/utils";
+} from "../../misc/types/type_format";
+import { getGenerics, getInstantiation } from "../../misc/types/type_generics";
 import InputCell, { ActionButton } from "../InputCell";
 import toast from "solid-toast";
 

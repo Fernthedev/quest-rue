@@ -11,12 +11,9 @@ import { PacketJSON, sendPacketResult } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import {
-  errorHandle,
-  isProtoClassInstanceOf,
-  protoTypeToString,
-  uniqueNumber,
-} from "../misc/utils";
+import { errorHandle, uniqueNumber } from "../misc/utils";
+import { protoTypeToString } from "../misc/types/type_format";
+import { isProtoClassInstanceOf } from "../misc/types/type_matching";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 import { Select, createOptions } from "@thisbeyond/solid-select";

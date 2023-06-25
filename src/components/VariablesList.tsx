@@ -10,7 +10,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { protoClassDetailsToString } from "../misc/utils";
+import { protoClassDetailsToString } from "../misc/types/type_matching";
 import { useSettings } from "./Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
@@ -129,9 +129,9 @@ export function VariablesList() {
       const entry = prev.get(typeString);
 
       if (!entry) {
-        prev.set(typeString, [type, [addr]])
+        prev.set(typeString, [type, [addr]]);
       } else {
-        entry[1].push(addr)
+        entry[1].push(addr);
       }
 
       return prev;
@@ -146,12 +146,7 @@ export function VariablesList() {
         {(key) => {
           // needs to be reactive on types here
           const data = createMemo(() => types().get(key)!);
-          return (
-            <TypeHeader
-              type={data()[0]}
-              vars={data()[1]}
-            />
-          );
+          return <TypeHeader type={data()[0]} vars={data()[1]} />;
         }}
       </For>
     </div>

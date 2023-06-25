@@ -1,7 +1,7 @@
 import { Icon } from "solid-heroicons";
 import { cog_6Tooth } from "solid-heroicons/outline";
 import { createContext, useContext, ParentProps } from "solid-js";
-import { createLocalSignal } from "../misc/utils";
+import { createPersistentSignal } from "../misc/utils";
 import Toggle from "./form/Toggle";
 import SegmentedControl from "./form/SegmentedControl";
 
@@ -10,13 +10,13 @@ function makeSettingsContext(
   darkMode = true,
   columnCount = 2
 ) {
-  const [getRawInput, setRawInput] = createLocalSignal("rawInput", () =>
+  const [getRawInput, setRawInput] = createPersistentSignal("rawInput", () =>
     rawInput ? "true" : "false"
   );
-  const [getDarkMode, setDarkMode] = createLocalSignal("darkMode", () =>
+  const [getDarkMode, setDarkMode] = createPersistentSignal("darkMode", () =>
     darkMode ? "true" : "false"
   );
-  const [getColumnCount, setColumnCount] = createLocalSignal(
+  const [getColumnCount, setColumnCount] = createPersistentSignal(
     "columnCount",
     () => columnCount.toString()
   );
