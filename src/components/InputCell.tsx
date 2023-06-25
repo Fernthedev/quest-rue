@@ -6,6 +6,7 @@ import {
   JSX,
   createSignal,
   createDeferred,
+  onMount,
 } from "solid-js";
 import { PacketJSON, sendPacketResult } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
@@ -18,7 +19,10 @@ import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
 import { createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
-import { createFocusSignal } from "@solid-primitives/active-element";
+import {
+  createFocusSignal,
+  makeFocusListener,
+} from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
 import { chevronDoubleRight } from "solid-heroicons/outline";
 import { addVariable, getVariableValue } from "./VariablesList";
@@ -165,18 +169,19 @@ export default function InputCell(props: {
 
   // track loss of focus (defer since it starts as false)
   let target: HTMLInputElement | undefined;
-  const focused = createFocusSignal(() => target!);
-  createEffect(
-    on(
-      focused,
-      () => {
-        if (!focused()) props.onFocusExit?.();
+  onMount(() => {
+    makeFocusListener(
+      target!,
+      // False positive
+      // eslint-disable-next-line solid/reactivity
+      (focused) => {
+        if (!focused) props.onFocusExit?.();
       },
-      { defer: true }
-    )
-  );
+      true
+    );
+  });
 
-  const onInput = (val: string) => {
+  function onInput(val: string) {
     if (!props.isInput) return;
     if (!variableInput()) {
       props.onInput?.(val);
@@ -186,7 +191,7 @@ export default function InputCell(props: {
     // Replace with
     const addr = getVariableValue(val)?.[0];
     if (addr) props.onInput?.(addr);
-  };
+  }
 
   async function saveVariable() {
     if (props.type.Info?.$case !== "classInfo") return;
