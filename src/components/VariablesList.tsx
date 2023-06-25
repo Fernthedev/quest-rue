@@ -1,4 +1,4 @@
-import { ProtoTypeInfo } from "../misc/proto/il2cpp";
+import { ProtoClassDetails } from "../misc/proto/il2cpp";
 import { useNavigate } from "@solidjs/router";
 import { objectUrl } from "../App";
 import { ActionButton } from "./InputCell";
@@ -10,7 +10,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { protoTypeToString } from "../misc/utils";
+import { protoClassDetailsToString } from "../misc/utils";
 import { useSettings } from "./Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
@@ -90,10 +90,10 @@ function VariableCell(props: { addr: string }) {
   );
 }
 
-function TypeHeader(props: { type: ProtoTypeInfo; vars: string[] }) {
+function TypeHeader(props: { type: ProtoClassDetails; vars: string[] }) {
   const [expanded, setExpanded] = createSignal(true);
 
-  const className = createMemo(() => protoTypeToString(props.type));
+  const className = createMemo(() => protoClassDetailsToString(props.type));
 
   return (
     <div class="flex flex-col">
@@ -125,11 +125,17 @@ export function VariablesList() {
   // typeInfo string -> typeInfo, variable addrs with that type
   const types = createMemo(() =>
     Object.entries(variables).reduce((prev, [addr, { type }]) => {
-      const typeString = protoTypeToString(type);
-      if (prev.has(typeString)) prev.get(typeString)![1].push(addr);
-      else prev.set(typeString, [type, [addr]]);
+      const typeString = protoClassDetailsToString(type);
+      const entry = prev.get(typeString);
+
+      if (!entry) {
+        prev.set(typeString, [type, [addr]])
+      } else {
+        entry[1].push(addr)
+      }
+
       return prev;
-    }, new Map<string, [ProtoTypeInfo, string[]]>())
+    }, new Map<string, [ProtoClassDetails, string[]]>())
   );
 
   // use the string key in the <For> to keep it from recreating all the inputs
@@ -140,7 +146,12 @@ export function VariablesList() {
         {(key) => {
           // needs to be reactive on types here
           const data = createMemo(() => types().get(key)!);
-          return <TypeHeader type={data()[0]} vars={data()[1]} />;
+          return (
+            <TypeHeader
+              type={data()[0]}
+              vars={data()[1]}
+            />
+          );
         }}
       </For>
     </div>
@@ -171,7 +182,11 @@ function firstFree(beginning = "Unnamed Variable", ignoreAddress?: string) {
   return `${beginning} ${ret}`;
 }
 
-function updateVariable(address: string, type: ProtoTypeInfo, name?: string) {
+function updateVariable(
+  address: string,
+  type: ProtoClassDetails,
+  name?: string
+) {
   setVariables({
     [address]: {
       name: firstFree(name, address),
@@ -182,14 +197,15 @@ function updateVariable(address: string, type: ProtoTypeInfo, name?: string) {
 
 export function addVariable(
   address: string,
-  type: ProtoTypeInfo,
+  type: ProtoClassDetails,
   name?: string
 ) {
-  if (!(address in variables))
-    setVariables({
-      [address]: {
-        name: firstFree(name),
-        type,
-      },
-    });
+  if (address in variables) return;
+
+  setVariables({
+    [address]: {
+      name: firstFree(name),
+      type,
+    },
+  });
 }

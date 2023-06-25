@@ -2,9 +2,9 @@ import toast from "solid-toast";
 import { Signal, SignalOptions, createEffect, createSignal } from "solid-js";
 import { PacketJSON } from "./events";
 import {
+  ProtoClassDetails,
   ProtoClassInfo,
   ProtoDataPayload,
-  ProtoStructInfo,
   ProtoTypeInfo,
   ProtoTypeInfo_Primitive,
 } from "./proto/il2cpp";
@@ -467,7 +467,44 @@ export function getInstantiation(
   return ret;
 }
 
-export function isProtoTypeConvertibleTo(
+export function isProtoClassInstanceOf(
+  instance: ProtoClassDetails,
+  targetType: ProtoClassInfo
+): boolean {
+  if (isProtoClassMatch(instance.clazz, targetType)) return true;
+
+  const interfacesMatch = instance.interfaces.some((interf) =>
+    isProtoClassMatch(interf, targetType)
+  );
+  if (interfacesMatch) return true;
+
+  // check if parent matches targetType
+  // or check if parent interfaces matches targetType
+  let parent = instance.parent;
+  while (parent !== undefined) {
+    const parentMatches = isProtoClassMatch(parent.clazz, targetType);
+    if (parentMatches) return true;
+
+    // check interfaces
+    const parentInterfacesMatch = parent.interfaces.some((interf) =>
+      isProtoClassMatch(interf, targetType)
+    );
+    if (parentInterfacesMatch) return true;
+
+    // check parent of parent
+    parent = parent.parent;
+  }
+
+  return false;
+}
+
+/**
+ * Does NOT check for inheritance
+ * @param targetType
+ * @param typeToCheck
+ * @returns
+ */
+export function isExactProtoTypeConvertibleTo(
   targetType: ProtoTypeInfo,
   typeToCheck: ProtoTypeInfo
 ): boolean {
@@ -486,7 +523,7 @@ export function isProtoTypeConvertibleTo(
       arrayT1 === arrayT2 || // same
       (arrayT1 !== undefined &&
         arrayT2 !== undefined &&
-        isProtoTypeConvertibleTo(arrayT1, arrayT2))
+        isExactProtoTypeConvertibleTo(arrayT1, arrayT2))
     );
   }
 
@@ -496,7 +533,7 @@ export function isProtoTypeConvertibleTo(
     const structT1 = targetType.Info.structInfo;
     const structT2 = typeToCheck.Info.structInfo;
 
-    return protoClassMatch(structT1.clazz, structT2.clazz);
+    return isProtoClassMatch(structT1.clazz, structT2.clazz);
   }
   if (targetType.Info?.$case === "classInfo") {
     if (typeToCheck.Info?.$case !== "classInfo") return false;
@@ -504,13 +541,13 @@ export function isProtoTypeConvertibleTo(
     const clazzT1 = targetType.Info.classInfo;
     const clazzT2 = typeToCheck.Info.classInfo;
 
-    return protoClassMatch(clazzT1, clazzT2);
+    return isProtoClassMatch(clazzT1, clazzT2);
   }
 
   return false;
 }
 
-function protoClassMatch(
+function isProtoClassMatch(
   clazzT1: ProtoClassInfo | undefined,
   clazzT2: ProtoClassInfo | undefined
 ) {
@@ -519,12 +556,12 @@ function protoClassMatch(
 
   const namespaceMatch = clazzT1?.namespaze === clazzT2?.namespaze;
   const nameMatch = clazzT1?.clazz === clazzT2?.clazz;
-  const clazzGenericsMatch = protoGenericsMatch(clazzT1, clazzT2);
+  const clazzGenericsMatch = isProtoGenericsMatch(clazzT1, clazzT2);
 
   return namespaceMatch && nameMatch && clazzGenericsMatch;
 }
 
-function protoGenericsMatch(
+function isProtoGenericsMatch(
   clazzT1: ProtoClassInfo | undefined,
   clazzT2: ProtoClassInfo | undefined
 ) {
@@ -534,7 +571,26 @@ function protoGenericsMatch(
     clazzT1.generics.length === clazzT2.generics.length &&
     clazzT1.generics.every((g1, i) => {
       const g2 = clazzT2.generics[i];
-      return isProtoTypeConvertibleTo(g1, g2);
+      return isExactProtoTypeConvertibleTo(g1, g2);
     })
   );
+}
+export function protoClassDetailsToString(
+  details: ProtoClassDetails | undefined
+): string {
+  if (!details?.clazz) return "Unknown";
+
+  return protoTypeToString(protoClassDetailsToTypeInfo(details));
+}
+
+export function protoClassDetailsToTypeInfo(details: ProtoClassDetails): ProtoTypeInfo {
+  return {
+    Info: {
+      $case: "classInfo",
+      classInfo: details.clazz!,
+    },
+    isByref: false,
+    // TODO: Needed?
+    size: details.fields.reduce((acc, x) => acc += (x.type?.size ?? 0), 0)
+  }
 }

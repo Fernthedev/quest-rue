@@ -11,6 +11,7 @@ import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 import { ActionButton } from "../InputCell";
 import { addVariable } from "../VariablesList";
+import { protoClassDetailsToString } from "../../misc/utils";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 
@@ -74,14 +75,7 @@ export default function ObjectView(props: {
   });
   const className = createMemo(() => {
     const details = classDetails();
-    if (!details?.clazz) return "Unknown";
-
-    return protoTypeToString({
-      Info: {
-        $case: "classInfo",
-        classInfo: details.clazz,
-      },
-    });
+    return protoClassDetailsToString(details);
   });
   const interfaces = createMemo(() => {
     const details = classDetails();
@@ -141,14 +135,7 @@ export default function ObjectView(props: {
             onClick={() => {
               const details = classDetails();
               if (props.selectedAddress && details) {
-                addVariable(`0x${props.selectedAddress.toString(16)}`, {
-                  Info: {
-                    $case: "classInfo",
-                    classInfo: details.clazz!,
-                  },
-                  size: 8,
-                  isByref: false,
-                });
+                addVariable(`0x${props.selectedAddress.toString(16)}`, details);
               }
             }}
             tooltip="Save variable"

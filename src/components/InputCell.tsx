@@ -6,13 +6,13 @@ import {
   JSX,
   createSignal,
 } from "solid-js";
-import { PacketJSON } from "../misc/events";
+import { PacketJSON, sendPacketResult } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
 import {
   errorHandle,
-  isProtoTypeConvertibleTo,
+  isProtoClassInstanceOf,
   protoTypeToString,
   uniqueNumber,
 } from "../misc/utils";
@@ -25,6 +25,7 @@ import { Icon } from "solid-heroicons";
 import { chevronDoubleRight } from "solid-heroicons/outline";
 import { addVariable } from "./VariablesList";
 import { variables } from "../misc/globals";
+import { GetClassDetailsResult } from "../misc/proto/qrue";
 
 export function ActionButton(props: {
   img:
@@ -155,9 +156,16 @@ export default function InputCell(props: {
 
   const opts = createMemo(() => {
     if (isBool()) return createOptions(["true", "false"]);
+    if (props.type.Info?.$case !== "classInfo") return createOptions([]);
+    const inputClassInfo = props.type.Info.classInfo;
 
     const validEntries = Object.values(variables).filter(({ type }) =>
-      isProtoTypeConvertibleTo(props.type, type)
+      isProtoClassInstanceOf(type, inputClassInfo)
+    );
+
+    console.log(
+      "Entries",
+      validEntries.map(({ name }) => name)
     );
 
     return createOptions(validEntries.map(({ name }) => name));
@@ -192,6 +200,21 @@ export default function InputCell(props: {
     )?.[0];
     if (addr) props.onInput?.(addr);
   };
+
+  async function saveVariable() {
+    if (props.type.Info?.$case !== "classInfo") return;
+
+    const [detailsPromise] = sendPacketResult<GetClassDetailsResult>({
+      $case: "getClassDetails",
+      getClassDetails: {
+        classInfo: props.type.Info.classInfo,
+      },
+    });
+
+    const details = await detailsPromise;
+
+    addVariable(props.value!, details.classDetails!, varName());
+  }
 
   return (
     <span
@@ -251,7 +274,7 @@ export default function InputCell(props: {
         <ActionButton
           class="small-button"
           img="save.svg"
-          onClick={() => addVariable(props.value!, props.type, varName())}
+          onClick={saveVariable}
           tooltip="Save variable"
         />
       </Show>

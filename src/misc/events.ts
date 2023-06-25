@@ -34,6 +34,65 @@ function buildEvents() {
 export type PacketTypes = PacketWrapper["Packet"];
 export type PacketJSON<T> = T; // ReturnType<T["toObject"]>;
 
+/// Asynchronous function useful for getting results
+export function sendPacketResult<
+  TResponse,
+  TRequest extends PacketTypes = PacketTypes
+>(
+  packet: TRequest,
+  options?: {
+    timeout?: number;
+    allowUnexpectedPackets?: boolean;
+    once?: boolean;
+  }
+): [Promise<TResponse>, () => void] {
+  const listener = getEvents().ALL_PACKETS;
+
+  // We use reference here since it's not necessary to call it "state", that is handled by `val`
+  const expectedQueryID = uniqueBigNumber();
+
+  const callback: { value: ListenerCallbackFunction<PacketWrapper> } = {
+    value: undefined!,
+  };
+
+  const cancelFn = () => listener.removeListener(callback.value);
+
+  const promise = new Promise<TResponse>((res, err) => {
+    callback.value = listener.addListener((union) => {
+      if (
+        options?.allowUnexpectedPackets ||
+        (expectedQueryID && union.queryResultId === expectedQueryID)
+      ) {
+        // it's guaranteed to exist ok
+        const packet: TResponse = (union.Packet as Record<string, unknown>)[
+          union.Packet!.$case!
+        ]! as unknown as TResponse;
+
+        if (!packet) throw "Packet is undefined why!";
+
+        if (union.Packet?.$case == "inputError") {
+          err(union.Packet.inputError);
+        } else {
+          // Cancel the listener, we have our value now
+          cancelFn()
+          res(packet);
+        }
+      }
+    }, options?.once ?? false);
+
+    if (options && options.timeout) {
+      listener.removeListener(callback.value);
+    }
+  });
+
+  sendPacket({
+    queryResultId: expectedQueryID,
+    Packet: packet,
+  });
+
+  return [promise, cancelFn];
+}
+
 /**
  * A hook that returns the value of a packet with a response
  * Essentially, it gives both the current state and a function to send a packet
@@ -52,7 +111,11 @@ export function useRequestAndResponsePacket<
   once = false,
   allowConcurrent = false,
   allowUnexpectedPackets = false
-): [Accessor<TResponse | undefined>, Accessor<boolean>, (p: TRequest) => void] {
+): [
+  Accessor<TResponse | undefined>,
+  Accessor<boolean>,
+  (p: TRequest) => void
+] {
   const [val, setValue] = createSignal<TResponse | undefined>(undefined);
   const [loading, setLoading] = createSignal<boolean>(false);
 
@@ -240,7 +303,8 @@ export class EventListener<T> {
   }
 
   invoke(value: T) {
-    this.otherListeners.forEach((callback) => {
+    // Safety, clone the listener list
+    [...this.otherListeners].forEach((callback) => {
       if (!callback) return;
 
       callback[0](value);
