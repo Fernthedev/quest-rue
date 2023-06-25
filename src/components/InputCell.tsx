@@ -11,19 +11,20 @@ import { PacketJSON, sendPacketResult } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import { errorHandle, uniqueNumber } from "../misc/utils";
+import { errorHandle } from "../misc/utils";
 import { protoTypeToString } from "../misc/types/type_format";
 import { isProtoClassInstanceOf } from "../misc/types/type_matching";
 import { objectUrl } from "../App";
 import { useNavigate } from "@solidjs/router";
-import { Select, createOptions } from "@thisbeyond/solid-select";
+import { createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "./Settings";
 import { createFocusSignal } from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
 import { chevronDoubleRight } from "solid-heroicons/outline";
-import { addVariable } from "./VariablesList";
+import { addVariable, getVariableValue } from "./VariablesList";
 import { variables } from "../misc/globals";
 import { GetClassDetailsResult } from "../misc/proto/qrue";
+import { BetterSelect } from "./form/BetterSelect";
 
 export function ActionButton(props: {
   img:
@@ -87,6 +88,9 @@ export default function InputCell(props: {
 }) {
   const { rawInput } = useSettings();
 
+  // useNavigate needs to be out here instead of in a callback fn
+  const navigate = useNavigate();
+
   // bool for when a field/prop has a non-null value
   const hasValue = createMemo(() => props.value && props.value != "0x0");
 
@@ -140,9 +144,6 @@ export default function InputCell(props: {
       protoTypeToString(props.type)
   );
 
-  // useNavigate needs to be out here instead of in a callback fn
-  const navigate = useNavigate();
-
   // true/false selector for booleans
   const isBool = createMemo(
     () =>
@@ -182,9 +183,8 @@ export default function InputCell(props: {
       return;
     }
 
-    const addr = Object.entries(variables).find(
-      ([, { name }]) => name == val
-    )?.[0];
+    // Replace with
+    const addr = getVariableValue(val)?.[0];
     if (addr) props.onInput?.(addr);
   };
 
@@ -203,48 +203,25 @@ export default function InputCell(props: {
     addVariable(props.value!, details.classDetails!);
   }
 
-  return (
-    <span
-      class={styles.inputParent}
-      style={{
-        "flex-grow": detail().length,
-        "min-width": `${minWidth()}px`,
-        "max-width": `${maxWidth()}px`,
-      }}
-    >
-      <span class="flex flex-1 w-0 min-w-0">
-        <Show
-          when={
-            // use a <Select> for inputting booleans or classes with raw input off
-            props.isInput && (variableInput() || isBool())
-          }
-          fallback={
-            <input
-              ref={target}
-              class="small-input w-full"
-              type={inputType()}
-              onInput={(e) => {
-                onInput(e.target.value);
-              }}
-              value={props.value ?? ""}
-              disabled={!variableInput() && !props.isInput}
-              placeholder={detail()}
-              title={detail()}
-            />
-          }
-        >
-          <span ref={target} class="w-full">
-            <BetterSelect
-              onChange={onInput}
-              initialValue={props.value ?? ""}
-              placeholder={detail()}
-              title={detail()}
-              {...opts()}
-            />
-          </span>
-        </Show>
-      </span>
-      {/* selection button for classes only */}
+  function BasicInput(): JSX.Element {
+    return (
+      <input
+        ref={target}
+        class="small-input w-full"
+        type={inputType()}
+        onInput={(e) => {
+          onInput(e.target.value);
+        }}
+        value={props.value ?? ""}
+        disabled={!variableInput() && !props.isInput}
+        placeholder={detail()}
+        title={detail()}
+      />
+    );
+  }
+
+  function ClassActions() {
+    return (
       <Show
         when={
           props.type.Info?.$case == "classInfo" && props.isOutput && hasValue()
@@ -265,31 +242,39 @@ export default function InputCell(props: {
           tooltip="Save variable"
         />
       </Show>
-    </span>
-  );
-}
-
-type SelectProps = Parameters<typeof Select>[0];
-function BetterSelect(props: SelectProps & { title?: string }) {
-  // set the title (tooltip) to the actual input element
-  // if it's just on the outer element it doesn't show up
-  const uniqId = uniqueNumber().toString();
-  createEffect(() => {
-    const e = document.getElementById(uniqId);
-    if (e) e.title = props.title ?? "";
-  });
+    );
+  }
 
   return (
-    <Select
-      {...props}
-      onChange={(val) => {
-        // make sure that { equals: false } doesn't cause an infinite loop
-        // when used for the initial value and updated by onChange
-        // (regular <input>s handle this fine, it's just needed here)
-        const safeVal = val ?? "";
-        if (safeVal != props.initialValue) props.onChange?.(safeVal);
+    <span
+      class={styles.inputParent}
+      style={{
+        "flex-grow": detail().length,
+        "min-width": `${minWidth()}px`,
+        "max-width": `${maxWidth()}px`,
       }}
-      id={uniqId}
-    />
+    >
+      <span class="flex flex-1 w-0 min-w-0">
+        <Show
+          when={
+            // use a <Select> for inputting booleans or classes with raw input off
+            props.isInput && (variableInput() || isBool())
+          }
+          fallback={<BasicInput />}
+        >
+          <span ref={target} class="w-full">
+            <BetterSelect
+              onChange={onInput}
+              initialValue={props.value ?? ""}
+              placeholder={detail()}
+              title={detail()}
+              {...opts()}
+            />
+          </span>
+        </Show>
+      </span>
+      {/* selection button for classes only */}
+      <ClassActions />
+    </span>
   );
 }

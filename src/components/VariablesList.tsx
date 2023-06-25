@@ -153,6 +153,14 @@ export function VariablesList() {
   );
 }
 
+export function getVariableValue(variable: string) {
+  const addr = Object.entries(variables).find(
+    ([, { name }]) => name === variable
+  );
+
+  return addr;
+}
+
 function removeVariable(address: string) {
   setVariables({ [address]: undefined! });
 }
