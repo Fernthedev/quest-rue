@@ -5,6 +5,7 @@ import {
   on,
   JSX,
   createSignal,
+  createDeferred,
 } from "solid-js";
 import { PacketJSON, sendPacketResult } from "../misc/events";
 import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
@@ -154,18 +155,13 @@ export default function InputCell(props: {
       props.type.Info.primitiveInfo == ProtoTypeInfo_Primitive.BOOLEAN
   );
 
-  const opts = createMemo(() => {
+  const opts = createDeferred(() => {
     if (isBool()) return createOptions(["true", "false"]);
     if (props.type.Info?.$case !== "classInfo") return createOptions([]);
     const inputClassInfo = props.type.Info.classInfo;
 
     const validEntries = Object.values(variables).filter(({ type }) =>
       isProtoClassInstanceOf(type, inputClassInfo)
-    );
-
-    console.log(
-      "Entries",
-      validEntries.map(({ name }) => name)
     );
 
     return createOptions(validEntries.map(({ name }) => name));
