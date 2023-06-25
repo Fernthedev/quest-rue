@@ -82,7 +82,7 @@ export default function InputCell(props: {
   placeholder?: string;
   onInput?: (s: string) => void;
   isInput?: boolean; // receives user input
-  isOutput?: boolean;
+  isOutput?: boolean; // receives quest output
   onFocusExit?: () => void;
 }) {
   const { rawInput } = useSettings();
@@ -90,12 +90,10 @@ export default function InputCell(props: {
   // bool for when a field/prop has a non-null value
   const hasValue = createMemo(() => props.value && props.value != "0x0");
 
-  // either an input for a variable OR an output where a varaible name could be written
+  // either an input for a variable
   // (variable names can be entered into outputs once they have a value instead of after saving it)
   const variableInput = createMemo(
-    () =>
-      ((props.isInput && !rawInput()) || hasValue()) &&
-      props.type.Info?.$case == "classInfo"
+    () => props.isInput && !rawInput() && props.type.Info?.$case == "classInfo"
   );
 
   // restrict values for some data types
@@ -177,16 +175,12 @@ export default function InputCell(props: {
     )
   );
 
-  const [varName, setVarName] = createSignal<string>();
-
   const onInput = (val: string) => {
+    if (!props.isInput) return;
     if (!variableInput()) {
       props.onInput?.(val);
       return;
     }
-
-    setVarName(val);
-    if (!props.isInput) return;
 
     const addr = Object.entries(variables).find(
       ([, { name }]) => name == val
@@ -206,7 +200,7 @@ export default function InputCell(props: {
 
     const details = await detailsPromise;
 
-    addVariable(props.value!, details.classDetails!, varName());
+    addVariable(props.value!, details.classDetails!);
   }
 
   return (
