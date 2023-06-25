@@ -45,7 +45,9 @@ export function PropertyCell(props: {
   // run setter on input and check if no error
   const [valueSetter, valueSetting, requestSet] =
     useRequestAndResponsePacket<InvokeMethodResult>();
-  const [inputValue, setInputValue] = createSignal<string>("");
+  // always update the input value so that it overrides anything typed in
+  // when the refresh button is pressed, even if it hasn't changed
+  const [inputValue, setInputValue] = createSignal("", { equals: false });
   function set() {
     const protoData = stringToProtoData(inputValue(), props.prop.type!);
     requestSet({

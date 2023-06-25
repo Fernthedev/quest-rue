@@ -7,7 +7,6 @@ import InputCell, { ActionButton } from "../InputCell";
 import { SpanFn } from "./ObjectView";
 
 import styles from "./ObjectView.module.css";
-import { arrowPath } from "solid-heroicons/outline";
 
 export function FieldCell(props: {
   field: PacketJSON<ProtoFieldInfo>;
@@ -69,7 +68,7 @@ export function FieldCell(props: {
         class={"small-button"}
         onClick={refresh}
         loading={valueLoading() || valueSetting()}
-        img={arrowPath}
+        img="refresh.svg"
         tooltip="Refresh"
       />
     </span>

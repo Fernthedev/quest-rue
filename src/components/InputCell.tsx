@@ -190,8 +190,7 @@ export default function InputCell(props: {
     const addr = Object.entries(variables).find(
       ([, { name }]) => name == val
     )?.[0];
-    if (!addr) return;
-    props.onInput?.(addr);
+    if (addr) props.onInput?.(addr);
   };
 
   return (
@@ -262,11 +261,25 @@ export default function InputCell(props: {
 
 type SelectProps = Parameters<typeof Select>[0];
 function BetterSelect(props: SelectProps & { title?: string }) {
+  // set the title (tooltip) to the actual input element
+  // if it's just on the outer element it doesn't show up
   const uniqId = uniqueNumber().toString();
   createEffect(() => {
     const e = document.getElementById(uniqId);
     if (e) e.title = props.title ?? "";
   });
 
-  return <Select {...props} id={uniqId} />;
+  return (
+    <Select
+      {...props}
+      onChange={(val) => {
+        // make sure that { equals: false } doesn't cause an infinite loop
+        // when used for the initial value and updated by onChange
+        // (regular <input>s handle this fine, it's just needed here)
+        const safeVal = val ?? "";
+        if (safeVal != props.initialValue) props.onChange?.(safeVal);
+      }}
+      id={uniqId}
+    />
+  );
 }
