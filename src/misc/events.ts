@@ -74,7 +74,7 @@ export function sendPacketResult<
           err(union.Packet.inputError);
         } else {
           // Cancel the listener, we have our value now
-          cancelFn()
+          cancelFn();
           res(packet);
         }
       }
@@ -111,11 +111,7 @@ export function useRequestAndResponsePacket<
   once = false,
   allowConcurrent = false,
   allowUnexpectedPackets = false
-): [
-  Accessor<TResponse | undefined>,
-  Accessor<boolean>,
-  (p: TRequest) => void
-] {
+): [Accessor<TResponse | undefined>, Accessor<boolean>, (p: TRequest) => void] {
   const [val, setValue] = createSignal<TResponse | undefined>(undefined);
   const [loading, setLoading] = createSignal<boolean>(false);
 
@@ -160,15 +156,15 @@ export function useRequestAndResponsePacket<
   // Return the state and a callback for invoking reads
 
   const refetch = (p: TRequest) => {
-    if (!untrack(loading) || allowConcurrent) {
-      const randomId = uniqueBigNumber();
-      expectedQueryID.value = randomId;
-      setLoading(true);
-      sendPacket({
-        queryResultId: randomId,
-        Packet: p,
-      });
-    }
+    if (untrack(loading) && !allowConcurrent) return;
+
+    const randomId = uniqueBigNumber();
+    expectedQueryID.value = randomId;
+    setLoading(true);
+    sendPacket({
+      queryResultId: randomId,
+      Packet: p,
+    });
   };
 
   return [val, loading, refetch];
@@ -272,7 +268,10 @@ export type ListenerCallbackFunction<T> = (value: T) => void;
 export class EventListener<T> {
   // callback/wrapper, callback id
   private otherListeners: (
-    | [ListenerCallbackFunction<T>, ListenerCallbackFunction<T> | undefined]
+    | [
+        invoker: ListenerCallbackFunction<T>,
+        id: ListenerCallbackFunction<T> | undefined
+      ]
     | undefined
   )[] = [];
 
