@@ -31,33 +31,19 @@ export function handleSafePtrAddresses(
       ])
     );
 
+    // Find addresses no longer in backend
     const removedAddresses: [string, Variable][] =
       findRemovedAddresses(typeSafeMap);
 
-    const addressToVariables = generateNewVariableRecord(typeSafeMap);
+    // Find new variables to add
+    const newVariables = generateNewVariableRecord(typeSafeMap);
 
     const modifiedVariableMap: Record<string, Variable> = Object.fromEntries(
-      removedAddresses.concat(await addressToVariables)
+      removedAddresses.concat(await newVariables)
     );
 
-
-
-    console.log("Old", variables)
-    console.log("New", modifiedVariableMap)
-    console.log("Backend", getSafePtrAddressesResult.address);
-    // console.log("Result", resultingVariableMap)
-
-
+    // This merges with the previous value
     setVariables(modifiedVariableMap)
-    console.log("Result", variables)
-    // setVariables(produce(prev => {
-    // const resultingVariableMap = {
-    //   ...prev,
-    //   ...modifiedVariableMap,
-    // };
-
-    //   return reconcile(resultingVariableMap, { merge: false });
-    // }));
   });
 }
 
@@ -84,13 +70,9 @@ function findRemovedAddresses(
 async function generateNewVariableRecord(
   packetAddresses: Map<bigint, ProtoClassInfo>
 ) {
+  // find class details of all the new variables
   const addressToDetails = await Promise.all(
     [...packetAddresses.entries()]
-      // wtf is going on with type checking here
-      .map<[bigint, ProtoClassInfo]>(([addr, classInfo]) => [
-        BigInt(addr),
-        classInfo as ProtoClassInfo,
-      ])
       // find variables that aren't already parsed
       .filter(([addr]) => !(addrToString(addr) in variables))
       .map(async ([addr, classInfo]) => {
@@ -108,8 +90,6 @@ async function generateNewVariableRecord(
   );
 
   const addressToVariables = addressToDetails.map(([addr, classDetails]) => {
-    console.log("Backend storage will use", addrToString(addr))
-
     return [
       addrToString(addr),
       {
@@ -187,6 +167,12 @@ export function updateVariable(
   type: ProtoClassDetails,
   name?: string
 ) {
+  const addressStr = addrToString(address);
+  if (!(addressStr in variables)) {
+   
+    throw `No address ${addressStr} in variables`;
+  }
+  
   setVariables({
     [addrToString(address)]: {
       name: firstFree(name, address),
