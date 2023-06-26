@@ -23,7 +23,10 @@ void scheduleFunction(std::function<void()> const &func) {
   std::unique_lock<std::mutex> lock(scheduleLock);
   scheduledFunctions.emplace_back(func);
 }
-void MainThreadRunner::Awake() { mainThreadRunnerInstance = this; }
+void MainThreadRunner::Awake() {
+   this->keepAliveObjects = System::Collections::Generic::List_1<Il2CppObject*>::New_ctor();
+   mainThreadRunnerInstance = this;
+}
 MainThreadRunner *getUnityHandle() { return mainThreadRunnerInstance; }
 
 void MainThreadRunner::Update() {
