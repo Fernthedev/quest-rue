@@ -1,17 +1,21 @@
 import { devPacketResponse } from "./dev";
 import { getEvents } from "./events";
 import { handleGameObjects } from "./handlers/gameobject";
+import { handleSafePtrAddresses } from "./handlers/variable_list";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueBigNumber } from "./utils";
 
 let socket: WebSocket | undefined;
 
-function handlePacketWrapper(packet: PacketWrapper) {
+function handleGlobalPacketWrapper(packet: PacketWrapper) {
   switch (packet.Packet?.$case) {
     case "getAllGameObjectsResult": {
       handleGameObjects(packet.Packet.getAllGameObjectsResult);
       break;
     }
+    case "getSafePtrAddressesResult":
+      handleSafePtrAddresses(packet.Packet.getSafePtrAddressesResult);
+      break;
     case "readMemoryResult": {
       console.log(packet.Packet.readMemoryResult);
       break;
@@ -47,7 +51,7 @@ export function connect(ip: string, port: number): Promise<boolean> {
       const bytes: ArrayBuffer = event.data;
       const packetWrapper = PacketWrapper.decode(new Uint8Array(bytes));
       // console.log(JSON.stringify(packetWrapper));
-      handlePacketWrapper(packetWrapper);
+      handleGlobalPacketWrapper(packetWrapper);
     };
   });
 }
@@ -72,7 +76,7 @@ export function requestGameObjects() {
 
 export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
   if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
-    devPacketResponse(p as PacketWrapper, handlePacketWrapper);
+    devPacketResponse(p as PacketWrapper, handleGlobalPacketWrapper);
     return;
   }
 

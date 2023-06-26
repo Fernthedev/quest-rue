@@ -23,12 +23,10 @@ import { useSettings } from "../Settings";
 import { makeFocusListener } from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
 import { check, chevronDoubleRight } from "solid-heroicons/outline";
-import {
-  addVariable,
-  getVariableValue,
-  isVariableNameFree,
-} from "./VariablesList";
-import { variables } from "../../misc/globals";
+import { addVariable } from "../../misc/handlers/variable_list";
+import { getVariableValue } from "../../misc/handlers/variable_list";
+import { isVariableNameFree } from "../../misc/handlers/variable_list";
+import { variables } from "../../misc/handlers/variable_list";
 import { GetClassDetailsResult } from "../../misc/proto/qrue";
 import { BetterSelect } from "../form/BetterSelect";
 

@@ -265,7 +265,12 @@ export interface GetSafePtrAddresses {
 }
 
 export interface GetSafePtrAddressesResult {
-  address: bigint[];
+  address: { [key: bigint]: ProtoClassInfo };
+}
+
+export interface GetSafePtrAddressesResult_AddressEntry {
+  key: bigint;
+  value: ProtoClassInfo | undefined;
 }
 
 /** TODO: Rename? */
@@ -2497,16 +2502,14 @@ export const GetSafePtrAddresses = {
 };
 
 function createBaseGetSafePtrAddressesResult(): GetSafePtrAddressesResult {
-  return { address: [] };
+  return { address: {} };
 }
 
 export const GetSafePtrAddressesResult = {
   encode(message: GetSafePtrAddressesResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    writer.uint32(10).fork();
-    for (const v of message.address) {
-      writer.uint64(v.toString());
-    }
-    writer.ldelim();
+    Object.entries(message.address).forEach(([key, value]) => {
+      GetSafePtrAddressesResult_AddressEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
     return writer;
   },
 
@@ -2518,22 +2521,15 @@ export const GetSafePtrAddressesResult = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag === 8) {
-            message.address.push(longToBigint(reader.uint64() as Long));
-
-            continue;
+          if (tag !== 10) {
+            break;
           }
 
-          if (tag === 10) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.address.push(longToBigint(reader.uint64() as Long));
-            }
-
-            continue;
+          const entry1 = GetSafePtrAddressesResult_AddressEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.address[entry1.key] = entry1.value;
           }
-
-          break;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2544,15 +2540,23 @@ export const GetSafePtrAddressesResult = {
   },
 
   fromJSON(object: any): GetSafePtrAddressesResult {
-    return { address: Array.isArray(object?.address) ? object.address.map((e: any) => BigInt(e)) : [] };
+    return {
+      address: isObject(object.address)
+        ? Object.entries(object.address).reduce<{ [key: bigint]: ProtoClassInfo }>((acc, [key, value]) => {
+          acc[Number(key)] = ProtoClassInfo.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
+    };
   },
 
   toJSON(message: GetSafePtrAddressesResult): unknown {
     const obj: any = {};
+    obj.address = {};
     if (message.address) {
-      obj.address = message.address.map((e) => e.toString());
-    } else {
-      obj.address = [];
+      Object.entries(message.address).forEach(([k, v]) => {
+        obj.address[k] = ProtoClassInfo.toJSON(v);
+      });
     }
     return obj;
   },
@@ -2563,7 +2567,92 @@ export const GetSafePtrAddressesResult = {
 
   fromPartial<I extends Exact<DeepPartial<GetSafePtrAddressesResult>, I>>(object: I): GetSafePtrAddressesResult {
     const message = createBaseGetSafePtrAddressesResult();
-    message.address = object.address?.map((e) => e) || [];
+    message.address = Object.entries(object.address ?? {}).reduce<{ [key: bigint]: ProtoClassInfo }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = ProtoClassInfo.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseGetSafePtrAddressesResult_AddressEntry(): GetSafePtrAddressesResult_AddressEntry {
+  return { key: BigInt("0"), value: undefined };
+}
+
+export const GetSafePtrAddressesResult_AddressEntry = {
+  encode(message: GetSafePtrAddressesResult_AddressEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== BigInt("0")) {
+      writer.uint32(8).uint64(message.key.toString());
+    }
+    if (message.value !== undefined) {
+      ProtoClassInfo.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetSafePtrAddressesResult_AddressEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetSafePtrAddressesResult_AddressEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.key = longToBigint(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = ProtoClassInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetSafePtrAddressesResult_AddressEntry {
+    return {
+      key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
+      value: isSet(object.value) ? ProtoClassInfo.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: GetSafePtrAddressesResult_AddressEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key.toString());
+    message.value !== undefined && (obj.value = message.value ? ProtoClassInfo.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetSafePtrAddressesResult_AddressEntry>, I>>(
+    base?: I,
+  ): GetSafePtrAddressesResult_AddressEntry {
+    return GetSafePtrAddressesResult_AddressEntry.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetSafePtrAddressesResult_AddressEntry>, I>>(
+    object: I,
+  ): GetSafePtrAddressesResult_AddressEntry {
+    const message = createBaseGetSafePtrAddressesResult_AddressEntry();
+    message.key = object.key ?? BigInt("0");
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoClassInfo.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };

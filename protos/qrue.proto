@@ -156,7 +156,7 @@ message AddSafePtrAddress {
 
 message GetSafePtrAddresses  {}
 message GetSafePtrAddressesResult {
-    repeated uint64 address = 1;
+    map<uint64, ProtoClassInfo> address = 1;
 }
 
 // TODO: Rename?

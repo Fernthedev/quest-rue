@@ -14,8 +14,11 @@ import { protoClassDetailsToString } from "../../misc/types/type_matching";
 import { useSettings } from "../Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
-import { variables, setVariables } from "../../misc/globals";
+import { variables } from "../../misc/handlers/variable_list";
 import { createFocusSignal } from "@solid-primitives/active-element";
+import { isVariableNameFree } from "../../misc/handlers/variable_list";
+import { removeVariable } from "../../misc/handlers/variable_list";
+import { updateVariable } from "../../misc/handlers/variable_list";
 
 function VariableCell(props: { addr: string }) {
   const { rawInput } = useSettings();
@@ -143,72 +146,4 @@ export function VariablesList() {
       </For>
     </div>
   );
-}
-
-export function isVariableNameFree(varName = "Unnamed Variable", ignoreAddress?: string) {
-  return !Object.entries(variables).some(
-    ([addr, { name }]) =>
-      (ignoreAddress == undefined || addr != ignoreAddress) &&
-      name == varName.trim()
-  );
-}
-
-export function getVariableValue(variable: string) {
-  const addr = Object.entries(variables).find(
-    ([, { name }]) => name === variable
-  );
-
-  return addr;
-}
-
-function removeVariable(address: string) {
-  setVariables({ [address]: undefined! });
-}
-
-function firstFree(beginning = "Unnamed Variable", ignoreAddress?: string) {
-  const usedNums = Object.entries(variables).reduce((set, [addr, { name }]) => {
-    if (ignoreAddress && addr == ignoreAddress) return set;
-    if (name.startsWith(beginning)) {
-      const end = name.substring(beginning.length).trimStart();
-      if (!isNaN(Number(end))) set.add(Number(end));
-    }
-    return set;
-  }, new Set<number>());
-  let ret = 0;
-  for (let i = 0; ; i++) {
-    if (!usedNums.has(i)) {
-      ret = i;
-      break;
-    }
-  }
-  if (ret == 0) return beginning;
-  return `${beginning} ${ret}`;
-}
-
-function updateVariable(
-  address: string,
-  type: ProtoClassDetails,
-  name?: string
-) {
-  setVariables({
-    [address]: {
-      name: firstFree(name, address),
-      type,
-    },
-  });
-}
-
-export function addVariable(
-  address: string,
-  type: ProtoClassDetails,
-  name?: string
-) {
-  if (address in variables) return;
-
-  setVariables({
-    [address]: {
-      name: firstFree(name),
-      type,
-    },
-  });
 }

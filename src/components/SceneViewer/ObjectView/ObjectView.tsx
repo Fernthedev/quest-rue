@@ -10,7 +10,7 @@ import { ProtoClassDetails } from "../../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 import { ActionButton } from "../InputCell";
-import { addVariable } from "../VariablesList";
+import { addVariable } from "../../../misc/handlers/variable_list";
 import { protoClassDetailsToString } from "../../../misc/types/type_matching";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
