@@ -1,7 +1,6 @@
 import { createStore, reconcile } from "solid-js/store";
 import { ProtoClassDetails, ProtoClassInfo } from "../proto/il2cpp";
 import {
-  AddSafePtrAddress,
   GetClassDetailsResult,
   GetSafePtrAddressesResult,
   PacketWrapper,
@@ -135,6 +134,10 @@ export function isVariableNameFree(
       name == varName.trim()
   );
 }
+export function getVariable(addr: string) {
+  return variables[addr];
+}
+
 export function getVariableValue(variable: string) {
   const addr = Object.entries(variables).find(
     ([, { name }]) => name === variable
@@ -144,6 +147,7 @@ export function getVariableValue(variable: string) {
 }
 export function removeVariable(address: string) {
   setVariables({ [address]: undefined! });
+
   return sendPacketResult<GetSafePtrAddressesResult>({
     $case: "addSafePtrAddress",
     addSafePtrAddress: {
@@ -169,10 +173,11 @@ export function addVariable(
   type: ProtoClassDetails,
   name?: string
 ) {
-  if (address in variables) return;
+  const addressStr = address.toString();
+  if (addressStr in variables) return;
 
   setVariables({
-    [address]: {
+    [addressStr]: {
       name: firstFree(name),
       type,
     },

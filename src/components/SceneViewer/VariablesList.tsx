@@ -14,7 +14,7 @@ import { protoClassDetailsToString } from "../../misc/types/type_matching";
 import { useSettings } from "../Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
-import { variables } from "../../misc/handlers/variable_list";
+import { getVariable, variables } from "../../misc/handlers/variable_list";
 import { createFocusSignal } from "@solid-primitives/active-element";
 import { isVariableNameFree } from "../../misc/handlers/variable_list";
 import { removeVariable } from "../../misc/handlers/variable_list";
@@ -25,7 +25,7 @@ function VariableCell(props: { addr: string }) {
 
   const navigate = useNavigate();
 
-  const name = createMemo(() => variables[props.addr]?.name ?? "");
+  const name = createMemo(() => getVariable(props.addr)?.name ?? "");
 
   const [validName, setValidName] = createSignal(true);
 
