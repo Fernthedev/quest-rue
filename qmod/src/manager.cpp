@@ -468,9 +468,11 @@ void Manager::sendSafePtrList(uint64_t id) {
     auto res = wrapper.mutable_getsafeptraddressesresult();
     auto objs = getUnityHandle()->keepAliveObjects;
 
-    res->mutable_address()->Reserve(objs.size());
+    auto &resMap = *res->mutable_address();
+
     for (auto const &addr : objs) {
-        res->add_address(asInt(addr));
+        resMap[asInt(addr)] =
+            ClassUtils::GetClassInfo(typeofclass(addr->klass));
     }
 
     handler->sendPacket(wrapper);
