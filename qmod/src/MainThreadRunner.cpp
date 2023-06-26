@@ -12,6 +12,7 @@ std::thread::id mainThreadId;
 
 static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
+static MainThreadRunner *mainThreadRunnerInstance;
 
 void scheduleFunction(std::function<void()> const &func) {
   if (mainThreadId == std::this_thread::get_id()) {
@@ -22,6 +23,8 @@ void scheduleFunction(std::function<void()> const &func) {
   std::unique_lock<std::mutex> lock(scheduleLock);
   scheduledFunctions.emplace_back(func);
 }
+void MainThreadRunner::Awake() { mainThreadRunnerInstance = this; }
+MainThreadRunner *getUnityHandle() { return mainThreadRunnerInstance; }
 
 void MainThreadRunner::Update() {
   if (scheduledFunctions.empty()) {
@@ -36,4 +39,14 @@ void MainThreadRunner::Update() {
   for (auto const &function : functions) {
     function();
   }
+}
+
+void MainThreadRunner::addKeepAlive(Il2CppObject* obj) {
+  if (this->keepAliveObjects->Contains(obj))
+    return;
+
+  this->keepAliveObjects->Add(obj);
+}
+void MainThreadRunner::removeKeepAlive(Il2CppObject *obj) {
+  this->keepAliveObjects->Remove(obj);
 }

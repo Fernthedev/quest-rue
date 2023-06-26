@@ -1,12 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {
-  ProtoClassDetails,
-  ProtoClassInfo,
-  ProtoDataPayload,
-  ProtoTypeInfo,
-} from "./il2cpp";
+import { ProtoClassDetails, ProtoClassInfo, ProtoDataPayload, ProtoTypeInfo } from "./il2cpp";
 import { ProtoComponent, ProtoGameObject, ProtoObject } from "./unity";
 
 export const protobufPackage = "";
@@ -41,7 +36,9 @@ export interface InvokeMethod {
 export interface InvokeMethodResult {
   status: InvokeMethodResult_Status;
   methodId: bigint;
-  result: ProtoDataPayload | undefined;
+  result:
+    | ProtoDataPayload
+    | undefined;
   /** map from parameter index */
   byrefChanges: { [key: number]: ProtoDataPayload };
   /** nullable */
@@ -54,9 +51,7 @@ export enum InvokeMethodResult_Status {
   UNRECOGNIZED = -1,
 }
 
-export function invokeMethodResult_StatusFromJSON(
-  object: any
-): InvokeMethodResult_Status {
+export function invokeMethodResult_StatusFromJSON(object: any): InvokeMethodResult_Status {
   switch (object) {
     case 0:
     case "ERR":
@@ -71,9 +66,7 @@ export function invokeMethodResult_StatusFromJSON(
   }
 }
 
-export function invokeMethodResult_StatusToJSON(
-  object: InvokeMethodResult_Status
-): string {
+export function invokeMethodResult_StatusToJSON(object: InvokeMethodResult_Status): string {
   switch (object) {
     case InvokeMethodResult_Status.ERR:
       return "ERR";
@@ -91,7 +84,9 @@ export interface InvokeMethodResult_ByrefChangesEntry {
 }
 
 export interface SearchObjects {
-  componentClass: ProtoClassInfo | undefined;
+  componentClass:
+    | ProtoClassInfo
+    | undefined;
   /** nullable */
   name?: string | undefined;
 }
@@ -100,7 +95,8 @@ export interface SearchObjectsResult {
   objects: ProtoObject[];
 }
 
-export interface GetAllGameObjects {}
+export interface GetAllGameObjects {
+}
 
 export interface GetAllGameObjectsResult {
   /** TODO: GameObject data such as hierarchy */
@@ -133,9 +129,7 @@ export enum ReadMemoryResult_Status {
   UNRECOGNIZED = -1,
 }
 
-export function readMemoryResult_StatusFromJSON(
-  object: any
-): ReadMemoryResult_Status {
+export function readMemoryResult_StatusFromJSON(object: any): ReadMemoryResult_Status {
   switch (object) {
     case 0:
     case "ERR":
@@ -150,9 +144,7 @@ export function readMemoryResult_StatusFromJSON(
   }
 }
 
-export function readMemoryResult_StatusToJSON(
-  object: ReadMemoryResult_Status
-): string {
+export function readMemoryResult_StatusToJSON(object: ReadMemoryResult_Status): string {
   switch (object) {
     case ReadMemoryResult_Status.ERR:
       return "ERR";
@@ -181,9 +173,7 @@ export enum WriteMemoryResult_Status {
   UNRECOGNIZED = -1,
 }
 
-export function writeMemoryResult_StatusFromJSON(
-  object: any
-): WriteMemoryResult_Status {
+export function writeMemoryResult_StatusFromJSON(object: any): WriteMemoryResult_Status {
   switch (object) {
     case 0:
     case "ERR":
@@ -198,9 +188,7 @@ export function writeMemoryResult_StatusFromJSON(
   }
 }
 
-export function writeMemoryResult_StatusToJSON(
-  object: WriteMemoryResult_Status
-): string {
+export function writeMemoryResult_StatusToJSON(object: WriteMemoryResult_Status): string {
   switch (object) {
     case WriteMemoryResult_Status.ERR:
       return "ERR";
@@ -263,7 +251,22 @@ export interface CreateGameObject {
   parent?: bigint | undefined;
 }
 
-export interface CreateGameObjectResult {}
+export interface CreateGameObjectResult {
+}
+
+/** Returns GetListSafePtrAddressResult */
+export interface AddSafePtrAddress {
+  address: bigint;
+  /** if true, removes the address */
+  remove: boolean;
+}
+
+export interface GetSafePtrAddresses {
+}
+
+export interface GetSafePtrAddressesResult {
+  address: bigint[];
+}
 
 /** TODO: Rename? */
 export interface PacketWrapper {
@@ -279,47 +282,26 @@ export interface PacketWrapper {
     | { $case: "searchObjects"; searchObjects: SearchObjects }
     | { $case: "searchObjectsResult"; searchObjectsResult: SearchObjectsResult }
     | { $case: "getAllGameObjects"; getAllGameObjects: GetAllGameObjects }
-    | {
-        $case: "getAllGameObjectsResult";
-        getAllGameObjectsResult: GetAllGameObjectsResult;
-      }
-    | {
-        $case: "getGameObjectComponents";
-        getGameObjectComponents: GetGameObjectComponents;
-      }
-    | {
-        $case: "getGameObjectComponentsResult";
-        getGameObjectComponentsResult: GetGameObjectComponentsResult;
-      }
+    | { $case: "getAllGameObjectsResult"; getAllGameObjectsResult: GetAllGameObjectsResult }
+    | { $case: "getGameObjectComponents"; getGameObjectComponents: GetGameObjectComponents }
+    | { $case: "getGameObjectComponentsResult"; getGameObjectComponentsResult: GetGameObjectComponentsResult }
     | { $case: "readMemory"; readMemory: ReadMemory }
     | { $case: "readMemoryResult"; readMemoryResult: ReadMemoryResult }
     | { $case: "writeMemory"; writeMemory: WriteMemory }
     | { $case: "writeMemoryResult"; writeMemoryResult: WriteMemoryResult }
     | { $case: "getClassDetails"; getClassDetails: GetClassDetails }
-    | {
-        $case: "getClassDetailsResult";
-        getClassDetailsResult: GetClassDetailsResult;
-      }
+    | { $case: "getClassDetailsResult"; getClassDetailsResult: GetClassDetailsResult }
     | { $case: "getInstanceClass"; getInstanceClass: GetInstanceClass }
-    | {
-        $case: "getInstanceClassResult";
-        getInstanceClassResult: GetInstanceClassResult;
-      }
+    | { $case: "getInstanceClassResult"; getInstanceClassResult: GetInstanceClassResult }
     | { $case: "getInstanceValues"; getInstanceValues: GetInstanceValues }
-    | {
-        $case: "getInstanceValuesResult";
-        getInstanceValuesResult: GetInstanceValuesResult;
-      }
+    | { $case: "getInstanceValuesResult"; getInstanceValuesResult: GetInstanceValuesResult }
     | { $case: "getInstanceDetails"; getInstanceDetails: GetInstanceDetails }
-    | {
-        $case: "getInstanceDetailsResult";
-        getInstanceDetailsResult: GetInstanceDetailsResult;
-      }
+    | { $case: "getInstanceDetailsResult"; getInstanceDetailsResult: GetInstanceDetailsResult }
     | { $case: "createGameObject"; createGameObject: CreateGameObject }
-    | {
-        $case: "createGameObjectResult";
-        createGameObjectResult: CreateGameObjectResult;
-      };
+    | { $case: "createGameObjectResult"; createGameObjectResult: CreateGameObjectResult }
+    | { $case: "addSafePtrAddress"; addSafePtrAddress: AddSafePtrAddress }
+    | { $case: "getSafePtrAddresses"; getSafePtrAddresses: GetSafePtrAddresses }
+    | { $case: "getSafePtrAddressesResult"; getSafePtrAddressesResult: GetSafePtrAddressesResult };
 }
 
 function createBaseSetField(): SetField {
@@ -327,10 +309,7 @@ function createBaseSetField(): SetField {
 }
 
 export const SetField = {
-  encode(
-    message: SetField,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: SetField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
@@ -344,8 +323,7 @@ export const SetField = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SetField {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetField();
     while (reader.pos < end) {
@@ -384,24 +362,16 @@ export const SetField = {
   fromJSON(object: any): SetField {
     return {
       fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress)
-        ? BigInt(object.objectAddress)
-        : BigInt("0"),
-      value: isSet(object.value)
-        ? ProtoDataPayload.fromJSON(object.value)
-        : undefined,
+      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
+      value: isSet(object.value) ? ProtoDataPayload.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: SetField): unknown {
     const obj: any = {};
     message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.objectAddress !== undefined &&
-      (obj.objectAddress = message.objectAddress.toString());
-    message.value !== undefined &&
-      (obj.value = message.value
-        ? ProtoDataPayload.toJSON(message.value)
-        : undefined);
+    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
+    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
     return obj;
   },
 
@@ -413,10 +383,9 @@ export const SetField = {
     const message = createBaseSetField();
     message.fieldId = object.fieldId ?? BigInt("0");
     message.objectAddress = object.objectAddress ?? BigInt("0");
-    message.value =
-      object.value !== undefined && object.value !== null
-        ? ProtoDataPayload.fromPartial(object.value)
-        : undefined;
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataPayload.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };
@@ -426,10 +395,7 @@ function createBaseSetFieldResult(): SetFieldResult {
 }
 
 export const SetFieldResult = {
-  encode(
-    message: SetFieldResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: SetFieldResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
@@ -437,8 +403,7 @@ export const SetFieldResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SetFieldResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetFieldResult();
     while (reader.pos < end) {
@@ -461,9 +426,7 @@ export const SetFieldResult = {
   },
 
   fromJSON(object: any): SetFieldResult {
-    return {
-      fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-    };
+    return { fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0") };
   },
 
   toJSON(message: SetFieldResult): unknown {
@@ -472,15 +435,11 @@ export const SetFieldResult = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SetFieldResult>, I>>(
-    base?: I
-  ): SetFieldResult {
+  create<I extends Exact<DeepPartial<SetFieldResult>, I>>(base?: I): SetFieldResult {
     return SetFieldResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<SetFieldResult>, I>>(
-    object: I
-  ): SetFieldResult {
+  fromPartial<I extends Exact<DeepPartial<SetFieldResult>, I>>(object: I): SetFieldResult {
     const message = createBaseSetFieldResult();
     message.fieldId = object.fieldId ?? BigInt("0");
     return message;
@@ -492,10 +451,7 @@ function createBaseGetField(): GetField {
 }
 
 export const GetField = {
-  encode(
-    message: GetField,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
@@ -506,8 +462,7 @@ export const GetField = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetField {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetField();
     while (reader.pos < end) {
@@ -539,17 +494,14 @@ export const GetField = {
   fromJSON(object: any): GetField {
     return {
       fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress)
-        ? BigInt(object.objectAddress)
-        : BigInt("0"),
+      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
     };
   },
 
   toJSON(message: GetField): unknown {
     const obj: any = {};
     message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.objectAddress !== undefined &&
-      (obj.objectAddress = message.objectAddress.toString());
+    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
     return obj;
   },
 
@@ -570,10 +522,7 @@ function createBaseGetFieldResult(): GetFieldResult {
 }
 
 export const GetFieldResult = {
-  encode(
-    message: GetFieldResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetFieldResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
@@ -584,8 +533,7 @@ export const GetFieldResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetFieldResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetFieldResult();
     while (reader.pos < end) {
@@ -617,55 +565,37 @@ export const GetFieldResult = {
   fromJSON(object: any): GetFieldResult {
     return {
       fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-      value: isSet(object.value)
-        ? ProtoDataPayload.fromJSON(object.value)
-        : undefined,
+      value: isSet(object.value) ? ProtoDataPayload.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: GetFieldResult): unknown {
     const obj: any = {};
     message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.value !== undefined &&
-      (obj.value = message.value
-        ? ProtoDataPayload.toJSON(message.value)
-        : undefined);
+    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetFieldResult>, I>>(
-    base?: I
-  ): GetFieldResult {
+  create<I extends Exact<DeepPartial<GetFieldResult>, I>>(base?: I): GetFieldResult {
     return GetFieldResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetFieldResult>, I>>(
-    object: I
-  ): GetFieldResult {
+  fromPartial<I extends Exact<DeepPartial<GetFieldResult>, I>>(object: I): GetFieldResult {
     const message = createBaseGetFieldResult();
     message.fieldId = object.fieldId ?? BigInt("0");
-    message.value =
-      object.value !== undefined && object.value !== null
-        ? ProtoDataPayload.fromPartial(object.value)
-        : undefined;
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataPayload.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };
 
 function createBaseInvokeMethod(): InvokeMethod {
-  return {
-    methodId: BigInt("0"),
-    objectAddress: BigInt("0"),
-    generics: [],
-    args: [],
-  };
+  return { methodId: BigInt("0"), objectAddress: BigInt("0"), generics: [], args: [] };
 }
 
 export const InvokeMethod = {
-  encode(
-    message: InvokeMethod,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: InvokeMethod, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.methodId !== BigInt("0")) {
       writer.uint32(8).uint64(message.methodId.toString());
     }
@@ -682,8 +612,7 @@ export const InvokeMethod = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): InvokeMethod {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInvokeMethod();
     while (reader.pos < end) {
@@ -729,76 +658,49 @@ export const InvokeMethod = {
   fromJSON(object: any): InvokeMethod {
     return {
       methodId: isSet(object.methodId) ? BigInt(object.methodId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress)
-        ? BigInt(object.objectAddress)
-        : BigInt("0"),
-      generics: Array.isArray(object?.generics)
-        ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e))
-        : [],
-      args: Array.isArray(object?.args)
-        ? object.args.map((e: any) => ProtoDataPayload.fromJSON(e))
-        : [],
+      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
+      generics: Array.isArray(object?.generics) ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e)) : [],
+      args: Array.isArray(object?.args) ? object.args.map((e: any) => ProtoDataPayload.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: InvokeMethod): unknown {
     const obj: any = {};
-    message.methodId !== undefined &&
-      (obj.methodId = message.methodId.toString());
-    message.objectAddress !== undefined &&
-      (obj.objectAddress = message.objectAddress.toString());
+    message.methodId !== undefined && (obj.methodId = message.methodId.toString());
+    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
     if (message.generics) {
-      obj.generics = message.generics.map((e) =>
-        e ? ProtoTypeInfo.toJSON(e) : undefined
-      );
+      obj.generics = message.generics.map((e) => e ? ProtoTypeInfo.toJSON(e) : undefined);
     } else {
       obj.generics = [];
     }
     if (message.args) {
-      obj.args = message.args.map((e) =>
-        e ? ProtoDataPayload.toJSON(e) : undefined
-      );
+      obj.args = message.args.map((e) => e ? ProtoDataPayload.toJSON(e) : undefined);
     } else {
       obj.args = [];
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<InvokeMethod>, I>>(
-    base?: I
-  ): InvokeMethod {
+  create<I extends Exact<DeepPartial<InvokeMethod>, I>>(base?: I): InvokeMethod {
     return InvokeMethod.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<InvokeMethod>, I>>(
-    object: I
-  ): InvokeMethod {
+  fromPartial<I extends Exact<DeepPartial<InvokeMethod>, I>>(object: I): InvokeMethod {
     const message = createBaseInvokeMethod();
     message.methodId = object.methodId ?? BigInt("0");
     message.objectAddress = object.objectAddress ?? BigInt("0");
-    message.generics =
-      object.generics?.map((e) => ProtoTypeInfo.fromPartial(e)) || [];
-    message.args =
-      object.args?.map((e) => ProtoDataPayload.fromPartial(e)) || [];
+    message.generics = object.generics?.map((e) => ProtoTypeInfo.fromPartial(e)) || [];
+    message.args = object.args?.map((e) => ProtoDataPayload.fromPartial(e)) || [];
     return message;
   },
 };
 
 function createBaseInvokeMethodResult(): InvokeMethodResult {
-  return {
-    status: 0,
-    methodId: BigInt("0"),
-    result: undefined,
-    byrefChanges: {},
-    error: undefined,
-  };
+  return { status: 0, methodId: BigInt("0"), result: undefined, byrefChanges: {}, error: undefined };
 }
 
 export const InvokeMethodResult = {
-  encode(
-    message: InvokeMethodResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: InvokeMethodResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.status !== 0) {
       writer.uint32(8).int32(message.status);
     }
@@ -806,16 +708,10 @@ export const InvokeMethodResult = {
       writer.uint32(16).uint64(message.methodId.toString());
     }
     if (message.result !== undefined) {
-      ProtoDataPayload.encode(
-        message.result,
-        writer.uint32(26).fork()
-      ).ldelim();
+      ProtoDataPayload.encode(message.result, writer.uint32(26).fork()).ldelim();
     }
     Object.entries(message.byrefChanges).forEach(([key, value]) => {
-      InvokeMethodResult_ByrefChangesEntry.encode(
-        { key: key as any, value },
-        writer.uint32(34).fork()
-      ).ldelim();
+      InvokeMethodResult_ByrefChangesEntry.encode({ key: key as any, value }, writer.uint32(34).fork()).ldelim();
     });
     if (message.error !== undefined) {
       writer.uint32(42).string(message.error);
@@ -824,8 +720,7 @@ export const InvokeMethodResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): InvokeMethodResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInvokeMethodResult();
     while (reader.pos < end) {
@@ -857,10 +752,7 @@ export const InvokeMethodResult = {
             break;
           }
 
-          const entry4 = InvokeMethodResult_ByrefChangesEntry.decode(
-            reader,
-            reader.uint32()
-          );
+          const entry4 = InvokeMethodResult_ByrefChangesEntry.decode(reader, reader.uint32());
           if (entry4.value !== undefined) {
             message.byrefChanges[entry4.key] = entry4.value;
           }
@@ -883,20 +775,14 @@ export const InvokeMethodResult = {
 
   fromJSON(object: any): InvokeMethodResult {
     return {
-      status: isSet(object.status)
-        ? invokeMethodResult_StatusFromJSON(object.status)
-        : 0,
+      status: isSet(object.status) ? invokeMethodResult_StatusFromJSON(object.status) : 0,
       methodId: isSet(object.methodId) ? BigInt(object.methodId) : BigInt("0"),
-      result: isSet(object.result)
-        ? ProtoDataPayload.fromJSON(object.result)
-        : undefined,
+      result: isSet(object.result) ? ProtoDataPayload.fromJSON(object.result) : undefined,
       byrefChanges: isObject(object.byrefChanges)
-        ? Object.entries(object.byrefChanges).reduce<{
-            [key: number]: ProtoDataPayload;
-          }>((acc, [key, value]) => {
-            acc[Number(key)] = ProtoDataPayload.fromJSON(value);
-            return acc;
-          }, {})
+        ? Object.entries(object.byrefChanges).reduce<{ [key: number]: ProtoDataPayload }>((acc, [key, value]) => {
+          acc[Number(key)] = ProtoDataPayload.fromJSON(value);
+          return acc;
+        }, {})
         : {},
       error: isSet(object.error) ? String(object.error) : undefined,
     };
@@ -904,14 +790,9 @@ export const InvokeMethodResult = {
 
   toJSON(message: InvokeMethodResult): unknown {
     const obj: any = {};
-    message.status !== undefined &&
-      (obj.status = invokeMethodResult_StatusToJSON(message.status));
-    message.methodId !== undefined &&
-      (obj.methodId = message.methodId.toString());
-    message.result !== undefined &&
-      (obj.result = message.result
-        ? ProtoDataPayload.toJSON(message.result)
-        : undefined);
+    message.status !== undefined && (obj.status = invokeMethodResult_StatusToJSON(message.status));
+    message.methodId !== undefined && (obj.methodId = message.methodId.toString());
+    message.result !== undefined && (obj.result = message.result ? ProtoDataPayload.toJSON(message.result) : undefined);
     obj.byrefChanges = {};
     if (message.byrefChanges) {
       Object.entries(message.byrefChanges).forEach(([k, v]) => {
@@ -922,30 +803,26 @@ export const InvokeMethodResult = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(
-    base?: I
-  ): InvokeMethodResult {
+  create<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(base?: I): InvokeMethodResult {
     return InvokeMethodResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(
-    object: I
-  ): InvokeMethodResult {
+  fromPartial<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(object: I): InvokeMethodResult {
     const message = createBaseInvokeMethodResult();
     message.status = object.status ?? 0;
     message.methodId = object.methodId ?? BigInt("0");
-    message.result =
-      object.result !== undefined && object.result !== null
-        ? ProtoDataPayload.fromPartial(object.result)
-        : undefined;
-    message.byrefChanges = Object.entries(object.byrefChanges ?? {}).reduce<{
-      [key: number]: ProtoDataPayload;
-    }>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[Number(key)] = ProtoDataPayload.fromPartial(value);
-      }
-      return acc;
-    }, {});
+    message.result = (object.result !== undefined && object.result !== null)
+      ? ProtoDataPayload.fromPartial(object.result)
+      : undefined;
+    message.byrefChanges = Object.entries(object.byrefChanges ?? {}).reduce<{ [key: number]: ProtoDataPayload }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = ProtoDataPayload.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
     message.error = object.error ?? undefined;
     return message;
   },
@@ -956,10 +833,7 @@ function createBaseInvokeMethodResult_ByrefChangesEntry(): InvokeMethodResult_By
 }
 
 export const InvokeMethodResult_ByrefChangesEntry = {
-  encode(
-    message: InvokeMethodResult_ByrefChangesEntry,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: InvokeMethodResult_ByrefChangesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== 0) {
       writer.uint32(8).int32(message.key);
     }
@@ -969,12 +843,8 @@ export const InvokeMethodResult_ByrefChangesEntry = {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): InvokeMethodResult_ByrefChangesEntry {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): InvokeMethodResult_ByrefChangesEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInvokeMethodResult_ByrefChangesEntry();
     while (reader.pos < end) {
@@ -1006,37 +876,31 @@ export const InvokeMethodResult_ByrefChangesEntry = {
   fromJSON(object: any): InvokeMethodResult_ByrefChangesEntry {
     return {
       key: isSet(object.key) ? Number(object.key) : 0,
-      value: isSet(object.value)
-        ? ProtoDataPayload.fromJSON(object.value)
-        : undefined,
+      value: isSet(object.value) ? ProtoDataPayload.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: InvokeMethodResult_ByrefChangesEntry): unknown {
     const obj: any = {};
     message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined &&
-      (obj.value = message.value
-        ? ProtoDataPayload.toJSON(message.value)
-        : undefined);
+    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
     return obj;
   },
 
   create<I extends Exact<DeepPartial<InvokeMethodResult_ByrefChangesEntry>, I>>(
-    base?: I
+    base?: I,
   ): InvokeMethodResult_ByrefChangesEntry {
     return InvokeMethodResult_ByrefChangesEntry.fromPartial(base ?? {});
   },
 
-  fromPartial<
-    I extends Exact<DeepPartial<InvokeMethodResult_ByrefChangesEntry>, I>
-  >(object: I): InvokeMethodResult_ByrefChangesEntry {
+  fromPartial<I extends Exact<DeepPartial<InvokeMethodResult_ByrefChangesEntry>, I>>(
+    object: I,
+  ): InvokeMethodResult_ByrefChangesEntry {
     const message = createBaseInvokeMethodResult_ByrefChangesEntry();
     message.key = object.key ?? 0;
-    message.value =
-      object.value !== undefined && object.value !== null
-        ? ProtoDataPayload.fromPartial(object.value)
-        : undefined;
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataPayload.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };
@@ -1046,15 +910,9 @@ function createBaseSearchObjects(): SearchObjects {
 }
 
 export const SearchObjects = {
-  encode(
-    message: SearchObjects,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: SearchObjects, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.componentClass !== undefined) {
-      ProtoClassInfo.encode(
-        message.componentClass,
-        writer.uint32(10).fork()
-      ).ldelim();
+      ProtoClassInfo.encode(message.componentClass, writer.uint32(10).fork()).ldelim();
     }
     if (message.name !== undefined) {
       writer.uint32(18).string(message.name);
@@ -1063,8 +921,7 @@ export const SearchObjects = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SearchObjects {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSearchObjects();
     while (reader.pos < end) {
@@ -1075,10 +932,7 @@ export const SearchObjects = {
             break;
           }
 
-          message.componentClass = ProtoClassInfo.decode(
-            reader,
-            reader.uint32()
-          );
+          message.componentClass = ProtoClassInfo.decode(reader, reader.uint32());
           continue;
         case 2:
           if (tag !== 18) {
@@ -1098,9 +952,7 @@ export const SearchObjects = {
 
   fromJSON(object: any): SearchObjects {
     return {
-      componentClass: isSet(object.componentClass)
-        ? ProtoClassInfo.fromJSON(object.componentClass)
-        : undefined,
+      componentClass: isSet(object.componentClass) ? ProtoClassInfo.fromJSON(object.componentClass) : undefined,
       name: isSet(object.name) ? String(object.name) : undefined,
     };
   },
@@ -1108,27 +960,20 @@ export const SearchObjects = {
   toJSON(message: SearchObjects): unknown {
     const obj: any = {};
     message.componentClass !== undefined &&
-      (obj.componentClass = message.componentClass
-        ? ProtoClassInfo.toJSON(message.componentClass)
-        : undefined);
+      (obj.componentClass = message.componentClass ? ProtoClassInfo.toJSON(message.componentClass) : undefined);
     message.name !== undefined && (obj.name = message.name);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SearchObjects>, I>>(
-    base?: I
-  ): SearchObjects {
+  create<I extends Exact<DeepPartial<SearchObjects>, I>>(base?: I): SearchObjects {
     return SearchObjects.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<SearchObjects>, I>>(
-    object: I
-  ): SearchObjects {
+  fromPartial<I extends Exact<DeepPartial<SearchObjects>, I>>(object: I): SearchObjects {
     const message = createBaseSearchObjects();
-    message.componentClass =
-      object.componentClass !== undefined && object.componentClass !== null
-        ? ProtoClassInfo.fromPartial(object.componentClass)
-        : undefined;
+    message.componentClass = (object.componentClass !== undefined && object.componentClass !== null)
+      ? ProtoClassInfo.fromPartial(object.componentClass)
+      : undefined;
     message.name = object.name ?? undefined;
     return message;
   },
@@ -1139,10 +984,7 @@ function createBaseSearchObjectsResult(): SearchObjectsResult {
 }
 
 export const SearchObjectsResult = {
-  encode(
-    message: SearchObjectsResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: SearchObjectsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.objects) {
       ProtoObject.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -1150,8 +992,7 @@ export const SearchObjectsResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SearchObjectsResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSearchObjectsResult();
     while (reader.pos < end) {
@@ -1174,37 +1015,26 @@ export const SearchObjectsResult = {
   },
 
   fromJSON(object: any): SearchObjectsResult {
-    return {
-      objects: Array.isArray(object?.objects)
-        ? object.objects.map((e: any) => ProtoObject.fromJSON(e))
-        : [],
-    };
+    return { objects: Array.isArray(object?.objects) ? object.objects.map((e: any) => ProtoObject.fromJSON(e)) : [] };
   },
 
   toJSON(message: SearchObjectsResult): unknown {
     const obj: any = {};
     if (message.objects) {
-      obj.objects = message.objects.map((e) =>
-        e ? ProtoObject.toJSON(e) : undefined
-      );
+      obj.objects = message.objects.map((e) => e ? ProtoObject.toJSON(e) : undefined);
     } else {
       obj.objects = [];
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(
-    base?: I
-  ): SearchObjectsResult {
+  create<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(base?: I): SearchObjectsResult {
     return SearchObjectsResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(
-    object: I
-  ): SearchObjectsResult {
+  fromPartial<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(object: I): SearchObjectsResult {
     const message = createBaseSearchObjectsResult();
-    message.objects =
-      object.objects?.map((e) => ProtoObject.fromPartial(e)) || [];
+    message.objects = object.objects?.map((e) => ProtoObject.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1214,16 +1044,12 @@ function createBaseGetAllGameObjects(): GetAllGameObjects {
 }
 
 export const GetAllGameObjects = {
-  encode(
-    _: GetAllGameObjects,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(_: GetAllGameObjects, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetAllGameObjects {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetAllGameObjects();
     while (reader.pos < end) {
@@ -1247,15 +1073,11 @@ export const GetAllGameObjects = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(
-    base?: I
-  ): GetAllGameObjects {
+  create<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(base?: I): GetAllGameObjects {
     return GetAllGameObjects.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(
-    _: I
-  ): GetAllGameObjects {
+  fromPartial<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(_: I): GetAllGameObjects {
     const message = createBaseGetAllGameObjects();
     return message;
   },
@@ -1266,22 +1088,15 @@ function createBaseGetAllGameObjectsResult(): GetAllGameObjectsResult {
 }
 
 export const GetAllGameObjectsResult = {
-  encode(
-    message: GetAllGameObjectsResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetAllGameObjectsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.objects) {
       ProtoGameObject.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetAllGameObjectsResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetAllGameObjectsResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetAllGameObjectsResult();
     while (reader.pos < end) {
@@ -1305,36 +1120,27 @@ export const GetAllGameObjectsResult = {
 
   fromJSON(object: any): GetAllGameObjectsResult {
     return {
-      objects: Array.isArray(object?.objects)
-        ? object.objects.map((e: any) => ProtoGameObject.fromJSON(e))
-        : [],
+      objects: Array.isArray(object?.objects) ? object.objects.map((e: any) => ProtoGameObject.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: GetAllGameObjectsResult): unknown {
     const obj: any = {};
     if (message.objects) {
-      obj.objects = message.objects.map((e) =>
-        e ? ProtoGameObject.toJSON(e) : undefined
-      );
+      obj.objects = message.objects.map((e) => e ? ProtoGameObject.toJSON(e) : undefined);
     } else {
       obj.objects = [];
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(
-    base?: I
-  ): GetAllGameObjectsResult {
+  create<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(base?: I): GetAllGameObjectsResult {
     return GetAllGameObjectsResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(
-    object: I
-  ): GetAllGameObjectsResult {
+  fromPartial<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(object: I): GetAllGameObjectsResult {
     const message = createBaseGetAllGameObjectsResult();
-    message.objects =
-      object.objects?.map((e) => ProtoGameObject.fromPartial(e)) || [];
+    message.objects = object.objects?.map((e) => ProtoGameObject.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1344,22 +1150,15 @@ function createBaseGetGameObjectComponents(): GetGameObjectComponents {
 }
 
 export const GetGameObjectComponents = {
-  encode(
-    message: GetGameObjectComponents,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetGameObjectComponents, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetGameObjectComponents {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetGameObjectComponents {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetGameObjectComponents();
     while (reader.pos < end) {
@@ -1382,9 +1181,7 @@ export const GetGameObjectComponents = {
   },
 
   fromJSON(object: any): GetGameObjectComponents {
-    return {
-      address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-    };
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
   },
 
   toJSON(message: GetGameObjectComponents): unknown {
@@ -1393,15 +1190,11 @@ export const GetGameObjectComponents = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(
-    base?: I
-  ): GetGameObjectComponents {
+  create<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(base?: I): GetGameObjectComponents {
     return GetGameObjectComponents.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(
-    object: I
-  ): GetGameObjectComponents {
+  fromPartial<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(object: I): GetGameObjectComponents {
     const message = createBaseGetGameObjectComponents();
     message.address = object.address ?? BigInt("0");
     return message;
@@ -1413,22 +1206,15 @@ function createBaseGetGameObjectComponentsResult(): GetGameObjectComponentsResul
 }
 
 export const GetGameObjectComponentsResult = {
-  encode(
-    message: GetGameObjectComponentsResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetGameObjectComponentsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.components) {
       ProtoComponent.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetGameObjectComponentsResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetGameObjectComponentsResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetGameObjectComponentsResult();
     while (reader.pos < end) {
@@ -1439,9 +1225,7 @@ export const GetGameObjectComponentsResult = {
             break;
           }
 
-          message.components.push(
-            ProtoComponent.decode(reader, reader.uint32())
-          );
+          message.components.push(ProtoComponent.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1463,27 +1247,22 @@ export const GetGameObjectComponentsResult = {
   toJSON(message: GetGameObjectComponentsResult): unknown {
     const obj: any = {};
     if (message.components) {
-      obj.components = message.components.map((e) =>
-        e ? ProtoComponent.toJSON(e) : undefined
-      );
+      obj.components = message.components.map((e) => e ? ProtoComponent.toJSON(e) : undefined);
     } else {
       obj.components = [];
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetGameObjectComponentsResult>, I>>(
-    base?: I
-  ): GetGameObjectComponentsResult {
+  create<I extends Exact<DeepPartial<GetGameObjectComponentsResult>, I>>(base?: I): GetGameObjectComponentsResult {
     return GetGameObjectComponentsResult.fromPartial(base ?? {});
   },
 
   fromPartial<I extends Exact<DeepPartial<GetGameObjectComponentsResult>, I>>(
-    object: I
+    object: I,
   ): GetGameObjectComponentsResult {
     const message = createBaseGetGameObjectComponentsResult();
-    message.components =
-      object.components?.map((e) => ProtoComponent.fromPartial(e)) || [];
+    message.components = object.components?.map((e) => ProtoComponent.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1493,10 +1272,7 @@ function createBaseReadMemory(): ReadMemory {
 }
 
 export const ReadMemory = {
-  encode(
-    message: ReadMemory,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: ReadMemory, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -1507,8 +1283,7 @@ export const ReadMemory = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ReadMemory {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReadMemory();
     while (reader.pos < end) {
@@ -1555,9 +1330,7 @@ export const ReadMemory = {
     return ReadMemory.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ReadMemory>, I>>(
-    object: I
-  ): ReadMemory {
+  fromPartial<I extends Exact<DeepPartial<ReadMemory>, I>>(object: I): ReadMemory {
     const message = createBaseReadMemory();
     message.address = object.address ?? BigInt("0");
     message.size = object.size ?? BigInt("0");
@@ -1566,14 +1339,11 @@ export const ReadMemory = {
 };
 
 function createBaseReadMemoryResult(): ReadMemoryResult {
-  return { status: 0, address: BigInt("0"), data: new Uint8Array() };
+  return { status: 0, address: BigInt("0"), data: new Uint8Array(0) };
 }
 
 export const ReadMemoryResult = {
-  encode(
-    message: ReadMemoryResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: ReadMemoryResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.status !== 0) {
       writer.uint32(8).int32(message.status);
     }
@@ -1587,8 +1357,7 @@ export const ReadMemoryResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ReadMemoryResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReadMemoryResult();
     while (reader.pos < end) {
@@ -1626,54 +1395,40 @@ export const ReadMemoryResult = {
 
   fromJSON(object: any): ReadMemoryResult {
     return {
-      status: isSet(object.status)
-        ? readMemoryResult_StatusFromJSON(object.status)
-        : 0,
+      status: isSet(object.status) ? readMemoryResult_StatusFromJSON(object.status) : 0,
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-      data: isSet(object.data)
-        ? bytesFromBase64(object.data)
-        : new Uint8Array(),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
     };
   },
 
   toJSON(message: ReadMemoryResult): unknown {
     const obj: any = {};
-    message.status !== undefined &&
-      (obj.status = readMemoryResult_StatusToJSON(message.status));
+    message.status !== undefined && (obj.status = readMemoryResult_StatusToJSON(message.status));
     message.address !== undefined && (obj.address = message.address.toString());
     message.data !== undefined &&
-      (obj.data = base64FromBytes(
-        message.data !== undefined ? message.data : new Uint8Array()
-      ));
+      (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array(0)));
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(
-    base?: I
-  ): ReadMemoryResult {
+  create<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(base?: I): ReadMemoryResult {
     return ReadMemoryResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(
-    object: I
-  ): ReadMemoryResult {
+  fromPartial<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(object: I): ReadMemoryResult {
     const message = createBaseReadMemoryResult();
     message.status = object.status ?? 0;
     message.address = object.address ?? BigInt("0");
-    message.data = object.data ?? new Uint8Array();
+    message.data = object.data ?? new Uint8Array(0);
     return message;
   },
 };
 
 function createBaseWriteMemory(): WriteMemory {
-  return { address: BigInt("0"), data: new Uint8Array() };
+  return { address: BigInt("0"), data: new Uint8Array(0) };
 }
 
 export const WriteMemory = {
-  encode(
-    message: WriteMemory,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: WriteMemory, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -1684,8 +1439,7 @@ export const WriteMemory = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): WriteMemory {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWriteMemory();
     while (reader.pos < end) {
@@ -1717,9 +1471,7 @@ export const WriteMemory = {
   fromJSON(object: any): WriteMemory {
     return {
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-      data: isSet(object.data)
-        ? bytesFromBase64(object.data)
-        : new Uint8Array(),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
     };
   },
 
@@ -1727,9 +1479,7 @@ export const WriteMemory = {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address.toString());
     message.data !== undefined &&
-      (obj.data = base64FromBytes(
-        message.data !== undefined ? message.data : new Uint8Array()
-      ));
+      (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array(0)));
     return obj;
   },
 
@@ -1737,12 +1487,10 @@ export const WriteMemory = {
     return WriteMemory.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<WriteMemory>, I>>(
-    object: I
-  ): WriteMemory {
+  fromPartial<I extends Exact<DeepPartial<WriteMemory>, I>>(object: I): WriteMemory {
     const message = createBaseWriteMemory();
     message.address = object.address ?? BigInt("0");
-    message.data = object.data ?? new Uint8Array();
+    message.data = object.data ?? new Uint8Array(0);
     return message;
   },
 };
@@ -1752,10 +1500,7 @@ function createBaseWriteMemoryResult(): WriteMemoryResult {
 }
 
 export const WriteMemoryResult = {
-  encode(
-    message: WriteMemoryResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: WriteMemoryResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.status !== 0) {
       writer.uint32(8).int32(message.status);
     }
@@ -1769,8 +1514,7 @@ export const WriteMemoryResult = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): WriteMemoryResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWriteMemoryResult();
     while (reader.pos < end) {
@@ -1808,9 +1552,7 @@ export const WriteMemoryResult = {
 
   fromJSON(object: any): WriteMemoryResult {
     return {
-      status: isSet(object.status)
-        ? writeMemoryResult_StatusFromJSON(object.status)
-        : 0,
+      status: isSet(object.status) ? writeMemoryResult_StatusFromJSON(object.status) : 0,
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
       size: isSet(object.size) ? BigInt(object.size) : BigInt("0"),
     };
@@ -1818,22 +1560,17 @@ export const WriteMemoryResult = {
 
   toJSON(message: WriteMemoryResult): unknown {
     const obj: any = {};
-    message.status !== undefined &&
-      (obj.status = writeMemoryResult_StatusToJSON(message.status));
+    message.status !== undefined && (obj.status = writeMemoryResult_StatusToJSON(message.status));
     message.address !== undefined && (obj.address = message.address.toString());
     message.size !== undefined && (obj.size = message.size.toString());
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(
-    base?: I
-  ): WriteMemoryResult {
+  create<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(base?: I): WriteMemoryResult {
     return WriteMemoryResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(
-    object: I
-  ): WriteMemoryResult {
+  fromPartial<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(object: I): WriteMemoryResult {
     const message = createBaseWriteMemoryResult();
     message.status = object.status ?? 0;
     message.address = object.address ?? BigInt("0");
@@ -1847,22 +1584,15 @@ function createBaseGetClassDetails(): GetClassDetails {
 }
 
 export const GetClassDetails = {
-  encode(
-    message: GetClassDetails,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetClassDetails, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.classInfo !== undefined) {
-      ProtoClassInfo.encode(
-        message.classInfo,
-        writer.uint32(10).fork()
-      ).ldelim();
+      ProtoClassInfo.encode(message.classInfo, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetClassDetails {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetClassDetails();
     while (reader.pos < end) {
@@ -1885,36 +1615,25 @@ export const GetClassDetails = {
   },
 
   fromJSON(object: any): GetClassDetails {
-    return {
-      classInfo: isSet(object.classInfo)
-        ? ProtoClassInfo.fromJSON(object.classInfo)
-        : undefined,
-    };
+    return { classInfo: isSet(object.classInfo) ? ProtoClassInfo.fromJSON(object.classInfo) : undefined };
   },
 
   toJSON(message: GetClassDetails): unknown {
     const obj: any = {};
     message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo
-        ? ProtoClassInfo.toJSON(message.classInfo)
-        : undefined);
+      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetClassDetails>, I>>(
-    base?: I
-  ): GetClassDetails {
+  create<I extends Exact<DeepPartial<GetClassDetails>, I>>(base?: I): GetClassDetails {
     return GetClassDetails.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetClassDetails>, I>>(
-    object: I
-  ): GetClassDetails {
+  fromPartial<I extends Exact<DeepPartial<GetClassDetails>, I>>(object: I): GetClassDetails {
     const message = createBaseGetClassDetails();
-    message.classInfo =
-      object.classInfo !== undefined && object.classInfo !== null
-        ? ProtoClassInfo.fromPartial(object.classInfo)
-        : undefined;
+    message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
+      ? ProtoClassInfo.fromPartial(object.classInfo)
+      : undefined;
     return message;
   },
 };
@@ -1924,25 +1643,15 @@ function createBaseGetClassDetailsResult(): GetClassDetailsResult {
 }
 
 export const GetClassDetailsResult = {
-  encode(
-    message: GetClassDetailsResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetClassDetailsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.classDetails !== undefined) {
-      ProtoClassDetails.encode(
-        message.classDetails,
-        writer.uint32(10).fork()
-      ).ldelim();
+      ProtoClassDetails.encode(message.classDetails, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetClassDetailsResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetClassDetailsResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetClassDetailsResult();
     while (reader.pos < end) {
@@ -1953,10 +1662,7 @@ export const GetClassDetailsResult = {
             break;
           }
 
-          message.classDetails = ProtoClassDetails.decode(
-            reader,
-            reader.uint32()
-          );
+          message.classDetails = ProtoClassDetails.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1968,36 +1674,25 @@ export const GetClassDetailsResult = {
   },
 
   fromJSON(object: any): GetClassDetailsResult {
-    return {
-      classDetails: isSet(object.classDetails)
-        ? ProtoClassDetails.fromJSON(object.classDetails)
-        : undefined,
-    };
+    return { classDetails: isSet(object.classDetails) ? ProtoClassDetails.fromJSON(object.classDetails) : undefined };
   },
 
   toJSON(message: GetClassDetailsResult): unknown {
     const obj: any = {};
     message.classDetails !== undefined &&
-      (obj.classDetails = message.classDetails
-        ? ProtoClassDetails.toJSON(message.classDetails)
-        : undefined);
+      (obj.classDetails = message.classDetails ? ProtoClassDetails.toJSON(message.classDetails) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(
-    base?: I
-  ): GetClassDetailsResult {
+  create<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(base?: I): GetClassDetailsResult {
     return GetClassDetailsResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(
-    object: I
-  ): GetClassDetailsResult {
+  fromPartial<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(object: I): GetClassDetailsResult {
     const message = createBaseGetClassDetailsResult();
-    message.classDetails =
-      object.classDetails !== undefined && object.classDetails !== null
-        ? ProtoClassDetails.fromPartial(object.classDetails)
-        : undefined;
+    message.classDetails = (object.classDetails !== undefined && object.classDetails !== null)
+      ? ProtoClassDetails.fromPartial(object.classDetails)
+      : undefined;
     return message;
   },
 };
@@ -2007,10 +1702,7 @@ function createBaseGetInstanceClass(): GetInstanceClass {
 }
 
 export const GetInstanceClass = {
-  encode(
-    message: GetInstanceClass,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -2018,8 +1710,7 @@ export const GetInstanceClass = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceClass {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceClass();
     while (reader.pos < end) {
@@ -2042,9 +1733,7 @@ export const GetInstanceClass = {
   },
 
   fromJSON(object: any): GetInstanceClass {
-    return {
-      address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-    };
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
   },
 
   toJSON(message: GetInstanceClass): unknown {
@@ -2053,15 +1742,11 @@ export const GetInstanceClass = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceClass>, I>>(
-    base?: I
-  ): GetInstanceClass {
+  create<I extends Exact<DeepPartial<GetInstanceClass>, I>>(base?: I): GetInstanceClass {
     return GetInstanceClass.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceClass>, I>>(
-    object: I
-  ): GetInstanceClass {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceClass>, I>>(object: I): GetInstanceClass {
     const message = createBaseGetInstanceClass();
     message.address = object.address ?? BigInt("0");
     return message;
@@ -2073,25 +1758,15 @@ function createBaseGetInstanceClassResult(): GetInstanceClassResult {
 }
 
 export const GetInstanceClassResult = {
-  encode(
-    message: GetInstanceClassResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceClassResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.classInfo !== undefined) {
-      ProtoClassInfo.encode(
-        message.classInfo,
-        writer.uint32(10).fork()
-      ).ldelim();
+      ProtoClassInfo.encode(message.classInfo, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetInstanceClassResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceClassResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceClassResult();
     while (reader.pos < end) {
@@ -2114,36 +1789,25 @@ export const GetInstanceClassResult = {
   },
 
   fromJSON(object: any): GetInstanceClassResult {
-    return {
-      classInfo: isSet(object.classInfo)
-        ? ProtoClassInfo.fromJSON(object.classInfo)
-        : undefined,
-    };
+    return { classInfo: isSet(object.classInfo) ? ProtoClassInfo.fromJSON(object.classInfo) : undefined };
   },
 
   toJSON(message: GetInstanceClassResult): unknown {
     const obj: any = {};
     message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo
-        ? ProtoClassInfo.toJSON(message.classInfo)
-        : undefined);
+      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(
-    base?: I
-  ): GetInstanceClassResult {
+  create<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(base?: I): GetInstanceClassResult {
     return GetInstanceClassResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(
-    object: I
-  ): GetInstanceClassResult {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(object: I): GetInstanceClassResult {
     const message = createBaseGetInstanceClassResult();
-    message.classInfo =
-      object.classInfo !== undefined && object.classInfo !== null
-        ? ProtoClassInfo.fromPartial(object.classInfo)
-        : undefined;
+    message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
+      ? ProtoClassInfo.fromPartial(object.classInfo)
+      : undefined;
     return message;
   },
 };
@@ -2153,10 +1817,7 @@ function createBaseGetInstanceValues(): GetInstanceValues {
 }
 
 export const GetInstanceValues = {
-  encode(
-    message: GetInstanceValues,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceValues, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -2164,8 +1825,7 @@ export const GetInstanceValues = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValues {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceValues();
     while (reader.pos < end) {
@@ -2188,9 +1848,7 @@ export const GetInstanceValues = {
   },
 
   fromJSON(object: any): GetInstanceValues {
-    return {
-      address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-    };
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
   },
 
   toJSON(message: GetInstanceValues): unknown {
@@ -2199,15 +1857,11 @@ export const GetInstanceValues = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceValues>, I>>(
-    base?: I
-  ): GetInstanceValues {
+  create<I extends Exact<DeepPartial<GetInstanceValues>, I>>(base?: I): GetInstanceValues {
     return GetInstanceValues.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceValues>, I>>(
-    object: I
-  ): GetInstanceValues {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValues>, I>>(object: I): GetInstanceValues {
     const message = createBaseGetInstanceValues();
     message.address = object.address ?? BigInt("0");
     return message;
@@ -2219,31 +1873,18 @@ function createBaseGetInstanceValuesResult(): GetInstanceValuesResult {
 }
 
 export const GetInstanceValuesResult = {
-  encode(
-    message: GetInstanceValuesResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceValuesResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     Object.entries(message.fieldValues).forEach(([key, value]) => {
-      GetInstanceValuesResult_FieldValuesEntry.encode(
-        { key: key as any, value },
-        writer.uint32(10).fork()
-      ).ldelim();
+      GetInstanceValuesResult_FieldValuesEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
     });
     Object.entries(message.propertyValues).forEach(([key, value]) => {
-      GetInstanceValuesResult_PropertyValuesEntry.encode(
-        { key: key as any, value },
-        writer.uint32(18).fork()
-      ).ldelim();
+      GetInstanceValuesResult_PropertyValuesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
     });
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetInstanceValuesResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceValuesResult();
     while (reader.pos < end) {
@@ -2254,10 +1895,7 @@ export const GetInstanceValuesResult = {
             break;
           }
 
-          const entry1 = GetInstanceValuesResult_FieldValuesEntry.decode(
-            reader,
-            reader.uint32()
-          );
+          const entry1 = GetInstanceValuesResult_FieldValuesEntry.decode(reader, reader.uint32());
           if (entry1.value !== undefined) {
             message.fieldValues[entry1.key] = entry1.value;
           }
@@ -2267,10 +1905,7 @@ export const GetInstanceValuesResult = {
             break;
           }
 
-          const entry2 = GetInstanceValuesResult_PropertyValuesEntry.decode(
-            reader,
-            reader.uint32()
-          );
+          const entry2 = GetInstanceValuesResult_PropertyValuesEntry.decode(reader, reader.uint32());
           if (entry2.value !== undefined) {
             message.propertyValues[entry2.key] = entry2.value;
           }
@@ -2287,20 +1922,16 @@ export const GetInstanceValuesResult = {
   fromJSON(object: any): GetInstanceValuesResult {
     return {
       fieldValues: isObject(object.fieldValues)
-        ? Object.entries(object.fieldValues).reduce<{
-            [key: bigint]: Uint8Array;
-          }>((acc, [key, value]) => {
-            acc[Number(key)] = bytesFromBase64(value as string);
-            return acc;
-          }, {})
+        ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
+          acc[Number(key)] = bytesFromBase64(value as string);
+          return acc;
+        }, {})
         : {},
       propertyValues: isObject(object.propertyValues)
-        ? Object.entries(object.propertyValues).reduce<{
-            [key: bigint]: Uint8Array;
-          }>((acc, [key, value]) => {
-            acc[Number(key)] = bytesFromBase64(value as string);
-            return acc;
-          }, {})
+        ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
+          acc[Number(key)] = bytesFromBase64(value as string);
+          return acc;
+        }, {})
         : {},
     };
   },
@@ -2322,45 +1953,40 @@ export const GetInstanceValuesResult = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(
-    base?: I
-  ): GetInstanceValuesResult {
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(base?: I): GetInstanceValuesResult {
     return GetInstanceValuesResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(
-    object: I
-  ): GetInstanceValuesResult {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(object: I): GetInstanceValuesResult {
     const message = createBaseGetInstanceValuesResult();
-    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{
-      [key: bigint]: Uint8Array;
-    }>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[Number(key)] = value;
-      }
-      return acc;
-    }, {});
-    message.propertyValues = Object.entries(
-      object.propertyValues ?? {}
-    ).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[Number(key)] = value;
-      }
-      return acc;
-    }, {});
+    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = value;
+        }
+        return acc;
+      },
+      {},
+    );
+    message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = value;
+        }
+        return acc;
+      },
+      {},
+    );
     return message;
   },
 };
 
 function createBaseGetInstanceValuesResult_FieldValuesEntry(): GetInstanceValuesResult_FieldValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array() };
+  return { key: BigInt("0"), value: new Uint8Array(0) };
 }
 
 export const GetInstanceValuesResult_FieldValuesEntry = {
-  encode(
-    message: GetInstanceValuesResult_FieldValuesEntry,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceValuesResult_FieldValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== BigInt("0")) {
       writer.uint32(8).uint64(message.key.toString());
     }
@@ -2370,12 +1996,8 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetInstanceValuesResult_FieldValuesEntry {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult_FieldValuesEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceValuesResult_FieldValuesEntry();
     while (reader.pos < end) {
@@ -2407,9 +2029,7 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
   fromJSON(object: any): GetInstanceValuesResult_FieldValuesEntry {
     return {
       key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value)
-        ? bytesFromBase64(object.value)
-        : new Uint8Array(),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
     };
   },
 
@@ -2417,37 +2037,32 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
     const obj: any = {};
     message.key !== undefined && (obj.key = message.key.toString());
     message.value !== undefined &&
-      (obj.value = base64FromBytes(
-        message.value !== undefined ? message.value : new Uint8Array()
-      ));
+      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array(0)));
     return obj;
   },
 
-  create<
-    I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>
-  >(base?: I): GetInstanceValuesResult_FieldValuesEntry {
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
+    base?: I,
+  ): GetInstanceValuesResult_FieldValuesEntry {
     return GetInstanceValuesResult_FieldValuesEntry.fromPartial(base ?? {});
   },
 
-  fromPartial<
-    I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>
-  >(object: I): GetInstanceValuesResult_FieldValuesEntry {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
+    object: I,
+  ): GetInstanceValuesResult_FieldValuesEntry {
     const message = createBaseGetInstanceValuesResult_FieldValuesEntry();
     message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array();
+    message.value = object.value ?? new Uint8Array(0);
     return message;
   },
 };
 
 function createBaseGetInstanceValuesResult_PropertyValuesEntry(): GetInstanceValuesResult_PropertyValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array() };
+  return { key: BigInt("0"), value: new Uint8Array(0) };
 }
 
 export const GetInstanceValuesResult_PropertyValuesEntry = {
-  encode(
-    message: GetInstanceValuesResult_PropertyValuesEntry,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceValuesResult_PropertyValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== BigInt("0")) {
       writer.uint32(8).uint64(message.key.toString());
     }
@@ -2457,12 +2072,8 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetInstanceValuesResult_PropertyValuesEntry {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceValuesResult_PropertyValuesEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceValuesResult_PropertyValuesEntry();
     while (reader.pos < end) {
@@ -2494,9 +2105,7 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
   fromJSON(object: any): GetInstanceValuesResult_PropertyValuesEntry {
     return {
       key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value)
-        ? bytesFromBase64(object.value)
-        : new Uint8Array(),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
     };
   },
 
@@ -2504,24 +2113,22 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
     const obj: any = {};
     message.key !== undefined && (obj.key = message.key.toString());
     message.value !== undefined &&
-      (obj.value = base64FromBytes(
-        message.value !== undefined ? message.value : new Uint8Array()
-      ));
+      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array(0)));
     return obj;
   },
 
-  create<
-    I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>
-  >(base?: I): GetInstanceValuesResult_PropertyValuesEntry {
+  create<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
+    base?: I,
+  ): GetInstanceValuesResult_PropertyValuesEntry {
     return GetInstanceValuesResult_PropertyValuesEntry.fromPartial(base ?? {});
   },
 
-  fromPartial<
-    I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>
-  >(object: I): GetInstanceValuesResult_PropertyValuesEntry {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
+    object: I,
+  ): GetInstanceValuesResult_PropertyValuesEntry {
     const message = createBaseGetInstanceValuesResult_PropertyValuesEntry();
     message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array();
+    message.value = object.value ?? new Uint8Array(0);
     return message;
   },
 };
@@ -2531,10 +2138,7 @@ function createBaseGetInstanceDetails(): GetInstanceDetails {
 }
 
 export const GetInstanceDetails = {
-  encode(
-    message: GetInstanceDetails,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceDetails, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
       writer.uint32(8).uint64(message.address.toString());
     }
@@ -2542,8 +2146,7 @@ export const GetInstanceDetails = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceDetails {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceDetails();
     while (reader.pos < end) {
@@ -2566,9 +2169,7 @@ export const GetInstanceDetails = {
   },
 
   fromJSON(object: any): GetInstanceDetails {
-    return {
-      address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-    };
+    return { address: isSet(object.address) ? BigInt(object.address) : BigInt("0") };
   },
 
   toJSON(message: GetInstanceDetails): unknown {
@@ -2577,15 +2178,11 @@ export const GetInstanceDetails = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(
-    base?: I
-  ): GetInstanceDetails {
+  create<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(base?: I): GetInstanceDetails {
     return GetInstanceDetails.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(
-    object: I
-  ): GetInstanceDetails {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(object: I): GetInstanceDetails {
     const message = createBaseGetInstanceDetails();
     message.address = object.address ?? BigInt("0");
     return message;
@@ -2597,31 +2194,18 @@ function createBaseGetInstanceDetailsResult(): GetInstanceDetailsResult {
 }
 
 export const GetInstanceDetailsResult = {
-  encode(
-    message: GetInstanceDetailsResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetInstanceDetailsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.classDetails !== undefined) {
-      ProtoClassDetails.encode(
-        message.classDetails,
-        writer.uint32(10).fork()
-      ).ldelim();
+      ProtoClassDetails.encode(message.classDetails, writer.uint32(10).fork()).ldelim();
     }
     if (message.values !== undefined) {
-      GetInstanceValuesResult.encode(
-        message.values,
-        writer.uint32(18).fork()
-      ).ldelim();
+      GetInstanceValuesResult.encode(message.values, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetInstanceDetailsResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetInstanceDetailsResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetInstanceDetailsResult();
     while (reader.pos < end) {
@@ -2632,20 +2216,14 @@ export const GetInstanceDetailsResult = {
             break;
           }
 
-          message.classDetails = ProtoClassDetails.decode(
-            reader,
-            reader.uint32()
-          );
+          message.classDetails = ProtoClassDetails.decode(reader, reader.uint32());
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.values = GetInstanceValuesResult.decode(
-            reader,
-            reader.uint32()
-          );
+          message.values = GetInstanceValuesResult.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2658,46 +2236,32 @@ export const GetInstanceDetailsResult = {
 
   fromJSON(object: any): GetInstanceDetailsResult {
     return {
-      classDetails: isSet(object.classDetails)
-        ? ProtoClassDetails.fromJSON(object.classDetails)
-        : undefined,
-      values: isSet(object.values)
-        ? GetInstanceValuesResult.fromJSON(object.values)
-        : undefined,
+      classDetails: isSet(object.classDetails) ? ProtoClassDetails.fromJSON(object.classDetails) : undefined,
+      values: isSet(object.values) ? GetInstanceValuesResult.fromJSON(object.values) : undefined,
     };
   },
 
   toJSON(message: GetInstanceDetailsResult): unknown {
     const obj: any = {};
     message.classDetails !== undefined &&
-      (obj.classDetails = message.classDetails
-        ? ProtoClassDetails.toJSON(message.classDetails)
-        : undefined);
+      (obj.classDetails = message.classDetails ? ProtoClassDetails.toJSON(message.classDetails) : undefined);
     message.values !== undefined &&
-      (obj.values = message.values
-        ? GetInstanceValuesResult.toJSON(message.values)
-        : undefined);
+      (obj.values = message.values ? GetInstanceValuesResult.toJSON(message.values) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(
-    base?: I
-  ): GetInstanceDetailsResult {
+  create<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(base?: I): GetInstanceDetailsResult {
     return GetInstanceDetailsResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(
-    object: I
-  ): GetInstanceDetailsResult {
+  fromPartial<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(object: I): GetInstanceDetailsResult {
     const message = createBaseGetInstanceDetailsResult();
-    message.classDetails =
-      object.classDetails !== undefined && object.classDetails !== null
-        ? ProtoClassDetails.fromPartial(object.classDetails)
-        : undefined;
-    message.values =
-      object.values !== undefined && object.values !== null
-        ? GetInstanceValuesResult.fromPartial(object.values)
-        : undefined;
+    message.classDetails = (object.classDetails !== undefined && object.classDetails !== null)
+      ? ProtoClassDetails.fromPartial(object.classDetails)
+      : undefined;
+    message.values = (object.values !== undefined && object.values !== null)
+      ? GetInstanceValuesResult.fromPartial(object.values)
+      : undefined;
     return message;
   },
 };
@@ -2707,10 +2271,7 @@ function createBaseCreateGameObject(): CreateGameObject {
 }
 
 export const CreateGameObject = {
-  encode(
-    message: CreateGameObject,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: CreateGameObject, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -2721,8 +2282,7 @@ export const CreateGameObject = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): CreateGameObject {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateGameObject();
     while (reader.pos < end) {
@@ -2765,15 +2325,11 @@ export const CreateGameObject = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateGameObject>, I>>(
-    base?: I
-  ): CreateGameObject {
+  create<I extends Exact<DeepPartial<CreateGameObject>, I>>(base?: I): CreateGameObject {
     return CreateGameObject.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<CreateGameObject>, I>>(
-    object: I
-  ): CreateGameObject {
+  fromPartial<I extends Exact<DeepPartial<CreateGameObject>, I>>(object: I): CreateGameObject {
     const message = createBaseCreateGameObject();
     message.name = object.name ?? "";
     message.parent = object.parent ?? undefined;
@@ -2786,19 +2342,12 @@ function createBaseCreateGameObjectResult(): CreateGameObjectResult {
 }
 
 export const CreateGameObjectResult = {
-  encode(
-    _: CreateGameObjectResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(_: CreateGameObjectResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): CreateGameObjectResult {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateGameObjectResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateGameObjectResult();
     while (reader.pos < end) {
@@ -2822,16 +2371,199 @@ export const CreateGameObjectResult = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(
-    base?: I
-  ): CreateGameObjectResult {
+  create<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(base?: I): CreateGameObjectResult {
     return CreateGameObjectResult.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(
-    _: I
-  ): CreateGameObjectResult {
+  fromPartial<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(_: I): CreateGameObjectResult {
     const message = createBaseCreateGameObjectResult();
+    return message;
+  },
+};
+
+function createBaseAddSafePtrAddress(): AddSafePtrAddress {
+  return { address: BigInt("0"), remove: false };
+}
+
+export const AddSafePtrAddress = {
+  encode(message: AddSafePtrAddress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== BigInt("0")) {
+      writer.uint32(8).uint64(message.address.toString());
+    }
+    if (message.remove === true) {
+      writer.uint32(16).bool(message.remove);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AddSafePtrAddress {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAddSafePtrAddress();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.address = longToBigint(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.remove = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddSafePtrAddress {
+    return {
+      address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
+      remove: isSet(object.remove) ? Boolean(object.remove) : false,
+    };
+  },
+
+  toJSON(message: AddSafePtrAddress): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address.toString());
+    message.remove !== undefined && (obj.remove = message.remove);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AddSafePtrAddress>, I>>(base?: I): AddSafePtrAddress {
+    return AddSafePtrAddress.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AddSafePtrAddress>, I>>(object: I): AddSafePtrAddress {
+    const message = createBaseAddSafePtrAddress();
+    message.address = object.address ?? BigInt("0");
+    message.remove = object.remove ?? false;
+    return message;
+  },
+};
+
+function createBaseGetSafePtrAddresses(): GetSafePtrAddresses {
+  return {};
+}
+
+export const GetSafePtrAddresses = {
+  encode(_: GetSafePtrAddresses, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetSafePtrAddresses {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetSafePtrAddresses();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetSafePtrAddresses {
+    return {};
+  },
+
+  toJSON(_: GetSafePtrAddresses): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetSafePtrAddresses>, I>>(base?: I): GetSafePtrAddresses {
+    return GetSafePtrAddresses.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetSafePtrAddresses>, I>>(_: I): GetSafePtrAddresses {
+    const message = createBaseGetSafePtrAddresses();
+    return message;
+  },
+};
+
+function createBaseGetSafePtrAddressesResult(): GetSafePtrAddressesResult {
+  return { address: [] };
+}
+
+export const GetSafePtrAddressesResult = {
+  encode(message: GetSafePtrAddressesResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    writer.uint32(10).fork();
+    for (const v of message.address) {
+      writer.uint64(v.toString());
+    }
+    writer.ldelim();
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetSafePtrAddressesResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetSafePtrAddressesResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag === 8) {
+            message.address.push(longToBigint(reader.uint64() as Long));
+
+            continue;
+          }
+
+          if (tag === 10) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.address.push(longToBigint(reader.uint64() as Long));
+            }
+
+            continue;
+          }
+
+          break;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetSafePtrAddressesResult {
+    return { address: Array.isArray(object?.address) ? object.address.map((e: any) => BigInt(e)) : [] };
+  },
+
+  toJSON(message: GetSafePtrAddressesResult): unknown {
+    const obj: any = {};
+    if (message.address) {
+      obj.address = message.address.map((e) => e.toString());
+    } else {
+      obj.address = [];
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetSafePtrAddressesResult>, I>>(base?: I): GetSafePtrAddressesResult {
+    return GetSafePtrAddressesResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetSafePtrAddressesResult>, I>>(object: I): GetSafePtrAddressesResult {
+    const message = createBaseGetSafePtrAddressesResult();
+    message.address = object.address?.map((e) => e) || [];
     return message;
   },
 };
@@ -2841,10 +2573,7 @@ function createBasePacketWrapper(): PacketWrapper {
 }
 
 export const PacketWrapper = {
-  encode(
-    message: PacketWrapper,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: PacketWrapper, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.queryResultId !== BigInt("0")) {
       writer.uint32(8).uint64(message.queryResultId.toString());
     }
@@ -2853,168 +2582,99 @@ export const PacketWrapper = {
         writer.uint32(18).string(message.Packet.inputError);
         break;
       case "setField":
-        SetField.encode(
-          message.Packet.setField,
-          writer.uint32(26).fork()
-        ).ldelim();
+        SetField.encode(message.Packet.setField, writer.uint32(26).fork()).ldelim();
         break;
       case "setFieldResult":
-        SetFieldResult.encode(
-          message.Packet.setFieldResult,
-          writer.uint32(34).fork()
-        ).ldelim();
+        SetFieldResult.encode(message.Packet.setFieldResult, writer.uint32(34).fork()).ldelim();
         break;
       case "getField":
-        GetField.encode(
-          message.Packet.getField,
-          writer.uint32(42).fork()
-        ).ldelim();
+        GetField.encode(message.Packet.getField, writer.uint32(42).fork()).ldelim();
         break;
       case "getFieldResult":
-        GetFieldResult.encode(
-          message.Packet.getFieldResult,
-          writer.uint32(50).fork()
-        ).ldelim();
+        GetFieldResult.encode(message.Packet.getFieldResult, writer.uint32(50).fork()).ldelim();
         break;
       case "invokeMethod":
-        InvokeMethod.encode(
-          message.Packet.invokeMethod,
-          writer.uint32(58).fork()
-        ).ldelim();
+        InvokeMethod.encode(message.Packet.invokeMethod, writer.uint32(58).fork()).ldelim();
         break;
       case "invokeMethodResult":
-        InvokeMethodResult.encode(
-          message.Packet.invokeMethodResult,
-          writer.uint32(66).fork()
-        ).ldelim();
+        InvokeMethodResult.encode(message.Packet.invokeMethodResult, writer.uint32(66).fork()).ldelim();
         break;
       case "searchObjects":
-        SearchObjects.encode(
-          message.Packet.searchObjects,
-          writer.uint32(74).fork()
-        ).ldelim();
+        SearchObjects.encode(message.Packet.searchObjects, writer.uint32(74).fork()).ldelim();
         break;
       case "searchObjectsResult":
-        SearchObjectsResult.encode(
-          message.Packet.searchObjectsResult,
-          writer.uint32(82).fork()
-        ).ldelim();
+        SearchObjectsResult.encode(message.Packet.searchObjectsResult, writer.uint32(82).fork()).ldelim();
         break;
       case "getAllGameObjects":
-        GetAllGameObjects.encode(
-          message.Packet.getAllGameObjects,
-          writer.uint32(90).fork()
-        ).ldelim();
+        GetAllGameObjects.encode(message.Packet.getAllGameObjects, writer.uint32(90).fork()).ldelim();
         break;
       case "getAllGameObjectsResult":
-        GetAllGameObjectsResult.encode(
-          message.Packet.getAllGameObjectsResult,
-          writer.uint32(98).fork()
-        ).ldelim();
+        GetAllGameObjectsResult.encode(message.Packet.getAllGameObjectsResult, writer.uint32(98).fork()).ldelim();
         break;
       case "getGameObjectComponents":
-        GetGameObjectComponents.encode(
-          message.Packet.getGameObjectComponents,
-          writer.uint32(106).fork()
-        ).ldelim();
+        GetGameObjectComponents.encode(message.Packet.getGameObjectComponents, writer.uint32(106).fork()).ldelim();
         break;
       case "getGameObjectComponentsResult":
-        GetGameObjectComponentsResult.encode(
-          message.Packet.getGameObjectComponentsResult,
-          writer.uint32(114).fork()
-        ).ldelim();
+        GetGameObjectComponentsResult.encode(message.Packet.getGameObjectComponentsResult, writer.uint32(114).fork())
+          .ldelim();
         break;
       case "readMemory":
-        ReadMemory.encode(
-          message.Packet.readMemory,
-          writer.uint32(122).fork()
-        ).ldelim();
+        ReadMemory.encode(message.Packet.readMemory, writer.uint32(122).fork()).ldelim();
         break;
       case "readMemoryResult":
-        ReadMemoryResult.encode(
-          message.Packet.readMemoryResult,
-          writer.uint32(130).fork()
-        ).ldelim();
+        ReadMemoryResult.encode(message.Packet.readMemoryResult, writer.uint32(130).fork()).ldelim();
         break;
       case "writeMemory":
-        WriteMemory.encode(
-          message.Packet.writeMemory,
-          writer.uint32(138).fork()
-        ).ldelim();
+        WriteMemory.encode(message.Packet.writeMemory, writer.uint32(138).fork()).ldelim();
         break;
       case "writeMemoryResult":
-        WriteMemoryResult.encode(
-          message.Packet.writeMemoryResult,
-          writer.uint32(146).fork()
-        ).ldelim();
+        WriteMemoryResult.encode(message.Packet.writeMemoryResult, writer.uint32(146).fork()).ldelim();
         break;
       case "getClassDetails":
-        GetClassDetails.encode(
-          message.Packet.getClassDetails,
-          writer.uint32(154).fork()
-        ).ldelim();
+        GetClassDetails.encode(message.Packet.getClassDetails, writer.uint32(154).fork()).ldelim();
         break;
       case "getClassDetailsResult":
-        GetClassDetailsResult.encode(
-          message.Packet.getClassDetailsResult,
-          writer.uint32(162).fork()
-        ).ldelim();
+        GetClassDetailsResult.encode(message.Packet.getClassDetailsResult, writer.uint32(162).fork()).ldelim();
         break;
       case "getInstanceClass":
-        GetInstanceClass.encode(
-          message.Packet.getInstanceClass,
-          writer.uint32(170).fork()
-        ).ldelim();
+        GetInstanceClass.encode(message.Packet.getInstanceClass, writer.uint32(170).fork()).ldelim();
         break;
       case "getInstanceClassResult":
-        GetInstanceClassResult.encode(
-          message.Packet.getInstanceClassResult,
-          writer.uint32(178).fork()
-        ).ldelim();
+        GetInstanceClassResult.encode(message.Packet.getInstanceClassResult, writer.uint32(178).fork()).ldelim();
         break;
       case "getInstanceValues":
-        GetInstanceValues.encode(
-          message.Packet.getInstanceValues,
-          writer.uint32(186).fork()
-        ).ldelim();
+        GetInstanceValues.encode(message.Packet.getInstanceValues, writer.uint32(186).fork()).ldelim();
         break;
       case "getInstanceValuesResult":
-        GetInstanceValuesResult.encode(
-          message.Packet.getInstanceValuesResult,
-          writer.uint32(194).fork()
-        ).ldelim();
+        GetInstanceValuesResult.encode(message.Packet.getInstanceValuesResult, writer.uint32(194).fork()).ldelim();
         break;
       case "getInstanceDetails":
-        GetInstanceDetails.encode(
-          message.Packet.getInstanceDetails,
-          writer.uint32(202).fork()
-        ).ldelim();
+        GetInstanceDetails.encode(message.Packet.getInstanceDetails, writer.uint32(202).fork()).ldelim();
         break;
       case "getInstanceDetailsResult":
-        GetInstanceDetailsResult.encode(
-          message.Packet.getInstanceDetailsResult,
-          writer.uint32(210).fork()
-        ).ldelim();
+        GetInstanceDetailsResult.encode(message.Packet.getInstanceDetailsResult, writer.uint32(210).fork()).ldelim();
         break;
       case "createGameObject":
-        CreateGameObject.encode(
-          message.Packet.createGameObject,
-          writer.uint32(218).fork()
-        ).ldelim();
+        CreateGameObject.encode(message.Packet.createGameObject, writer.uint32(218).fork()).ldelim();
         break;
       case "createGameObjectResult":
-        CreateGameObjectResult.encode(
-          message.Packet.createGameObjectResult,
-          writer.uint32(226).fork()
-        ).ldelim();
+        CreateGameObjectResult.encode(message.Packet.createGameObjectResult, writer.uint32(226).fork()).ldelim();
+        break;
+      case "addSafePtrAddress":
+        AddSafePtrAddress.encode(message.Packet.addSafePtrAddress, writer.uint32(234).fork()).ldelim();
+        break;
+      case "getSafePtrAddresses":
+        GetSafePtrAddresses.encode(message.Packet.getSafePtrAddresses, writer.uint32(242).fork()).ldelim();
+        break;
+      case "getSafePtrAddressesResult":
+        GetSafePtrAddressesResult.encode(message.Packet.getSafePtrAddressesResult, writer.uint32(250).fork()).ldelim();
         break;
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketWrapper {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketWrapper();
     while (reader.pos < end) {
@@ -3039,50 +2699,35 @@ export const PacketWrapper = {
             break;
           }
 
-          message.Packet = {
-            $case: "setField",
-            setField: SetField.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "setField", setField: SetField.decode(reader, reader.uint32()) };
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.Packet = {
-            $case: "setFieldResult",
-            setFieldResult: SetFieldResult.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "setFieldResult", setFieldResult: SetFieldResult.decode(reader, reader.uint32()) };
           continue;
         case 5:
           if (tag !== 42) {
             break;
           }
 
-          message.Packet = {
-            $case: "getField",
-            getField: GetField.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "getField", getField: GetField.decode(reader, reader.uint32()) };
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.Packet = {
-            $case: "getFieldResult",
-            getFieldResult: GetFieldResult.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "getFieldResult", getFieldResult: GetFieldResult.decode(reader, reader.uint32()) };
           continue;
         case 7:
           if (tag !== 58) {
             break;
           }
 
-          message.Packet = {
-            $case: "invokeMethod",
-            invokeMethod: InvokeMethod.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "invokeMethod", invokeMethod: InvokeMethod.decode(reader, reader.uint32()) };
           continue;
         case 8:
           if (tag !== 66) {
@@ -3091,10 +2736,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "invokeMethodResult",
-            invokeMethodResult: InvokeMethodResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            invokeMethodResult: InvokeMethodResult.decode(reader, reader.uint32()),
           };
           continue;
         case 9:
@@ -3102,10 +2744,7 @@ export const PacketWrapper = {
             break;
           }
 
-          message.Packet = {
-            $case: "searchObjects",
-            searchObjects: SearchObjects.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "searchObjects", searchObjects: SearchObjects.decode(reader, reader.uint32()) };
           continue;
         case 10:
           if (tag !== 82) {
@@ -3114,10 +2753,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "searchObjectsResult",
-            searchObjectsResult: SearchObjectsResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            searchObjectsResult: SearchObjectsResult.decode(reader, reader.uint32()),
           };
           continue;
         case 11:
@@ -3127,10 +2763,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getAllGameObjects",
-            getAllGameObjects: GetAllGameObjects.decode(
-              reader,
-              reader.uint32()
-            ),
+            getAllGameObjects: GetAllGameObjects.decode(reader, reader.uint32()),
           };
           continue;
         case 12:
@@ -3140,10 +2773,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getAllGameObjectsResult",
-            getAllGameObjectsResult: GetAllGameObjectsResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getAllGameObjectsResult: GetAllGameObjectsResult.decode(reader, reader.uint32()),
           };
           continue;
         case 13:
@@ -3153,10 +2783,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getGameObjectComponents",
-            getGameObjectComponents: GetGameObjectComponents.decode(
-              reader,
-              reader.uint32()
-            ),
+            getGameObjectComponents: GetGameObjectComponents.decode(reader, reader.uint32()),
           };
           continue;
         case 14:
@@ -3166,10 +2793,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getGameObjectComponentsResult",
-            getGameObjectComponentsResult: GetGameObjectComponentsResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getGameObjectComponentsResult: GetGameObjectComponentsResult.decode(reader, reader.uint32()),
           };
           continue;
         case 15:
@@ -3177,10 +2801,7 @@ export const PacketWrapper = {
             break;
           }
 
-          message.Packet = {
-            $case: "readMemory",
-            readMemory: ReadMemory.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "readMemory", readMemory: ReadMemory.decode(reader, reader.uint32()) };
           continue;
         case 16:
           if (tag !== 130) {
@@ -3197,10 +2818,7 @@ export const PacketWrapper = {
             break;
           }
 
-          message.Packet = {
-            $case: "writeMemory",
-            writeMemory: WriteMemory.decode(reader, reader.uint32()),
-          };
+          message.Packet = { $case: "writeMemory", writeMemory: WriteMemory.decode(reader, reader.uint32()) };
           continue;
         case 18:
           if (tag !== 146) {
@@ -3209,10 +2827,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "writeMemoryResult",
-            writeMemoryResult: WriteMemoryResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            writeMemoryResult: WriteMemoryResult.decode(reader, reader.uint32()),
           };
           continue;
         case 19:
@@ -3232,10 +2847,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getClassDetailsResult",
-            getClassDetailsResult: GetClassDetailsResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getClassDetailsResult: GetClassDetailsResult.decode(reader, reader.uint32()),
           };
           continue;
         case 21:
@@ -3255,10 +2867,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getInstanceClassResult",
-            getInstanceClassResult: GetInstanceClassResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getInstanceClassResult: GetInstanceClassResult.decode(reader, reader.uint32()),
           };
           continue;
         case 23:
@@ -3268,10 +2877,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getInstanceValues",
-            getInstanceValues: GetInstanceValues.decode(
-              reader,
-              reader.uint32()
-            ),
+            getInstanceValues: GetInstanceValues.decode(reader, reader.uint32()),
           };
           continue;
         case 24:
@@ -3281,10 +2887,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getInstanceValuesResult",
-            getInstanceValuesResult: GetInstanceValuesResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getInstanceValuesResult: GetInstanceValuesResult.decode(reader, reader.uint32()),
           };
           continue;
         case 25:
@@ -3294,10 +2897,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getInstanceDetails",
-            getInstanceDetails: GetInstanceDetails.decode(
-              reader,
-              reader.uint32()
-            ),
+            getInstanceDetails: GetInstanceDetails.decode(reader, reader.uint32()),
           };
           continue;
         case 26:
@@ -3307,10 +2907,7 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "getInstanceDetailsResult",
-            getInstanceDetailsResult: GetInstanceDetailsResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            getInstanceDetailsResult: GetInstanceDetailsResult.decode(reader, reader.uint32()),
           };
           continue;
         case 27:
@@ -3330,10 +2927,37 @@ export const PacketWrapper = {
 
           message.Packet = {
             $case: "createGameObjectResult",
-            createGameObjectResult: CreateGameObjectResult.decode(
-              reader,
-              reader.uint32()
-            ),
+            createGameObjectResult: CreateGameObjectResult.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 29:
+          if (tag !== 234) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "addSafePtrAddress",
+            addSafePtrAddress: AddSafePtrAddress.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 30:
+          if (tag !== 242) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getSafePtrAddresses",
+            getSafePtrAddresses: GetSafePtrAddresses.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 31:
+          if (tag !== 250) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getSafePtrAddressesResult",
+            getSafePtrAddressesResult: GetSafePtrAddressesResult.decode(reader, reader.uint32()),
           };
           continue;
       }
@@ -3347,307 +2971,207 @@ export const PacketWrapper = {
 
   fromJSON(object: any): PacketWrapper {
     return {
-      queryResultId: isSet(object.queryResultId)
-        ? BigInt(object.queryResultId)
-        : BigInt("0"),
+      queryResultId: isSet(object.queryResultId) ? BigInt(object.queryResultId) : BigInt("0"),
       Packet: isSet(object.inputError)
         ? { $case: "inputError", inputError: String(object.inputError) }
         : isSet(object.setField)
         ? { $case: "setField", setField: SetField.fromJSON(object.setField) }
         : isSet(object.setFieldResult)
-        ? {
-            $case: "setFieldResult",
-            setFieldResult: SetFieldResult.fromJSON(object.setFieldResult),
-          }
+        ? { $case: "setFieldResult", setFieldResult: SetFieldResult.fromJSON(object.setFieldResult) }
         : isSet(object.getField)
         ? { $case: "getField", getField: GetField.fromJSON(object.getField) }
         : isSet(object.getFieldResult)
-        ? {
-            $case: "getFieldResult",
-            getFieldResult: GetFieldResult.fromJSON(object.getFieldResult),
-          }
+        ? { $case: "getFieldResult", getFieldResult: GetFieldResult.fromJSON(object.getFieldResult) }
         : isSet(object.invokeMethod)
-        ? {
-            $case: "invokeMethod",
-            invokeMethod: InvokeMethod.fromJSON(object.invokeMethod),
-          }
+        ? { $case: "invokeMethod", invokeMethod: InvokeMethod.fromJSON(object.invokeMethod) }
         : isSet(object.invokeMethodResult)
-        ? {
-            $case: "invokeMethodResult",
-            invokeMethodResult: InvokeMethodResult.fromJSON(
-              object.invokeMethodResult
-            ),
-          }
+        ? { $case: "invokeMethodResult", invokeMethodResult: InvokeMethodResult.fromJSON(object.invokeMethodResult) }
         : isSet(object.searchObjects)
-        ? {
-            $case: "searchObjects",
-            searchObjects: SearchObjects.fromJSON(object.searchObjects),
-          }
+        ? { $case: "searchObjects", searchObjects: SearchObjects.fromJSON(object.searchObjects) }
         : isSet(object.searchObjectsResult)
         ? {
-            $case: "searchObjectsResult",
-            searchObjectsResult: SearchObjectsResult.fromJSON(
-              object.searchObjectsResult
-            ),
-          }
+          $case: "searchObjectsResult",
+          searchObjectsResult: SearchObjectsResult.fromJSON(object.searchObjectsResult),
+        }
         : isSet(object.getAllGameObjects)
-        ? {
-            $case: "getAllGameObjects",
-            getAllGameObjects: GetAllGameObjects.fromJSON(
-              object.getAllGameObjects
-            ),
-          }
+        ? { $case: "getAllGameObjects", getAllGameObjects: GetAllGameObjects.fromJSON(object.getAllGameObjects) }
         : isSet(object.getAllGameObjectsResult)
         ? {
-            $case: "getAllGameObjectsResult",
-            getAllGameObjectsResult: GetAllGameObjectsResult.fromJSON(
-              object.getAllGameObjectsResult
-            ),
-          }
+          $case: "getAllGameObjectsResult",
+          getAllGameObjectsResult: GetAllGameObjectsResult.fromJSON(object.getAllGameObjectsResult),
+        }
         : isSet(object.getGameObjectComponents)
         ? {
-            $case: "getGameObjectComponents",
-            getGameObjectComponents: GetGameObjectComponents.fromJSON(
-              object.getGameObjectComponents
-            ),
-          }
+          $case: "getGameObjectComponents",
+          getGameObjectComponents: GetGameObjectComponents.fromJSON(object.getGameObjectComponents),
+        }
         : isSet(object.getGameObjectComponentsResult)
         ? {
-            $case: "getGameObjectComponentsResult",
-            getGameObjectComponentsResult:
-              GetGameObjectComponentsResult.fromJSON(
-                object.getGameObjectComponentsResult
-              ),
-          }
+          $case: "getGameObjectComponentsResult",
+          getGameObjectComponentsResult: GetGameObjectComponentsResult.fromJSON(object.getGameObjectComponentsResult),
+        }
         : isSet(object.readMemory)
-        ? {
-            $case: "readMemory",
-            readMemory: ReadMemory.fromJSON(object.readMemory),
-          }
+        ? { $case: "readMemory", readMemory: ReadMemory.fromJSON(object.readMemory) }
         : isSet(object.readMemoryResult)
-        ? {
-            $case: "readMemoryResult",
-            readMemoryResult: ReadMemoryResult.fromJSON(
-              object.readMemoryResult
-            ),
-          }
+        ? { $case: "readMemoryResult", readMemoryResult: ReadMemoryResult.fromJSON(object.readMemoryResult) }
         : isSet(object.writeMemory)
-        ? {
-            $case: "writeMemory",
-            writeMemory: WriteMemory.fromJSON(object.writeMemory),
-          }
+        ? { $case: "writeMemory", writeMemory: WriteMemory.fromJSON(object.writeMemory) }
         : isSet(object.writeMemoryResult)
-        ? {
-            $case: "writeMemoryResult",
-            writeMemoryResult: WriteMemoryResult.fromJSON(
-              object.writeMemoryResult
-            ),
-          }
+        ? { $case: "writeMemoryResult", writeMemoryResult: WriteMemoryResult.fromJSON(object.writeMemoryResult) }
         : isSet(object.getClassDetails)
-        ? {
-            $case: "getClassDetails",
-            getClassDetails: GetClassDetails.fromJSON(object.getClassDetails),
-          }
+        ? { $case: "getClassDetails", getClassDetails: GetClassDetails.fromJSON(object.getClassDetails) }
         : isSet(object.getClassDetailsResult)
         ? {
-            $case: "getClassDetailsResult",
-            getClassDetailsResult: GetClassDetailsResult.fromJSON(
-              object.getClassDetailsResult
-            ),
-          }
+          $case: "getClassDetailsResult",
+          getClassDetailsResult: GetClassDetailsResult.fromJSON(object.getClassDetailsResult),
+        }
         : isSet(object.getInstanceClass)
-        ? {
-            $case: "getInstanceClass",
-            getInstanceClass: GetInstanceClass.fromJSON(
-              object.getInstanceClass
-            ),
-          }
+        ? { $case: "getInstanceClass", getInstanceClass: GetInstanceClass.fromJSON(object.getInstanceClass) }
         : isSet(object.getInstanceClassResult)
         ? {
-            $case: "getInstanceClassResult",
-            getInstanceClassResult: GetInstanceClassResult.fromJSON(
-              object.getInstanceClassResult
-            ),
-          }
+          $case: "getInstanceClassResult",
+          getInstanceClassResult: GetInstanceClassResult.fromJSON(object.getInstanceClassResult),
+        }
         : isSet(object.getInstanceValues)
-        ? {
-            $case: "getInstanceValues",
-            getInstanceValues: GetInstanceValues.fromJSON(
-              object.getInstanceValues
-            ),
-          }
+        ? { $case: "getInstanceValues", getInstanceValues: GetInstanceValues.fromJSON(object.getInstanceValues) }
         : isSet(object.getInstanceValuesResult)
         ? {
-            $case: "getInstanceValuesResult",
-            getInstanceValuesResult: GetInstanceValuesResult.fromJSON(
-              object.getInstanceValuesResult
-            ),
-          }
+          $case: "getInstanceValuesResult",
+          getInstanceValuesResult: GetInstanceValuesResult.fromJSON(object.getInstanceValuesResult),
+        }
         : isSet(object.getInstanceDetails)
-        ? {
-            $case: "getInstanceDetails",
-            getInstanceDetails: GetInstanceDetails.fromJSON(
-              object.getInstanceDetails
-            ),
-          }
+        ? { $case: "getInstanceDetails", getInstanceDetails: GetInstanceDetails.fromJSON(object.getInstanceDetails) }
         : isSet(object.getInstanceDetailsResult)
         ? {
-            $case: "getInstanceDetailsResult",
-            getInstanceDetailsResult: GetInstanceDetailsResult.fromJSON(
-              object.getInstanceDetailsResult
-            ),
-          }
+          $case: "getInstanceDetailsResult",
+          getInstanceDetailsResult: GetInstanceDetailsResult.fromJSON(object.getInstanceDetailsResult),
+        }
         : isSet(object.createGameObject)
-        ? {
-            $case: "createGameObject",
-            createGameObject: CreateGameObject.fromJSON(
-              object.createGameObject
-            ),
-          }
+        ? { $case: "createGameObject", createGameObject: CreateGameObject.fromJSON(object.createGameObject) }
         : isSet(object.createGameObjectResult)
         ? {
-            $case: "createGameObjectResult",
-            createGameObjectResult: CreateGameObjectResult.fromJSON(
-              object.createGameObjectResult
-            ),
-          }
+          $case: "createGameObjectResult",
+          createGameObjectResult: CreateGameObjectResult.fromJSON(object.createGameObjectResult),
+        }
+        : isSet(object.addSafePtrAddress)
+        ? { $case: "addSafePtrAddress", addSafePtrAddress: AddSafePtrAddress.fromJSON(object.addSafePtrAddress) }
+        : isSet(object.getSafePtrAddresses)
+        ? {
+          $case: "getSafePtrAddresses",
+          getSafePtrAddresses: GetSafePtrAddresses.fromJSON(object.getSafePtrAddresses),
+        }
+        : isSet(object.getSafePtrAddressesResult)
+        ? {
+          $case: "getSafePtrAddressesResult",
+          getSafePtrAddressesResult: GetSafePtrAddressesResult.fromJSON(object.getSafePtrAddressesResult),
+        }
         : undefined,
     };
   },
 
   toJSON(message: PacketWrapper): unknown {
     const obj: any = {};
-    message.queryResultId !== undefined &&
-      (obj.queryResultId = message.queryResultId.toString());
-    message.Packet?.$case === "inputError" &&
-      (obj.inputError = message.Packet?.inputError);
+    message.queryResultId !== undefined && (obj.queryResultId = message.queryResultId.toString());
+    message.Packet?.$case === "inputError" && (obj.inputError = message.Packet?.inputError);
     message.Packet?.$case === "setField" &&
-      (obj.setField = message.Packet?.setField
-        ? SetField.toJSON(message.Packet?.setField)
-        : undefined);
-    message.Packet?.$case === "setFieldResult" &&
-      (obj.setFieldResult = message.Packet?.setFieldResult
-        ? SetFieldResult.toJSON(message.Packet?.setFieldResult)
-        : undefined);
+      (obj.setField = message.Packet?.setField ? SetField.toJSON(message.Packet?.setField) : undefined);
+    message.Packet?.$case === "setFieldResult" && (obj.setFieldResult = message.Packet?.setFieldResult
+      ? SetFieldResult.toJSON(message.Packet?.setFieldResult)
+      : undefined);
     message.Packet?.$case === "getField" &&
-      (obj.getField = message.Packet?.getField
-        ? GetField.toJSON(message.Packet?.getField)
-        : undefined);
-    message.Packet?.$case === "getFieldResult" &&
-      (obj.getFieldResult = message.Packet?.getFieldResult
-        ? GetFieldResult.toJSON(message.Packet?.getFieldResult)
-        : undefined);
+      (obj.getField = message.Packet?.getField ? GetField.toJSON(message.Packet?.getField) : undefined);
+    message.Packet?.$case === "getFieldResult" && (obj.getFieldResult = message.Packet?.getFieldResult
+      ? GetFieldResult.toJSON(message.Packet?.getFieldResult)
+      : undefined);
     message.Packet?.$case === "invokeMethod" &&
-      (obj.invokeMethod = message.Packet?.invokeMethod
-        ? InvokeMethod.toJSON(message.Packet?.invokeMethod)
-        : undefined);
-    message.Packet?.$case === "invokeMethodResult" &&
-      (obj.invokeMethodResult = message.Packet?.invokeMethodResult
-        ? InvokeMethodResult.toJSON(message.Packet?.invokeMethodResult)
-        : undefined);
-    message.Packet?.$case === "searchObjects" &&
-      (obj.searchObjects = message.Packet?.searchObjects
-        ? SearchObjects.toJSON(message.Packet?.searchObjects)
-        : undefined);
-    message.Packet?.$case === "searchObjectsResult" &&
-      (obj.searchObjectsResult = message.Packet?.searchObjectsResult
-        ? SearchObjectsResult.toJSON(message.Packet?.searchObjectsResult)
-        : undefined);
-    message.Packet?.$case === "getAllGameObjects" &&
-      (obj.getAllGameObjects = message.Packet?.getAllGameObjects
-        ? GetAllGameObjects.toJSON(message.Packet?.getAllGameObjects)
-        : undefined);
+      (obj.invokeMethod = message.Packet?.invokeMethod ? InvokeMethod.toJSON(message.Packet?.invokeMethod) : undefined);
+    message.Packet?.$case === "invokeMethodResult" && (obj.invokeMethodResult = message.Packet?.invokeMethodResult
+      ? InvokeMethodResult.toJSON(message.Packet?.invokeMethodResult)
+      : undefined);
+    message.Packet?.$case === "searchObjects" && (obj.searchObjects = message.Packet?.searchObjects
+      ? SearchObjects.toJSON(message.Packet?.searchObjects)
+      : undefined);
+    message.Packet?.$case === "searchObjectsResult" && (obj.searchObjectsResult = message.Packet?.searchObjectsResult
+      ? SearchObjectsResult.toJSON(message.Packet?.searchObjectsResult)
+      : undefined);
+    message.Packet?.$case === "getAllGameObjects" && (obj.getAllGameObjects = message.Packet?.getAllGameObjects
+      ? GetAllGameObjects.toJSON(message.Packet?.getAllGameObjects)
+      : undefined);
     message.Packet?.$case === "getAllGameObjectsResult" &&
       (obj.getAllGameObjectsResult = message.Packet?.getAllGameObjectsResult
-        ? GetAllGameObjectsResult.toJSON(
-            message.Packet?.getAllGameObjectsResult
-          )
+        ? GetAllGameObjectsResult.toJSON(message.Packet?.getAllGameObjectsResult)
         : undefined);
     message.Packet?.$case === "getGameObjectComponents" &&
       (obj.getGameObjectComponents = message.Packet?.getGameObjectComponents
-        ? GetGameObjectComponents.toJSON(
-            message.Packet?.getGameObjectComponents
-          )
+        ? GetGameObjectComponents.toJSON(message.Packet?.getGameObjectComponents)
         : undefined);
     message.Packet?.$case === "getGameObjectComponentsResult" &&
-      (obj.getGameObjectComponentsResult = message.Packet
-        ?.getGameObjectComponentsResult
-        ? GetGameObjectComponentsResult.toJSON(
-            message.Packet?.getGameObjectComponentsResult
-          )
+      (obj.getGameObjectComponentsResult = message.Packet?.getGameObjectComponentsResult
+        ? GetGameObjectComponentsResult.toJSON(message.Packet?.getGameObjectComponentsResult)
         : undefined);
     message.Packet?.$case === "readMemory" &&
-      (obj.readMemory = message.Packet?.readMemory
-        ? ReadMemory.toJSON(message.Packet?.readMemory)
-        : undefined);
-    message.Packet?.$case === "readMemoryResult" &&
-      (obj.readMemoryResult = message.Packet?.readMemoryResult
-        ? ReadMemoryResult.toJSON(message.Packet?.readMemoryResult)
-        : undefined);
+      (obj.readMemory = message.Packet?.readMemory ? ReadMemory.toJSON(message.Packet?.readMemory) : undefined);
+    message.Packet?.$case === "readMemoryResult" && (obj.readMemoryResult = message.Packet?.readMemoryResult
+      ? ReadMemoryResult.toJSON(message.Packet?.readMemoryResult)
+      : undefined);
     message.Packet?.$case === "writeMemory" &&
-      (obj.writeMemory = message.Packet?.writeMemory
-        ? WriteMemory.toJSON(message.Packet?.writeMemory)
-        : undefined);
-    message.Packet?.$case === "writeMemoryResult" &&
-      (obj.writeMemoryResult = message.Packet?.writeMemoryResult
-        ? WriteMemoryResult.toJSON(message.Packet?.writeMemoryResult)
-        : undefined);
-    message.Packet?.$case === "getClassDetails" &&
-      (obj.getClassDetails = message.Packet?.getClassDetails
-        ? GetClassDetails.toJSON(message.Packet?.getClassDetails)
-        : undefined);
+      (obj.writeMemory = message.Packet?.writeMemory ? WriteMemory.toJSON(message.Packet?.writeMemory) : undefined);
+    message.Packet?.$case === "writeMemoryResult" && (obj.writeMemoryResult = message.Packet?.writeMemoryResult
+      ? WriteMemoryResult.toJSON(message.Packet?.writeMemoryResult)
+      : undefined);
+    message.Packet?.$case === "getClassDetails" && (obj.getClassDetails = message.Packet?.getClassDetails
+      ? GetClassDetails.toJSON(message.Packet?.getClassDetails)
+      : undefined);
     message.Packet?.$case === "getClassDetailsResult" &&
       (obj.getClassDetailsResult = message.Packet?.getClassDetailsResult
         ? GetClassDetailsResult.toJSON(message.Packet?.getClassDetailsResult)
         : undefined);
-    message.Packet?.$case === "getInstanceClass" &&
-      (obj.getInstanceClass = message.Packet?.getInstanceClass
-        ? GetInstanceClass.toJSON(message.Packet?.getInstanceClass)
-        : undefined);
+    message.Packet?.$case === "getInstanceClass" && (obj.getInstanceClass = message.Packet?.getInstanceClass
+      ? GetInstanceClass.toJSON(message.Packet?.getInstanceClass)
+      : undefined);
     message.Packet?.$case === "getInstanceClassResult" &&
       (obj.getInstanceClassResult = message.Packet?.getInstanceClassResult
         ? GetInstanceClassResult.toJSON(message.Packet?.getInstanceClassResult)
         : undefined);
-    message.Packet?.$case === "getInstanceValues" &&
-      (obj.getInstanceValues = message.Packet?.getInstanceValues
-        ? GetInstanceValues.toJSON(message.Packet?.getInstanceValues)
-        : undefined);
+    message.Packet?.$case === "getInstanceValues" && (obj.getInstanceValues = message.Packet?.getInstanceValues
+      ? GetInstanceValues.toJSON(message.Packet?.getInstanceValues)
+      : undefined);
     message.Packet?.$case === "getInstanceValuesResult" &&
       (obj.getInstanceValuesResult = message.Packet?.getInstanceValuesResult
-        ? GetInstanceValuesResult.toJSON(
-            message.Packet?.getInstanceValuesResult
-          )
+        ? GetInstanceValuesResult.toJSON(message.Packet?.getInstanceValuesResult)
         : undefined);
-    message.Packet?.$case === "getInstanceDetails" &&
-      (obj.getInstanceDetails = message.Packet?.getInstanceDetails
-        ? GetInstanceDetails.toJSON(message.Packet?.getInstanceDetails)
-        : undefined);
+    message.Packet?.$case === "getInstanceDetails" && (obj.getInstanceDetails = message.Packet?.getInstanceDetails
+      ? GetInstanceDetails.toJSON(message.Packet?.getInstanceDetails)
+      : undefined);
     message.Packet?.$case === "getInstanceDetailsResult" &&
       (obj.getInstanceDetailsResult = message.Packet?.getInstanceDetailsResult
-        ? GetInstanceDetailsResult.toJSON(
-            message.Packet?.getInstanceDetailsResult
-          )
+        ? GetInstanceDetailsResult.toJSON(message.Packet?.getInstanceDetailsResult)
         : undefined);
-    message.Packet?.$case === "createGameObject" &&
-      (obj.createGameObject = message.Packet?.createGameObject
-        ? CreateGameObject.toJSON(message.Packet?.createGameObject)
-        : undefined);
+    message.Packet?.$case === "createGameObject" && (obj.createGameObject = message.Packet?.createGameObject
+      ? CreateGameObject.toJSON(message.Packet?.createGameObject)
+      : undefined);
     message.Packet?.$case === "createGameObjectResult" &&
       (obj.createGameObjectResult = message.Packet?.createGameObjectResult
         ? CreateGameObjectResult.toJSON(message.Packet?.createGameObjectResult)
         : undefined);
+    message.Packet?.$case === "addSafePtrAddress" && (obj.addSafePtrAddress = message.Packet?.addSafePtrAddress
+      ? AddSafePtrAddress.toJSON(message.Packet?.addSafePtrAddress)
+      : undefined);
+    message.Packet?.$case === "getSafePtrAddresses" && (obj.getSafePtrAddresses = message.Packet?.getSafePtrAddresses
+      ? GetSafePtrAddresses.toJSON(message.Packet?.getSafePtrAddresses)
+      : undefined);
+    message.Packet?.$case === "getSafePtrAddressesResult" &&
+      (obj.getSafePtrAddressesResult = message.Packet?.getSafePtrAddressesResult
+        ? GetSafePtrAddressesResult.toJSON(message.Packet?.getSafePtrAddressesResult)
+        : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PacketWrapper>, I>>(
-    base?: I
-  ): PacketWrapper {
+  create<I extends Exact<DeepPartial<PacketWrapper>, I>>(base?: I): PacketWrapper {
     return PacketWrapper.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<PacketWrapper>, I>>(
-    object: I
-  ): PacketWrapper {
+  fromPartial<I extends Exact<DeepPartial<PacketWrapper>, I>>(object: I): PacketWrapper {
     const message = createBasePacketWrapper();
     message.queryResultId = object.queryResultId ?? BigInt("0");
     if (
@@ -3655,20 +3179,12 @@ export const PacketWrapper = {
       object.Packet?.inputError !== undefined &&
       object.Packet?.inputError !== null
     ) {
-      message.Packet = {
-        $case: "inputError",
-        inputError: object.Packet.inputError,
-      };
+      message.Packet = { $case: "inputError", inputError: object.Packet.inputError };
     }
     if (
-      object.Packet?.$case === "setField" &&
-      object.Packet?.setField !== undefined &&
-      object.Packet?.setField !== null
+      object.Packet?.$case === "setField" && object.Packet?.setField !== undefined && object.Packet?.setField !== null
     ) {
-      message.Packet = {
-        $case: "setField",
-        setField: SetField.fromPartial(object.Packet.setField),
-      };
+      message.Packet = { $case: "setField", setField: SetField.fromPartial(object.Packet.setField) };
     }
     if (
       object.Packet?.$case === "setFieldResult" &&
@@ -3677,20 +3193,13 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "setFieldResult",
-        setFieldResult: SetFieldResult.fromPartial(
-          object.Packet.setFieldResult
-        ),
+        setFieldResult: SetFieldResult.fromPartial(object.Packet.setFieldResult),
       };
     }
     if (
-      object.Packet?.$case === "getField" &&
-      object.Packet?.getField !== undefined &&
-      object.Packet?.getField !== null
+      object.Packet?.$case === "getField" && object.Packet?.getField !== undefined && object.Packet?.getField !== null
     ) {
-      message.Packet = {
-        $case: "getField",
-        getField: GetField.fromPartial(object.Packet.getField),
-      };
+      message.Packet = { $case: "getField", getField: GetField.fromPartial(object.Packet.getField) };
     }
     if (
       object.Packet?.$case === "getFieldResult" &&
@@ -3699,9 +3208,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getFieldResult",
-        getFieldResult: GetFieldResult.fromPartial(
-          object.Packet.getFieldResult
-        ),
+        getFieldResult: GetFieldResult.fromPartial(object.Packet.getFieldResult),
       };
     }
     if (
@@ -3709,10 +3216,7 @@ export const PacketWrapper = {
       object.Packet?.invokeMethod !== undefined &&
       object.Packet?.invokeMethod !== null
     ) {
-      message.Packet = {
-        $case: "invokeMethod",
-        invokeMethod: InvokeMethod.fromPartial(object.Packet.invokeMethod),
-      };
+      message.Packet = { $case: "invokeMethod", invokeMethod: InvokeMethod.fromPartial(object.Packet.invokeMethod) };
     }
     if (
       object.Packet?.$case === "invokeMethodResult" &&
@@ -3721,9 +3225,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "invokeMethodResult",
-        invokeMethodResult: InvokeMethodResult.fromPartial(
-          object.Packet.invokeMethodResult
-        ),
+        invokeMethodResult: InvokeMethodResult.fromPartial(object.Packet.invokeMethodResult),
       };
     }
     if (
@@ -3743,9 +3245,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "searchObjectsResult",
-        searchObjectsResult: SearchObjectsResult.fromPartial(
-          object.Packet.searchObjectsResult
-        ),
+        searchObjectsResult: SearchObjectsResult.fromPartial(object.Packet.searchObjectsResult),
       };
     }
     if (
@@ -3755,9 +3255,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getAllGameObjects",
-        getAllGameObjects: GetAllGameObjects.fromPartial(
-          object.Packet.getAllGameObjects
-        ),
+        getAllGameObjects: GetAllGameObjects.fromPartial(object.Packet.getAllGameObjects),
       };
     }
     if (
@@ -3767,9 +3265,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getAllGameObjectsResult",
-        getAllGameObjectsResult: GetAllGameObjectsResult.fromPartial(
-          object.Packet.getAllGameObjectsResult
-        ),
+        getAllGameObjectsResult: GetAllGameObjectsResult.fromPartial(object.Packet.getAllGameObjectsResult),
       };
     }
     if (
@@ -3779,9 +3275,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getGameObjectComponents",
-        getGameObjectComponents: GetGameObjectComponents.fromPartial(
-          object.Packet.getGameObjectComponents
-        ),
+        getGameObjectComponents: GetGameObjectComponents.fromPartial(object.Packet.getGameObjectComponents),
       };
     }
     if (
@@ -3791,10 +3285,9 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getGameObjectComponentsResult",
-        getGameObjectComponentsResult:
-          GetGameObjectComponentsResult.fromPartial(
-            object.Packet.getGameObjectComponentsResult
-          ),
+        getGameObjectComponentsResult: GetGameObjectComponentsResult.fromPartial(
+          object.Packet.getGameObjectComponentsResult,
+        ),
       };
     }
     if (
@@ -3802,10 +3295,7 @@ export const PacketWrapper = {
       object.Packet?.readMemory !== undefined &&
       object.Packet?.readMemory !== null
     ) {
-      message.Packet = {
-        $case: "readMemory",
-        readMemory: ReadMemory.fromPartial(object.Packet.readMemory),
-      };
+      message.Packet = { $case: "readMemory", readMemory: ReadMemory.fromPartial(object.Packet.readMemory) };
     }
     if (
       object.Packet?.$case === "readMemoryResult" &&
@@ -3814,9 +3304,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "readMemoryResult",
-        readMemoryResult: ReadMemoryResult.fromPartial(
-          object.Packet.readMemoryResult
-        ),
+        readMemoryResult: ReadMemoryResult.fromPartial(object.Packet.readMemoryResult),
       };
     }
     if (
@@ -3824,10 +3312,7 @@ export const PacketWrapper = {
       object.Packet?.writeMemory !== undefined &&
       object.Packet?.writeMemory !== null
     ) {
-      message.Packet = {
-        $case: "writeMemory",
-        writeMemory: WriteMemory.fromPartial(object.Packet.writeMemory),
-      };
+      message.Packet = { $case: "writeMemory", writeMemory: WriteMemory.fromPartial(object.Packet.writeMemory) };
     }
     if (
       object.Packet?.$case === "writeMemoryResult" &&
@@ -3836,9 +3321,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "writeMemoryResult",
-        writeMemoryResult: WriteMemoryResult.fromPartial(
-          object.Packet.writeMemoryResult
-        ),
+        writeMemoryResult: WriteMemoryResult.fromPartial(object.Packet.writeMemoryResult),
       };
     }
     if (
@@ -3848,9 +3331,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getClassDetails",
-        getClassDetails: GetClassDetails.fromPartial(
-          object.Packet.getClassDetails
-        ),
+        getClassDetails: GetClassDetails.fromPartial(object.Packet.getClassDetails),
       };
     }
     if (
@@ -3860,9 +3341,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getClassDetailsResult",
-        getClassDetailsResult: GetClassDetailsResult.fromPartial(
-          object.Packet.getClassDetailsResult
-        ),
+        getClassDetailsResult: GetClassDetailsResult.fromPartial(object.Packet.getClassDetailsResult),
       };
     }
     if (
@@ -3872,9 +3351,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceClass",
-        getInstanceClass: GetInstanceClass.fromPartial(
-          object.Packet.getInstanceClass
-        ),
+        getInstanceClass: GetInstanceClass.fromPartial(object.Packet.getInstanceClass),
       };
     }
     if (
@@ -3884,9 +3361,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceClassResult",
-        getInstanceClassResult: GetInstanceClassResult.fromPartial(
-          object.Packet.getInstanceClassResult
-        ),
+        getInstanceClassResult: GetInstanceClassResult.fromPartial(object.Packet.getInstanceClassResult),
       };
     }
     if (
@@ -3896,9 +3371,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceValues",
-        getInstanceValues: GetInstanceValues.fromPartial(
-          object.Packet.getInstanceValues
-        ),
+        getInstanceValues: GetInstanceValues.fromPartial(object.Packet.getInstanceValues),
       };
     }
     if (
@@ -3908,9 +3381,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceValuesResult",
-        getInstanceValuesResult: GetInstanceValuesResult.fromPartial(
-          object.Packet.getInstanceValuesResult
-        ),
+        getInstanceValuesResult: GetInstanceValuesResult.fromPartial(object.Packet.getInstanceValuesResult),
       };
     }
     if (
@@ -3920,9 +3391,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceDetails",
-        getInstanceDetails: GetInstanceDetails.fromPartial(
-          object.Packet.getInstanceDetails
-        ),
+        getInstanceDetails: GetInstanceDetails.fromPartial(object.Packet.getInstanceDetails),
       };
     }
     if (
@@ -3932,9 +3401,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "getInstanceDetailsResult",
-        getInstanceDetailsResult: GetInstanceDetailsResult.fromPartial(
-          object.Packet.getInstanceDetailsResult
-        ),
+        getInstanceDetailsResult: GetInstanceDetailsResult.fromPartial(object.Packet.getInstanceDetailsResult),
       };
     }
     if (
@@ -3944,9 +3411,7 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "createGameObject",
-        createGameObject: CreateGameObject.fromPartial(
-          object.Packet.createGameObject
-        ),
+        createGameObject: CreateGameObject.fromPartial(object.Packet.createGameObject),
       };
     }
     if (
@@ -3956,9 +3421,37 @@ export const PacketWrapper = {
     ) {
       message.Packet = {
         $case: "createGameObjectResult",
-        createGameObjectResult: CreateGameObjectResult.fromPartial(
-          object.Packet.createGameObjectResult
-        ),
+        createGameObjectResult: CreateGameObjectResult.fromPartial(object.Packet.createGameObjectResult),
+      };
+    }
+    if (
+      object.Packet?.$case === "addSafePtrAddress" &&
+      object.Packet?.addSafePtrAddress !== undefined &&
+      object.Packet?.addSafePtrAddress !== null
+    ) {
+      message.Packet = {
+        $case: "addSafePtrAddress",
+        addSafePtrAddress: AddSafePtrAddress.fromPartial(object.Packet.addSafePtrAddress),
+      };
+    }
+    if (
+      object.Packet?.$case === "getSafePtrAddresses" &&
+      object.Packet?.getSafePtrAddresses !== undefined &&
+      object.Packet?.getSafePtrAddresses !== null
+    ) {
+      message.Packet = {
+        $case: "getSafePtrAddresses",
+        getSafePtrAddresses: GetSafePtrAddresses.fromPartial(object.Packet.getSafePtrAddresses),
+      };
+    }
+    if (
+      object.Packet?.$case === "getSafePtrAddressesResult" &&
+      object.Packet?.getSafePtrAddressesResult !== undefined &&
+      object.Packet?.getSafePtrAddressesResult !== null
+    ) {
+      message.Packet = {
+        $case: "getSafePtrAddressesResult",
+        getSafePtrAddressesResult: GetSafePtrAddressesResult.fromPartial(object.Packet.getSafePtrAddressesResult),
       };
     }
     return message;
@@ -4009,36 +3502,17 @@ function base64FromBytes(arr: Uint8Array): string {
   }
 }
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | bigint
-  | undefined;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
 
-export type DeepPartial<T> = T extends Builtin
-  ? T
-  : T extends Array<infer U>
-  ? Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string }
-  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
-      $case: T["$case"];
-    }
-  : T extends {}
-  ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin
-  ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
-      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
-    };
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function longToBigint(long: Long) {
   return BigInt(long.toString());

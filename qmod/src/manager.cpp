@@ -1,4 +1,5 @@
 #include "manager.hpp"
+#include "MainThreadRunner.hpp"
 #include "classutils.hpp"
 #include "unity.hpp"
 #include "mem.hpp"
@@ -86,6 +87,12 @@ void Manager::processMessage(const PacketWrapper& packet) {
             break;
         case PacketWrapper::kCreateGameObject:
             createGameObject(packet.creategameobject(), id);
+            break;
+        case PacketWrapper::kAddSafePtrAddress:
+            addSafePtrAddress(packet.addsafeptraddress(), id);
+            break;
+        case PacketWrapper::kGetSafePtrAddresses:
+            sendSafePtrList(id);
             break;
         default:
             LOG_INFO("Invalid packet type!");
@@ -441,6 +448,31 @@ void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) 
         *classDetails = getClassDetails_internal(instance->klass);
         *result->mutable_values() = getInstanceValues_internal(instance, classDetails);
     }
+    handler->sendPacket(wrapper);
+}
+
+void Manager::addSafePtrAddress(AddSafePtrAddress const &addPacket, uint64_t id) {
+    auto addr = asPtr(Il2CppObject, addPacket.address());
+    if (addPacket.remove()) {
+        getUnityHandle()->removeKeepAlive(addr);
+    } else {
+        getUnityHandle()->addKeepAlive(addr);
+    }
+    sendSafePtrList(id);
+}
+
+void Manager::sendSafePtrList(uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    auto res = wrapper.mutable_getsafeptraddressesresult();
+    auto objs = getUnityHandle()->keepAliveObjects;
+
+    res->mutable_address()->Reserve(objs.size());
+    for (auto const &addr : objs) {
+        res->add_address(asInt(addr));
+    }
+
     handler->sendPacket(wrapper);
 }
 

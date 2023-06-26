@@ -24,6 +24,8 @@ class Manager {
     void getInstanceValues(const GetInstanceValues& packet, uint64_t id);
     void getInstanceDetails(const GetInstanceDetails& packet, uint64_t id);
     void createGameObject(const CreateGameObject& packet, uint64_t id);
+    void addSafePtrAddress(const AddSafePtrAddress& packet, uint64_t id);
+    void sendSafePtrList(uint64_t id);
 
     bool initialized;
     std::unique_ptr<PacketHandler> handler;

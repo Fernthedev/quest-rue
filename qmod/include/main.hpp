@@ -30,4 +30,4 @@ Logger& getLogger();
 std::string_view GetDataPath();
 
 extern std::thread::id mainThreadId;
-void scheduleFunction(std::function<void()> const& func);
+

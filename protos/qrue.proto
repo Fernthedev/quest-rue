@@ -148,6 +148,17 @@ message CreateGameObject {
 message CreateGameObjectResult {
 }
 
+// Returns GetListSafePtrAddressResult
+message AddSafePtrAddress {
+    uint64 address = 1;
+    bool remove = 2; // if true, removes the address
+}
+
+message GetSafePtrAddresses  {}
+message GetSafePtrAddressesResult {
+    repeated uint64 address = 1;
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -179,5 +190,8 @@ message PacketWrapper {
         GetInstanceDetailsResult getInstanceDetailsResult = 26;
         CreateGameObject createGameObject = 27;
         CreateGameObjectResult createGameObjectResult = 28;
+        AddSafePtrAddress addSafePtrAddress = 29;
+        GetSafePtrAddresses getSafePtrAddresses = 30;
+        GetSafePtrAddressesResult getSafePtrAddressesResult = 31;
     }
 }
