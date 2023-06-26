@@ -28,12 +28,9 @@ function VariableCell(props: { addr: string }) {
 
   // if the new name is unique, update it, otherwise enable invalid input css
   const updateName = (val: string) => {
-      const isValid =
-          Object.entries(variables).find(
-              ([addr, { name }]) => addr != props.addr && name == val.trim()
-          ) == undefined;
-      setValidName(isValid);
-      if (isValid) updateVariable(props.addr, variables[props.addr].type, val);
+    const isValid = isVariableNameFree(val, props.addr);
+    setValidName(isValid);
+    if (isValid) updateVariable(props.addr, variables[props.addr].type, val);
   };
 
   // reset value to last valid name if focus is exited while it still has an invalid name
@@ -126,10 +123,8 @@ export function VariablesList() {
       const typeString = protoClassDetailsToString(type);
       const entry = prev.get(typeString);
 
-      if (!entry)
-        prev.set(typeString, [type, [addr]]);
-      else
-        entry[1].push(addr);
+      if (!entry) prev.set(typeString, [type, [addr]]);
+      else entry[1].push(addr);
 
       return prev;
     }, new Map<string, [ProtoClassDetails, string[]]>())
@@ -147,6 +142,14 @@ export function VariablesList() {
         }}
       </For>
     </div>
+  );
+}
+
+export function isVariableNameFree(varName = "Unnamed Variable", ignoreAddress?: string) {
+  return !Object.entries(variables).some(
+    ([addr, { name }]) =>
+      (ignoreAddress == undefined || addr != ignoreAddress) &&
+      name == varName.trim()
   );
 }
 

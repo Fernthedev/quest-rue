@@ -1,12 +1,10 @@
 import {
   Show,
   createMemo,
-  createEffect,
-  on,
   JSX,
-  createSignal,
   createDeferred,
   onMount,
+  createSignal,
 } from "solid-js";
 import { PacketJSON, sendPacketResult } from "../../misc/events";
 import {
@@ -22,13 +20,14 @@ import { objectUrl } from "../../App";
 import { useNavigate } from "@solidjs/router";
 import { createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "../Settings";
-import {
-  createFocusSignal,
-  makeFocusListener,
-} from "@solid-primitives/active-element";
+import { makeFocusListener } from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
-import { chevronDoubleRight } from "solid-heroicons/outline";
-import { addVariable, getVariableValue } from "./VariablesList";
+import { check, chevronDoubleRight } from "solid-heroicons/outline";
+import {
+  addVariable,
+  getVariableValue,
+  isVariableNameFree,
+} from "./VariablesList";
 import { variables } from "../../misc/globals";
 import { GetClassDetailsResult } from "../../misc/proto/qrue";
 import { BetterSelect } from "../form/BetterSelect";
@@ -39,7 +38,7 @@ export function ActionButton(props: {
     | "enter.svg"
     | "save.svg"
     | "refresh.svg";
-  onClick: () => void;
+  onClick?: () => void;
   loading?: boolean;
   class?: string;
   label?: string;
@@ -68,7 +67,7 @@ export function ActionButton(props: {
       classList={{ tooltip: props.tooltip !== undefined }}
       // False positive
       // eslint-disable-next-line solid/reactivity
-      onClick={() => errorHandle(() => props.onClick())}
+      onClick={() => errorHandle(() => props.onClick?.())}
       title={props.tooltip}
     >
       <Show when={props.loading} fallback={icon()}>
@@ -196,7 +195,7 @@ export default function InputCell(props: {
     if (addr) props.onInput?.(addr);
   }
 
-  async function saveVariable() {
+  async function saveVariable(name?: string) {
     if (props.type.Info?.$case !== "classInfo") return;
 
     const [detailsPromise] = sendPacketResult<GetClassDetailsResult>({
@@ -208,7 +207,7 @@ export default function InputCell(props: {
 
     const details = await detailsPromise;
 
-    addVariable(props.value!, details.classDetails!);
+    addVariable(props.value!, details.classDetails!, name);
   }
 
   function BasicInput(): JSX.Element {
@@ -229,6 +228,8 @@ export default function InputCell(props: {
   }
 
   function ClassActions() {
+    const [name, setName] = createSignal("");
+
     return (
       <Show
         when={
@@ -243,12 +244,47 @@ export default function InputCell(props: {
           tooltip="Select as object"
         />
         <span class="w-1" />
-        <ActionButton
-          class="small-button"
-          img="save.svg"
-          onClick={saveVariable}
-          tooltip="Save variable"
-        />
+        <Show
+          when={!((props.value ?? "") in variables)}
+          fallback={
+            <ActionButton
+              class="small-button"
+              img={check}
+              tooltip="Variable saved"
+            />
+          }
+        >
+          <span class="dropdown dropdown-bottom dropdown-end h-6">
+            <ActionButton
+              class="small-button"
+              img="save.svg"
+              tooltip="Save variable"
+            />
+            <div
+              class="
+              dropdown-content shadow menu text-base
+              bg-neutral-400 dark:bg-zinc-800
+              justify-center gap-1 w-60 p-2 my-1
+              flex flex-row flex-nowrap
+              z-20 rounded-box cursor-auto"
+            >
+              <input
+                class="min-w-0 small-input"
+                placeholder="Unnamed Variable"
+                onInput={(e) => setName(e.currentTarget.value)}
+                classList={{ invalid: !isVariableNameFree(name()) }}
+              />
+              <ActionButton
+                class="small-button"
+                img={check}
+                onClick={() =>
+                  saveVariable(name()?.length > 0 ? name() : undefined)
+                }
+                tooltip="Confirm"
+              />
+            </div>
+          </span>
+        </Show>
       </Show>
     );
   }
