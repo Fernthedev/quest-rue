@@ -183,7 +183,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
                 args.emplace_back(packet.args(i));
 
             std::string err = "";
-            auto [res, resPtr] = MethodUtils::Run(method, object, args, err);
+            auto res = MethodUtils::Run(method, object, args, err);
 
             InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
             result.set_methodid(asInt(method));
@@ -197,13 +197,6 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
 
             result.set_status(InvokeMethodResult::OK);
             *result.mutable_result() = res;
-            // TODO: Make this optional
-            // TODO: Make a temporary keep alive?
-            if (resPtr) {
-                getUnityHandle()->addKeepAlive(resPtr);
-                // update the client state's safeptr list
-                this->sendSafePtrList(-1); // TODO: same id? this would likely break other things though
-            }
         }
     }
     handler->sendPacket(wrapper);
@@ -414,11 +407,10 @@ GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, Proto
             continue;
         auto getter = asPtr(MethodInfo, prop.getterid());
         std::string err = "";
-        auto [res, resPtr] = MethodUtils::Run(getter, instance, {}, err);
+        auto res = MethodUtils::Run(getter, instance, {}, err);
         if(!err.empty())
             LOG_INFO("getting property failed with error: {}", err);
         else
-            // TODO: Should we store the resPtr in keep alive?
             (*ret.mutable_fieldvalues())[prop.getterid()] = res.data();
     }
 

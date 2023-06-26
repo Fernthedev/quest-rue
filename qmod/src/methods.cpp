@@ -206,8 +206,7 @@ ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
 }
 
 namespace MethodUtils {
-    // payload and result
-    std::pair<ProtoDataPayload,Il2CppObject*> Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences) {
+    ProtoDataPayload Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences) {
         LOG_DEBUG("Running method {}", method->name);
         LOG_DEBUG("{} parameters", method->parameters_count);
 
@@ -227,15 +226,15 @@ namespace MethodUtils {
         if(ex) {
             error = il2cpp_utils::ExceptionToString(ex);
             LOG_INFO("{}: Failed with exception: {}", method->name, error);
-            return {VoidDataPayload(method->return_type), nullptr};
+            return VoidDataPayload(method->return_type);
         }
 
         LOG_DEBUG("Returning");
         if(!ret) {
             LOG_DEBUG("null pointer");
-            return {VoidDataPayload(method->return_type), nullptr};
+            return VoidDataPayload(method->return_type);
         }
-        return {HandleReturn(method, ret), ret};
+        return HandleReturn(method, ret);
     }
 
     ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property) {
