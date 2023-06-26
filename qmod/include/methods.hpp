@@ -2,8 +2,10 @@
 
 #include "main.hpp"
 
+#include <tuple>
+
 namespace MethodUtils {
-    ProtoDataPayload Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences = true);
+    std::pair<ProtoDataPayload,Il2CppObject*> Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences = true);
 
     ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property);
     ProtoMethodInfo GetMethodInfo(MethodInfo* method);
