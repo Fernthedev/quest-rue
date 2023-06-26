@@ -24,19 +24,16 @@ function VariableCell(props: { addr: string }) {
 
   const name = createMemo(() => variables[props.addr]?.name ?? "");
 
-  const isValidName = createMemo(() => {
-    const exists = Object.entries(variables).some(
-      ([addr, { name }]) => addr !== props.addr && name === name.trim()
-    );
-
-    return !exists;
-  });
+  const [validName, setValidName] = createSignal(true);
 
   // if the new name is unique, update it, otherwise enable invalid input css
   const updateName = (val: string) => {
-    if (isValidName()) {
-      updateVariable(props.addr, variables[props.addr].type, val.trim());
-    }
+      const isValid =
+          Object.entries(variables).find(
+              ([addr, { name }]) => addr != props.addr && name == val.trim()
+          ) == undefined;
+      setValidName(isValid);
+      if (isValid) updateVariable(props.addr, variables[props.addr].type, val);
   };
 
   // reset value to last valid name if focus is exited while it still has an invalid name
@@ -46,7 +43,8 @@ function VariableCell(props: { addr: string }) {
     on(
       focused,
       () => {
-        if (!focused() && !isValidName()) {
+        if (!focused() && !validName()) {
+          setValidName(true);
           input!.value = name();
         }
       },
@@ -59,7 +57,7 @@ function VariableCell(props: { addr: string }) {
       <span class="flex gap-1">
         <input
           class="small-input flex-1 min-w-0"
-          classList={{ invalid: !isValidName() }}
+          classList={{ invalid: !validName() }}
           onInput={(e) => {
             updateName(e.currentTarget.value);
           }}
@@ -128,11 +126,10 @@ export function VariablesList() {
       const typeString = protoClassDetailsToString(type);
       const entry = prev.get(typeString);
 
-      if (!entry) {
+      if (!entry)
         prev.set(typeString, [type, [addr]]);
-      } else {
+      else
         entry[1].push(addr);
-      }
 
       return prev;
     }, new Map<string, [ProtoClassDetails, string[]]>())

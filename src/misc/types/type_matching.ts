@@ -102,6 +102,7 @@ export function protoClassDetailsToTypeInfo(
     size: details.fields.reduce((acc, x) => (acc += x.type?.size ?? 0), 0),
   };
 }
+
 export function isProtoClassInstanceOf(
   instance: ProtoClassDetails,
   targetType: ProtoClassInfo
