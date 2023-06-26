@@ -20,7 +20,7 @@ import { isVariableNameFree } from "../../misc/handlers/variable_list";
 import { removeVariable } from "../../misc/handlers/variable_list";
 import { updateVariable } from "../../misc/handlers/variable_list";
 
-function VariableCell(props: { addr: string }) {
+function VariableCell(props: { addr: bigint }) {
   const { rawInput } = useSettings();
 
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function VariableCell(props: { addr: string }) {
   const updateName = (val: string) => {
     const isValid = isVariableNameFree(val, props.addr);
     setValidName(isValid);
-    if (isValid) updateVariable(props.addr, variables[props.addr].type, val);
+    if (isValid) updateVariable(props.addr, getVariable(props.addr).type, val);
   };
 
   // reset value to last valid name if focus is exited while it still has an invalid name
@@ -88,7 +88,7 @@ function VariableCell(props: { addr: string }) {
   );
 }
 
-function TypeHeader(props: { type: ProtoClassDetails; vars: string[] }) {
+function TypeHeader(props: { type: ProtoClassDetails; vars: bigint[] }) {
   const [expanded, setExpanded] = createSignal(true);
 
   const className = createMemo(() => protoClassDetailsToString(props.type));
@@ -123,14 +123,15 @@ export function VariablesList() {
   // typeInfo string -> typeInfo, variable addrs with that type
   const types = createMemo(() =>
     Object.entries(variables).reduce((prev, [addr, { type }]) => {
+      const addrBigInt = BigInt(addr)
       const typeString = protoClassDetailsToString(type);
       const entry = prev.get(typeString);
 
-      if (!entry) prev.set(typeString, [type, [addr]]);
-      else entry[1].push(addr);
+      if (!entry) prev.set(typeString, [type, [addrBigInt]]);
+      else entry[1].push(addrBigInt);
 
       return prev;
-    }, new Map<string, [ProtoClassDetails, string[]]>())
+    }, new Map<string, [ProtoClassDetails, bigint[]]>())
   );
 
   // use the string key in the <For> to keep it from recreating all the inputs

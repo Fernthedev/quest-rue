@@ -24,7 +24,7 @@ import { useSettings } from "../Settings";
 import { makeFocusListener } from "@solid-primitives/active-element";
 import { Icon } from "solid-heroicons";
 import { check, chevronDoubleRight } from "solid-heroicons/outline";
-import { addVariable } from "../../misc/handlers/variable_list";
+import { addVariable, addrToString } from "../../misc/handlers/variable_list";
 import { getVariableValue } from "../../misc/handlers/variable_list";
 import { isVariableNameFree } from "../../misc/handlers/variable_list";
 import { variables } from "../../misc/handlers/variable_list";
@@ -206,7 +206,7 @@ export default function InputCell(props: {
 
     const details = await detailsPromise;
 
-    addVariable(props.value!, details.classDetails!, name);
+    addVariable(BigInt(props.value!), details.classDetails!, name);
   }
 
   function BasicInput(): JSX.Element {
@@ -228,6 +228,7 @@ export default function InputCell(props: {
 
   function ClassActions() {
     const [name, setName] = createSignal("");
+    const addr 
 
     return (
       <Show
@@ -244,7 +245,7 @@ export default function InputCell(props: {
         />
         <span class="w-1" />
         <Show
-          when={!((props.value ?? "") in variables)}
+          when={!props.value || !(addrToString(BigInt(props.value)) in variables)}
           fallback={
             <ActionButton
               class="small-button"
