@@ -36,7 +36,9 @@ export function handleSafePtrAddresses(
       removedAddresses.concat(await addressToVariables)
     );
 
-    setVariables(reconcile(newVariableMap));
+    console.log("Remove", removedAddresses)
+    console.log("Add", await addressToVariables)
+    setVariables(reconcile(newVariableMap, { merge: true }));
   });
 }
 
@@ -93,7 +95,7 @@ async function generateNewVariableRecord(
     return [
       addr,
       {
-        name: addr,
+        name: `0x${BigInt(addr).toString(16)}`,
         type: classDetails,
       } satisfies Variable,
     ] as [string, Variable];
