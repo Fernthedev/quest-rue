@@ -9,13 +9,17 @@ import {
   createMemo,
   createSignal,
   on,
+  onMount,
 } from "solid-js";
 import { protoClassDetailsToString } from "../../misc/types/type_matching";
 import { useSettings } from "../Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
 import { getVariable, variables } from "../../misc/handlers/variable_list";
-import { createFocusSignal } from "@solid-primitives/active-element";
+import {
+  createFocusSignal,
+  makeFocusListener,
+} from "@solid-primitives/active-element";
 import { isVariableNameFree } from "../../misc/handlers/variable_list";
 import { removeVariable } from "../../misc/handlers/variable_list";
 import { updateVariable } from "../../misc/handlers/variable_list";
@@ -27,6 +31,7 @@ function VariableCell(props: { addr: bigint }) {
 
   const name = createMemo(() => getVariable(props.addr)?.name ?? "");
 
+  // Use a signal since we need to control ordering
   const [validName, setValidName] = createSignal(true);
 
   // if the new name is unique, update it, otherwise enable invalid input css
@@ -38,19 +43,20 @@ function VariableCell(props: { addr: bigint }) {
 
   // reset value to last valid name if focus is exited while it still has an invalid name
   let input: HTMLInputElement | undefined;
-  const focused = createFocusSignal(() => input!);
-  createEffect(
-    on(
-      focused,
-      () => {
-        if (!focused() && !validName()) {
+  onMount(() => {
+    makeFocusListener(
+      input!,
+      // False positive
+      // eslint-disable-next-line solid/reactivity
+      (focused) => {
+        if (!focused && !validName()) {
           setValidName(true);
           input!.value = name();
         }
       },
-      { defer: true }
-    )
-  );
+      false
+    );
+  });
 
   return (
     <span>
@@ -123,7 +129,7 @@ export function VariablesList() {
   // typeInfo string -> typeInfo, variable addrs with that type
   const types = createMemo(() =>
     Object.entries(variables).reduce((prev, [addr, { type }]) => {
-      const addrBigInt = BigInt(addr)
+      const addrBigInt = BigInt(addr);
       const typeString = protoClassDetailsToString(type);
       const entry = prev.get(typeString);
 
