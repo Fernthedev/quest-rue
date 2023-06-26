@@ -1,5 +1,5 @@
 import { devPacketResponse } from "./dev";
-import { getEvents } from "./events";
+import { PacketTypes, getEvents, ListenerCallbackFunction } from "./events";
 import { handleGameObjects } from "./handlers/gameobject";
 import { handleSafePtrAddresses } from "./handlers/variable_list";
 import { PacketWrapper } from "./proto/qrue";
@@ -62,19 +62,7 @@ export function isConnected() {
   return socket?.readyState == WebSocket.OPEN;
 }
 
-export function requestGameObjects() {
-  sendPacket(
-    PacketWrapper.create({
-      queryResultId: uniqueBigNumber(),
-      Packet: {
-        $case: "getAllGameObjects",
-        getAllGameObjects: {},
-      },
-    })
-  );
-}
-
-export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
+export function writePacket<P extends PacketWrapper = PacketWrapper>(p: P) {
   if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
     devPacketResponse(p as PacketWrapper, handleGlobalPacketWrapper);
     return;
@@ -87,4 +75,63 @@ export function sendPacket<P extends PacketWrapper = PacketWrapper>(p: P) {
       socket?.send(PacketWrapper.encode(p).finish())
     );
   }
+}
+
+/// Asynchronous function useful for getting results
+export function sendPacketResult<
+  TResponse,
+  TRequest extends PacketTypes = PacketTypes
+>(
+  packet: TRequest,
+  options?: {
+    timeout?: number;
+    allowUnexpectedPackets?: boolean;
+    once?: boolean;
+  }
+): [Promise<TResponse>, () => void] {
+  const listener = getEvents().ALL_PACKETS;
+
+  // We use reference here since it's not necessary to call it "state", that is handled by `val`
+  const expectedQueryID = uniqueBigNumber();
+
+  const callback: { value: ListenerCallbackFunction<PacketWrapper> } = {
+    value: undefined!,
+  };
+
+  const cancelFn = () => listener.removeListener(callback.value);
+
+  const promise = new Promise<TResponse>((res, err) => {
+    callback.value = listener.addListener((union) => {
+      if (
+        options?.allowUnexpectedPackets ||
+        (expectedQueryID && union.queryResultId === expectedQueryID)
+      ) {
+        // it's guaranteed to exist ok
+        const packet: TResponse = (union.Packet as Record<string, unknown>)[
+          union.Packet!.$case!
+        ]! as unknown as TResponse;
+
+        if (!packet) throw "Packet is undefined why!";
+
+        if (union.Packet?.$case == "inputError") {
+          err(union.Packet.inputError);
+        } else {
+          // Cancel the listener, we have our value now
+          cancelFn();
+          res(packet);
+        }
+      }
+    }, options?.once ?? false);
+
+    if (options && options.timeout) {
+      listener.removeListener(callback.value);
+    }
+  });
+
+  writePacket({
+    queryResultId: expectedQueryID,
+    Packet: packet,
+  });
+
+  return [promise, cancelFn];
 }

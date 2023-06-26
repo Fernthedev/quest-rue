@@ -20,7 +20,7 @@ import {
 } from "../../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
-import { requestGameObjects } from "../../misc/commands";
+import { requestGameObjects } from "../../misc/handlers/gameobject";
 import { objectUrl } from "../../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "../utils/VirtualList";
@@ -193,8 +193,6 @@ export default function GameObjectList() {
     return Array.from(newTreeData.keys());
   });
 
-  // refresh store
-  requestGameObjects();
   const [requesting, setRequesting] = createSignal<boolean>();
 
   const noEntries = () => (search() ? "No Results" : "Loading...");

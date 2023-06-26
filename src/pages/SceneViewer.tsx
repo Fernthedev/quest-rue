@@ -4,6 +4,7 @@ import ObjectView from "../components/SceneViewer/ObjectView/ObjectView";
 
 import styles from "./SceneViewer.module.css";
 import { isConnected } from "../misc/commands";
+import { requestGameObjects } from "../misc/handlers/gameobject";
 import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
 import { Resizable } from "../components/utils/Resizable";
@@ -12,6 +13,7 @@ import { SettingsMenu } from "../components/Settings";
 import { createStore } from "solid-js/store";
 import { ProtoClassDetails } from "../misc/proto/il2cpp";
 import { VariablesList } from "../components/SceneViewer/VariablesList";
+import { requestVariables } from "../misc/handlers/variable_list";
 
 export default function SceneViewer() {
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ export default function SceneViewer() {
     navigate("/");
   });
   getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
+
+  // refresh store
+  requestGameObjects();
+  requestVariables();
 
   const routeParams = useParams<{ address?: string }>();
   const address = createMemo(() =>

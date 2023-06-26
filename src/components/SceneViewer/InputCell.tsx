@@ -6,7 +6,8 @@ import {
   onMount,
   createSignal,
 } from "solid-js";
-import { PacketJSON, sendPacketResult } from "../../misc/events";
+import { PacketJSON } from "../../misc/events";
+import { sendPacketResult } from "../../misc/commands";
 import {
   ProtoTypeInfo,
   ProtoTypeInfo_Primitive,

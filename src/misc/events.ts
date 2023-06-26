@@ -1,5 +1,5 @@
 import toast from "solid-toast";
-import { sendPacket } from "./commands";
+import { writePacket } from "./commands";
 import { PacketWrapper } from "./proto/qrue";
 import { ProtoGameObject } from "./proto/unity";
 import { uniqueBigNumber } from "./utils";
@@ -33,65 +33,6 @@ function buildEvents() {
 
 export type PacketTypes = PacketWrapper["Packet"];
 export type PacketJSON<T> = T; // ReturnType<T["toObject"]>;
-
-/// Asynchronous function useful for getting results
-export function sendPacketResult<
-  TResponse,
-  TRequest extends PacketTypes = PacketTypes
->(
-  packet: TRequest,
-  options?: {
-    timeout?: number;
-    allowUnexpectedPackets?: boolean;
-    once?: boolean;
-  }
-): [Promise<TResponse>, () => void] {
-  const listener = getEvents().ALL_PACKETS;
-
-  // We use reference here since it's not necessary to call it "state", that is handled by `val`
-  const expectedQueryID = uniqueBigNumber();
-
-  const callback: { value: ListenerCallbackFunction<PacketWrapper> } = {
-    value: undefined!,
-  };
-
-  const cancelFn = () => listener.removeListener(callback.value);
-
-  const promise = new Promise<TResponse>((res, err) => {
-    callback.value = listener.addListener((union) => {
-      if (
-        options?.allowUnexpectedPackets ||
-        (expectedQueryID && union.queryResultId === expectedQueryID)
-      ) {
-        // it's guaranteed to exist ok
-        const packet: TResponse = (union.Packet as Record<string, unknown>)[
-          union.Packet!.$case!
-        ]! as unknown as TResponse;
-
-        if (!packet) throw "Packet is undefined why!";
-
-        if (union.Packet?.$case == "inputError") {
-          err(union.Packet.inputError);
-        } else {
-          // Cancel the listener, we have our value now
-          cancelFn();
-          res(packet);
-        }
-      }
-    }, options?.once ?? false);
-
-    if (options && options.timeout) {
-      listener.removeListener(callback.value);
-    }
-  });
-
-  sendPacket({
-    queryResultId: expectedQueryID,
-    Packet: packet,
-  });
-
-  return [promise, cancelFn];
-}
 
 /**
  * A hook that returns the value of a packet with a response
@@ -161,7 +102,7 @@ export function useRequestAndResponsePacket<
     const randomId = uniqueBigNumber();
     expectedQueryID.value = randomId;
     setLoading(true);
-    sendPacket({
+    writePacket({
       queryResultId: randomId,
       Packet: p,
     });

@@ -1,7 +1,9 @@
 import { batch } from "solid-js";
 import { GameObjectJSON, PacketJSON } from "../events";
-import { GetAllGameObjectsResult } from "../proto/qrue";
+import { GetAllGameObjectsResult, PacketWrapper } from "../proto/qrue";
 import { createStore, reconcile } from "solid-js/store";
+import { writePacket } from "../commands";
+import { uniqueBigNumber } from "../utils";
 
 // type is based on Transform's address
 export type GameObjectIndex = Exclude<
@@ -63,4 +65,15 @@ export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
     setGameObjectsStore("objectsMap", reconcile(objectsMap));
     setGameObjectsStore("childrenMap", reconcile(childrenMap));
   });
+}
+export function requestGameObjects() {
+  writePacket(
+    PacketWrapper.create({
+      queryResultId: uniqueBigNumber(),
+      Packet: {
+        $case: "getAllGameObjects",
+        getAllGameObjects: {},
+      },
+    })
+  );
 }

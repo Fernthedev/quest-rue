@@ -1,11 +1,15 @@
 import { createStore, reconcile } from "solid-js/store";
 import { ProtoClassDetails, ProtoClassInfo } from "../proto/il2cpp";
 import {
+  AddSafePtrAddress,
   GetClassDetailsResult,
   GetSafePtrAddressesResult,
+  PacketWrapper,
 } from "../proto/qrue";
 import { batch } from "solid-js";
-import { sendPacketResult } from "../events";
+import { sendPacketResult } from "../commands";
+import { writePacket } from "../commands";
+import { uniqueBigNumber } from "../utils";
 
 export interface Variable {
   name: string;
@@ -17,14 +21,17 @@ export const [variables, setVariables] = createStore<{
   [addr: string]: Variable;
 }>({});
 
-
 export function handleSafePtrAddresses(
   getSafePtrAddressesResult: GetSafePtrAddressesResult
 ) {
   batch(async () => {
-    const removedAddresses: [string, Variable][] = findRemovedAddresses(getSafePtrAddressesResult);
+    const removedAddresses: [string, Variable][] = findRemovedAddresses(
+      getSafePtrAddressesResult
+    );
 
-    const addressToVariables = generateNewVariableRecord(getSafePtrAddressesResult);
+    const addressToVariables = generateNewVariableRecord(
+      getSafePtrAddressesResult
+    );
 
     const newVariableMap: Record<string, Variable> = Object.fromEntries(
       removedAddresses.concat(await addressToVariables)
@@ -34,17 +41,29 @@ export function handleSafePtrAddresses(
   });
 }
 
+export function requestVariables() {
+  writePacket(
+    PacketWrapper.create({
+      queryResultId: uniqueBigNumber(),
+      Packet: {
+        $case: "getSafePtrAddresses",
+        getSafePtrAddresses: {},
+      },
+    })
+  );
+}
 
-
-function findRemovedAddresses(getSafePtrAddressesResult: GetSafePtrAddressesResult): [string, Variable][] {
+function findRemovedAddresses(
+  getSafePtrAddressesResult: GetSafePtrAddressesResult
+): [string, Variable][] {
   return Object.entries(variables)
-    .filter(
-      ([addr]) => !Object.hasOwn(getSafePtrAddressesResult.address, addr)
-    )
+    .filter(([addr]) => !Object.hasOwn(getSafePtrAddressesResult.address, addr))
     .map(([addr]) => [addr, undefined!]);
 }
 
-async function generateNewVariableRecord(getSafePtrAddressesResult: GetSafePtrAddressesResult) {
+async function generateNewVariableRecord(
+  getSafePtrAddressesResult: GetSafePtrAddressesResult
+) {
   const addressToDetails = await Promise.all(
     Object.entries(getSafePtrAddressesResult.address)
       // find variables that aren't already parsed
@@ -55,14 +74,12 @@ async function generateNewVariableRecord(getSafePtrAddressesResult: GetSafePtrAd
         classInfo as ProtoClassInfo,
       ])
       .map(async ([addr, classInfo]) => {
-        const [classDetailsPromise] = sendPacketResult<GetClassDetailsResult>(
-          {
-            $case: "getClassDetails",
-            getClassDetails: {
-              classInfo: classInfo,
-            },
-          }
-        );
+        const [classDetailsPromise] = sendPacketResult<GetClassDetailsResult>({
+          $case: "getClassDetails",
+          getClassDetails: {
+            classInfo: classInfo,
+          },
+        });
 
         const classDetails = await classDetailsPromise;
 
@@ -85,26 +102,6 @@ async function generateNewVariableRecord(getSafePtrAddressesResult: GetSafePtrAd
   return addressToVariables;
 }
 
-export function isVariableNameFree(
-  varName = "Unnamed Variable",
-  ignoreAddress?: string
-) {
-  return !Object.entries(variables).some(
-    ([addr, { name }]) =>
-      (ignoreAddress == undefined || addr != ignoreAddress) &&
-      name == varName.trim()
-  );
-}
-export function getVariableValue(variable: string) {
-  const addr = Object.entries(variables).find(
-    ([, { name }]) => name === variable
-  );
-
-  return addr;
-}
-export function removeVariable(address: string) {
-  setVariables({ [address]: undefined! });
-}
 export function firstFree(
   beginning = "Unnamed Variable",
   ignoreAddress?: string
@@ -126,6 +123,34 @@ export function firstFree(
   }
   if (ret == 0) return beginning;
   return `${beginning} ${ret}`;
+}
+
+export function isVariableNameFree(
+  varName = "Unnamed Variable",
+  ignoreAddress?: string
+) {
+  return !Object.entries(variables).some(
+    ([addr, { name }]) =>
+      (ignoreAddress == undefined || addr != ignoreAddress) &&
+      name == varName.trim()
+  );
+}
+export function getVariableValue(variable: string) {
+  const addr = Object.entries(variables).find(
+    ([, { name }]) => name === variable
+  );
+
+  return addr;
+}
+export function removeVariable(address: string) {
+  setVariables({ [address]: undefined! });
+  return sendPacketResult<GetSafePtrAddressesResult>({
+    $case: "addSafePtrAddress",
+    addSafePtrAddress: {
+      address: BigInt(address),
+      remove: true,
+    },
+  });
 }
 export function updateVariable(
   address: string,
@@ -150,6 +175,14 @@ export function addVariable(
     [address]: {
       name: firstFree(name),
       type,
+    },
+  });
+
+  return sendPacketResult<GetSafePtrAddressesResult>({
+    $case: "addSafePtrAddress",
+    addSafePtrAddress: {
+      address: BigInt(address),
+      remove: false,
     },
   });
 }
