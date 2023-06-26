@@ -1,17 +1,17 @@
 import { createMemo, onMount } from "solid-js";
-import GameObjectList from "../components/GameObjectList";
-import ObjectView from "../components/ObjectView/ObjectView";
+import GameObjectList from "../components/SceneViewer/GameObjectList";
+import ObjectView from "../components/SceneViewer/ObjectView/ObjectView";
 
 import styles from "./SceneViewer.module.css";
 import { isConnected } from "../misc/commands";
 import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
-import { Resizable } from "../components/Resizable";
-import { StaticsView } from "../components/StaticsView";
+import { Resizable } from "../components/utils/Resizable";
+import { StaticsView } from "../components/SceneViewer/StaticsView";
 import { SettingsMenu } from "../components/Settings";
 import { createStore } from "solid-js/store";
 import { ProtoClassDetails } from "../misc/proto/il2cpp";
-import { VariablesList } from "../components/VariablesList";
+import { VariablesList } from "../components/SceneViewer/VariablesList";
 
 export default function SceneViewer() {
   const navigate = useNavigate();

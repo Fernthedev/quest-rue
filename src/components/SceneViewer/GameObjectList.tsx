@@ -13,18 +13,21 @@ import {
   createEventEffect,
   getEvents,
   useRequestAndResponsePacket,
-} from "../misc/events";
-import { GameObjectIndex, gameObjectsStore } from "../misc/handlers/gameobject";
+} from "../../misc/events";
+import {
+  GameObjectIndex,
+  gameObjectsStore,
+} from "../../misc/handlers/gameobject";
 
 import styles from "./GameObjectList.module.css";
-import { requestGameObjects } from "../misc/commands";
-import { objectUrl } from "../App";
+import { requestGameObjects } from "../../misc/commands";
+import { objectUrl } from "../../App";
 import { Navigator, useNavigate } from "@solidjs/router";
-import { VirtualList } from "./VirtualList";
+import { VirtualList } from "../utils/VirtualList";
 
 import { plus } from "solid-heroicons/outline";
 import { Icon } from "solid-heroicons";
-import { CreateGameObjectResult } from "../misc/proto/qrue";
+import { CreateGameObjectResult } from "../../misc/proto/qrue";
 
 function GameObjectListItem(props: {
   item: GameObjectIndex;

@@ -1,5 +1,5 @@
 import { Icon } from "solid-heroicons";
-import Toggle from "../form/Toggle";
+import Toggle from "../../form/Toggle";
 import { SetStoreFunction, Store } from "solid-js/store";
 import { adjustmentsHorizontal } from "solid-heroicons/outline";
 import { JSX, onCleanup, onMount, splitProps } from "solid-js";
@@ -8,8 +8,8 @@ import {
   ProtoMethodInfo,
   ProtoPropertyInfo,
   ProtoTypeInfo,
-} from "../../misc/proto/il2cpp";
-import { stringToPrimitive } from "../../misc/types/type_format";
+} from "../../../misc/proto/il2cpp";
+import { stringToPrimitive } from "../../../misc/types/type_format";
 
 export interface FilterSettings {
   filterFields: boolean;

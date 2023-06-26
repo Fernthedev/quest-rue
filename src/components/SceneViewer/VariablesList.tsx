@@ -1,6 +1,6 @@
-import { ProtoClassDetails } from "../misc/proto/il2cpp";
+import { ProtoClassDetails } from "../../misc/proto/il2cpp";
 import { useNavigate } from "@solidjs/router";
-import { objectUrl } from "../App";
+import { objectUrl } from "../../App";
 import { ActionButton } from "./InputCell";
 import {
   For,
@@ -10,11 +10,11 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { protoClassDetailsToString } from "../misc/types/type_matching";
-import { useSettings } from "./Settings";
+import { protoClassDetailsToString } from "../../misc/types/type_matching";
+import { useSettings } from "../Settings";
 import { separator } from "./ObjectView/ObjectView";
 import { chevronDoubleRight, xMark } from "solid-heroicons/outline";
-import { variables, setVariables } from "../misc/globals";
+import { variables, setVariables } from "../../misc/globals";
 import { createFocusSignal } from "@solid-primitives/active-element";
 
 function VariableCell(props: { addr: string }) {

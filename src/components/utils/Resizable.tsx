@@ -1,5 +1,5 @@
 import { ParentProps, createMemo, Show } from "solid-js";
-import { createUpdatingSignal } from "../misc/utils";
+import { createUpdatingSignal } from "../../misc/utils";
 
 export function Resizable(
   props: {

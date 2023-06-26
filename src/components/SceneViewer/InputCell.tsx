@@ -8,17 +8,20 @@ import {
   createDeferred,
   onMount,
 } from "solid-js";
-import { PacketJSON, sendPacketResult } from "../misc/events";
-import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../misc/proto/il2cpp";
+import { PacketJSON, sendPacketResult } from "../../misc/events";
+import {
+  ProtoTypeInfo,
+  ProtoTypeInfo_Primitive,
+} from "../../misc/proto/il2cpp";
 
 import styles from "./InputCell.module.css";
-import { errorHandle } from "../misc/utils";
-import { protoTypeToString } from "../misc/types/type_format";
-import { isProtoClassInstanceOf } from "../misc/types/type_matching";
-import { objectUrl } from "../App";
+import { errorHandle } from "../../misc/utils";
+import { protoTypeToString } from "../../misc/types/type_format";
+import { isProtoClassInstanceOf } from "../../misc/types/type_matching";
+import { objectUrl } from "../../App";
 import { useNavigate } from "@solidjs/router";
 import { createOptions } from "@thisbeyond/solid-select";
-import { useSettings } from "./Settings";
+import { useSettings } from "../Settings";
 import {
   createFocusSignal,
   makeFocusListener,
@@ -26,9 +29,9 @@ import {
 import { Icon } from "solid-heroicons";
 import { chevronDoubleRight } from "solid-heroicons/outline";
 import { addVariable, getVariableValue } from "./VariablesList";
-import { variables } from "../misc/globals";
-import { GetClassDetailsResult } from "../misc/proto/qrue";
-import { BetterSelect } from "./form/BetterSelect";
+import { variables } from "../../misc/globals";
+import { GetClassDetailsResult } from "../../misc/proto/qrue";
+import { BetterSelect } from "../form/BetterSelect";
 
 export function ActionButton(props: {
   img:

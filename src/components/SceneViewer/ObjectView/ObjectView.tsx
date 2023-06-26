@@ -1,17 +1,17 @@
 import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
-import { useRequestAndResponsePacket } from "../../misc/events";
-import { GetInstanceDetailsResult } from "../../misc/proto/qrue";
+import { useRequestAndResponsePacket } from "../../../misc/events";
+import { GetInstanceDetailsResult } from "../../../misc/proto/qrue";
 
 import styles from "./ObjectView.module.css";
-import { protoTypeToString } from "../../misc/types/type_format";
+import { protoTypeToString } from "../../../misc/types/type_format";
 import { TypeSection } from "./TypeSection";
-import { useSettings } from "../Settings";
-import { ProtoClassDetails } from "../../misc/proto/il2cpp";
+import { useSettings } from "../../Settings";
+import { ProtoClassDetails } from "../../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 import { ActionButton } from "../InputCell";
 import { addVariable } from "../VariablesList";
-import { protoClassDetailsToString } from "../../misc/types/type_matching";
+import { protoClassDetailsToString } from "../../../misc/types/type_matching";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 

@@ -7,15 +7,15 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { PacketJSON } from "../../misc/events";
-import { ProtoClassDetails, ProtoMethodInfo } from "../../misc/proto/il2cpp";
+import { PacketJSON } from "../../../misc/events";
+import { ProtoClassDetails, ProtoMethodInfo } from "../../../misc/proto/il2cpp";
 import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
 import { MethodCell } from "./MethodCell";
 import { SpanFn, separator } from "./ObjectView";
 import { OverloadCell } from "./OverloadCell";
-import { createUpdatingSignal } from "../../misc/utils";
+import { createUpdatingSignal } from "../../../misc/utils";
 import { SetStoreFunction, Store } from "solid-js/store";
 import {
   FilterSettings,

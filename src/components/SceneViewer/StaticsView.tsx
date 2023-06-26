@@ -1,5 +1,5 @@
 import { SetStoreFunction, createStore } from "solid-js/store";
-import { ProtoClassDetails } from "../misc/proto/il2cpp";
+import { ProtoClassDetails } from "../../misc/proto/il2cpp";
 import {
   Show,
   createSignal,
@@ -8,17 +8,17 @@ import {
   createMemo,
   For,
 } from "solid-js";
-import { useSettings } from "./Settings";
+import { useSettings } from "../Settings";
 import { SpanFn, adaptiveSpanSize, separator } from "./ObjectView/ObjectView";
 import { TypeSection } from "./ObjectView/TypeSection";
 import { Icon } from "solid-heroicons";
 import { plus } from "solid-heroicons/outline";
-import { useRequestAndResponsePacket } from "../misc/events";
-import { GetClassDetailsResult } from "../misc/proto/qrue";
+import { useRequestAndResponsePacket } from "../../misc/events";
+import { GetClassDetailsResult } from "../../misc/proto/qrue";
 import {
   protoTypeToString,
   stringToProtoType,
-} from "../misc/types/type_format";
+} from "../../misc/types/type_format";
 import toast from "solid-toast";
 import {
   FilterSettings,

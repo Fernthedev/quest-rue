@@ -1,9 +1,9 @@
 import { createEffect, onMount } from "solid-js";
-import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
-import { GetFieldResult, SetFieldResult } from "../../misc/proto/qrue";
-import { ProtoFieldInfo } from "../../misc/proto/il2cpp";
-import { stringToProtoData } from "../../misc/types/type_format";
-import { protoDataToString } from "../../misc/types/type_format";
+import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
+import { GetFieldResult, SetFieldResult } from "../../../misc/proto/qrue";
+import { ProtoFieldInfo } from "../../../misc/proto/il2cpp";
+import { stringToProtoData } from "../../../misc/types/type_format";
+import { protoDataToString } from "../../../misc/types/type_format";
 import InputCell, { ActionButton } from "../InputCell";
 import { SpanFn } from "./ObjectView";
 

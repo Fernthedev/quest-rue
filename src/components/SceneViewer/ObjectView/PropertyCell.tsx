@@ -5,11 +5,11 @@ import {
   createMemo,
   createSignal,
 } from "solid-js";
-import { PacketJSON, useRequestAndResponsePacket } from "../../misc/events";
-import { InvokeMethodResult } from "../../misc/proto/qrue";
-import { ProtoPropertyInfo } from "../../misc/proto/il2cpp";
-import { stringToProtoData } from "../../misc/types/type_format";
-import { protoDataToString } from "../../misc/types/type_format";
+import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
+import { InvokeMethodResult } from "../../../misc/proto/qrue";
+import { ProtoPropertyInfo } from "../../../misc/proto/il2cpp";
+import { stringToProtoData } from "../../../misc/types/type_format";
+import { protoDataToString } from "../../../misc/types/type_format";
 import InputCell, { ActionButton } from "../InputCell";
 import toast from "solid-toast";
 
