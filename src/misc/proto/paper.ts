@@ -1,0 +1,200 @@
+/* eslint-disable */
+import Long from "long";
+import _m0 from "protobufjs/minimal";
+import { Timestamp } from "./google/protobuf/timestamp";
+
+export const protobufPackage = "";
+
+/** / https://github.com/Fernthedev/paperlog/blob/89a2726d78bf86c28f8b8b17ded6bbed43d56c1b/shared/internal_logger.hpp#L60-L67 */
+export interface PaperLogData {
+  str: string;
+  threadId: bigint;
+  tag: string;
+  fileName: string;
+  functionName: string;
+  fileLine: string;
+  logTime: Date | undefined;
+}
+
+function createBasePaperLogData(): PaperLogData {
+  return { str: "", threadId: BigInt("0"), tag: "", fileName: "", functionName: "", fileLine: "", logTime: undefined };
+}
+
+export const PaperLogData = {
+  encode(message: PaperLogData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.str !== "") {
+      writer.uint32(10).string(message.str);
+    }
+    if (message.threadId !== BigInt("0")) {
+      writer.uint32(16).uint64(message.threadId.toString());
+    }
+    if (message.tag !== "") {
+      writer.uint32(26).string(message.tag);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(34).string(message.fileName);
+    }
+    if (message.functionName !== "") {
+      writer.uint32(42).string(message.functionName);
+    }
+    if (message.fileLine !== "") {
+      writer.uint32(50).string(message.fileLine);
+    }
+    if (message.logTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.logTime), writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PaperLogData {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePaperLogData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.str = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.threadId = longToBigint(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.tag = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.functionName = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.fileLine = reader.string();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.logTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PaperLogData {
+    return {
+      str: isSet(object.str) ? String(object.str) : "",
+      threadId: isSet(object.threadId) ? BigInt(object.threadId) : BigInt("0"),
+      tag: isSet(object.tag) ? String(object.tag) : "",
+      fileName: isSet(object.fileName) ? String(object.fileName) : "",
+      functionName: isSet(object.functionName) ? String(object.functionName) : "",
+      fileLine: isSet(object.fileLine) ? String(object.fileLine) : "",
+      logTime: isSet(object.logTime) ? fromJsonTimestamp(object.logTime) : undefined,
+    };
+  },
+
+  toJSON(message: PaperLogData): unknown {
+    const obj: any = {};
+    message.str !== undefined && (obj.str = message.str);
+    message.threadId !== undefined && (obj.threadId = message.threadId.toString());
+    message.tag !== undefined && (obj.tag = message.tag);
+    message.fileName !== undefined && (obj.fileName = message.fileName);
+    message.functionName !== undefined && (obj.functionName = message.functionName);
+    message.fileLine !== undefined && (obj.fileLine = message.fileLine);
+    message.logTime !== undefined && (obj.logTime = message.logTime.toISOString());
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PaperLogData>, I>>(base?: I): PaperLogData {
+    return PaperLogData.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PaperLogData>, I>>(object: I): PaperLogData {
+    const message = createBasePaperLogData();
+    message.str = object.str ?? "";
+    message.threadId = object.threadId ?? BigInt("0");
+    message.tag = object.tag ?? "";
+    message.fileName = object.fileName ?? "";
+    message.functionName = object.functionName ?? "";
+    message.fileLine = object.fileLine ?? "";
+    message.logTime = object.logTime ?? undefined;
+    return message;
+  },
+};
+
+type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
+
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = BigInt(Math.trunc(date.getTime() / 1_000));
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (Number(t.seconds.toString()) || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
+
+function longToBigint(long: Long) {
+  return BigInt(long.toString());
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
+}

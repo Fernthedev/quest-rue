@@ -31,6 +31,33 @@ void Manager::Init() {
     handler = std::make_unique<WebSocketHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
+
+// Logger sink
+// TODO: Make this a queue and flush
+    Paper::Logger::AddLogSink(
+        [this](Paper::ThreadData const &data, std::string_view fmtMessage) {
+          if(!sendLoggerUpdates)
+            return;
+
+          PacketWrapper wrapper;
+          wrapper.set_queryresultid(-1);
+
+          auto &loggerUpdate = *wrapper.mutable_responseloggerupdate();
+
+          auto *log = loggerUpdate.add_paperlogs();
+          log->set_str(fmtMessage);
+          log->set_threadid(((uint64_t *)(&data.threadId))[0]);
+          log->set_tag(data.tag);
+          log->set_filename(data.loc.file_name());
+          log->set_functionname(data.loc.function_name());
+          log->set_fileline(data.loc.line());
+          log->mutable_logtime()->set_nanos(
+              std::chrono::duration_cast<std::chrono::nanoseconds>(
+                  data.logTime.time_since_epoch())
+                  .count());
+
+          handler->sendPacket(wrapper);
+        });
 }
 
 bool Manager::tryValidatePtr(const void* ptr) {
@@ -93,6 +120,9 @@ void Manager::processMessage(const PacketWrapper& packet) {
             break;
         case PacketWrapper::kGetSafePtrAddresses:
             sendSafePtrList(id);
+            break;
+        case PacketWrapper::kRequestLogger:
+            setLoggerListener(packet.requestlogger(), id);
             break;
         default:
             LOG_INFO("Invalid packet type!");
@@ -476,6 +506,10 @@ void Manager::sendSafePtrList(uint64_t id) {
     }
 
     handler->sendPacket(wrapper);
+}
+
+void Manager::setLoggerListener(RequestLogger const& packet, uint64_t id) {
+    this->sendLoggerUpdates = packet.listen();
 }
 
 #pragma endregion

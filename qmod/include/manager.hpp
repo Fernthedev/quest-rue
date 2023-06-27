@@ -26,8 +26,10 @@ class Manager {
     void createGameObject(const CreateGameObject& packet, uint64_t id);
     void addSafePtrAddress(const AddSafePtrAddress& packet, uint64_t id);
     void sendSafePtrList(uint64_t id);
+    void setLoggerListener(const RequestLogger& packet, uint64_t id);
 
     bool initialized;
+    bool sendLoggerUpdates = false;
     std::unique_ptr<PacketHandler> handler;
 
     std::unordered_map<Il2CppClass*, PacketWrapper> cachedClasses;

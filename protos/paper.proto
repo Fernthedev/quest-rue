@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+// optional = nullable
+// may change in future!
+
+import "google/protobuf/timestamp.proto";
+
+
+/// https://github.com/Fernthedev/paperlog/blob/89a2726d78bf86c28f8b8b17ded6bbed43d56c1b/shared/internal_logger.hpp#L60-L67
+message PaperLogData {
+    string str = 1;
+    uint64 threadId = 2;
+    string tag = 3;
+    string fileName = 4;
+    string functionName = 5;
+    string fileLine = 6;
+    google.protobuf.Timestamp logTime = 7;
+}

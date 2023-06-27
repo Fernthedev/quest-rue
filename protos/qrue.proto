@@ -5,6 +5,7 @@ syntax = "proto3";
 
 import "il2cpp.proto";
 import "unity.proto";
+import "paper.proto";
 
 // COMMAND/QUERY PACKETS
 
@@ -159,6 +160,17 @@ message GetSafePtrAddressesResult {
     map<uint64, ProtoClassInfo> address = 1;
 }
 
+message RequestLogger {
+    // if true, enables the logger updates
+    // false disables
+    bool listen = 1;
+}
+
+// the backend will continually send this as long as we're listening
+message ResponseLoggerUpdate {
+    repeated PaperLogData paperLogs = 1;
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -193,5 +205,7 @@ message PacketWrapper {
         AddSafePtrAddress addSafePtrAddress = 29;
         GetSafePtrAddresses getSafePtrAddresses = 30;
         GetSafePtrAddressesResult getSafePtrAddressesResult = 31;
+        RequestLogger requestLogger = 32;
+        ResponseLoggerUpdate responseLoggerUpdate = 33;
     }
 }
