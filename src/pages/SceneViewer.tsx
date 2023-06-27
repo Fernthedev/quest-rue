@@ -47,24 +47,30 @@ export default function SceneViewer() {
   return (
     <div class="flex w-full h-full">
       <Resizable direction="right" size={275} minSize={150} maxSize={600}>
-        {leftPanel() ?? <></>}
-        <div class={`${styles.leftPanelTabs}`}>
-          <Tabs onTabSelect={[leftPanel, setLeftPanel]}>
-            {[
-              [
-                "Variables",
-                <div class={`${styles.variableList}`}>
-                  <VariablesList />
-                </div>,
-              ],
-              [
-                "Logger",
-                <div>
-                  <h1>Loggers!</h1>
-                </div>,
-              ],
-            ]}
-          </Tabs>
+        <div class={`${styles.leftPanel}`}>
+          {leftPanel() ?? <></>}
+          <div class={`${styles.leftPanelTabs}`}>
+            <Tabs
+              onTabSelect={[leftPanel, setLeftPanel]}
+              tabClass="bordered"
+              size="md"
+            >
+              {[
+                [
+                  "Variables",
+                  <div class={`${styles.variableList}`}>
+                    <VariablesList />
+                  </div>,
+                ],
+                [
+                  "Logger",
+                  <div>
+                    <h1>Loggers!</h1>
+                  </div>,
+                ],
+              ]}
+            </Tabs>
+          </div>
         </div>
       </Resizable>
 

@@ -3,7 +3,6 @@ import {
   JSX,
   ParentProps,
   Signal,
-  createEffect,
   createMemo,
   createRenderEffect,
   createSignal,
@@ -46,12 +45,14 @@ export function Tabs(props: TabProps) {
         {(item, index) => {
           const name = createMemo(() => item()[0]);
 
+          const size = () =>
+            props.size !== undefined ? `tab-${props.size}` : "";
+
           return (
             <button
               onClick={() => select(index, item()[1])}
-              class={`tab`}
+              class={`tab ${size()}`}
               classList={{
-                [`tab-${props.size}`]: props.size !== undefined,
                 "tab-active": activeTab() === index,
                 "tab-bordered": props.tabClass === "bordered",
                 "tab-lifted": props.tabClass === "lifted",
