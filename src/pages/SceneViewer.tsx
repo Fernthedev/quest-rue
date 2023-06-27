@@ -15,6 +15,7 @@ import { ProtoClassDetails } from "../misc/proto/il2cpp";
 import { VariablesList } from "../components/SceneViewer/VariablesList";
 import { requestVariables } from "../misc/handlers/variable_list";
 import { Tabs } from "../components/Tabs";
+import { Logger } from "../components/SceneViewer/Logger";
 
 export default function SceneViewer() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function SceneViewer() {
     <div class="flex w-full h-full">
       <Resizable direction="right" size={275} minSize={150} maxSize={600}>
         <div class={`${styles.leftPanel}`}>
-          {leftPanel() ?? <></>}
+          <div class={`${styles.leftPanelScreen}`}>{leftPanel() ?? <></>}</div>
           <div class={`${styles.leftPanelTabs}`}>
             <Tabs
               onTabSelect={[leftPanel, setLeftPanel]}
@@ -56,18 +57,8 @@ export default function SceneViewer() {
               size="md"
             >
               {[
-                [
-                  "Variables",
-                  <div class={`${styles.variableList}`}>
-                    <VariablesList />
-                  </div>,
-                ],
-                [
-                  "Logger",
-                  <div>
-                    <h1>Loggers!</h1>
-                  </div>,
-                ],
+                ["Variables", <VariablesList />],
+                ["Logger", <Logger />],
               ]}
             </Tabs>
           </div>

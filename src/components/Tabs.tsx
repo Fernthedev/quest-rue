@@ -51,7 +51,7 @@ export function Tabs(props: TabProps) {
           return (
             <button
               onClick={() => select(index, item()[1])}
-              class={`tab ${size()}`}
+              class={`tab btn-no-style ${size()}`}
               classList={{
                 "tab-active": activeTab() === index,
                 "tab-bordered": props.tabClass === "bordered",

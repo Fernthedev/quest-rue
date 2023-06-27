@@ -143,7 +143,7 @@ export function VariablesList() {
   // use the string key in the <For> to keep it from recreating all the inputs
   // when the stpre changes, which would cause you to lose focus each keystroke
   return (
-    <div class="flex flex-col p-2 gap-1">
+    <div class="flex flex-col p-2 gap-1 overflow-hidden">
       <For each={Array.from(types().keys())}>
         {(key) => {
           // needs to be reactive on types here

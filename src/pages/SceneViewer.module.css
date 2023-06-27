@@ -5,12 +5,12 @@
   height: 100%;
 }
 
-.variableList {
+.leftPanelScreen {
   /* 700 */
   @apply bg-zinc-400 dark:bg-zinc-800;
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .leftPanel {
@@ -26,6 +26,8 @@
   display: flex;
   width: 100%;
 
+  /* this pushes it down */
+  margin-top: auto;
   align-self: flex-end;
   justify-content: center;
 
