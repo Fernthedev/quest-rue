@@ -7,6 +7,7 @@ import {
   createRenderEffect,
   createSignal,
 } from "solid-js";
+import styles from "./Tabs.module.css"
 
 export interface TabProps extends ParentProps {
   defaultTab?: number;
@@ -40,7 +41,7 @@ export function Tabs(props: TabProps) {
   }
 
   return (
-    <div class="tabs" classList={{ "tabs-boxed": props.tabClass === "boxed" }}>
+    <div class="tabs w-full" classList={{ "tabs-boxed": props.tabClass === "boxed" }}>
       <Index each={props.children ?? []}>
         {(item, index) => {
           const name = createMemo(() => item()[0]);
@@ -51,7 +52,7 @@ export function Tabs(props: TabProps) {
           return (
             <button
               onClick={() => select(index, item()[1])}
-              class={`tab btn-no-style ${size()}`}
+              class={`tab ${styles.tabButton} ${size()}`}
               classList={{
                 "tab-active": activeTab() === index,
                 "tab-bordered": props.tabClass === "bordered",

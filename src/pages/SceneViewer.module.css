@@ -31,8 +31,7 @@
   align-self: flex-end;
   justify-content: center;
 
-  /* margin: 1rem; */
-  padding: 0.5rem;
+  @apply py-2
 }
 
 @media (max-width: 500px) {

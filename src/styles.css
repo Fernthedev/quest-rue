@@ -72,8 +72,8 @@ h1 {
 }
 
 input,
-button:not(.btn-no-style),
-button:not(.btn-no-style)[type="submit"] {
+button,
+button[type="submit"] {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -91,14 +91,15 @@ input:not(.toggle) {
   transition: border-radius 0.1s;
 }
 button {
+  align-content: center;
   cursor: pointer;
 }
 
 input:not(.toggle):hover,
-button:not(.btn-no-style):hover {
+button:hover {
   border-color: #396cd8;
 }
-button:not(.btn-no-style):active {
+button:active {
   border-color: #396cd8;
   background-color: #e8e8e8;
 }
@@ -119,7 +120,7 @@ input:placeholder-shown {
 }
 
 input,
-button:not(.btn-no-style) {
+button {
   outline: none;
 }
 
@@ -206,12 +207,12 @@ input[type="number"] {
   }
 
   input,
-  button:not(.btn-no-style),
-  button:not(.btn-no-style)[type="submit"] {
+  button,
+  button[type="submit"] {
     color: #ffffff;
     background-color: #0f0f0fff;
   }
-  button:not(.btn-no-style):active {
+  button:active {
     background-color: #0f0f0fff;
   }
 

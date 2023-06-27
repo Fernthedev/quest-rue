@@ -1,0 +1,9 @@
+.tabButton {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid;
+  background: transparent;
+  min-width: 0;
+  flex: 1;
+  transition: border-opacity 0.25s;
+}
