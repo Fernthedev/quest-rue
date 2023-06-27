@@ -13,6 +13,10 @@
   overflow-x: hidden;
 }
 
+.leftPanelTabs {
+  align-self: flex-end;
+}
+
 @media (max-width: 500px) {
   .gameObjectList {
     width: 100%;

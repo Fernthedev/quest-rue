@@ -1,4 +1,4 @@
-import { createMemo, onMount } from "solid-js";
+import { JSX, createMemo, createSignal, onMount } from "solid-js";
 import GameObjectList from "../components/SceneViewer/GameObjectList";
 import ObjectView from "../components/SceneViewer/ObjectView/ObjectView";
 
@@ -14,6 +14,7 @@ import { createStore } from "solid-js/store";
 import { ProtoClassDetails } from "../misc/proto/il2cpp";
 import { VariablesList } from "../components/SceneViewer/VariablesList";
 import { requestVariables } from "../misc/handlers/variable_list";
+import { Tabs } from "../components/Tabs";
 
 export default function SceneViewer() {
   const navigate = useNavigate();
@@ -38,11 +39,32 @@ export default function SceneViewer() {
   const address = createMemo(() =>
     routeParams.address ? BigInt(routeParams.address) : undefined
   );
+
+  const [leftPanel, setLeftPanel] = createSignal<JSX.Element | undefined>(
+    undefined
+  );
+
   return (
     <div class="flex w-full h-full">
       <Resizable direction="right" size={275} minSize={150} maxSize={600}>
-        <div class={`${styles.variableList}`}>
-          <VariablesList />
+        {leftPanel() ?? <></>}
+        <div class={`${styles.leftPanelTabs}`}>
+          <Tabs onTabSelect={[leftPanel, setLeftPanel]}>
+            {[
+              [
+                "Variables",
+                <div class={`${styles.variableList}`}>
+                  <VariablesList />
+                </div>,
+              ],
+              [
+                "Logger",
+                <div>
+                  <h1>Loggers!</h1>
+                </div>,
+              ],
+            ]}
+          </Tabs>
         </div>
       </Resizable>
 

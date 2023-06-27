@@ -228,7 +228,6 @@ export default function InputCell(props: {
 
   function ClassActions() {
     const [name, setName] = createSignal("");
-    const addr 
 
     return (
       <Show
@@ -245,7 +244,9 @@ export default function InputCell(props: {
         />
         <span class="w-1" />
         <Show
-          when={!props.value || !(addrToString(BigInt(props.value)) in variables)}
+          when={
+            !props.value || !(addrToString(BigInt(props.value)) in variables)
+          }
           fallback={
             <ActionButton
               class="small-button"
