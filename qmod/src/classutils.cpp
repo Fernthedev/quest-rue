@@ -7,6 +7,8 @@
 using namespace ClassUtils;
 using namespace il2cpp_utils;
 
+std::unordered_map<Il2CppType const*, ProtoTypeInfo> typeInfoCache;
+
 // basically copied from il2cpp (field setting). what could go wrong?
 // (so blame them for the gotos)
 size_t fieldTypeSize(const Il2CppType* type) {
@@ -157,10 +159,16 @@ bool ClassUtils::GetIsStatic(MethodInfo const* method) {
 // from here, use type instead of class, as it is slightly more specific in cases such as byrefs
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
-    ProtoTypeInfo info;
     LOG_DEBUG("Getting type info {}", il2cpp_functions::type_get_name(type));
     LOG_DEBUG("Type enum {}", (int) type->type);
 
+    auto cached = typeInfoCache.find(type);
+    if (cached != typeInfoCache.end()) {
+        LOG_DEBUG("Returning cached type info");
+        return cached->second;
+    }
+
+    ProtoTypeInfo info;
     info.set_size(fieldTypeSize(type));
     LOG_DEBUG("Found size {}", info.size());
 
@@ -171,7 +179,7 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
         IL2CPP_TYPE_MVAR
     };
 
-    if (!typeIsValuetype(type) && nonClassReferences.find(type->type) == nonClassReferences.end()) {
+    if (!typeIsValuetype(type) && !nonClassReferences.contains(type->type)) {
         if(classoftype(type) == il2cpp_functions::defaults->systemtype_class)
             info.set_primitiveinfo(ProtoTypeInfo::TYPE);
         else
@@ -234,6 +242,8 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
         }
     }
     info.set_isbyref(type->byref);
+
+    typeInfoCache[type] = info;
 
     return info;
 }

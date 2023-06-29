@@ -342,8 +342,18 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
+std::unordered_map<Il2CppClass*, ProtoClassDetails> cachedClasses;
+
 ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
+    auto cached = cachedClasses.find(clazz);
+    if(cached != cachedClasses.end()) {
+        LOG_INFO("Returning cached details for {}::{}", il2cpp_functions::class_get_namespace(clazz), il2cpp_functions::class_get_name(clazz));
+        return cached->second;
+    }
+
     ProtoClassDetails ret;
+    if(clazz == nullptr)
+        return ret; // don't add to cache
 
     auto currentClass = clazz;
     auto currentClassProto = &ret;
@@ -387,10 +397,21 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
             currentClassProto = currentClassProto->mutable_parent();
     }
 
+    // while loop means I can't add the parents to the cache in it
+    // because it goes in the wrong order, so parents aren't filled out when they would be added
+    currentClass = clazz;
+    currentClassProto = &ret;
+
+    while (currentClass != nullptr) {
+        cachedClasses[currentClass] = *currentClassProto;
+        currentClass = GetParent(currentClass);
+        if (currentClass)
+            currentClassProto = currentClassProto->mutable_parent();
+    }
+
     return ret;
 }
 
-// TODO: generics
 void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);

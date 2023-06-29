@@ -32,11 +32,6 @@ class Manager {
     bool sendLoggerUpdates = false;
     std::unique_ptr<PacketHandler> handler;
 
-    std::unordered_map<Il2CppClass*, PacketWrapper> cachedClasses;
-
-    // TODO: implement
-    std::vector<SafePtr<Il2CppObject>> storedResults;
-
     public:
     void Init();
 
