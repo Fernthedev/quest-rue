@@ -64,10 +64,9 @@ size_t fieldTypeSize(const Il2CppType* type) {
                 return il2cpp_functions::class_instance_size(klass) - sizeof(Il2CppObject);
             }
         case IL2CPP_TYPE_GENERICINST:
-            LOG_INFO("Error: tried to find size of generic instance, not implemented yet");
-            return 8;
             // t = GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
-            // goto handle_enum;
+            t = il2cpp_functions::MetadataCache_GetTypeInfoFromTypeDefinitionIndex(type->data.generic_class->typeDefinitionIndex)->byval_arg.type;
+            goto handle_enum;
         case IL2CPP_TYPE_VOID:
             // added myself but I mean it makes sense, probably doesn't actually matter for functionality though
             return 0;
