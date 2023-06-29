@@ -81,7 +81,8 @@ export function stringToDataSegment(
           new DataView(size(8).buffer).setFloat64(0, Number(input), true);
           break;
         case ProtoTypeInfo_Primitive.STRING: {
-          const utf16Arr = new Uint16Array(size(input.length * 2).buffer);
+          // +1 to add null char
+          const utf16Arr = new Uint16Array(size((input.length + 1) * 2).buffer);
           for (let i = 0; i < input.length; i++)
             utf16Arr[i] = input.charCodeAt(i);
           break;
