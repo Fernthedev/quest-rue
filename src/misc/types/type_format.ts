@@ -11,9 +11,7 @@ import { protoDataToRealValue } from "./type_serialization";
 export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
   if (!data) return "";
   const typeInfo = data.typeInfo!;
-  // fill with zeroes if left empty
   if (!data.data?.Data) return "";
-  console.log(data.data.Data);
   const ret = protoDataToRealValue(data.data, typeInfo);
   console.log(ret);
   if (

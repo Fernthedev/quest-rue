@@ -18,13 +18,13 @@ inline void** pointerOffset(void* ptr, int offset) {
 void* HandleType(ProtoTypeInfo const& typeInfo, ProtoDataSegment arg);
 
 void* HandleClass(ProtoClassInfo const& info, ProtoDataSegment arg) {
-    if(arg.Data_case() == ProtoDataSegment::DataCase::kClassData)
+    if(arg.Data_case() != ProtoDataSegment::DataCase::kClassData)
         return nullptr;
     return (void*) arg.classdata();
 }
 
 void* HandleArray(ProtoArrayInfo const& info, ProtoDataSegment arg) {
-    if(arg.Data_case() == ProtoDataSegment::DataCase::kArrayData)
+    if(arg.Data_case() != ProtoDataSegment::DataCase::kArrayData)
         return nullptr;
     auto& elements = arg.arraydata();
     int len = elements.data_size();
@@ -47,7 +47,7 @@ void* HandleArray(ProtoArrayInfo const& info, ProtoDataSegment arg) {
 }
 
 void* HandleStruct(ProtoStructInfo const& info, ProtoDataSegment arg) {
-    if(arg.Data_case() == ProtoDataSegment::DataCase::kStructData)
+    if(arg.Data_case() != ProtoDataSegment::DataCase::kStructData)
         return nullptr;
     // get the size of the struct in a slightly janky way, just like how I allocate it too
     // TODO: allocate this differently if it breaks (empty bytes in ProtoDataSegment.StructData?)
@@ -68,7 +68,7 @@ void* HandleStruct(ProtoStructInfo const& info, ProtoDataSegment arg) {
 }
 
 void* HandleGeneric(ProtoGenericInfo const& info, ProtoDataSegment arg) {
-    if(arg.Data_case() == ProtoDataSegment::DataCase::kGenericData)
+    if(arg.Data_case() != ProtoDataSegment::DataCase::kGenericData)
         return nullptr;
     // This shouldn't be called as it represents an unspecified generic
     LOG_INFO("Unspecified generic passed as a parameter!");
@@ -76,7 +76,7 @@ void* HandleGeneric(ProtoGenericInfo const& info, ProtoDataSegment arg) {
 }
 
 void* HandlePrimitive(ProtoTypeInfo::Primitive info, ProtoDataSegment arg) {
-    if(arg.Data_case() == ProtoDataSegment::DataCase::kPrimitiveData)
+    if(arg.Data_case() != ProtoDataSegment::DataCase::kPrimitiveData)
         return nullptr;
     std::string const& bytes = arg.primitivedata();
 
