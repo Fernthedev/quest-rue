@@ -1,48 +1,60 @@
 import { PacketJSON } from "../events";
-import { ProtoTypeInfo, ProtoTypeInfo_Primitive } from "../proto/il2cpp";
+import {
+  ProtoDataSegment,
+  ProtoTypeInfo,
+  ProtoTypeInfo_Primitive,
+} from "../proto/il2cpp";
 import { stringToProtoType, protoTypeToString } from "./type_format";
 import { parseShallow } from "../utils";
 
-export function stringToBytes(
+export function stringToDataSegment(
   input: string,
   typeInfo: PacketJSON<ProtoTypeInfo>
-) {
-  let dataArray: Uint8Array | undefined;
-  const size = (bytes: number) => {
-    if (!dataArray) dataArray = new Uint8Array(bytes);
-    return dataArray;
-  };
-  const defSize = () => size(typeInfo.size!);
-
+): ProtoDataSegment {
   switch (typeInfo.Info?.$case) {
     case "classInfo":
-      new DataView(size(8).buffer).setBigInt64(0, BigInt(input), true);
-      break;
+      return ProtoDataSegment.create({
+        Data: { $case: "classData", classData: BigInt(input) },
+      });
     case "structInfo": {
+      // get keys and values, keeping the values as strings so they can be passed recursively
       const struct: { [key: string]: string } = parseShallow(input);
-      const fields = typeInfo.Info.structInfo.fieldOffsets!;
-      for (const offset in fields) {
-        const field = fields[offset];
-        const string = struct[field.name!];
-        defSize().set(stringToBytes(string, field.type!), Number(offset));
-      }
-      break;
+      // convert the fields in the typeInfo to an object with the correct value for each field
+      const dataObj = Object.fromEntries(
+        Object.entries(typeInfo.Info.structInfo.fieldOffsets!).map(
+          ([offset, { name, type }]) => [
+            Number(offset),
+            stringToDataSegment(struct[name], type!),
+          ]
+        )
+      ) as { [offset: number]: ProtoDataSegment }; // ts doesn't understand the key is a number
+      return ProtoDataSegment.create({
+        Data: {
+          $case: "structData",
+          structData: {
+            data: dataObj,
+          },
+        },
+      });
     }
     case "arrayInfo": {
       const arr: string[] = parseShallow(input);
-      const elems: Uint8Array[] = [];
-      let largest = 0;
-      for (const elem of arr) {
-        const bytes = stringToBytes(elem, typeInfo.Info.arrayInfo.memberType!);
-        elems.push(bytes);
-        if (bytes.length > largest) largest = bytes.length;
-      }
-      typeInfo.Info.arrayInfo.memberType!.size = largest;
-      for (let i = 0; i < elems.length; i++)
-        size(elems.length * largest).set(elems[i], i * largest);
-      break;
+      const memberType = typeInfo.Info.arrayInfo.memberType!;
+      return ProtoDataSegment.create({
+        Data: {
+          $case: "arrayData",
+          arrayData: {
+            data: arr.map((elem) => stringToDataSegment(elem, memberType)),
+          },
+        },
+      });
     }
     case "primitiveInfo": {
+      let byteArray: Uint8Array | undefined;
+      const size = (bytes: number) => {
+        if (!byteArray) byteArray = new Uint8Array(bytes);
+        return byteArray;
+      };
       switch (typeInfo.Info.primitiveInfo) {
         case ProtoTypeInfo_Primitive.BOOLEAN:
           new DataView(size(1).buffer).setUint8(0, Number(input == "true"));
@@ -75,7 +87,7 @@ export function stringToBytes(
           break;
         }
         case ProtoTypeInfo_Primitive.TYPE:
-          dataArray = ProtoTypeInfo.encode(stringToProtoType(input)!).finish();
+          byteArray = ProtoTypeInfo.encode(stringToProtoType(input)!).finish();
           break;
         case ProtoTypeInfo_Primitive.PTR:
           new DataView(size(8).buffer).setBigInt64(0, BigInt(input), true);
@@ -84,77 +96,83 @@ export function stringToBytes(
         case ProtoTypeInfo_Primitive.VOID:
           break;
       }
+      return ProtoDataSegment.create({
+        Data: {
+          $case: "primitiveData",
+          primitiveData: byteArray ?? new Uint8Array(0),
+        },
+      });
     }
   }
-
-  return dataArray ?? new Uint8Array(0);
+  return {};
 }
 
-export function bytesToRealValue(
-  bytes: DataView,
-  typeInfo: PacketJSON<ProtoTypeInfo>,
-  baseOffset: number
+export function protoDataToRealValue(
+  data: ProtoDataSegment,
+  typeInfo: PacketJSON<ProtoTypeInfo>
 ) {
-  const arr = new Uint8Array(bytes.buffer);
-
   switch (typeInfo.Info?.$case) {
     case "classInfo":
-      return bytes.getBigInt64(baseOffset, true);
+      if (data.Data?.$case != "classData") return 0;
+      return data.Data.classData;
     case "structInfo": {
+      if (data.Data?.$case != "structData") return {};
       const struct: Record<string, unknown> = {};
       const fields = typeInfo.Info.structInfo.fieldOffsets!;
       for (const offset in fields) {
         const field = fields[offset];
         console.log("struct field at offset:", offset);
-        struct[field.name!] = bytesToRealValue(
-          bytes,
-          field.type!,
-          Number(offset) + baseOffset
+        struct[field.name!] = protoDataToRealValue(
+          data.Data.structData.data[offset],
+          field.type!
         );
       }
       return struct;
     }
     case "arrayInfo": {
+      if (data.Data?.$case != "arrayData") return [];
       const arr: unknown[] = [];
       const memberType = typeInfo.Info.arrayInfo.memberType!;
-      for (let i = 0; i < (typeInfo.Info.arrayInfo.length ?? 0); i++)
-        arr.push(bytesToRealValue(bytes, memberType, i * memberType.size!));
+      for (let i = 0; i < data.Data.arrayData.data.length; i++)
+        arr.push(protoDataToRealValue(data.Data.arrayData.data[i], memberType));
       return arr;
-      // check for primitive last since its default is 0 instead of undefined
     }
     case "genericInfo":
       return typeInfo.Info.genericInfo.name;
     case "primitiveInfo": {
+      if (data.Data?.$case != "primitiveData") return "";
+      const arr = data.Data.primitiveData;
+      const bytes = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
       switch (typeInfo.Info.primitiveInfo) {
         case ProtoTypeInfo_Primitive.BOOLEAN:
-          return bytes.getUint8(baseOffset) != 0;
+          return bytes.getUint8(0) != 0;
         case ProtoTypeInfo_Primitive.CHAR: {
-          const byte = bytes.buffer.slice(baseOffset, baseOffset + 2);
+          const byte = bytes.buffer.slice(0, 2);
           return new TextDecoder("utf-16").decode(byte);
         }
         case ProtoTypeInfo_Primitive.BYTE:
-          return bytes.getInt8(baseOffset);
+          return bytes.getInt8(0);
         case ProtoTypeInfo_Primitive.SHORT:
-          return bytes.getInt16(baseOffset, true);
+          return bytes.getInt16(0, true);
         case ProtoTypeInfo_Primitive.INT:
-          return bytes.getInt32(baseOffset, true);
+          return bytes.getInt32(0, true);
         case ProtoTypeInfo_Primitive.LONG:
-          return bytes.getBigInt64(baseOffset, true);
+          return bytes.getBigInt64(0, true);
         case ProtoTypeInfo_Primitive.FLOAT:
-          return bytes.getFloat32(baseOffset, true);
+          return bytes.getFloat32(0, true);
         case ProtoTypeInfo_Primitive.DOUBLE:
-          return bytes.getFloat64(baseOffset, true);
+          return bytes.getFloat64(0, true);
         case ProtoTypeInfo_Primitive.STRING: {
           const slice = bytes.buffer.slice(
-            baseOffset,
-            baseOffset + typeInfo.size!
+            arr.byteOffset,
+            arr.byteOffset + arr.byteLength
           );
           return new TextDecoder("utf-16").decode(slice);
         }
         case ProtoTypeInfo_Primitive.TYPE:
           return protoTypeToString(ProtoTypeInfo.decode(arr));
         case ProtoTypeInfo_Primitive.PTR:
-          return bytes.getBigInt64(baseOffset, true);
+          return bytes.getBigInt64(0, true);
         case ProtoTypeInfo_Primitive.UNKNOWN:
           return "unknown";
         case ProtoTypeInfo_Primitive.VOID:

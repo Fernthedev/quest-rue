@@ -12,12 +12,12 @@ export interface PaperLogData {
   tag: string;
   fileName: string;
   functionName: string;
-  fileLine: string;
+  fileLine: number;
   logTime: Date | undefined;
 }
 
 function createBasePaperLogData(): PaperLogData {
-  return { str: "", threadId: BigInt("0"), tag: "", fileName: "", functionName: "", fileLine: "", logTime: undefined };
+  return { str: "", threadId: BigInt("0"), tag: "", fileName: "", functionName: "", fileLine: 0, logTime: undefined };
 }
 
 export const PaperLogData = {
@@ -37,8 +37,8 @@ export const PaperLogData = {
     if (message.functionName !== "") {
       writer.uint32(42).string(message.functionName);
     }
-    if (message.fileLine !== "") {
-      writer.uint32(50).string(message.fileLine);
+    if (message.fileLine !== 0) {
+      writer.uint32(48).int32(message.fileLine);
     }
     if (message.logTime !== undefined) {
       Timestamp.encode(toTimestamp(message.logTime), writer.uint32(58).fork()).ldelim();
@@ -89,11 +89,11 @@ export const PaperLogData = {
           message.functionName = reader.string();
           continue;
         case 6:
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.fileLine = reader.string();
+          message.fileLine = reader.int32();
           continue;
         case 7:
           if (tag !== 58) {
@@ -118,7 +118,7 @@ export const PaperLogData = {
       tag: isSet(object.tag) ? String(object.tag) : "",
       fileName: isSet(object.fileName) ? String(object.fileName) : "",
       functionName: isSet(object.functionName) ? String(object.functionName) : "",
-      fileLine: isSet(object.fileLine) ? String(object.fileLine) : "",
+      fileLine: isSet(object.fileLine) ? Number(object.fileLine) : 0,
       logTime: isSet(object.logTime) ? fromJsonTimestamp(object.logTime) : undefined,
     };
   },
@@ -130,7 +130,7 @@ export const PaperLogData = {
     message.tag !== undefined && (obj.tag = message.tag);
     message.fileName !== undefined && (obj.fileName = message.fileName);
     message.functionName !== undefined && (obj.functionName = message.functionName);
-    message.fileLine !== undefined && (obj.fileLine = message.fileLine);
+    message.fileLine !== undefined && (obj.fileLine = Math.round(message.fileLine));
     message.logTime !== undefined && (obj.logTime = message.logTime.toISOString());
     return obj;
   },
@@ -146,7 +146,7 @@ export const PaperLogData = {
     message.tag = object.tag ?? "";
     message.fileName = object.fileName ?? "";
     message.functionName = object.functionName ?? "";
-    message.fileLine = object.fileLine ?? "";
+    message.fileLine = object.fileLine ?? 0;
     message.logTime = object.logTime ?? undefined;
     return message;
   },

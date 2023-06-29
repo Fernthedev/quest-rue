@@ -15,81 +15,106 @@ inline void** pointerOffset(void* ptr, int offset) {
     return (void**) (((char*) ptr) + offset);
 }
 
-void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size);
+void* HandleType(ProtoTypeInfo const& typeInfo, ProtoDataSegment arg);
 
-void* HandleClass(ProtoClassInfo const& info, void* arg, int size) {
-    return arg;
+void* HandleClass(ProtoClassInfo const& info, ProtoDataSegment arg) {
+    if(arg.Data_case() == ProtoDataSegment::DataCase::kClassData)
+        return nullptr;
+    return (void*) arg.classdata();
 }
 
-void* HandleArray(ProtoArrayInfo const& info, void* arg, int size) {
-    int len = info.length();
-    if(len < 0) // idk
-        return arg;
+void* HandleArray(ProtoArrayInfo const& info, ProtoDataSegment arg) {
+    if(arg.Data_case() == ProtoDataSegment::DataCase::kArrayData)
+        return nullptr;
+    auto& elements = arg.arraydata();
+    int len = elements.data_size();
+    if(len < 0)
+        return nullptr;
     auto elemTypeProto = info.membertype();
     auto elemClass = ClassUtils::GetClass(elemTypeProto);
     if(!elemClass)
         return nullptr;
+
     auto ret = il2cpp_functions::array_new(elemClass, len);
     void* values = pointerOffset(ret, sizeof(Il2CppArray));
-    // for arrays with variable length data... just set size to the largest and align based on that I guess
-    // TODO: fix that
-    int inputSize = elemTypeProto.size();
+
     int outputSize = fieldTypeSize(typeofclass(elemClass));
     for(int i = 0; i < len; i++) {
-        void* value = HandleType(elemTypeProto, pointerOffset(arg, i * inputSize), inputSize);
+        void* value = HandleType(elemTypeProto, elements.data(i));
         *pointerOffset(values, i * outputSize) = value;
     }
     return ret;
 }
 
-void* HandleStruct(ProtoStructInfo const& info, void* arg, int size) {
-    // TODO: structs with fancy contents
-    // for(auto& field : info.fieldoffsets())
-    //     *pointerOffset(???, field.first) = HandleType(field.second.type(), pointerOffset(arg, ???), ???);
-    return arg;
+void* HandleStruct(ProtoStructInfo const& info, ProtoDataSegment arg) {
+    if(arg.Data_case() == ProtoDataSegment::DataCase::kStructData)
+        return nullptr;
+    // get the size of the struct in a slightly janky way, just like how I allocate it too
+    // TODO: allocate this differently if it breaks (empty bytes in ProtoDataSegment.StructData?)
+    int last_offset = 0;
+    int last_size = 0;
+    for(auto field : info.fieldoffsets()) {
+        if(field.first > last_offset) {
+            last_offset = field.first;
+            last_size = field.second.type().size();
+        }
+    }
+    void* ret = il2cpp_utils::__AllocateUnsafe(last_offset + last_size);
+
+    for(auto& field : info.fieldoffsets())
+        *pointerOffset(ret, field.first) = HandleType(field.second.type(), arg.structdata().data().at(field.first));
+
+    return ret;
 }
 
-void* HandleGeneric(ProtoGenericInfo const& info, void* arg, int size) {
+void* HandleGeneric(ProtoGenericInfo const& info, ProtoDataSegment arg) {
+    if(arg.Data_case() == ProtoDataSegment::DataCase::kGenericData)
+        return nullptr;
     // This shouldn't be called as it represents an unspecified generic
     LOG_INFO("Unspecified generic passed as a parameter!");
-    return arg;
+    return (void*) arg.genericdata().data();
 }
 
-void* HandlePrimitive(ProtoTypeInfo::Primitive info, void* arg, int size) {
+void* HandlePrimitive(ProtoTypeInfo::Primitive info, ProtoDataSegment arg) {
+    if(arg.Data_case() == ProtoDataSegment::DataCase::kPrimitiveData)
+        return nullptr;
+    std::string const& bytes = arg.primitivedata();
+
     switch(info) {
     case ProtoTypeInfo::STRING:
         // since StringW does an il2cpp string allocation, it should last long enough for the method
         // btw make sure the string is null terminated haha
-        return StringW(std::u16string_view((Il2CppChar*) arg, size)).convert();
+        return StringW(std::u16string_view((Il2CppChar*) bytes.data())).convert();
     case ProtoTypeInfo::TYPE: {
         ProtoTypeInfo typeInfo;
-        typeInfo.ParseFromArray(arg, size);
+        typeInfo.ParseFromString(bytes);
         auto type = ClassUtils::GetType(typeInfo);
         if(!type)
             return nullptr;
         return il2cpp_utils::GetSystemType(type);
     } default:
-        return arg;
+        return (void*) bytes.data();
     }
 }
 
-void* HandleType(ProtoTypeInfo const& typeInfo, void* arg, int size) {
+// converts the data in a ProtoDataPayload into an object of the correct type
+void* HandleType(ProtoTypeInfo const& typeInfo, ProtoDataSegment arg) {
     if(typeInfo.has_classinfo())
-        return HandleClass(typeInfo.classinfo(), arg, size);
+        return HandleClass(typeInfo.classinfo(), arg);
     else if(typeInfo.has_arrayinfo())
-        return HandleArray(typeInfo.arrayinfo(), arg, size);
+        return HandleArray(typeInfo.arrayinfo(), arg);
     else if(typeInfo.has_structinfo())
-        return HandleStruct(typeInfo.structinfo(), arg, size);
+        return HandleStruct(typeInfo.structinfo(), arg);
     else if(typeInfo.has_genericinfo())
-        return HandleGeneric(typeInfo.genericinfo(), arg, size);
+        return HandleGeneric(typeInfo.genericinfo(), arg);
     else if(typeInfo.has_primitiveinfo())
-        return HandlePrimitive(typeInfo.primitiveinfo(), arg, size);
+        return HandlePrimitive(typeInfo.primitiveinfo(), arg);
     return nullptr;
 }
 
 void FillList(std::vector<ProtoDataPayload> args, void** dest) {
     for(int i = 0; i < args.size(); i++)
-        dest[i] = HandleType(args[i].typeinfo(), (void*) args[i].data().data(), args[i].data().length());
+        dest[i] = HandleType(args[i].typeinfo(), args[i].data());
 }
 
 ProtoDataPayload VoidDataPayload(Il2CppType const* type = nullptr) {
@@ -105,85 +130,99 @@ ProtoDataPayload VoidDataPayload(Il2CppType const* type = nullptr) {
     return ret;
 }
 
-std::string OutputType(ProtoTypeInfo& typeInfo, void* value);
+ProtoDataSegment OutputType(ProtoTypeInfo const& typeInfo, void* value);
 
-std::string OutputClass(ProtoClassInfo& info, void* value, int size) {
-    return std::string((char*) value, size);
+ProtoDataSegment OutputClass(ProtoClassInfo const& info, void* value, int size) {
+    ProtoDataSegment ret;
+    LOG_DEBUG("Outputting class pointer {} {}", *(int64_t*)value, fmt::ptr(*(void**)value));
+    ret.set_classdata(*(int64_t*) value);
+    return ret;
 }
 
-std::string OutputArray(ProtoArrayInfo& info, void* value, int size) {
+ProtoDataSegment OutputArray(ProtoArrayInfo const& info, void* value, int size) {
+    ProtoDataSegment ret;
+    LOG_DEBUG("Outputting array {}", fmt::ptr(*(void**)value));
     auto arr = *(Il2CppArray**) value;
     if(!arr || arr->max_length <= 0)
-        return "";
-    info.set_length(arr->max_length);
+        return ret;
 
-    // see comment in HandleArray
-    std::vector<std::string> elementData{};
+    auto ret_arr = ret.mutable_arraydata();
+
     void* values = pointerOffset(arr, sizeof(Il2CppArray));
     int memberSize = info.membertype().size();
+    LOG_DEBUG("Length {} member size {}", arr->max_length, memberSize);
     for(int i = 0; i < arr->max_length; i++)
-        elementData.emplace_back(OutputType(*info.mutable_membertype(), pointerOffset(values, i * memberSize)));
+        *ret_arr->add_data() = OutputType(info.membertype(), pointerOffset(values, i * memberSize));
 
-    int maxSize = 0;
-    for(auto& data : elementData) {
-        if(maxSize < data.length())
-            maxSize = data.length();
-    }
-    info.mutable_membertype()->set_size(maxSize);
-    std::stringstream out;
-    for(auto& data : elementData) {
-        // pad endings of smaller elements with null
-        data.append(maxSize - data.length(), '\0');
-        out << data;
-    }
-    return out.str();
+    return ret;
 }
 
-std::string OutputStruct(ProtoStructInfo& info, void* value, int size) {
-    // TODO: structs with strings and stuff here too
-    return std::string((char*) value, size);
+ProtoDataSegment OutputStruct(ProtoStructInfo const& info, void* value, int size) {
+    ProtoDataSegment ret;
+    LOG_DEBUG("Outputting struct");
+    auto retStruct = ret.mutable_structdata();
+
+    for(auto& field : info.fieldoffsets()) {
+        LOG_DEBUG("Adding field at offset {}", field.first);
+        auto fieldData = OutputType(field.second.type(), pointerOffset(value, field.first));
+        retStruct->mutable_data()->insert({field.first, fieldData});
+    }
+    return ret;
 }
 
-std::string OutputGeneric(ProtoGenericInfo& info, void* value, int size) {
+ProtoDataSegment OutputGeneric(ProtoGenericInfo const& info, void* value, int size) {
+    ProtoDataSegment ret;
     // This also shouldn't be called
     LOG_INFO("Unspecified generic sent to be output!");
-    return std::string((char*) value, size);
+    ret.set_genericdata(std::string((char*) value, size));
+    return ret;
 }
 
-std::string OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size) {
+ProtoDataSegment OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size) {
+    ProtoDataSegment ret;
+    LOG_DEBUG("Outputting primitive {}", (int) info);
     switch(info) {
     case ProtoTypeInfo::STRING: {
         auto str = *(Il2CppString**) value;
-        // while codegen says this is a char16, il2cpp says this is a char16[]
-        // also ignore the error
-        return std::string((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
-    } case ProtoTypeInfo::TYPE:
-        return ClassUtils::GetTypeInfo(il2cpp_functions::class_from_system_type(*(Il2CppReflectionType**) value)).SerializeAsString();
-    default:
-        return std::string((char*) value, size);
+        LOG_DEBUG("String of length {}", str->m_stringLength);
+        // while codegen says this is just one char16, it's actually a char16[]
+        std::string retStr((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
+        ret.set_primitivedata(retStr);
+        break;
+    } case ProtoTypeInfo::TYPE: {
+        auto type = il2cpp_functions::class_from_system_type(*(Il2CppReflectionType**) value);
+        // I could have a oneof in the primitive case instead of only bytes...
+        // but that would mean *another* whole extra message when I can just do this
+        std::string retStr = ClassUtils::GetTypeInfo(type).SerializeAsString();
+        ret.set_primitivedata(retStr);
+        break;
+    } default:
+        ret.set_primitivedata(std::string((char*) value, size));
+        break;
     }
+    return ret;
 }
 
-std::string OutputType(ProtoTypeInfo& typeInfo, void* value) {
+ProtoDataSegment OutputType(ProtoTypeInfo const& typeInfo, void* value) {
     if(!value)
-        return "";
+        return {};
     if(typeInfo.has_classinfo())
-        return OutputClass(*typeInfo.mutable_classinfo(), value, typeInfo.size());
+        return OutputClass(typeInfo.classinfo(), value, typeInfo.size());
     else if(typeInfo.has_arrayinfo())
-        return OutputArray(*typeInfo.mutable_arrayinfo(), value, typeInfo.size());
+        return OutputArray(typeInfo.arrayinfo(), value, typeInfo.size());
     else if(typeInfo.has_structinfo())
-        return OutputStruct(*typeInfo.mutable_structinfo(), value, typeInfo.size());
+        return OutputStruct(typeInfo.structinfo(), value, typeInfo.size());
     else if(typeInfo.has_genericinfo())
-        return OutputGeneric(*typeInfo.mutable_genericinfo(), value, typeInfo.size());
+        return OutputGeneric(typeInfo.genericinfo(), value, typeInfo.size());
     else if(typeInfo.has_primitiveinfo())
         return OutputPrimitive(typeInfo.primitiveinfo(), value, typeInfo.size());
-    return "";
+    return {};
 }
 
-ProtoDataPayload OutputData(ProtoTypeInfo& typeInfo, void* value) {
+ProtoDataPayload OutputData(ProtoTypeInfo const& typeInfo, void* value) {
+    LOG_DEBUG("Outputting data");
     ProtoDataPayload ret;
-    ret.set_data(OutputType(typeInfo, value));
-    typeInfo.set_size(ret.data().length());
+    *ret.mutable_data() = OutputType(typeInfo, value);
     *ret.mutable_typeinfo() = typeInfo;
     return ret;
 }
@@ -287,7 +326,7 @@ namespace FieldUtils {
         LOG_DEBUG("Setting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
-        void* value = HandleType(arg.typeinfo(), (void*) arg.data().data(), arg.data().length());
+        void* value = HandleType(arg.typeinfo(), arg.data());
 
         // deref reference types here as well since it expects the same as if it were running a method
         if(derefReferences && arg.typeinfo().has_classinfo())

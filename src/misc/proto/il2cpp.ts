@@ -22,11 +22,7 @@ export interface ProtoStructInfo_FieldOffsetsEntry {
 }
 
 export interface ProtoArrayInfo {
-  memberType:
-    | ProtoTypeInfo
-    | undefined;
-  /** nullable */
-  length?: number | undefined;
+  memberType: ProtoTypeInfo | undefined;
 }
 
 export interface ProtoGenericInfo {
@@ -205,11 +201,35 @@ export interface ProtoClassDetails {
   parent?: ProtoClassDetails | undefined;
 }
 
+/** separate from payload because the typeInfo never needs to be nested */
+export interface ProtoDataSegment {
+  Data?:
+    | { $case: "primitiveData"; primitiveData: Uint8Array }
+    | { $case: "arrayData"; arrayData: ProtoDataSegment_ArrayData }
+    | { $case: "structData"; structData: ProtoDataSegment_StructData }
+    | { $case: "classData"; classData: bigint }
+    | { $case: "genericData"; genericData: Uint8Array };
+}
+
+/** repeated fields aren't allowed directly in oneOf */
+export interface ProtoDataSegment_ArrayData {
+  data: ProtoDataSegment[];
+}
+
+export interface ProtoDataSegment_StructData {
+  data: { [key: number]: ProtoDataSegment };
+}
+
+export interface ProtoDataSegment_StructData_DataEntry {
+  key: number;
+  value: ProtoDataSegment | undefined;
+}
+
 /** Data Sending */
 export interface ProtoDataPayload {
   /** nullable */
   typeInfo?: ProtoTypeInfo | undefined;
-  data: Uint8Array;
+  data: ProtoDataSegment | undefined;
 }
 
 function createBaseProtoClassInfo(): ProtoClassInfo {
@@ -472,16 +492,13 @@ export const ProtoStructInfo_FieldOffsetsEntry = {
 };
 
 function createBaseProtoArrayInfo(): ProtoArrayInfo {
-  return { memberType: undefined, length: undefined };
+  return { memberType: undefined };
 }
 
 export const ProtoArrayInfo = {
   encode(message: ProtoArrayInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.memberType !== undefined) {
       ProtoTypeInfo.encode(message.memberType, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.length !== undefined) {
-      writer.uint32(16).int32(message.length);
     }
     return writer;
   },
@@ -500,13 +517,6 @@ export const ProtoArrayInfo = {
 
           message.memberType = ProtoTypeInfo.decode(reader, reader.uint32());
           continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.length = reader.int32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -517,17 +527,13 @@ export const ProtoArrayInfo = {
   },
 
   fromJSON(object: any): ProtoArrayInfo {
-    return {
-      memberType: isSet(object.memberType) ? ProtoTypeInfo.fromJSON(object.memberType) : undefined,
-      length: isSet(object.length) ? Number(object.length) : undefined,
-    };
+    return { memberType: isSet(object.memberType) ? ProtoTypeInfo.fromJSON(object.memberType) : undefined };
   },
 
   toJSON(message: ProtoArrayInfo): unknown {
     const obj: any = {};
     message.memberType !== undefined &&
       (obj.memberType = message.memberType ? ProtoTypeInfo.toJSON(message.memberType) : undefined);
-    message.length !== undefined && (obj.length = Math.round(message.length));
     return obj;
   },
 
@@ -540,7 +546,6 @@ export const ProtoArrayInfo = {
     message.memberType = (object.memberType !== undefined && object.memberType !== null)
       ? ProtoTypeInfo.fromPartial(object.memberType)
       : undefined;
-    message.length = object.length ?? undefined;
     return message;
   },
 };
@@ -1403,8 +1408,377 @@ export const ProtoClassDetails = {
   },
 };
 
+function createBaseProtoDataSegment(): ProtoDataSegment {
+  return { Data: undefined };
+}
+
+export const ProtoDataSegment = {
+  encode(message: ProtoDataSegment, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    switch (message.Data?.$case) {
+      case "primitiveData":
+        writer.uint32(10).bytes(message.Data.primitiveData);
+        break;
+      case "arrayData":
+        ProtoDataSegment_ArrayData.encode(message.Data.arrayData, writer.uint32(18).fork()).ldelim();
+        break;
+      case "structData":
+        ProtoDataSegment_StructData.encode(message.Data.structData, writer.uint32(26).fork()).ldelim();
+        break;
+      case "classData":
+        writer.uint32(32).uint64(message.Data.classData.toString());
+        break;
+      case "genericData":
+        writer.uint32(42).bytes(message.Data.genericData);
+        break;
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoDataSegment {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProtoDataSegment();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.Data = { $case: "primitiveData", primitiveData: reader.bytes() };
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.Data = { $case: "arrayData", arrayData: ProtoDataSegment_ArrayData.decode(reader, reader.uint32()) };
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.Data = {
+            $case: "structData",
+            structData: ProtoDataSegment_StructData.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.Data = { $case: "classData", classData: longToBigint(reader.uint64() as Long) };
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.Data = { $case: "genericData", genericData: reader.bytes() };
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProtoDataSegment {
+    return {
+      Data: isSet(object.primitiveData)
+        ? { $case: "primitiveData", primitiveData: bytesFromBase64(object.primitiveData) }
+        : isSet(object.arrayData)
+        ? { $case: "arrayData", arrayData: ProtoDataSegment_ArrayData.fromJSON(object.arrayData) }
+        : isSet(object.structData)
+        ? { $case: "structData", structData: ProtoDataSegment_StructData.fromJSON(object.structData) }
+        : isSet(object.classData)
+        ? { $case: "classData", classData: BigInt(object.classData) }
+        : isSet(object.genericData)
+        ? { $case: "genericData", genericData: bytesFromBase64(object.genericData) }
+        : undefined,
+    };
+  },
+
+  toJSON(message: ProtoDataSegment): unknown {
+    const obj: any = {};
+    message.Data?.$case === "primitiveData" && (obj.primitiveData = message.Data?.primitiveData !== undefined
+      ? base64FromBytes(message.Data?.primitiveData)
+      : undefined);
+    message.Data?.$case === "arrayData" &&
+      (obj.arrayData = message.Data?.arrayData
+        ? ProtoDataSegment_ArrayData.toJSON(message.Data?.arrayData)
+        : undefined);
+    message.Data?.$case === "structData" && (obj.structData = message.Data?.structData
+      ? ProtoDataSegment_StructData.toJSON(message.Data?.structData)
+      : undefined);
+    message.Data?.$case === "classData" && (obj.classData = message.Data?.classData.toString());
+    message.Data?.$case === "genericData" && (obj.genericData = message.Data?.genericData !== undefined
+      ? base64FromBytes(message.Data?.genericData)
+      : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProtoDataSegment>, I>>(base?: I): ProtoDataSegment {
+    return ProtoDataSegment.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProtoDataSegment>, I>>(object: I): ProtoDataSegment {
+    const message = createBaseProtoDataSegment();
+    if (
+      object.Data?.$case === "primitiveData" &&
+      object.Data?.primitiveData !== undefined &&
+      object.Data?.primitiveData !== null
+    ) {
+      message.Data = { $case: "primitiveData", primitiveData: object.Data.primitiveData };
+    }
+    if (object.Data?.$case === "arrayData" && object.Data?.arrayData !== undefined && object.Data?.arrayData !== null) {
+      message.Data = { $case: "arrayData", arrayData: ProtoDataSegment_ArrayData.fromPartial(object.Data.arrayData) };
+    }
+    if (
+      object.Data?.$case === "structData" && object.Data?.structData !== undefined && object.Data?.structData !== null
+    ) {
+      message.Data = {
+        $case: "structData",
+        structData: ProtoDataSegment_StructData.fromPartial(object.Data.structData),
+      };
+    }
+    if (object.Data?.$case === "classData" && object.Data?.classData !== undefined && object.Data?.classData !== null) {
+      message.Data = { $case: "classData", classData: object.Data.classData };
+    }
+    if (
+      object.Data?.$case === "genericData" &&
+      object.Data?.genericData !== undefined &&
+      object.Data?.genericData !== null
+    ) {
+      message.Data = { $case: "genericData", genericData: object.Data.genericData };
+    }
+    return message;
+  },
+};
+
+function createBaseProtoDataSegment_ArrayData(): ProtoDataSegment_ArrayData {
+  return { data: [] };
+}
+
+export const ProtoDataSegment_ArrayData = {
+  encode(message: ProtoDataSegment_ArrayData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.data) {
+      ProtoDataSegment.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoDataSegment_ArrayData {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProtoDataSegment_ArrayData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.data.push(ProtoDataSegment.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProtoDataSegment_ArrayData {
+    return { data: Array.isArray(object?.data) ? object.data.map((e: any) => ProtoDataSegment.fromJSON(e)) : [] };
+  },
+
+  toJSON(message: ProtoDataSegment_ArrayData): unknown {
+    const obj: any = {};
+    if (message.data) {
+      obj.data = message.data.map((e) => e ? ProtoDataSegment.toJSON(e) : undefined);
+    } else {
+      obj.data = [];
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProtoDataSegment_ArrayData>, I>>(base?: I): ProtoDataSegment_ArrayData {
+    return ProtoDataSegment_ArrayData.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_ArrayData>, I>>(object: I): ProtoDataSegment_ArrayData {
+    const message = createBaseProtoDataSegment_ArrayData();
+    message.data = object.data?.map((e) => ProtoDataSegment.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseProtoDataSegment_StructData(): ProtoDataSegment_StructData {
+  return { data: {} };
+}
+
+export const ProtoDataSegment_StructData = {
+  encode(message: ProtoDataSegment_StructData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    Object.entries(message.data).forEach(([key, value]) => {
+      ProtoDataSegment_StructData_DataEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoDataSegment_StructData {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProtoDataSegment_StructData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          const entry1 = ProtoDataSegment_StructData_DataEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.data[entry1.key] = entry1.value;
+          }
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProtoDataSegment_StructData {
+    return {
+      data: isObject(object.data)
+        ? Object.entries(object.data).reduce<{ [key: number]: ProtoDataSegment }>((acc, [key, value]) => {
+          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: ProtoDataSegment_StructData): unknown {
+    const obj: any = {};
+    obj.data = {};
+    if (message.data) {
+      Object.entries(message.data).forEach(([k, v]) => {
+        obj.data[k] = ProtoDataSegment.toJSON(v);
+      });
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProtoDataSegment_StructData>, I>>(base?: I): ProtoDataSegment_StructData {
+    return ProtoDataSegment_StructData.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_StructData>, I>>(object: I): ProtoDataSegment_StructData {
+    const message = createBaseProtoDataSegment_StructData();
+    message.data = Object.entries(object.data ?? {}).reduce<{ [key: number]: ProtoDataSegment }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseProtoDataSegment_StructData_DataEntry(): ProtoDataSegment_StructData_DataEntry {
+  return { key: 0, value: undefined };
+}
+
+export const ProtoDataSegment_StructData_DataEntry = {
+  encode(message: ProtoDataSegment_StructData_DataEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== 0) {
+      writer.uint32(8).int32(message.key);
+    }
+    if (message.value !== undefined) {
+      ProtoDataSegment.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoDataSegment_StructData_DataEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProtoDataSegment_StructData_DataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.key = reader.int32();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = ProtoDataSegment.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProtoDataSegment_StructData_DataEntry {
+    return {
+      key: isSet(object.key) ? Number(object.key) : 0,
+      value: isSet(object.value) ? ProtoDataSegment.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: ProtoDataSegment_StructData_DataEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = Math.round(message.key));
+    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProtoDataSegment_StructData_DataEntry>, I>>(
+    base?: I,
+  ): ProtoDataSegment_StructData_DataEntry {
+    return ProtoDataSegment_StructData_DataEntry.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_StructData_DataEntry>, I>>(
+    object: I,
+  ): ProtoDataSegment_StructData_DataEntry {
+    const message = createBaseProtoDataSegment_StructData_DataEntry();
+    message.key = object.key ?? 0;
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataSegment.fromPartial(object.value)
+      : undefined;
+    return message;
+  },
+};
+
 function createBaseProtoDataPayload(): ProtoDataPayload {
-  return { typeInfo: undefined, data: new Uint8Array(0) };
+  return { typeInfo: undefined, data: undefined };
 }
 
 export const ProtoDataPayload = {
@@ -1412,8 +1786,8 @@ export const ProtoDataPayload = {
     if (message.typeInfo !== undefined) {
       ProtoTypeInfo.encode(message.typeInfo, writer.uint32(10).fork()).ldelim();
     }
-    if (message.data.length !== 0) {
-      writer.uint32(18).bytes(message.data);
+    if (message.data !== undefined) {
+      ProtoDataSegment.encode(message.data, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1437,7 +1811,7 @@ export const ProtoDataPayload = {
             break;
           }
 
-          message.data = reader.bytes();
+          message.data = ProtoDataSegment.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1451,7 +1825,7 @@ export const ProtoDataPayload = {
   fromJSON(object: any): ProtoDataPayload {
     return {
       typeInfo: isSet(object.typeInfo) ? ProtoTypeInfo.fromJSON(object.typeInfo) : undefined,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+      data: isSet(object.data) ? ProtoDataSegment.fromJSON(object.data) : undefined,
     };
   },
 
@@ -1459,8 +1833,7 @@ export const ProtoDataPayload = {
     const obj: any = {};
     message.typeInfo !== undefined &&
       (obj.typeInfo = message.typeInfo ? ProtoTypeInfo.toJSON(message.typeInfo) : undefined);
-    message.data !== undefined &&
-      (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array(0)));
+    message.data !== undefined && (obj.data = message.data ? ProtoDataSegment.toJSON(message.data) : undefined);
     return obj;
   },
 
@@ -1473,7 +1846,9 @@ export const ProtoDataPayload = {
     message.typeInfo = (object.typeInfo !== undefined && object.typeInfo !== null)
       ? ProtoTypeInfo.fromPartial(object.typeInfo)
       : undefined;
-    message.data = object.data ?? new Uint8Array(0);
+    message.data = (object.data !== undefined && object.data !== null)
+      ? ProtoDataSegment.fromPartial(object.data)
+      : undefined;
     return message;
   },
 };

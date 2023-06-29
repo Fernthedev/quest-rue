@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { ProtoClassDetails, ProtoClassInfo, ProtoDataPayload, ProtoTypeInfo } from "./il2cpp";
+import { ProtoClassDetails, ProtoClassInfo, ProtoDataPayload, ProtoDataSegment, ProtoTypeInfo } from "./il2cpp";
 import { PaperLogData } from "./paper";
 import { ProtoComponent, ProtoGameObject, ProtoObject } from "./unity";
 
@@ -223,19 +223,19 @@ export interface GetInstanceValues {
 
 export interface GetInstanceValuesResult {
   /** nullable */
-  fieldValues: { [key: bigint]: Uint8Array };
+  fieldValues: { [key: bigint]: ProtoDataSegment };
   /** nullable */
-  propertyValues: { [key: bigint]: Uint8Array };
+  propertyValues: { [key: bigint]: ProtoDataSegment };
 }
 
 export interface GetInstanceValuesResult_FieldValuesEntry {
   key: bigint;
-  value: Uint8Array;
+  value: ProtoDataSegment | undefined;
 }
 
 export interface GetInstanceValuesResult_PropertyValuesEntry {
   key: bigint;
-  value: Uint8Array;
+  value: ProtoDataSegment | undefined;
 }
 
 export interface GetInstanceDetails {
@@ -1943,14 +1943,14 @@ export const GetInstanceValuesResult = {
   fromJSON(object: any): GetInstanceValuesResult {
     return {
       fieldValues: isObject(object.fieldValues)
-        ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
-          acc[Number(key)] = bytesFromBase64(value as string);
+        ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: ProtoDataSegment }>((acc, [key, value]) => {
+          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
           return acc;
         }, {})
         : {},
       propertyValues: isObject(object.propertyValues)
-        ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: Uint8Array }>((acc, [key, value]) => {
-          acc[Number(key)] = bytesFromBase64(value as string);
+        ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: ProtoDataSegment }>((acc, [key, value]) => {
+          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
           return acc;
         }, {})
         : {},
@@ -1962,13 +1962,13 @@ export const GetInstanceValuesResult = {
     obj.fieldValues = {};
     if (message.fieldValues) {
       Object.entries(message.fieldValues).forEach(([k, v]) => {
-        obj.fieldValues[k] = base64FromBytes(v);
+        obj.fieldValues[k] = ProtoDataSegment.toJSON(v);
       });
     }
     obj.propertyValues = {};
     if (message.propertyValues) {
       Object.entries(message.propertyValues).forEach(([k, v]) => {
-        obj.propertyValues[k] = base64FromBytes(v);
+        obj.propertyValues[k] = ProtoDataSegment.toJSON(v);
       });
     }
     return obj;
@@ -1980,19 +1980,19 @@ export const GetInstanceValuesResult = {
 
   fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(object: I): GetInstanceValuesResult {
     const message = createBaseGetInstanceValuesResult();
-    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+    message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: ProtoDataSegment }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = value;
+          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
         }
         return acc;
       },
       {},
     );
-    message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: Uint8Array }>(
+    message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: ProtoDataSegment }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = value;
+          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
         }
         return acc;
       },
@@ -2003,7 +2003,7 @@ export const GetInstanceValuesResult = {
 };
 
 function createBaseGetInstanceValuesResult_FieldValuesEntry(): GetInstanceValuesResult_FieldValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array(0) };
+  return { key: BigInt("0"), value: undefined };
 }
 
 export const GetInstanceValuesResult_FieldValuesEntry = {
@@ -2011,8 +2011,8 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
     if (message.key !== BigInt("0")) {
       writer.uint32(8).uint64(message.key.toString());
     }
-    if (message.value.length !== 0) {
-      writer.uint32(18).bytes(message.value);
+    if (message.value !== undefined) {
+      ProtoDataSegment.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -2036,7 +2036,7 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
             break;
           }
 
-          message.value = reader.bytes();
+          message.value = ProtoDataSegment.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2050,15 +2050,14 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
   fromJSON(object: any): GetInstanceValuesResult_FieldValuesEntry {
     return {
       key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
+      value: isSet(object.value) ? ProtoDataSegment.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: GetInstanceValuesResult_FieldValuesEntry): unknown {
     const obj: any = {};
     message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined &&
-      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array(0)));
+    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
     return obj;
   },
 
@@ -2073,13 +2072,15 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
   ): GetInstanceValuesResult_FieldValuesEntry {
     const message = createBaseGetInstanceValuesResult_FieldValuesEntry();
     message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array(0);
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataSegment.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };
 
 function createBaseGetInstanceValuesResult_PropertyValuesEntry(): GetInstanceValuesResult_PropertyValuesEntry {
-  return { key: BigInt("0"), value: new Uint8Array(0) };
+  return { key: BigInt("0"), value: undefined };
 }
 
 export const GetInstanceValuesResult_PropertyValuesEntry = {
@@ -2087,8 +2088,8 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
     if (message.key !== BigInt("0")) {
       writer.uint32(8).uint64(message.key.toString());
     }
-    if (message.value.length !== 0) {
-      writer.uint32(18).bytes(message.value);
+    if (message.value !== undefined) {
+      ProtoDataSegment.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -2112,7 +2113,7 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
             break;
           }
 
-          message.value = reader.bytes();
+          message.value = ProtoDataSegment.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2126,15 +2127,14 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
   fromJSON(object: any): GetInstanceValuesResult_PropertyValuesEntry {
     return {
       key: isSet(object.key) ? BigInt(object.key) : BigInt("0"),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
+      value: isSet(object.value) ? ProtoDataSegment.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: GetInstanceValuesResult_PropertyValuesEntry): unknown {
     const obj: any = {};
     message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined &&
-      (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array(0)));
+    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
     return obj;
   },
 
@@ -2149,7 +2149,9 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
   ): GetInstanceValuesResult_PropertyValuesEntry {
     const message = createBaseGetInstanceValuesResult_PropertyValuesEntry();
     message.key = object.key ?? BigInt("0");
-    message.value = object.value ?? new Uint8Array(0);
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProtoDataSegment.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };

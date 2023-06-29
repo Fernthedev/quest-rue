@@ -18,8 +18,6 @@ message ProtoStructInfo {
 
 message ProtoArrayInfo {
     ProtoTypeInfo memberType = 1;
-
-    optional int32 length = 2; /* nullable */
 }
 
 message ProtoGenericInfo {
@@ -98,9 +96,28 @@ message ProtoClassDetails {
     optional ProtoClassDetails parent = 9; /* nullable */
 }
 
+// separate from payload because the typeInfo never needs to be nested
+message ProtoDataSegment {
+    // repeated fields aren't allowed directly in oneOf
+    message ArrayData {
+        repeated ProtoDataSegment data = 1;
+    }
+    message StructData {
+        map<int32, ProtoDataSegment> data = 1;
+    }
+
+    oneof Data {
+        bytes primitiveData = 1; /* simpler than having another oneof for each primitive case */
+        ArrayData arrayData = 2;
+        StructData structData = 3;
+        uint64 classData = 4; /* class pointer */
+        bytes genericData = 5; /* shouldn't come up */
+    }
+}
+
 // Data Sending
 message ProtoDataPayload {
     optional ProtoTypeInfo typeInfo = 1; /* nullable */
 
-    bytes data = 2;
+    ProtoDataSegment data = 2;
 }

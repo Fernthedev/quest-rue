@@ -127,9 +127,9 @@ message GetInstanceValues {
 
 message GetInstanceValuesResult {
     /* nullable */
-    map<uint64, bytes> fieldValues = 1;
+    map<uint64, ProtoDataSegment> fieldValues = 1;
     /* nullable */
-    map<uint64, bytes> propertyValues = 2;
+    map<uint64, ProtoDataSegment> propertyValues = 2;
 }
 
 message GetInstanceDetails {

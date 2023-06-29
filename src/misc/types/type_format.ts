@@ -5,17 +5,17 @@ import {
   ProtoTypeInfo,
   ProtoTypeInfo_Primitive,
 } from "../proto/il2cpp";
-import { stringToBytes } from "./type_serialization";
-import { bytesToRealValue } from "./type_serialization";
+import { stringToDataSegment } from "./type_serialization";
+import { protoDataToRealValue } from "./type_serialization";
 
 export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
   if (!data) return "";
   const typeInfo = data.typeInfo!;
   // fill with zeroes if left empty
-  if (!data.data || data.data?.length == 0)
-    data.data = new Uint8Array(typeInfo.size!);
-  const bytes = new DataView(data.data!.buffer.slice(-typeInfo.size!)); // wtf
-  const ret = bytesToRealValue(bytes, typeInfo, 0);
+  if (!data.data?.Data) return "";
+  console.log(data.data.Data);
+  const ret = protoDataToRealValue(data.data, typeInfo);
+  console.log(ret);
   if (
     data.typeInfo?.Info?.$case == "primitiveInfo" &&
     data.typeInfo.Info.primitiveInfo == ProtoTypeInfo_Primitive.LONG
@@ -176,6 +176,6 @@ export function stringToProtoData(
 ) {
   return {
     typeInfo: typeInfo,
-    data: stringToBytes(input, typeInfo),
+    data: stringToDataSegment(input, typeInfo),
   };
 }
