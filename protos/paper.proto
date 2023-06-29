@@ -13,6 +13,6 @@ message PaperLogData {
     string tag = 3;
     string fileName = 4;
     string functionName = 5;
-    string fileLine = 6;
+    int32 fileLine = 6;
     google.protobuf.Timestamp logTime = 7;
 }

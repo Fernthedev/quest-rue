@@ -32,8 +32,8 @@ void Manager::Init() {
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 
-// Logger sink
-// TODO: Make this a queue and flush
+    // Logger sink
+    // TODO: Make this a queue and flush
     Paper::Logger::AddLogSink(
         [this](Paper::ThreadData const &data, std::string_view fmtMessage) {
           if(!sendLoggerUpdates)
@@ -45,11 +45,13 @@ void Manager::Init() {
           auto &loggerUpdate = *wrapper.mutable_responseloggerupdate();
 
           auto *log = loggerUpdate.add_paperlogs();
-          log->set_str(fmtMessage);
+          log->set_str(fmtMessage.data(), fmtMessage.length());
           log->set_threadid(((uint64_t *)(&data.threadId))[0]);
           log->set_tag(data.tag);
-          log->set_filename(data.loc.file_name());
-          log->set_functionname(data.loc.function_name());
+          auto filename = data.loc.file_name();
+          log->set_filename(filename.data(), filename.length());
+          auto fname = data.loc.function_name();
+          log->set_functionname(fname.data(), fname.length());
           log->set_fileline(data.loc.line());
           log->mutable_logtime()->set_nanos(
               std::chrono::duration_cast<std::chrono::nanoseconds>(
