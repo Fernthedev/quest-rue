@@ -10,8 +10,14 @@ import { ProtoClassDetails } from "../../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 import { ActionButton } from "../InputCell";
-import { addVariable } from "../../../misc/handlers/variable_list";
+import {
+  addVariable,
+  addrToString,
+  isVariableNameFree,
+  variables,
+} from "../../../misc/handlers/variable_list";
 import { protoClassDetailsToString } from "../../../misc/types/type_matching";
+import { check } from "solid-heroicons/outline";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 
@@ -115,6 +121,59 @@ export default function ObjectView(props: {
       adaptiveSpanSize(e, colSize, cols);
   });
 
+  const [varNameInput, setVarNameInput] = createSignal("");
+
+  // TODO: make this a component instead of duplicated
+  const saveButton = (
+    <Show
+      when={
+        !props.selectedAddress ||
+        !(addrToString(props.selectedAddress) in variables)
+      }
+      fallback={
+        <ActionButton
+          class="small-button"
+          img={check}
+          tooltip="Variable saved"
+        />
+      }
+    >
+      <span class="dropdown dropdown-right dropdown-end h-6">
+        <ActionButton
+          class="small-button"
+          img="save.svg"
+          tooltip="Save variable"
+        />
+        <div
+          class="
+          dropdown-content shadow menu text-base
+          bg-neutral-400 dark:bg-zinc-800
+          justify-center gap-1 w-60 p-2 mx-1
+          flex flex-row flex-nowrap
+          z-20 rounded-box cursor-auto"
+        >
+          <input
+            class="min-w-0 small-input"
+            placeholder="Unnamed Variable"
+            onInput={(e) => setVarNameInput(e.currentTarget.value)}
+            classList={{ invalid: !isVariableNameFree(varNameInput()) }}
+          />
+          <ActionButton
+            class="small-button"
+            img={check}
+            onClick={() => {
+              const details = classDetails();
+              if (props.selectedAddress && details) {
+                addVariable(props.selectedAddress, details, varNameInput());
+              }
+            }}
+            tooltip="Confirm"
+          />
+        </div>
+      </span>
+    </Show>
+  );
+
   return (
     <Show when={props.selectedAddress} fallback={globalFallback} keyed>
       <div
@@ -129,17 +188,7 @@ export default function ObjectView(props: {
           <span class="text-xl font-mono flex-0">
             0x{props.selectedAddress?.toString(16)}
           </span>
-          <ActionButton
-            class="small-button"
-            img="save.svg"
-            onClick={() => {
-              const details = classDetails();
-              if (props.selectedAddress && details) {
-                addVariable(`0x${props.selectedAddress.toString(16)}`, details);
-              }
-            }}
-            tooltip="Save variable"
-          />
+          {saveButton}
           <span class="text-lg font-mono flex-0">{interfaces()}</span>
           <span class="flex-1" />
           <div class="whitespace-nowrap flex flex-row join">

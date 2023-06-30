@@ -1,4 +1,4 @@
-import { createStore, produce, reconcile } from "solid-js/store";
+import { createStore } from "solid-js/store";
 import { ProtoClassDetails, ProtoClassInfo } from "../proto/il2cpp";
 import {
   GetClassDetailsResult,
@@ -43,7 +43,7 @@ export function handleSafePtrAddresses(
     );
 
     // This merges with the previous value
-    setVariables(modifiedVariableMap)
+    setVariables(modifiedVariableMap);
   });
 }
 
@@ -169,10 +169,9 @@ export function updateVariable(
 ) {
   const addressStr = addrToString(address);
   if (!(addressStr in variables)) {
-   
     throw `No address ${addressStr} in variables`;
   }
-  
+
   setVariables({
     [addrToString(address)]: {
       name: firstFree(name, address),
@@ -188,7 +187,7 @@ export function addVariable(
   const addressStr = addrToString(address);
   if (addressStr in variables) return;
 
-  console.log("Adding as ", addressStr)
+  console.log("Adding as ", addressStr);
   setVariables({
     [addressStr]: {
       name: firstFree(name),
