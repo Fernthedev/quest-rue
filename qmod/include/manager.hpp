@@ -27,6 +27,8 @@ class Manager {
     void addSafePtrAddress(const AddSafePtrAddress& packet, uint64_t id);
     void sendSafePtrList(uint64_t id);
     void setLoggerListener(const RequestLogger& packet, uint64_t id);
+    void setCameraOptions(const CameraOptions& packet, uint64_t id);
+    void getHoveredObject(const GetCameraHovered& packet, uint64_t id);
 
     bool initialized;
     bool sendLoggerUpdates = false;

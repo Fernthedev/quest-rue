@@ -6,16 +6,31 @@ DEFINE_TYPE(QRUE, CameraController);
 
 bool click = false;
 
+float rotateSensitivity = 1;
+float moveSensitivity = 1;
+float clickTime = 0.2;
+float movementThreshold = 1;
+
+#include "VRUIControls/VRInputModule.hpp"
+#include "UnityEngine/EventSystems/PointerEventData.hpp"
+
+SafePtrUnity<VRUIControls::VRInputModule> latestInputModule;
+
+UnityEngine::GameObject* GetHovered() {
+    if(!latestInputModule)
+        return nullptr;
+    auto eventData = latestInputModule->GetLastPointerEventData(-1);
+    if(eventData)
+        return eventData->pointerEnter;
+    return nullptr;
+}
+
 using namespace QRUE;
 using namespace UnityEngine;
 using namespace GlobalNamespace;
 
 void CameraController::Start() {
     LOG_INFO("CameraController start");
-
-    rotateSensitivity = moveSensitivity = 1;
-    clickTime = 0.2;
-    movementThreshold = 1;
 
     childTransform = get_transform();
     parentTransform = childTransform->GetParent();
@@ -24,17 +39,16 @@ void CameraController::Start() {
 }
 
 #include "GlobalNamespace/FirstPersonFlyingController.hpp"
-#include "VRUIControls/VRInputModule.hpp"
 #include "VRUIControls/VRPointer.hpp"
 #include "VRUIControls/VRLaserPointer.hpp"
 #include "GlobalNamespace/VRCenterAdjust.hpp"
-#include "UnityEngine/GameObject.hpp"
 
 void CameraController::OnEnable() {
     LOG_INFO("CameraController enbale");
 
     // in main menu
     if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+        latestInputModule = objectsSource->vrInputModule;
         objectsSource->vrInputModule->set_useMouseForPressInput(true);
         objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
         objectsSource->centerAdjust->ResetRoom();
@@ -52,6 +66,7 @@ void CameraController::OnEnable() {
         controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
         controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
         if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+            latestInputModule = vrInputModule;
             vrInputModule->set_useMouseForPressInput(true);
             vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
         }

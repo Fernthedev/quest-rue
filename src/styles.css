@@ -123,6 +123,11 @@ input,
 button {
   outline: none;
 }
+button > img,
+button > svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
 
 .small-button {
   padding: 2px;

@@ -67,6 +67,8 @@ export function ActionButton(props: {
       // False positive
       // eslint-disable-next-line solid/reactivity
       onClick={() => errorHandle(() => props.onClick?.())}
+      // eslint-disable-next-line solid/reactivity
+      onKeyPress={() => errorHandle(() => props.onClick?.())}
       title={props.tooltip}
     >
       <Show when={props.loading} fallback={icon()}>

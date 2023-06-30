@@ -171,6 +171,29 @@ message ResponseLoggerUpdate {
     repeated PaperLogData paperLogs = 1;
 }
 
+message CameraOptions {
+    // set to negative values to leave the options unchanged
+    float moveSensitivity = 1;
+    float rotSensitivity = 2;
+    float clickTime = 3;
+    float clickMovementThreshold = 4;
+}
+
+message CameraOptionsResult {
+    // the current values for the options
+    float moveSensitivity = 1;
+    float rotSensitivity = 2;
+    float clickTime = 3;
+    float clickMovementThreshold = 4;
+}
+
+message GetCameraHovered {
+}
+
+message GetCameraHoveredResult {
+    ProtoGameObject hoveredObject = 1; /* nullable */
+}
+
 // TODO: Rename?
 message PacketWrapper {
     uint64 queryResultId = 1;
@@ -207,5 +230,9 @@ message PacketWrapper {
         GetSafePtrAddressesResult getSafePtrAddressesResult = 31;
         RequestLogger requestLogger = 32;
         ResponseLoggerUpdate responseLoggerUpdate = 33;
+        CameraOptions cameraOptions = 34;
+        CameraOptionsResult cameraOptionsResult = 35;
+        GetCameraHovered getCameraHovered = 36;
+        GetCameraHoveredResult getCameraHoveredResult = 37;
     }
 }

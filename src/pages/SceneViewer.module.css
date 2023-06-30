@@ -10,7 +10,6 @@
   @apply bg-zinc-400 dark:bg-zinc-800;
   width: 100%;
   height: 100%;
-  overflow-x: auto;
 }
 
 .leftPanel {

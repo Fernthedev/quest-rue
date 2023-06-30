@@ -287,6 +287,30 @@ export interface ResponseLoggerUpdate {
   paperLogs: PaperLogData[];
 }
 
+export interface CameraOptions {
+  /** set to negative values to leave the options unchanged */
+  moveSensitivity: number;
+  rotSensitivity: number;
+  clickTime: number;
+  clickMovementThreshold: number;
+}
+
+export interface CameraOptionsResult {
+  /** the current values for the options */
+  moveSensitivity: number;
+  rotSensitivity: number;
+  clickTime: number;
+  clickMovementThreshold: number;
+}
+
+export interface GetCameraHovered {
+}
+
+export interface GetCameraHoveredResult {
+  /** nullable */
+  hoveredObject: ProtoGameObject | undefined;
+}
+
 /** TODO: Rename? */
 export interface PacketWrapper {
   queryResultId: bigint;
@@ -322,7 +346,11 @@ export interface PacketWrapper {
     | { $case: "getSafePtrAddresses"; getSafePtrAddresses: GetSafePtrAddresses }
     | { $case: "getSafePtrAddressesResult"; getSafePtrAddressesResult: GetSafePtrAddressesResult }
     | { $case: "requestLogger"; requestLogger: RequestLogger }
-    | { $case: "responseLoggerUpdate"; responseLoggerUpdate: ResponseLoggerUpdate };
+    | { $case: "responseLoggerUpdate"; responseLoggerUpdate: ResponseLoggerUpdate }
+    | { $case: "cameraOptions"; cameraOptions: CameraOptions }
+    | { $case: "cameraOptionsResult"; cameraOptionsResult: CameraOptionsResult }
+    | { $case: "getCameraHovered"; getCameraHovered: GetCameraHovered }
+    | { $case: "getCameraHoveredResult"; getCameraHoveredResult: GetCameraHoveredResult };
 }
 
 function createBaseSetField(): SetField {
@@ -2793,6 +2821,303 @@ export const ResponseLoggerUpdate = {
   },
 };
 
+function createBaseCameraOptions(): CameraOptions {
+  return { moveSensitivity: 0, rotSensitivity: 0, clickTime: 0, clickMovementThreshold: 0 };
+}
+
+export const CameraOptions = {
+  encode(message: CameraOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.moveSensitivity !== 0) {
+      writer.uint32(13).float(message.moveSensitivity);
+    }
+    if (message.rotSensitivity !== 0) {
+      writer.uint32(21).float(message.rotSensitivity);
+    }
+    if (message.clickTime !== 0) {
+      writer.uint32(29).float(message.clickTime);
+    }
+    if (message.clickMovementThreshold !== 0) {
+      writer.uint32(37).float(message.clickMovementThreshold);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CameraOptions {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCameraOptions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 13) {
+            break;
+          }
+
+          message.moveSensitivity = reader.float();
+          continue;
+        case 2:
+          if (tag !== 21) {
+            break;
+          }
+
+          message.rotSensitivity = reader.float();
+          continue;
+        case 3:
+          if (tag !== 29) {
+            break;
+          }
+
+          message.clickTime = reader.float();
+          continue;
+        case 4:
+          if (tag !== 37) {
+            break;
+          }
+
+          message.clickMovementThreshold = reader.float();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CameraOptions {
+    return {
+      moveSensitivity: isSet(object.moveSensitivity) ? Number(object.moveSensitivity) : 0,
+      rotSensitivity: isSet(object.rotSensitivity) ? Number(object.rotSensitivity) : 0,
+      clickTime: isSet(object.clickTime) ? Number(object.clickTime) : 0,
+      clickMovementThreshold: isSet(object.clickMovementThreshold) ? Number(object.clickMovementThreshold) : 0,
+    };
+  },
+
+  toJSON(message: CameraOptions): unknown {
+    const obj: any = {};
+    message.moveSensitivity !== undefined && (obj.moveSensitivity = message.moveSensitivity);
+    message.rotSensitivity !== undefined && (obj.rotSensitivity = message.rotSensitivity);
+    message.clickTime !== undefined && (obj.clickTime = message.clickTime);
+    message.clickMovementThreshold !== undefined && (obj.clickMovementThreshold = message.clickMovementThreshold);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CameraOptions>, I>>(base?: I): CameraOptions {
+    return CameraOptions.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<CameraOptions>, I>>(object: I): CameraOptions {
+    const message = createBaseCameraOptions();
+    message.moveSensitivity = object.moveSensitivity ?? 0;
+    message.rotSensitivity = object.rotSensitivity ?? 0;
+    message.clickTime = object.clickTime ?? 0;
+    message.clickMovementThreshold = object.clickMovementThreshold ?? 0;
+    return message;
+  },
+};
+
+function createBaseCameraOptionsResult(): CameraOptionsResult {
+  return { moveSensitivity: 0, rotSensitivity: 0, clickTime: 0, clickMovementThreshold: 0 };
+}
+
+export const CameraOptionsResult = {
+  encode(message: CameraOptionsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.moveSensitivity !== 0) {
+      writer.uint32(13).float(message.moveSensitivity);
+    }
+    if (message.rotSensitivity !== 0) {
+      writer.uint32(21).float(message.rotSensitivity);
+    }
+    if (message.clickTime !== 0) {
+      writer.uint32(29).float(message.clickTime);
+    }
+    if (message.clickMovementThreshold !== 0) {
+      writer.uint32(37).float(message.clickMovementThreshold);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CameraOptionsResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCameraOptionsResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 13) {
+            break;
+          }
+
+          message.moveSensitivity = reader.float();
+          continue;
+        case 2:
+          if (tag !== 21) {
+            break;
+          }
+
+          message.rotSensitivity = reader.float();
+          continue;
+        case 3:
+          if (tag !== 29) {
+            break;
+          }
+
+          message.clickTime = reader.float();
+          continue;
+        case 4:
+          if (tag !== 37) {
+            break;
+          }
+
+          message.clickMovementThreshold = reader.float();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CameraOptionsResult {
+    return {
+      moveSensitivity: isSet(object.moveSensitivity) ? Number(object.moveSensitivity) : 0,
+      rotSensitivity: isSet(object.rotSensitivity) ? Number(object.rotSensitivity) : 0,
+      clickTime: isSet(object.clickTime) ? Number(object.clickTime) : 0,
+      clickMovementThreshold: isSet(object.clickMovementThreshold) ? Number(object.clickMovementThreshold) : 0,
+    };
+  },
+
+  toJSON(message: CameraOptionsResult): unknown {
+    const obj: any = {};
+    message.moveSensitivity !== undefined && (obj.moveSensitivity = message.moveSensitivity);
+    message.rotSensitivity !== undefined && (obj.rotSensitivity = message.rotSensitivity);
+    message.clickTime !== undefined && (obj.clickTime = message.clickTime);
+    message.clickMovementThreshold !== undefined && (obj.clickMovementThreshold = message.clickMovementThreshold);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(base?: I): CameraOptionsResult {
+    return CameraOptionsResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(object: I): CameraOptionsResult {
+    const message = createBaseCameraOptionsResult();
+    message.moveSensitivity = object.moveSensitivity ?? 0;
+    message.rotSensitivity = object.rotSensitivity ?? 0;
+    message.clickTime = object.clickTime ?? 0;
+    message.clickMovementThreshold = object.clickMovementThreshold ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetCameraHovered(): GetCameraHovered {
+  return {};
+}
+
+export const GetCameraHovered = {
+  encode(_: GetCameraHovered, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetCameraHovered {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetCameraHovered();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetCameraHovered {
+    return {};
+  },
+
+  toJSON(_: GetCameraHovered): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetCameraHovered>, I>>(base?: I): GetCameraHovered {
+    return GetCameraHovered.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetCameraHovered>, I>>(_: I): GetCameraHovered {
+    const message = createBaseGetCameraHovered();
+    return message;
+  },
+};
+
+function createBaseGetCameraHoveredResult(): GetCameraHoveredResult {
+  return { hoveredObject: undefined };
+}
+
+export const GetCameraHoveredResult = {
+  encode(message: GetCameraHoveredResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.hoveredObject !== undefined) {
+      ProtoGameObject.encode(message.hoveredObject, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetCameraHoveredResult {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetCameraHoveredResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.hoveredObject = ProtoGameObject.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetCameraHoveredResult {
+    return { hoveredObject: isSet(object.hoveredObject) ? ProtoGameObject.fromJSON(object.hoveredObject) : undefined };
+  },
+
+  toJSON(message: GetCameraHoveredResult): unknown {
+    const obj: any = {};
+    message.hoveredObject !== undefined &&
+      (obj.hoveredObject = message.hoveredObject ? ProtoGameObject.toJSON(message.hoveredObject) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetCameraHoveredResult>, I>>(base?: I): GetCameraHoveredResult {
+    return GetCameraHoveredResult.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetCameraHoveredResult>, I>>(object: I): GetCameraHoveredResult {
+    const message = createBaseGetCameraHoveredResult();
+    message.hoveredObject = (object.hoveredObject !== undefined && object.hoveredObject !== null)
+      ? ProtoGameObject.fromPartial(object.hoveredObject)
+      : undefined;
+    return message;
+  },
+};
+
 function createBasePacketWrapper(): PacketWrapper {
   return { queryResultId: BigInt("0"), Packet: undefined };
 }
@@ -2899,6 +3224,18 @@ export const PacketWrapper = {
         break;
       case "responseLoggerUpdate":
         ResponseLoggerUpdate.encode(message.Packet.responseLoggerUpdate, writer.uint32(266).fork()).ldelim();
+        break;
+      case "cameraOptions":
+        CameraOptions.encode(message.Packet.cameraOptions, writer.uint32(274).fork()).ldelim();
+        break;
+      case "cameraOptionsResult":
+        CameraOptionsResult.encode(message.Packet.cameraOptionsResult, writer.uint32(282).fork()).ldelim();
+        break;
+      case "getCameraHovered":
+        GetCameraHovered.encode(message.Packet.getCameraHovered, writer.uint32(290).fork()).ldelim();
+        break;
+      case "getCameraHoveredResult":
+        GetCameraHoveredResult.encode(message.Packet.getCameraHoveredResult, writer.uint32(298).fork()).ldelim();
         break;
     }
     return writer;
@@ -3208,6 +3545,43 @@ export const PacketWrapper = {
             responseLoggerUpdate: ResponseLoggerUpdate.decode(reader, reader.uint32()),
           };
           continue;
+        case 34:
+          if (tag !== 274) {
+            break;
+          }
+
+          message.Packet = { $case: "cameraOptions", cameraOptions: CameraOptions.decode(reader, reader.uint32()) };
+          continue;
+        case 35:
+          if (tag !== 282) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "cameraOptionsResult",
+            cameraOptionsResult: CameraOptionsResult.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 36:
+          if (tag !== 290) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getCameraHovered",
+            getCameraHovered: GetCameraHovered.decode(reader, reader.uint32()),
+          };
+          continue;
+        case 37:
+          if (tag !== 298) {
+            break;
+          }
+
+          message.Packet = {
+            $case: "getCameraHoveredResult",
+            getCameraHoveredResult: GetCameraHoveredResult.decode(reader, reader.uint32()),
+          };
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3320,6 +3694,20 @@ export const PacketWrapper = {
           $case: "responseLoggerUpdate",
           responseLoggerUpdate: ResponseLoggerUpdate.fromJSON(object.responseLoggerUpdate),
         }
+        : isSet(object.cameraOptions)
+        ? { $case: "cameraOptions", cameraOptions: CameraOptions.fromJSON(object.cameraOptions) }
+        : isSet(object.cameraOptionsResult)
+        ? {
+          $case: "cameraOptionsResult",
+          cameraOptionsResult: CameraOptionsResult.fromJSON(object.cameraOptionsResult),
+        }
+        : isSet(object.getCameraHovered)
+        ? { $case: "getCameraHovered", getCameraHovered: GetCameraHovered.fromJSON(object.getCameraHovered) }
+        : isSet(object.getCameraHoveredResult)
+        ? {
+          $case: "getCameraHoveredResult",
+          getCameraHoveredResult: GetCameraHoveredResult.fromJSON(object.getCameraHoveredResult),
+        }
         : undefined,
     };
   },
@@ -3425,6 +3813,19 @@ export const PacketWrapper = {
     message.Packet?.$case === "responseLoggerUpdate" && (obj.responseLoggerUpdate = message.Packet?.responseLoggerUpdate
       ? ResponseLoggerUpdate.toJSON(message.Packet?.responseLoggerUpdate)
       : undefined);
+    message.Packet?.$case === "cameraOptions" && (obj.cameraOptions = message.Packet?.cameraOptions
+      ? CameraOptions.toJSON(message.Packet?.cameraOptions)
+      : undefined);
+    message.Packet?.$case === "cameraOptionsResult" && (obj.cameraOptionsResult = message.Packet?.cameraOptionsResult
+      ? CameraOptionsResult.toJSON(message.Packet?.cameraOptionsResult)
+      : undefined);
+    message.Packet?.$case === "getCameraHovered" && (obj.getCameraHovered = message.Packet?.getCameraHovered
+      ? GetCameraHovered.toJSON(message.Packet?.getCameraHovered)
+      : undefined);
+    message.Packet?.$case === "getCameraHoveredResult" &&
+      (obj.getCameraHoveredResult = message.Packet?.getCameraHoveredResult
+        ? GetCameraHoveredResult.toJSON(message.Packet?.getCameraHoveredResult)
+        : undefined);
     return obj;
   },
 
@@ -3733,6 +4134,46 @@ export const PacketWrapper = {
       message.Packet = {
         $case: "responseLoggerUpdate",
         responseLoggerUpdate: ResponseLoggerUpdate.fromPartial(object.Packet.responseLoggerUpdate),
+      };
+    }
+    if (
+      object.Packet?.$case === "cameraOptions" &&
+      object.Packet?.cameraOptions !== undefined &&
+      object.Packet?.cameraOptions !== null
+    ) {
+      message.Packet = {
+        $case: "cameraOptions",
+        cameraOptions: CameraOptions.fromPartial(object.Packet.cameraOptions),
+      };
+    }
+    if (
+      object.Packet?.$case === "cameraOptionsResult" &&
+      object.Packet?.cameraOptionsResult !== undefined &&
+      object.Packet?.cameraOptionsResult !== null
+    ) {
+      message.Packet = {
+        $case: "cameraOptionsResult",
+        cameraOptionsResult: CameraOptionsResult.fromPartial(object.Packet.cameraOptionsResult),
+      };
+    }
+    if (
+      object.Packet?.$case === "getCameraHovered" &&
+      object.Packet?.getCameraHovered !== undefined &&
+      object.Packet?.getCameraHovered !== null
+    ) {
+      message.Packet = {
+        $case: "getCameraHovered",
+        getCameraHovered: GetCameraHovered.fromPartial(object.Packet.getCameraHovered),
+      };
+    }
+    if (
+      object.Packet?.$case === "getCameraHoveredResult" &&
+      object.Packet?.getCameraHoveredResult !== undefined &&
+      object.Packet?.getCameraHoveredResult !== null
+    ) {
+      message.Packet = {
+        $case: "getCameraHoveredResult",
+        getCameraHoveredResult: GetCameraHoveredResult.fromPartial(object.Packet.getCameraHoveredResult),
       };
     }
     return message;

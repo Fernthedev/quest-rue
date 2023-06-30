@@ -6,6 +6,7 @@
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "UnityEngine/Vector2.hpp"
 #include "UnityEngine/Transform.hpp"
+#include "UnityEngine/GameObject.hpp"
 #include "GlobalNamespace/VRController.hpp"
 
 DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
@@ -15,10 +16,6 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_METHOD(void, Rotate, UnityEngine::Vector2);
     DECLARE_INSTANCE_METHOD(void, Move, UnityEngine::Vector3);
 
-    DECLARE_INSTANCE_FIELD(float, rotateSensitivity);
-    DECLARE_INSTANCE_FIELD(float, moveSensitivity);
-    DECLARE_INSTANCE_FIELD(float, clickTime);
-    DECLARE_INSTANCE_FIELD(float, movementThreshold);
     DECLARE_INSTANCE_FIELD(float, lastTime);
     DECLARE_INSTANCE_FIELD(float, lastMovement);
     DECLARE_INSTANCE_FIELD(UnityEngine::Vector2, lastPos);
@@ -29,4 +26,12 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
 )
 
 extern bool click;
+
+extern float rotateSensitivity;
+extern float moveSensitivity;
+extern float clickTime;
+extern float movementThreshold;
+
+UnityEngine::GameObject* GetHovered();
+
 #endif

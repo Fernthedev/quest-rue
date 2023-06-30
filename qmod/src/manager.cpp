@@ -1,5 +1,6 @@
 #include "manager.hpp"
 #include "MainThreadRunner.hpp"
+#include "CameraController.hpp"
 #include "classutils.hpp"
 #include "unity.hpp"
 #include "mem.hpp"
@@ -125,6 +126,12 @@ void Manager::processMessage(const PacketWrapper& packet) {
             break;
         case PacketWrapper::kRequestLogger:
             setLoggerListener(packet.requestlogger(), id);
+            break;
+        case PacketWrapper::kCameraOptions:
+            setCameraOptions(packet.cameraoptions(), id);
+            break;
+        case PacketWrapper::kGetCameraHovered:
+            getHoveredObject(packet.getcamerahovered(), id);
             break;
         default:
             LOG_INFO("Invalid packet type!");
@@ -533,6 +540,39 @@ void Manager::sendSafePtrList(uint64_t id) {
 
 void Manager::setLoggerListener(RequestLogger const& packet, uint64_t id) {
     this->sendLoggerUpdates = packet.listen();
+}
+
+void Manager::setCameraOptions(const CameraOptions& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    if(packet.movesensitivity() > 0)
+        moveSensitivity = packet.movesensitivity();
+    if(packet.rotsensitivity() > 0)
+        rotateSensitivity = packet.rotsensitivity();
+    if(packet.clicktime() > 0)
+        clickTime = packet.clicktime();
+    if(packet.clickmovementthreshold() > 0)
+        movementThreshold = packet.clickmovementthreshold();
+
+    auto& res = *wrapper.mutable_cameraoptionsresult();
+    res.set_movesensitivity(moveSensitivity);
+    res.set_rotsensitivity(rotateSensitivity);
+    res.set_clicktime(clickTime);
+    res.set_clickmovementthreshold(movementThreshold);
+
+    handler->sendPacket(wrapper);
+}
+
+void Manager::getHoveredObject(const GetCameraHovered& packet, uint64_t id) {
+    PacketWrapper wrapper;
+    wrapper.set_queryresultid(id);
+
+    auto res = wrapper.mutable_getcamerahoveredresult()->mutable_hoveredobject();
+    if(auto obj = GetHovered())
+        *res = ReadGameObject(obj);
+
+    handler->sendPacket(wrapper);
 }
 
 #pragma endregion
