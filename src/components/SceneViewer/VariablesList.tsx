@@ -146,17 +146,29 @@ function VariablesListContent() {
     }, new Map<string, [ProtoClassDetails, bigint[]]>())
   );
 
+  const emptyFallback = (
+    <div class="w-full h-full pt-2 flex-1 overflow-hidden">
+      {separator()}
+      <div class="relative w-full h-full min-h-6">
+        <div class="absolute-centered w-full">No Variables Saved</div>
+      </div>
+    </div>
+  );
+
   // use the string key in the <For> to keep it from recreating all the inputs
-  // when the stpre changes, which would cause you to lose focus each keystroke
+  // when the store changes, which would cause you to lose focus each keystroke
   return (
-    <div class="flex flex-col p-2 gap-1 overflow-hidden">
-      <For each={Array.from(types().keys())}>
-        {(key) => {
-          // needs to be reactive on types here
-          const data = createMemo(() => types().get(key)!);
-          return <TypeHeader type={data()[0]} vars={data()[1]} />;
-        }}
-      </For>
+    <Show when={types().size > 0} fallback={emptyFallback}>
+      <div class="flex flex-col p-2 gap-1 overflow-x-hidden">
+        <For each={Array.from(types().keys())}>
+          {(key) => {
+            // needs to be reactive on types here
+            const data = createMemo(() => types().get(key)!);
+            return <TypeHeader type={data()[0]} vars={data()[1]} />;
+          }}
+        </For>
+      </div>
+    </Show>
   );
 }
 
