@@ -9,7 +9,7 @@ export const protobufPackage = "";
 
 export interface SetField {
   fieldId: bigint;
-  objectAddress: bigint;
+  inst: ProtoDataPayload | undefined;
   value: ProtoDataPayload | undefined;
 }
 
@@ -19,7 +19,7 @@ export interface SetFieldResult {
 
 export interface GetField {
   fieldId: bigint;
-  objectAddress: bigint;
+  inst: ProtoDataPayload | undefined;
 }
 
 export interface GetFieldResult {
@@ -29,7 +29,7 @@ export interface GetFieldResult {
 
 export interface InvokeMethod {
   methodId: bigint;
-  objectAddress: bigint;
+  inst: ProtoDataPayload | undefined;
   generics: ProtoTypeInfo[];
   args: ProtoDataPayload[];
 }
@@ -354,7 +354,7 @@ export interface PacketWrapper {
 }
 
 function createBaseSetField(): SetField {
-  return { fieldId: BigInt("0"), objectAddress: BigInt("0"), value: undefined };
+  return { fieldId: BigInt("0"), inst: undefined, value: undefined };
 }
 
 export const SetField = {
@@ -362,8 +362,8 @@ export const SetField = {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
-    if (message.objectAddress !== BigInt("0")) {
-      writer.uint32(16).uint64(message.objectAddress.toString());
+    if (message.inst !== undefined) {
+      ProtoDataPayload.encode(message.inst, writer.uint32(18).fork()).ldelim();
     }
     if (message.value !== undefined) {
       ProtoDataPayload.encode(message.value, writer.uint32(26).fork()).ldelim();
@@ -386,11 +386,11 @@ export const SetField = {
           message.fieldId = longToBigint(reader.uint64() as Long);
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.objectAddress = longToBigint(reader.uint64() as Long);
+          message.inst = ProtoDataPayload.decode(reader, reader.uint32());
           continue;
         case 3:
           if (tag !== 26) {
@@ -411,7 +411,7 @@ export const SetField = {
   fromJSON(object: any): SetField {
     return {
       fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
+      inst: isSet(object.inst) ? ProtoDataPayload.fromJSON(object.inst) : undefined,
       value: isSet(object.value) ? ProtoDataPayload.fromJSON(object.value) : undefined,
     };
   },
@@ -419,7 +419,7 @@ export const SetField = {
   toJSON(message: SetField): unknown {
     const obj: any = {};
     message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
+    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
     message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
     return obj;
   },
@@ -431,7 +431,9 @@ export const SetField = {
   fromPartial<I extends Exact<DeepPartial<SetField>, I>>(object: I): SetField {
     const message = createBaseSetField();
     message.fieldId = object.fieldId ?? BigInt("0");
-    message.objectAddress = object.objectAddress ?? BigInt("0");
+    message.inst = (object.inst !== undefined && object.inst !== null)
+      ? ProtoDataPayload.fromPartial(object.inst)
+      : undefined;
     message.value = (object.value !== undefined && object.value !== null)
       ? ProtoDataPayload.fromPartial(object.value)
       : undefined;
@@ -496,7 +498,7 @@ export const SetFieldResult = {
 };
 
 function createBaseGetField(): GetField {
-  return { fieldId: BigInt("0"), objectAddress: BigInt("0") };
+  return { fieldId: BigInt("0"), inst: undefined };
 }
 
 export const GetField = {
@@ -504,8 +506,8 @@ export const GetField = {
     if (message.fieldId !== BigInt("0")) {
       writer.uint32(8).uint64(message.fieldId.toString());
     }
-    if (message.objectAddress !== BigInt("0")) {
-      writer.uint32(16).uint64(message.objectAddress.toString());
+    if (message.inst !== undefined) {
+      ProtoDataPayload.encode(message.inst, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -525,11 +527,11 @@ export const GetField = {
           message.fieldId = longToBigint(reader.uint64() as Long);
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.objectAddress = longToBigint(reader.uint64() as Long);
+          message.inst = ProtoDataPayload.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -543,14 +545,14 @@ export const GetField = {
   fromJSON(object: any): GetField {
     return {
       fieldId: isSet(object.fieldId) ? BigInt(object.fieldId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
+      inst: isSet(object.inst) ? ProtoDataPayload.fromJSON(object.inst) : undefined,
     };
   },
 
   toJSON(message: GetField): unknown {
     const obj: any = {};
     message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
+    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
     return obj;
   },
 
@@ -561,7 +563,9 @@ export const GetField = {
   fromPartial<I extends Exact<DeepPartial<GetField>, I>>(object: I): GetField {
     const message = createBaseGetField();
     message.fieldId = object.fieldId ?? BigInt("0");
-    message.objectAddress = object.objectAddress ?? BigInt("0");
+    message.inst = (object.inst !== undefined && object.inst !== null)
+      ? ProtoDataPayload.fromPartial(object.inst)
+      : undefined;
     return message;
   },
 };
@@ -640,7 +644,7 @@ export const GetFieldResult = {
 };
 
 function createBaseInvokeMethod(): InvokeMethod {
-  return { methodId: BigInt("0"), objectAddress: BigInt("0"), generics: [], args: [] };
+  return { methodId: BigInt("0"), inst: undefined, generics: [], args: [] };
 }
 
 export const InvokeMethod = {
@@ -648,8 +652,8 @@ export const InvokeMethod = {
     if (message.methodId !== BigInt("0")) {
       writer.uint32(8).uint64(message.methodId.toString());
     }
-    if (message.objectAddress !== BigInt("0")) {
-      writer.uint32(16).uint64(message.objectAddress.toString());
+    if (message.inst !== undefined) {
+      ProtoDataPayload.encode(message.inst, writer.uint32(18).fork()).ldelim();
     }
     for (const v of message.generics) {
       ProtoTypeInfo.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -675,11 +679,11 @@ export const InvokeMethod = {
           message.methodId = longToBigint(reader.uint64() as Long);
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.objectAddress = longToBigint(reader.uint64() as Long);
+          message.inst = ProtoDataPayload.decode(reader, reader.uint32());
           continue;
         case 3:
           if (tag !== 26) {
@@ -707,7 +711,7 @@ export const InvokeMethod = {
   fromJSON(object: any): InvokeMethod {
     return {
       methodId: isSet(object.methodId) ? BigInt(object.methodId) : BigInt("0"),
-      objectAddress: isSet(object.objectAddress) ? BigInt(object.objectAddress) : BigInt("0"),
+      inst: isSet(object.inst) ? ProtoDataPayload.fromJSON(object.inst) : undefined,
       generics: Array.isArray(object?.generics) ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e)) : [],
       args: Array.isArray(object?.args) ? object.args.map((e: any) => ProtoDataPayload.fromJSON(e)) : [],
     };
@@ -716,7 +720,7 @@ export const InvokeMethod = {
   toJSON(message: InvokeMethod): unknown {
     const obj: any = {};
     message.methodId !== undefined && (obj.methodId = message.methodId.toString());
-    message.objectAddress !== undefined && (obj.objectAddress = message.objectAddress.toString());
+    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
     if (message.generics) {
       obj.generics = message.generics.map((e) => e ? ProtoTypeInfo.toJSON(e) : undefined);
     } else {
@@ -737,7 +741,9 @@ export const InvokeMethod = {
   fromPartial<I extends Exact<DeepPartial<InvokeMethod>, I>>(object: I): InvokeMethod {
     const message = createBaseInvokeMethod();
     message.methodId = object.methodId ?? BigInt("0");
-    message.objectAddress = object.objectAddress ?? BigInt("0");
+    message.inst = (object.inst !== undefined && object.inst !== null)
+      ? ProtoDataPayload.fromPartial(object.inst)
+      : undefined;
     message.generics = object.generics?.map((e) => ProtoTypeInfo.fromPartial(e)) || [];
     message.args = object.args?.map((e) => ProtoDataPayload.fromPartial(e)) || [];
     return message;

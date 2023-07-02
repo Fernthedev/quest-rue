@@ -7,7 +7,10 @@ import {
 } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
-import { ProtoPropertyInfo } from "../../../misc/proto/il2cpp";
+import {
+  ProtoDataPayload,
+  ProtoPropertyInfo,
+} from "../../../misc/proto/il2cpp";
 import { stringToProtoData } from "../../../misc/types/type_format";
 import { protoDataToString } from "../../../misc/types/type_format";
 import InputCell, { ActionButton } from "../InputCell";
@@ -19,7 +22,7 @@ import { SpanFn } from "./ObjectView";
 export function PropertyCell(props: {
   prop: PacketJSON<ProtoPropertyInfo>;
   colSize: number;
-  address: bigint;
+  selected: ProtoDataPayload;
   spanFn: SpanFn;
 }) {
   // update element span when colSize updates
@@ -37,7 +40,7 @@ export function PropertyCell(props: {
       invokeMethod: {
         generics: [],
         methodId: props.prop.getterId!,
-        objectAddress: props.address,
+        inst: props.selected,
         args: [],
       },
     });
@@ -56,7 +59,7 @@ export function PropertyCell(props: {
       invokeMethod: {
         generics: [],
         methodId: props.prop.setterId!,
-        objectAddress: props.address,
+        inst: props.selected,
         args: [protoData],
       },
     });

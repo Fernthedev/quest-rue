@@ -1,7 +1,7 @@
 import { createEffect, onMount } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../../misc/proto/qrue";
-import { ProtoFieldInfo } from "../../../misc/proto/il2cpp";
+import { ProtoDataPayload, ProtoFieldInfo } from "../../../misc/proto/il2cpp";
 import { stringToProtoData } from "../../../misc/types/type_format";
 import { protoDataToString } from "../../../misc/types/type_format";
 import InputCell, { ActionButton } from "../InputCell";
@@ -12,7 +12,7 @@ import styles from "./ObjectView.module.css";
 export function FieldCell(props: {
   field: PacketJSON<ProtoFieldInfo>;
   colSize: number;
-  address: bigint;
+  selected: ProtoDataPayload;
   spanFn: SpanFn;
 }) {
   // update element on resize
@@ -25,12 +25,14 @@ export function FieldCell(props: {
   const [value, valueLoading, requestValue] =
     useRequestAndResponsePacket<GetFieldResult>();
   function refresh() {
-    console.log(`Requesting ${props.field.id} ${props.address}`);
+    console.log(
+      `Requesting ${props.field.id} ${protoDataToString(props.selected)}`
+    );
     requestValue({
       $case: "getField",
       getField: {
         fieldId: props.field.id,
-        objectAddress: props.address,
+        inst: props.selected,
       },
     });
   }
@@ -47,7 +49,7 @@ export function FieldCell(props: {
       $case: "setField",
       setField: {
         fieldId: props.field.id,
-        objectAddress: props.address,
+        inst: props.selected,
         value: protoData,
       },
     });

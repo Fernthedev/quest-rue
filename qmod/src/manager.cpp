@@ -148,16 +148,13 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
     wrapper.set_queryresultid(queryId);
 
     auto field = asPtr(FieldInfo, packet.fieldid());
-    auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(field))
         INPUT_ERROR("field info pointer was invalid")
     else if(!GetIsLiteral(field))
         INPUT_ERROR("literal fields cannot be set")
-    else if(!GetIsStatic(field) && !tryValidatePtr(object))
-        INPUT_ERROR("instance pointer was invalid")
     else {
-        FieldUtils::Set(field, object, packet.value());
+        FieldUtils::Set(field, packet.inst(), packet.value());
 
         SetFieldResult& result = *wrapper.mutable_setfieldresult();
         result.set_fieldid(asInt(field));
@@ -170,16 +167,13 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
     wrapper.set_queryresultid(queryId);
 
     auto field = asPtr(FieldInfo, packet.fieldid());
-    auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(field))
         INPUT_ERROR("field info pointer was invalid")
-    else if(!GetIsStatic(field) && !tryValidatePtr(object))
-        INPUT_ERROR("instance pointer was invalid")
     else {
-        LOG_DEBUG("Getting field {} for object {}", packet.fieldid(), packet.objectaddress());
+        LOG_DEBUG("Getting field {}", packet.fieldid());
 
-        auto res = FieldUtils::Get(field, object);
+        auto res = FieldUtils::Get(field, packet.inst());
 
         GetFieldResult& result = *wrapper.mutable_getfieldresult();
         result.set_fieldid(asInt(field));
@@ -194,12 +188,9 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     wrapper.set_queryresultid(queryId);
 
     auto method = asPtr(const MethodInfo, packet.methodid());
-    auto object = asPtr(Il2CppObject, packet.objectaddress());
 
     if(!tryValidatePtr(method))
         INPUT_ERROR("method info pointer was invalid")
-    else if(!GetIsStatic(method) && !tryValidatePtr(object))
-        INPUT_ERROR("instance pointer was invalid")
     else {
         bool validGenerics = true;
         if(int size = packet.generics_size()) {
@@ -222,7 +213,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
                 args.emplace_back(packet.args(i));
 
             std::string err = "";
-            auto res = MethodUtils::Run(method, object, args, err);
+            auto res = MethodUtils::Run(method, packet.inst(), args, err);
 
             InvokeMethodResult& result = *wrapper.mutable_invokemethodresult();
             result.set_methodid(asInt(method));

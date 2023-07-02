@@ -1,7 +1,11 @@
 import { Show, For, createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
-import { ProtoMethodInfo, ProtoTypeInfo } from "../../../misc/proto/il2cpp";
+import {
+  ProtoDataPayload,
+  ProtoMethodInfo,
+  ProtoTypeInfo,
+} from "../../../misc/proto/il2cpp";
 import { createUpdatingSignal } from "../../../misc/utils";
 import { stringToProtoData } from "../../../misc/types/type_format";
 import {
@@ -21,7 +25,7 @@ import { SpanFn } from "./ObjectView";
 export function MethodCell(props: {
   method: PacketJSON<ProtoMethodInfo>;
   colSize: number;
-  address: bigint;
+  selected: ProtoDataPayload;
   spanFn: SpanFn;
   highlight: boolean;
 }) {
@@ -82,7 +86,7 @@ export function MethodCell(props: {
       $case: "invokeMethod",
       invokeMethod: {
         methodId: props.method.id,
-        objectAddress: props.address,
+        inst: props.selected,
         generics: genericsData.map(([, t]) => t),
         args: argsData,
       },

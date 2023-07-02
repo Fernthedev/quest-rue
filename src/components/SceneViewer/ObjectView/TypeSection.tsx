@@ -8,7 +8,7 @@ import {
   on,
 } from "solid-js";
 import { PacketJSON } from "../../../misc/events";
-import { ProtoClassDetails, ProtoMethodInfo } from "../../../misc/proto/il2cpp";
+import { ProtoClassDetails, ProtoDataPayload, ProtoMethodInfo } from "../../../misc/proto/il2cpp";
 import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
@@ -31,7 +31,7 @@ interface OverloadInfo {
 
 export function TypeSection(props: {
   details?: PacketJSON<ProtoClassDetails>;
-  selectedAddress: bigint;
+  selected: ProtoDataPayload;
   search: string;
   spanFn: SpanFn;
   statics: boolean;
@@ -181,7 +181,7 @@ export function TypeSection(props: {
                 spanFn={props.spanFn}
                 field={item}
                 colSize={colSize()}
-                address={props.selectedAddress}
+                selected={props.selected}
               />
             )}
           </For>
@@ -195,7 +195,7 @@ export function TypeSection(props: {
               <PropertyCell
                 prop={item}
                 colSize={colSize()}
-                address={props.selectedAddress}
+                selected={props.selected}
                 spanFn={props.spanFn}
               />
             )}
@@ -246,7 +246,7 @@ export function TypeSection(props: {
                       method={item as ProtoMethodInfo}
                       colSize={colSize()}
                       spanFn={props.spanFn}
-                      address={props.selectedAddress}
+                      selected={props.selected}
                       highlight={expanded().has(item.name)}
                     />
                   }
@@ -274,7 +274,7 @@ export function TypeSection(props: {
         {separator()}
         <TypeSection
           details={props.details?.parent}
-          selectedAddress={props.selectedAddress}
+          selected={props.selected}
           search={props.search}
           spanFn={props.spanFn}
           statics={props.statics}

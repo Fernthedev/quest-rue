@@ -245,19 +245,20 @@ ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
 }
 
 namespace MethodUtils {
-    ProtoDataPayload Run(MethodInfo const* method, Il2CppObject* object, std::vector<ProtoDataPayload> const& args, std::string& error, bool derefReferences) {
+    ProtoDataPayload Run(MethodInfo const* method, ProtoDataPayload const& object, std::vector<ProtoDataPayload> const& args, std::string& error) {
+        void* inst = nullptr;
+        if(!ClassUtils::GetIsStatic(method))
+            inst = HandleType(object.typeinfo(), object.data());
+
+        return Run(method, inst, args, error);
+    }
+    ProtoDataPayload Run(MethodInfo const* method, void* object, std::vector<ProtoDataPayload> const& args, std::string& error) {
         LOG_DEBUG("Running method {}", method->name);
         LOG_DEBUG("{} parameters", method->parameters_count);
 
         void* il2cppArgs[args.size()];
         // TODO: type checking?
         FillList(args, il2cppArgs);
-
-        // deref reference types when running a method as it expects direct pointers to them
-        for(int i = 0; i < args.size(); i++) {
-            if(derefReferences && args[i].typeinfo().has_classinfo())
-                il2cppArgs[i] = *(void**) il2cppArgs[i];
-        }
 
         Il2CppException* ex = nullptr;
         auto ret = il2cpp_functions::runtime_invoke(method, object, (void**) il2cppArgs, &ex);
@@ -304,10 +305,20 @@ namespace MethodUtils {
 }
 
 namespace FieldUtils {
-    ProtoDataPayload Get(FieldInfo* field, Il2CppObject* object) {
-        LOG_DEBUG("Object {}", object ? object->klass->name : "null");
+    ProtoDataPayload Get(FieldInfo* field, ProtoDataPayload const& object) {
+        void* inst = nullptr;
+        if(!ClassUtils::GetIsStatic(field))
+            inst = HandleType(object.typeinfo(), object.data());
+
+        return Get(field, inst, object.typeinfo().has_classinfo() | object.typeinfo().has_arrayinfo());
+    }
+    ProtoDataPayload Get(FieldInfo* field, void* object, bool isObject) {
         LOG_DEBUG("Getting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
+
+        // since fields only use pointer math to find the offsets, we don't need to box things properly
+        if(!isObject)
+            object = (void*) ((char*) object - sizeof(Il2CppObject));
 
         size_t size = fieldTypeSize(field->type);
         char ret[size];
@@ -315,34 +326,39 @@ namespace FieldUtils {
         if(ClassUtils::GetIsStatic(field))
             il2cpp_functions::field_static_get_value(field, (void*) ret);
         else
-            il2cpp_functions::field_get_value(object, field, (void*) ret);
+            il2cpp_functions::field_get_value((Il2CppObject*) object, field, (void*) ret);
 
-        // handles copying of string data if necessary
+        // handles the transformation of the data if necessary
         auto typeInfo = ClassUtils::GetTypeInfo(field->type);
         return OutputData(typeInfo, ret);
     }
 
-    void Set(FieldInfo* field, Il2CppObject* object, ProtoDataPayload const& arg, bool derefReferences) {
+    void Set(FieldInfo* field, ProtoDataPayload const& object, ProtoDataPayload const& arg) {
+        void* inst = nullptr;
+        if(!ClassUtils::GetIsStatic(field))
+            inst = HandleType(object.typeinfo(), object.data());
+
+        return Set(field, inst, arg, object.typeinfo().has_classinfo() | object.typeinfo().has_arrayinfo());
+    }
+    void Set(FieldInfo* field, void* object, ProtoDataPayload const& arg, bool isObject) {
         LOG_DEBUG("Setting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
-        void* value = HandleType(arg.typeinfo(), arg.data());
+        // since fields only use pointer math to find the offsets, we don't need to box things properly
+        if(!isObject)
+            object = (void*) ((char*) object - sizeof(Il2CppObject));
 
-        // deref reference types here as well since it expects the same as if it were running a method
-        if(derefReferences && arg.typeinfo().has_classinfo())
-            value = *(void**) value;
+        void* value = HandleType(arg.typeinfo(), arg.data());
 
         if(ClassUtils::GetIsStatic(field))
             il2cpp_functions::field_static_set_value(field, value);
         else
-            il2cpp_functions::field_set_value(object, field, value);
+            il2cpp_functions::field_set_value((Il2CppObject*) object, field, value);
     }
 
     ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
         ProtoFieldInfo info;
         info.set_name(field->name);
-        LOG_DEBUG("Field address: {} vs converted {} ({})", fmt::ptr(field),
-                 asInt(field), fmt::ptr((void *)asInt(field)));
         info.set_id(asInt(field));
         *info.mutable_type() = ClassUtils::GetTypeInfo(field->type);
         info.set_literal(ClassUtils::GetIsLiteral(field));

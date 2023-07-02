@@ -1,12 +1,15 @@
 import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
 import { useRequestAndResponsePacket } from "../../../misc/events";
-import { GetInstanceDetailsResult } from "../../../misc/proto/qrue";
+import { GetClassDetailsResult } from "../../../misc/proto/qrue";
 
 import styles from "./ObjectView.module.css";
 import { protoTypeToString } from "../../../misc/types/type_format";
 import { TypeSection } from "./TypeSection";
 import { useSettings } from "../../Settings";
-import { ProtoClassDetails } from "../../../misc/proto/il2cpp";
+import {
+  ProtoClassDetails,
+  ProtoDataPayload,
+} from "../../../misc/proto/il2cpp";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { FilterSettings, FilterSettingsDropdown } from "./FilterSettings";
 import { ActionButton } from "../InputCell";
@@ -42,7 +45,7 @@ export const separator = () => (
 );
 
 export default function ObjectView(props: {
-  selectedAddress: bigint | undefined;
+  selected?: ProtoDataPayload;
   setStatics: SetStoreFunction<{ [key: string]: ProtoClassDetails }>;
 }) {
   const { columnCount } = useSettings();
@@ -61,22 +64,31 @@ export default function ObjectView(props: {
   const detailsFallback = <div class="absolute-centered">Loading...</div>;
 
   const [details, detailsLoading, requestDetails] =
-    useRequestAndResponsePacket<GetInstanceDetailsResult>();
+    useRequestAndResponsePacket<GetClassDetailsResult>();
+
+  const selectedAddress = createMemo(() => {
+    const data = props.selected?.data?.Data;
+    return data?.$case == "classData" ? data.classData : undefined;
+  });
 
   // request the instance data on select
   createEffect(() => {
-    if (!props.selectedAddress) return;
+    const info = props.selected?.typeInfo?.Info;
+    if (info?.$case != "classInfo" && info?.$case != "structInfo") return;
+
+    const classInfo =
+      info?.$case == "classInfo" ? info.classInfo : info.structInfo.clazz;
 
     requestDetails({
-      $case: "getInstanceDetails",
-      getInstanceDetails: {
-        address: props.selectedAddress,
+      $case: "getClassDetails",
+      getClassDetails: {
+        classInfo: classInfo,
       },
     });
   });
 
   const classDetails = createMemo(() => {
-    if (!props.selectedAddress) return undefined;
+    if (!props.selected) return undefined;
     return details()?.classDetails;
   });
   const className = createMemo(() => {
@@ -127,8 +139,7 @@ export default function ObjectView(props: {
   const saveButton = (
     <Show
       when={
-        !props.selectedAddress ||
-        !(addrToString(props.selectedAddress) in variables)
+        selectedAddress() && !(addrToString(selectedAddress()!) in variables)
       }
       fallback={
         <ActionButton
@@ -163,9 +174,10 @@ export default function ObjectView(props: {
             img={check}
             onClick={() => {
               const details = classDetails();
-              if (props.selectedAddress && details) {
-                addVariable(props.selectedAddress, details, varNameInput());
-              }
+              const addr = selectedAddress();
+              const name = varNameInput();
+              if (addr && details)
+                addVariable(addr, details, name.length > 0 ? name : undefined);
             }}
             tooltip="Confirm"
           />
@@ -175,7 +187,7 @@ export default function ObjectView(props: {
   );
 
   return (
-    <Show when={props.selectedAddress} fallback={globalFallback} keyed>
+    <Show when={props.selected} fallback={globalFallback} keyed>
       <div
         class={`p-4 w-full h-full overflow-x-hidden`}
         ref={container}
@@ -184,11 +196,13 @@ export default function ObjectView(props: {
         <div class="flex gap-4 mb-1 items-end pr-10">
           <span class="text-lg flex-0 -mr-2">Selected:</span>
           <span class="text-xl font-mono flex-0">{className()}</span>
-          <span class="text-lg flex-0 -mx-2">at</span>
-          <span class="text-xl font-mono flex-0">
-            0x{props.selectedAddress?.toString(16)}
-          </span>
-          {saveButton}
+          <Show when={selectedAddress()}>
+            <span class="text-lg flex-0 -mx-2">at</span>
+            <span class="text-xl font-mono flex-0">
+              0x{selectedAddress()!.toString(16)}
+            </span>
+            {saveButton}
+          </Show>
           <span class="text-lg font-mono flex-0">{interfaces()}</span>
           <span class="flex-1" />
           <div class="whitespace-nowrap flex flex-row join">
@@ -213,7 +227,7 @@ export default function ObjectView(props: {
           <TypeSection
             spanFn={spanFn()}
             details={classDetails()!}
-            selectedAddress={props.selectedAddress!}
+            selected={props.selected!}
             search={search()}
             statics={false}
             setStatics={props.setStatics}

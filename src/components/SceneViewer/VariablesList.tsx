@@ -1,6 +1,6 @@
 import { ProtoClassDetails } from "../../misc/proto/il2cpp";
 import { useNavigate } from "@solidjs/router";
-import { objectUrl } from "../../App";
+import { selectClass } from "../../App";
 import { ActionButton } from "./InputCell";
 import {
   For,
@@ -80,7 +80,7 @@ function VariableCell(props: { addr: bigint }) {
           class="small-button min-w-max"
           img={chevronDoubleRight}
           onClick={() => {
-            if (props.addr) navigate(objectUrl(BigInt(props.addr)));
+            if (props.addr) selectClass(navigate, BigInt(props.addr));
           }}
           tooltip="Select as object"
         />
@@ -226,7 +226,7 @@ function SelectAddress() {
           class="p-2"
           img={chevronDoubleRight}
           onClick={() => {
-            if (input().length > 0) navigate(objectUrl(BigInt(input())));
+            if (input().length > 0) selectClass(navigate, BigInt(input()));
           }}
         />
       </div>
@@ -315,7 +315,7 @@ function CameraSettings() {
       getCameraHovered: {},
     })[0].then((result) => {
       if (result.hoveredObject?.address)
-        navigate(objectUrl(result.hoveredObject?.address));
+        selectClass(navigate, result.hoveredObject?.address);
     });
 
   return (

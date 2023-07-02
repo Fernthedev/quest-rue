@@ -110,7 +110,7 @@ message ProtoDataSegment {
         bytes primitiveData = 1; /* simpler than having another oneof for each primitive case */
         ArrayData arrayData = 2;
         StructData structData = 3;
-        uint64 classData = 4; /* class pointer */
+        uint64 classData = 4; /* object pointer */
         bytes genericData = 5; /* shouldn't come up */
     }
 }

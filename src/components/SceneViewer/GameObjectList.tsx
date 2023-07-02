@@ -21,7 +21,7 @@ import {
 
 import styles from "./GameObjectList.module.css";
 import { requestGameObjects } from "../../misc/handlers/gameobject";
-import { objectUrl } from "../../App";
+import { selectClass } from "../../App";
 import { Navigator, useNavigate } from "@solidjs/router";
 import { VirtualList } from "../utils/VirtualList";
 
@@ -54,7 +54,7 @@ function GameObjectListItem(props: {
     props.updateAddressMap?.(
       props.addressMap()?.set(props.item, [highlighted(), !expanded()])
     );
-  const select = () => props.navigate(objectUrl(object()?.address));
+  const select = () => selectClass(props.navigate, object()?.address);
 
   // [indent, hasChildren]
   const treeData = createMemo<[number, boolean]>(
@@ -202,7 +202,7 @@ export default function GameObjectList() {
     getEvents().ALL_PACKETS,
     (packet) => {
       if (packet.Packet?.$case === "getAllGameObjectsResult") {
-        navigate(objectUrl(undefined));
+        selectClass(navigate, undefined);
         setRequesting(false);
       }
     }

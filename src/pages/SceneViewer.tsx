@@ -11,7 +11,7 @@ import { Resizable } from "../components/utils/Resizable";
 import { StaticsView } from "../components/SceneViewer/StaticsView";
 import { SettingsMenu } from "../components/Settings";
 import { createStore } from "solid-js/store";
-import { ProtoClassDetails } from "../misc/proto/il2cpp";
+import { ProtoClassDetails, ProtoDataPayload } from "../misc/proto/il2cpp";
 import { VariablesList } from "../components/SceneViewer/VariablesList";
 import { requestVariables } from "../misc/handlers/variable_list";
 import { Tabs } from "../components/Tabs";
@@ -36,9 +36,13 @@ export default function SceneViewer() {
   requestGameObjects();
   requestVariables();
 
-  const routeParams = useParams<{ address?: string }>();
-  const address = createMemo(() =>
-    routeParams.address ? BigInt(routeParams.address) : undefined
+  const routeParams = useParams<{ selectedData?: string }>();
+  const selected = createMemo(() =>
+    routeParams.selectedData
+      ? ProtoDataPayload.fromJSON(
+          JSON.parse(decodeURIComponent(routeParams.selectedData))
+        )
+      : undefined
   );
 
   const [leftPanel, setLeftPanel] = createSignal<JSX.Element | undefined>(
@@ -67,7 +71,7 @@ export default function SceneViewer() {
 
       <div class="flex flex-col flex-1">
         <div class="relative flex-1 overflow-auto">
-          <ObjectView selectedAddress={address()} setStatics={setStatics} />
+          <ObjectView selected={selected()} setStatics={setStatics} />
         </div>
         <Resizable direction="up" size={300}>
           <div class="relative overflow-auto w-full h-full">

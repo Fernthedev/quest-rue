@@ -11,7 +11,7 @@ import "paper.proto";
 
 message SetField {
     uint64 fieldId = 1;
-    uint64 objectAddress = 2;
+    ProtoDataPayload inst = 2;
     ProtoDataPayload value = 3;
 }
 
@@ -21,7 +21,7 @@ message SetFieldResult {
 
 message GetField {
     uint64 fieldId = 1;
-    uint64 objectAddress = 2;
+    ProtoDataPayload inst = 2;
 }
 
 message GetFieldResult {
@@ -31,7 +31,7 @@ message GetFieldResult {
 
 message InvokeMethod {
     uint64 methodId = 1;
-    uint64 objectAddress = 2;
+    ProtoDataPayload inst = 2;
     repeated ProtoTypeInfo generics = 3;
     repeated ProtoDataPayload args = 4;
 }

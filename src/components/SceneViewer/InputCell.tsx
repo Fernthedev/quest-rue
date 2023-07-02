@@ -17,7 +17,7 @@ import styles from "./InputCell.module.css";
 import { errorHandle } from "../../misc/utils";
 import { protoTypeToString } from "../../misc/types/type_format";
 import { isProtoClassInstanceOf } from "../../misc/types/type_matching";
-import { objectUrl } from "../../App";
+import { selectClass } from "../../App";
 import { useNavigate } from "@solidjs/router";
 import { createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "../Settings";
@@ -241,7 +241,7 @@ export default function InputCell(props: {
         <ActionButton
           class="small-button"
           img={chevronDoubleRight}
-          onClick={() => navigate(objectUrl(BigInt(props.value!)))}
+          onClick={() => selectClass(navigate, BigInt(props.value!))}
           tooltip="Select as object"
         />
         <span class="w-1" />
