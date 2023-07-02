@@ -40,8 +40,11 @@ void* HandleArray(ProtoArrayInfo const& info, ProtoDataSegment arg) {
 
     int outputSize = fieldTypeSize(typeofclass(elemClass));
     for(int i = 0; i < len; i++) {
-        void* value = HandleType(elemTypeProto, elements.data(i));
-        *pointerOffset(values, i * outputSize) = value;
+        void* val = HandleType(elemTypeProto, elements.data(i));
+        // get the address if we want to copy the pointer as opposed to the value
+        if(!elemTypeProto.has_primitiveinfo() && !elemTypeProto.has_structinfo())
+            val = (void*) &val;
+        memcpy(pointerOffset(values, i * outputSize), val, elemTypeProto.size());
     }
     return ret;
 }
@@ -61,8 +64,13 @@ void* HandleStruct(ProtoStructInfo const& info, ProtoDataSegment arg) {
     }
     void* ret = il2cpp_utils::__AllocateUnsafe(last_offset + last_size);
 
-    for(auto& field : info.fieldoffsets())
-        *pointerOffset(ret, field.first) = HandleType(field.second.type(), arg.structdata().data().at(field.first));
+    for(auto& field : info.fieldoffsets()) {
+        void* val = HandleType(field.second.type(), arg.structdata().data().at(field.first));
+        // get the address if we want to copy the pointer as opposed to the value
+        if(!field.second.type().has_primitiveinfo() && !field.second.type().has_structinfo())
+            val = (void*) &val;
+        memcpy(pointerOffset(ret, field.first), val, field.second.type().size());
+    }
 
     return ret;
 }
