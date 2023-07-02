@@ -11,6 +11,13 @@ import { ProtoDataPayload } from "./misc/proto/il2cpp";
 import { sendPacketResult } from "./misc/commands";
 import { GetInstanceClassResult } from "./misc/proto/qrue";
 
+export function selectData(navigate: Navigator, data: ProtoDataPayload) {
+  const selected = encodeURIComponent(
+    JSON.stringify(ProtoDataPayload.toJSON(data))
+  );
+  navigate(`/scene/${selected}`);
+}
+
 export function selectClass(navigate: Navigator, address?: bigint) {
   if (address == undefined || address == 0n) navigate("/scene/");
   else
@@ -34,10 +41,7 @@ export function selectClass(navigate: Navigator, address?: bigint) {
           },
         },
       });
-      const selected = encodeURIComponent(
-        JSON.stringify(ProtoDataPayload.toJSON(data))
-      );
-      navigate(`/scene/${selected}`);
+      selectData(navigate, data);
     });
 }
 

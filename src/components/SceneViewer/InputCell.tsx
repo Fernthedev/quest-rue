@@ -15,9 +15,12 @@ import {
 
 import styles from "./InputCell.module.css";
 import { errorHandle } from "../../misc/utils";
-import { protoTypeToString } from "../../misc/types/type_format";
+import {
+  protoTypeToString,
+  stringToProtoData,
+} from "../../misc/types/type_format";
 import { isProtoClassInstanceOf } from "../../misc/types/type_matching";
-import { selectClass } from "../../App";
+import { selectClass, selectData } from "../../App";
 import { useNavigate } from "@solidjs/router";
 import { createOptions } from "@thisbeyond/solid-select";
 import { useSettings } from "../Settings";
@@ -99,7 +102,7 @@ export default function InputCell(props: {
   const navigate = useNavigate();
 
   // bool for when a field/prop has a non-null value
-  const hasValue = createMemo(() => props.value && props.value != "0x0");
+  const hasValue = createMemo(() => props.value != undefined && props.value.length > 0 && props.value != "0x0");
 
   // either an input for a variable
   // (variable names can be entered into outputs once they have a value instead of after saving it)
@@ -232,11 +235,7 @@ export default function InputCell(props: {
     const [name, setName] = createSignal("");
 
     return (
-      <Show
-        when={
-          props.type.Info?.$case == "classInfo" && props.isOutput && hasValue()
-        }
-      >
+      <>
         <span class="w-1" />
         <ActionButton
           class="small-button"
@@ -244,7 +243,6 @@ export default function InputCell(props: {
           onClick={() => selectClass(navigate, BigInt(props.value!))}
           tooltip="Select as object"
         />
-        <span class="w-1" />
         <Show
           when={
             !props.value || !(addrToString(BigInt(props.value)) in variables)
@@ -257,6 +255,7 @@ export default function InputCell(props: {
             />
           }
         >
+          <span class="w-1" />
           <span class="dropdown dropdown-bottom dropdown-end h-6">
             <ActionButton
               class="small-button"
@@ -288,7 +287,24 @@ export default function InputCell(props: {
             </div>
           </span>
         </Show>
-      </Show>
+      </>
+    );
+  }
+
+  function StructActions() {
+    console.log("struct");
+    return (
+      <>
+        <span class="w-1" />
+        <ActionButton
+          class="small-button"
+          img={chevronDoubleRight}
+          onClick={() =>
+            selectData(navigate, stringToProtoData(props.value!, props.type))
+          }
+          tooltip="Select as object"
+        />
+      </>
     );
   }
 
@@ -320,8 +336,21 @@ export default function InputCell(props: {
           </span>
         </Show>
       </span>
-      {/* selection button for classes only */}
-      <ClassActions />
+      {/* buttons for specific data types */}
+      <Show
+        when={
+          props.type.Info?.$case == "structInfo" && props.isOutput && hasValue()
+        }
+      >
+        <StructActions />
+      </Show>
+      <Show
+        when={
+          props.type.Info?.$case == "classInfo" && props.isOutput && hasValue()
+        }
+      >
+        <ClassActions />
+      </Show>
     </span>
   );
 }
