@@ -32,10 +32,17 @@ using namespace GlobalNamespace;
 void CameraController::Start() {
     LOG_INFO("CameraController start");
 
+    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
+        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
+    disablePositionalTracking(true);
+
     childTransform = get_transform();
     parentTransform = childTransform->GetParent();
 
-    parentTransform->set_position({0, 0, 0});
+    parentTransform->set_position({0, 1, 0});
+    parentTransform->set_eulerAngles({0, 90, 0});
+    childTransform->set_localPosition({0, 0, 0});
+    childTransform->set_localEulerAngles({0, 0, 0});
 }
 
 #include "GlobalNamespace/FirstPersonFlyingController.hpp"
@@ -148,7 +155,7 @@ void CameraController::Rotate(Vector2 delta) {
     delta = delta * rotateSensitivity * 20;
     lastMovement += delta.get_magnitude();
     auto prev = parentTransform->get_eulerAngles();
-    parentTransform->set_eulerAngles(prev + Vector3{-delta.y, delta.x, 0});
+    parentTransform->set_eulerAngles(prev + Vector3{0, delta.x, -delta.y});
 }
 
 void CameraController::Move(Vector3 delta) {

@@ -6,6 +6,9 @@ Param(
     [Switch] $log,
 
     [Parameter(Mandatory=$false)]
+    [Switch] $scrcpy,
+
+    [Parameter(Mandatory=$false)]
     [Switch] $useDebug,
 
     [Parameter(Mandatory=$false)]
@@ -63,6 +66,10 @@ foreach ($fileName in $modFiles) {
 }
 
 & $PSScriptRoot/restart-game.ps1
+
+if ($scrcpy -eq $true) {
+    & scrcpy --crop 1600:1000:100:350 --power-off-on-close
+}
 
 if ($log -eq $true) {
     & adb logcat -c
