@@ -10,8 +10,8 @@
 #include "GlobalNamespace/VRController.hpp"
 
 DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
-    DECLARE_INSTANCE_METHOD(void, Start);
     DECLARE_INSTANCE_METHOD(void, OnEnable);
+    DECLARE_INSTANCE_METHOD(void, OnDisable);
     DECLARE_INSTANCE_METHOD(void, Update);
     DECLARE_INSTANCE_METHOD(void, Rotate, UnityEngine::Vector2);
     DECLARE_INSTANCE_METHOD(void, Move, UnityEngine::Vector3);
@@ -24,6 +24,8 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, parentTransform);
     DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, childTransform);
 )
+
+extern bool enabled;
 
 extern bool click;
 

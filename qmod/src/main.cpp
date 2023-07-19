@@ -6,7 +6,6 @@
 #include "CameraController.hpp"
 
 #include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/Camera.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
@@ -62,12 +61,33 @@ extern "C" void setup(ModInfo& info) {
     if (!direxists(dataPath))
         mkpath(dataPath);
 
+#ifdef BEAT_SABER
+    setenv("QuestRUE", "", 0);
+#endif
+
     LOG_INFO("Completed setup!");
 }
 
 #ifdef BEAT_SABER
-#include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
+#include "UnityEngine/Camera.hpp"
+
 using namespace GlobalNamespace;
+
+void EnableFPFC() {
+    LOG_INFO("Enabling camera controller");
+
+    auto cam = UnityEngine::Camera::get_main();
+    if(!cam)
+        return;
+
+    auto go = cam->get_gameObject();
+    if(auto existing = go->GetComponent<QRUE::CameraController*>())
+        existing->set_enabled(true);
+    else
+        go->AddComponent<QRUE::CameraController*>();
+}
+
+#include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
 
 MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &DefaultScenesTransitionsFromInit::TransitionToNextScene, void, DefaultScenesTransitionsFromInit* self, bool goStraightToMenu, bool goStraightToEditor, bool goToRecordingToolScene) {
 
@@ -80,10 +100,8 @@ MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &MainMenuViewController::Did
 
     MainMenuViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
-    if(firstActivation) {
-        auto cam = UnityEngine::Camera::get_main();
-        cam->get_gameObject()->AddComponent<QRUE::CameraController*>();
-    }
+    if(enabled)
+        EnableFPFC();
 }
 
 #include "GlobalNamespace/AudioTimeSyncController.hpp"
@@ -92,8 +110,8 @@ MAKE_HOOK_MATCH(AudioTimeSyncController_Start, &AudioTimeSyncController::Start, 
 
     AudioTimeSyncController_Start(self);
 
-    auto cam = UnityEngine::Camera::get_main();
-    cam->get_gameObject()->AddComponent<QRUE::CameraController*>();
+    if(enabled)
+        EnableFPFC();
 }
 
 #include "VRUIControls/VRInputModule.hpp"
@@ -110,7 +128,6 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData, &VRUIControls::VRInputMo
     click = false;
     return ret;
 }
-
 #endif
 
 extern "C" void load() {

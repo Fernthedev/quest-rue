@@ -4,6 +4,8 @@
 
 DEFINE_TYPE(QRUE, CameraController);
 
+bool enabled = true;
+
 bool click = false;
 
 float rotateSensitivity = 1;
@@ -29,29 +31,32 @@ using namespace QRUE;
 using namespace UnityEngine;
 using namespace GlobalNamespace;
 
-void CameraController::Start() {
-    LOG_INFO("CameraController start");
-
-    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
-        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
-    disablePositionalTracking(true);
-
-    childTransform = get_transform();
-    parentTransform = childTransform->GetParent();
-
-    parentTransform->set_position({0, 1, 0});
-    parentTransform->set_eulerAngles({0, 90, 0});
-    childTransform->set_localPosition({0, 0, 0});
-    childTransform->set_localEulerAngles({0, 0, 0});
-}
-
 #include "GlobalNamespace/FirstPersonFlyingController.hpp"
 #include "VRUIControls/VRPointer.hpp"
 #include "VRUIControls/VRLaserPointer.hpp"
 #include "GlobalNamespace/VRCenterAdjust.hpp"
 
 void CameraController::OnEnable() {
-    LOG_INFO("CameraController enbale");
+    if(!enabled)
+        return;
+    LOG_INFO("CameraController enable");
+
+    childTransform = get_transform();
+    parentTransform = childTransform->GetParent();
+
+    if(!parentTransform) {
+        set_enabled(false);
+        return;
+    }
+
+    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
+        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
+    disablePositionalTracking(true);
+
+    parentTransform->set_position({0, 1.5, 0});
+    parentTransform->set_eulerAngles({0, 0, 0});
+    childTransform->set_localPosition({0, 0, 0});
+    childTransform->set_localEulerAngles({0, 0, 0});
 
     // in main menu
     if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
@@ -87,13 +92,68 @@ void CameraController::OnEnable() {
     }
 }
 
+void CameraController::OnDisable() {
+    if(enabled)
+        return;
+    LOG_INFO("CameraController disable");
+
+    if(!parentTransform)
+        return;
+
+    // reverse of enable
+    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
+        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
+    disablePositionalTracking(false);
+
+    parentTransform->set_position({0, 0, 0});
+    parentTransform->set_eulerAngles({0, 0, 0});
+
+    if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+        objectsSource->vrInputModule->set_useMouseForPressInput(false);
+        objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
+        objectsSource->centerAdjust->set_enabled(true);
+        for(auto gameObject : objectsSource->controllerModels) {
+            if(gameObject)
+                gameObject->SetActive(true);
+        }
+        controller0 = objectsSource->controller0;
+        controller1 = objectsSource->controller1;
+    } else if(auto pauseMenu = GameObject::Find("PauseMenu")) {
+        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
+        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
+        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+            vrInputModule->set_useMouseForPressInput(false);
+            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
+        }
+    }
+
+    latestInputModule = nullptr;
+
+    if(controller0 && controller1) {
+        controller0->set_enabled(true);
+        controller1->set_enabled(true);
+        if(auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
+            pointer->get_gameObject()->SetActive(true);
+    }
+}
+
 #include "UnityEngine/Touch.hpp"
 #include "UnityEngine/Input.hpp"
 #include "UnityEngine/Time.hpp"
 #include "UnityEngine/KeyCode.hpp"
 #include "GlobalNamespace/PauseController.hpp"
+#include "GlobalNamespace/PauseMenuManager.hpp"
 
 void CameraController::Update() {
+    if(Input::GetKey(KeyCode::X)) {
+        LOG_INFO("Disabling FPFC due to X press (reenable with C)");
+
+        enabled = false;
+        set_enabled(false);
+        return;
+    }
+
     if (Input::get_touchCount() > 0) {
         auto touch = Input::GetTouch(0);
         auto& pos = touch.m_Position;
@@ -140,9 +200,13 @@ void CameraController::Update() {
         if(auto pauser = Object::FindObjectOfType<PauseController*>())
             pauser->Pause();
     }
-    if(Input::GetKey(KeyCode::Return)) {
-        if(auto pauser = Object::FindObjectOfType<PauseController*>())
-            pauser->HandlePauseMenuManagerDidPressContinueButton();
+    else if(Input::GetKey(KeyCode::Return)) {
+        if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+            pauser->ContinueButtonPressed();
+    }
+    else if(Input::GetKey(KeyCode::Q)) {
+        if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+            pauser->MenuButtonPressed();
     }
 
     if(controller0 && controller1) {
@@ -155,7 +219,7 @@ void CameraController::Rotate(Vector2 delta) {
     delta = delta * rotateSensitivity * 20;
     lastMovement += delta.get_magnitude();
     auto prev = parentTransform->get_eulerAngles();
-    parentTransform->set_eulerAngles(prev + Vector3{0, delta.x, -delta.y});
+    parentTransform->set_eulerAngles(prev + Vector3{-delta.y, delta.x, 0});
 }
 
 void CameraController::Move(Vector3 delta) {

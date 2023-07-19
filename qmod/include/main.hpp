@@ -31,3 +31,7 @@ std::string_view GetDataPath();
 
 extern std::thread::id mainThreadId;
 
+#ifdef BEAT_SABER
+void EnableFPFC();
+#endif
+
