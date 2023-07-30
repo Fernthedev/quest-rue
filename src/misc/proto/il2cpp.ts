@@ -174,13 +174,13 @@ export interface ProtoPropertyInfo {
 export interface ProtoMethodInfo {
   name: string;
   id: bigint;
-  args: { [key: string]: ProtoTypeInfo };
+  args: ProtoMethodInfo_Argument[];
   returnType: ProtoTypeInfo | undefined;
 }
 
-export interface ProtoMethodInfo_ArgsEntry {
-  key: string;
-  value: ProtoTypeInfo | undefined;
+export interface ProtoMethodInfo_Argument {
+  name: string;
+  type: ProtoTypeInfo | undefined;
 }
 
 /**
@@ -1003,7 +1003,7 @@ export const ProtoPropertyInfo = {
 };
 
 function createBaseProtoMethodInfo(): ProtoMethodInfo {
-  return { name: "", id: BigInt("0"), args: {}, returnType: undefined };
+  return { name: "", id: BigInt("0"), args: [], returnType: undefined };
 }
 
 export const ProtoMethodInfo = {
@@ -1014,9 +1014,9 @@ export const ProtoMethodInfo = {
     if (message.id !== BigInt("0")) {
       writer.uint32(16).uint64(message.id.toString());
     }
-    Object.entries(message.args).forEach(([key, value]) => {
-      ProtoMethodInfo_ArgsEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
-    });
+    for (const v of message.args) {
+      ProtoMethodInfo_Argument.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     if (message.returnType !== undefined) {
       ProtoTypeInfo.encode(message.returnType, writer.uint32(34).fork()).ldelim();
     }
@@ -1049,10 +1049,7 @@ export const ProtoMethodInfo = {
             break;
           }
 
-          const entry3 = ProtoMethodInfo_ArgsEntry.decode(reader, reader.uint32());
-          if (entry3.value !== undefined) {
-            message.args[entry3.key] = entry3.value;
-          }
+          message.args.push(ProtoMethodInfo_Argument.decode(reader, reader.uint32()));
           continue;
         case 4:
           if (tag !== 34) {
@@ -1074,12 +1071,7 @@ export const ProtoMethodInfo = {
     return {
       name: isSet(object.name) ? String(object.name) : "",
       id: isSet(object.id) ? BigInt(object.id) : BigInt("0"),
-      args: isObject(object.args)
-        ? Object.entries(object.args).reduce<{ [key: string]: ProtoTypeInfo }>((acc, [key, value]) => {
-          acc[key] = ProtoTypeInfo.fromJSON(value);
-          return acc;
-        }, {})
-        : {},
+      args: Array.isArray(object?.args) ? object.args.map((e: any) => ProtoMethodInfo_Argument.fromJSON(e)) : [],
       returnType: isSet(object.returnType) ? ProtoTypeInfo.fromJSON(object.returnType) : undefined,
     };
   },
@@ -1088,11 +1080,10 @@ export const ProtoMethodInfo = {
     const obj: any = {};
     message.name !== undefined && (obj.name = message.name);
     message.id !== undefined && (obj.id = message.id.toString());
-    obj.args = {};
     if (message.args) {
-      Object.entries(message.args).forEach(([k, v]) => {
-        obj.args[k] = ProtoTypeInfo.toJSON(v);
-      });
+      obj.args = message.args.map((e) => e ? ProtoMethodInfo_Argument.toJSON(e) : undefined);
+    } else {
+      obj.args = [];
     }
     message.returnType !== undefined &&
       (obj.returnType = message.returnType ? ProtoTypeInfo.toJSON(message.returnType) : undefined);
@@ -1107,12 +1098,7 @@ export const ProtoMethodInfo = {
     const message = createBaseProtoMethodInfo();
     message.name = object.name ?? "";
     message.id = object.id ?? BigInt("0");
-    message.args = Object.entries(object.args ?? {}).reduce<{ [key: string]: ProtoTypeInfo }>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key] = ProtoTypeInfo.fromPartial(value);
-      }
-      return acc;
-    }, {});
+    message.args = object.args?.map((e) => ProtoMethodInfo_Argument.fromPartial(e)) || [];
     message.returnType = (object.returnType !== undefined && object.returnType !== null)
       ? ProtoTypeInfo.fromPartial(object.returnType)
       : undefined;
@@ -1120,25 +1106,25 @@ export const ProtoMethodInfo = {
   },
 };
 
-function createBaseProtoMethodInfo_ArgsEntry(): ProtoMethodInfo_ArgsEntry {
-  return { key: "", value: undefined };
+function createBaseProtoMethodInfo_Argument(): ProtoMethodInfo_Argument {
+  return { name: "", type: undefined };
 }
 
-export const ProtoMethodInfo_ArgsEntry = {
-  encode(message: ProtoMethodInfo_ArgsEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
+export const ProtoMethodInfo_Argument = {
+  encode(message: ProtoMethodInfo_Argument, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
     }
-    if (message.value !== undefined) {
-      ProtoTypeInfo.encode(message.value, writer.uint32(18).fork()).ldelim();
+    if (message.type !== undefined) {
+      ProtoTypeInfo.encode(message.type, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoMethodInfo_ArgsEntry {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProtoMethodInfo_Argument {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProtoMethodInfo_ArgsEntry();
+    const message = createBaseProtoMethodInfo_Argument();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1147,14 +1133,14 @@ export const ProtoMethodInfo_ArgsEntry = {
             break;
           }
 
-          message.key = reader.string();
+          message.name = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.value = ProtoTypeInfo.decode(reader, reader.uint32());
+          message.type = ProtoTypeInfo.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1165,29 +1151,29 @@ export const ProtoMethodInfo_ArgsEntry = {
     return message;
   },
 
-  fromJSON(object: any): ProtoMethodInfo_ArgsEntry {
+  fromJSON(object: any): ProtoMethodInfo_Argument {
     return {
-      key: isSet(object.key) ? String(object.key) : "",
-      value: isSet(object.value) ? ProtoTypeInfo.fromJSON(object.value) : undefined,
+      name: isSet(object.name) ? String(object.name) : "",
+      type: isSet(object.type) ? ProtoTypeInfo.fromJSON(object.type) : undefined,
     };
   },
 
-  toJSON(message: ProtoMethodInfo_ArgsEntry): unknown {
+  toJSON(message: ProtoMethodInfo_Argument): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value ? ProtoTypeInfo.toJSON(message.value) : undefined);
+    message.name !== undefined && (obj.name = message.name);
+    message.type !== undefined && (obj.type = message.type ? ProtoTypeInfo.toJSON(message.type) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProtoMethodInfo_ArgsEntry>, I>>(base?: I): ProtoMethodInfo_ArgsEntry {
-    return ProtoMethodInfo_ArgsEntry.fromPartial(base ?? {});
+  create<I extends Exact<DeepPartial<ProtoMethodInfo_Argument>, I>>(base?: I): ProtoMethodInfo_Argument {
+    return ProtoMethodInfo_Argument.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProtoMethodInfo_ArgsEntry>, I>>(object: I): ProtoMethodInfo_ArgsEntry {
-    const message = createBaseProtoMethodInfo_ArgsEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? ProtoTypeInfo.fromPartial(object.value)
+  fromPartial<I extends Exact<DeepPartial<ProtoMethodInfo_Argument>, I>>(object: I): ProtoMethodInfo_Argument {
+    const message = createBaseProtoMethodInfo_Argument();
+    message.name = object.name ?? "";
+    message.type = (object.type !== undefined && object.type !== null)
+      ? ProtoTypeInfo.fromPartial(object.type)
       : undefined;
     return message;
   },

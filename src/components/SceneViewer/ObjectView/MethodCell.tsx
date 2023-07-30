@@ -1,9 +1,10 @@
-import { Show, For, createEffect, createMemo } from "solid-js";
+import { Show, For, createEffect, createMemo, Index } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
 import {
   ProtoDataPayload,
   ProtoMethodInfo,
+  ProtoMethodInfo_Argument,
   ProtoTypeInfo,
 } from "../../../misc/proto/il2cpp";
 import { createUpdatingSignal } from "../../../misc/utils";
@@ -37,9 +38,12 @@ export function MethodCell(props: {
 
   // args and return type
   const args = createMemo(() =>
-    Object.entries(props.method.args).concat([
-      ["ret", props.method.returnType!],
-    ])
+    props.method.args.concat(
+      ProtoMethodInfo_Argument.fromPartial({
+        name: "ret",
+        type: props.method.returnType,
+      })
+    )
   );
 
   // args with types updated to the latest inputs for generics
@@ -61,10 +65,12 @@ export function MethodCell(props: {
     );
     // set from base args, not latest args
     setLatestArgs(
-      args().map<[string, ProtoTypeInfo]>(([s, type]) => [
-        s,
-        getInstantiation(type, generics),
-      ])
+      args().map(({ name, type }) =>
+        ProtoMethodInfo_Argument.fromPartial({
+          name: name,
+          type: getInstantiation(type!, generics),
+        })
+      )
     );
     return genericsData;
   }
@@ -80,7 +86,7 @@ export function MethodCell(props: {
   function run() {
     const genericsData = updateGenerics(true);
     const argsData = argInputs().map((str, index) =>
-      stringToProtoData(str, latestArgs()[index][1])
+      stringToProtoData(str, latestArgs()[index].type!)
     );
     runMethod({
       $case: "invokeMethod",
@@ -97,8 +103,7 @@ export function MethodCell(props: {
   const genericArgsMap = createMemo(() => {
     return (
       args()
-        .map(([, t]) => t)
-        .flatMap((t) => getGenerics(t))
+        .flatMap(({ type }) => getGenerics(type))
         // eslint-disable-next-line solid/reactivity
         .reduce((map, t) => {
           if (t.Info?.$case != "genericInfo") {
@@ -151,16 +156,16 @@ export function MethodCell(props: {
       </Show>
       {"("}
       {/* make sure to use latestArgs so that it updates with generic types */}
-      <For each={latestArgs().slice(0, -1)}>
-        {([name, type], index) => (
+      <Index each={latestArgs().slice(0, -1)}>
+        {(arg, index) => (
           <InputCell
             isInput
-            placeholder={name}
-            type={type!}
-            onInput={(str) => (argInputs()[index()] = str)}
+            placeholder={arg().name}
+            type={arg().type!}
+            onInput={(str) => (argInputs()[index] = str)}
           />
         )}
-      </For>
+      </Index>
       {") "}
       <ActionButton
         class={"small-button"}
@@ -172,7 +177,7 @@ export function MethodCell(props: {
       <InputCell
         isOutput
         value={protoDataToString(result()?.result)}
-        type={latestArgs().at(-1)![1]}
+        type={latestArgs().at(-1)!.type!}
       />
     </span>
   );

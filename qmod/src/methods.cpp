@@ -305,7 +305,10 @@ namespace MethodUtils {
         info.set_id(asInt(method));
         for(int i = 0; i < method->parameters_count; i++) {
             auto const& param = method->parameters[i];
-            info.mutable_args()->insert({param.name, ClassUtils::GetTypeInfo(param.parameter_type)});
+            ProtoMethodInfo_Argument arg;
+            arg.set_name(param.name);
+            *arg.mutable_type() = ClassUtils::GetTypeInfo(param.parameter_type);
+            *info.add_args() = arg;
         }
         *info.mutable_returntype() = ClassUtils::GetTypeInfo(method->return_type);
         return info;

@@ -71,10 +71,15 @@ message ProtoPropertyInfo {
 }
 
 message ProtoMethodInfo {
+    message Argument {
+        string name = 1;
+        ProtoTypeInfo type = 2;
+    }
+
     string name = 1;
     uint64 id = 2;
 
-    map<string, ProtoTypeInfo> args = 3;
+    repeated Argument args = 3;
     ProtoTypeInfo returnType = 4;
 }
 
