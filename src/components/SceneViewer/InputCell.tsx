@@ -5,6 +5,7 @@ import {
   createDeferred,
   onMount,
   createSignal,
+  createEffect,
 } from "solid-js";
 import { PacketJSON } from "../../misc/events";
 import { sendPacketResult } from "../../misc/commands";
@@ -170,7 +171,7 @@ export default function InputCell(props: {
       isProtoClassInstanceOf(type, inputClassInfo)
     );
 
-    return createOptions(validEntries.map(({ name }) => name));
+    return createOptions(validEntries.map(({ name }) => name).concat("Null"));
   });
 
   // track loss of focus (defer since it starts as false)
@@ -194,9 +195,8 @@ export default function InputCell(props: {
       return;
     }
 
-    // Replace with
     const addr = getVariableValue(val)?.[0];
-    if (addr) props.onInput?.(addr);
+    if (addr) props.onInput?.(`0x${BigInt(addr).toString(16)}`);
   }
 
   async function saveVariable(name?: string) {
@@ -292,7 +292,6 @@ export default function InputCell(props: {
   }
 
   function StructActions() {
-    console.log("struct");
     return (
       <>
         <span class="w-1" />
@@ -307,6 +306,11 @@ export default function InputCell(props: {
       </>
     );
   }
+
+  createEffect(() => {
+    if(props.isInput && (variableInput() || isBool()))
+      console.log(props.value);
+  })
 
   return (
     <span

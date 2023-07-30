@@ -109,39 +109,39 @@ export function stringToDataSegment(
 }
 
 export function protoDataToRealValue(
-  data: ProtoDataSegment,
-  typeInfo: PacketJSON<ProtoTypeInfo>
+  typeInfo: PacketJSON<ProtoTypeInfo>,
+  data?: ProtoDataSegment
 ) {
   switch (typeInfo.Info?.$case) {
     case "classInfo":
-      if (data.Data?.$case != "classData") return 0;
-      return data.Data.classData;
+      if (data?.Data?.$case != "classData") return 0n;
+      return data?.Data.classData;
     case "structInfo": {
-      if (data.Data?.$case != "structData") return {};
+      if (data?.Data?.$case != "structData") return "null";
       const struct: Record<string, unknown> = {};
       const fields = typeInfo.Info.structInfo.fieldOffsets!;
       for (const offset in fields) {
         const field = fields[offset];
         console.log("struct field at offset:", offset);
         struct[field.name!] = protoDataToRealValue(
-          data.Data.structData.data[offset],
-          field.type!
+          field.type!,
+          data.Data.structData.data[offset]
         );
       }
       return struct;
     }
     case "arrayInfo": {
-      if (data.Data?.$case != "arrayData") return [];
+      if (data?.Data?.$case != "arrayData") return 0n;
       const arr: unknown[] = [];
       const memberType = typeInfo.Info.arrayInfo.memberType!;
       for (let i = 0; i < data.Data.arrayData.data.length; i++)
-        arr.push(protoDataToRealValue(data.Data.arrayData.data[i], memberType));
+        arr.push(protoDataToRealValue(memberType, data.Data.arrayData.data[i]));
       return arr;
     }
     case "genericInfo":
       return typeInfo.Info.genericInfo.name;
     case "primitiveInfo": {
-      if (data.Data?.$case != "primitiveData") return "";
+      if (data?.Data?.$case != "primitiveData") return "null";
       const arr = data.Data.primitiveData;
       const bytes = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
       switch (typeInfo.Info.primitiveInfo) {
@@ -177,6 +177,7 @@ export function protoDataToRealValue(
         case ProtoTypeInfo_Primitive.UNKNOWN:
           return "unknown";
         case ProtoTypeInfo_Primitive.VOID:
+          console.log("void data to real value");
           return "";
       }
     }

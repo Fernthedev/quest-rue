@@ -10,6 +10,8 @@ import { sendPacketResult } from "../commands";
 import { writePacket } from "../commands";
 import { uniqueBigNumber } from "../utils";
 
+const reservedNames: { [key: string]: bigint } = { Null: 0n };
+
 export interface Variable {
   name: string;
   type: ProtoClassDetails;
@@ -113,6 +115,9 @@ export function firstFree(
     }
     return set;
   }, new Set<number>());
+
+  if (Object.keys(reservedNames).includes(beginning)) usedNums.add(0);
+
   let ret = 0;
   for (let i = 0; ; i++) {
     if (!usedNums.has(i)) {
@@ -132,13 +137,23 @@ export function isVariableNameFree(
   varName = "Unnamed Variable",
   ignoreAddress?: bigint
 ) {
+  if (Object.keys(reservedNames).includes(varName)) return false;
+
   return !Object.entries(variables).some(
     ([addr, { name }]) =>
       (ignoreAddress == undefined || BigInt(addr) != ignoreAddress) &&
       name == varName.trim()
   );
 }
-export function getVariableValue(variable: string) {
+export function getVariableValue(variable: string): [string, Variable] | undefined {
+  const reserved = reservedNames[variable];
+  if (reserved != undefined) return [reserved.toString(), {name: variable, type: ProtoClassDetails.fromPartial({
+    clazz: {
+      namespaze: "System",
+      clazz: "Object",
+    }
+  })}];
+
   const addr = Object.entries(variables).find(
     ([, { name }]) => name === variable
   );
