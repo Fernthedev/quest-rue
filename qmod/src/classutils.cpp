@@ -84,7 +84,8 @@ std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass const* klass) {
     // only a single pointer since fields are stored as values
     FieldInfo* iter = nullptr; // needs to be explicitly set to nullptr
     while(il2cpp_functions::class_get_fields(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(iter && (iter->type->attrs & FIELD_ATTRIBUTE_STATIC) == 0)
+        // TODO: fix self referential types in static fields
+        if(iter && !GetIsStatic(iter))
             ret.push_back(iter);
     }
     return ret;

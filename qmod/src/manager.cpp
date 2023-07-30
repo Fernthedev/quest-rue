@@ -151,7 +151,7 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
 
     if(!tryValidatePtr(field))
         INPUT_ERROR("field info pointer was invalid")
-    else if(!GetIsLiteral(field))
+    else if(GetIsLiteral(field))
         INPUT_ERROR("literal fields cannot be set")
     else {
         FieldUtils::Set(field, packet.inst(), packet.value());

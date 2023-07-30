@@ -1,5 +1,5 @@
 import { SetStoreFunction, createStore } from "solid-js/store";
-import { ProtoClassDetails } from "../../misc/proto/il2cpp";
+import { ProtoClassDetails, ProtoDataPayload } from "../../misc/proto/il2cpp";
 import {
   Show,
   createSignal,
@@ -160,7 +160,7 @@ export function StaticsView(props: {
             <TypeSection
               spanFn={spanFn()}
               details={details}
-              selectedAddress={0n}
+              selected={ProtoDataPayload.fromPartial({})}
               search={search()}
               statics={true}
               setStatics={props.setStatics}
