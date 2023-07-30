@@ -41,7 +41,7 @@ void MainThreadRunner::Update() {
 
 #ifdef BEAT_SABER
     // listen for fpfc enable key (C)
-    if(UnityEngine::Input::GetKey(UnityEngine::KeyCode::C)) {
+    if(UnityEngine::Input::GetKey(UnityEngine::KeyCode::Z)) {
         enabled = true;
         EnableFPFC();
     }

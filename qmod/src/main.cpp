@@ -128,6 +128,21 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData, &VRUIControls::VRInputMo
     click = false;
     return ret;
 }
+
+#include "GlobalNamespace/UIKeyboardManager.hpp"
+
+MAKE_HOOK_MATCH(UIKeyboardManager_OpenKeyboardFor, &UIKeyboardManager::OpenKeyboardFor, void, UIKeyboardManager* self, HMUI::InputFieldView* input) {
+
+    UIKeyboardManager_OpenKeyboardFor(self, input);
+
+    keyboardOpen = self->uiKeyboard;
+}
+MAKE_HOOK_MATCH(UIKeyboardManager_CloseKeyboard, &UIKeyboardManager::CloseKeyboard, void, UIKeyboardManager* self) {
+
+    UIKeyboardManager_CloseKeyboard(self);
+
+    keyboardOpen = nullptr;
+}
 #endif
 
 extern "C" void load() {
@@ -141,6 +156,8 @@ extern "C" void load() {
     INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
     INSTALL_HOOK(getLogger(), AudioTimeSyncController_Start);
     INSTALL_HOOK(getLogger(), VRInputModule_GetMousePointerEventData);
+    INSTALL_HOOK(getLogger(), UIKeyboardManager_OpenKeyboardFor);
+    INSTALL_HOOK(getLogger(), UIKeyboardManager_CloseKeyboard);
     LOG_INFO("Installed hooks!");
 #endif
 

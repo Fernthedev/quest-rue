@@ -8,6 +8,7 @@
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "GlobalNamespace/VRController.hpp"
+#include "HMUI/UIKeyboard.hpp"
 
 DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_METHOD(void, OnEnable);
@@ -18,6 +19,9 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
 
     DECLARE_INSTANCE_FIELD(float, lastTime);
     DECLARE_INSTANCE_FIELD(float, lastMovement);
+    DECLARE_INSTANCE_FIELD(float, lastBackspace);
+    DECLARE_INSTANCE_FIELD(bool, backspaceHold);
+    DECLARE_INSTANCE_FIELD(bool, backspaceHoldStart);
     DECLARE_INSTANCE_FIELD(UnityEngine::Vector2, lastPos);
     DECLARE_INSTANCE_FIELD(GlobalNamespace::VRController*, controller0);
     DECLARE_INSTANCE_FIELD(GlobalNamespace::VRController*, controller1);
@@ -28,6 +32,7 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
 extern bool enabled;
 
 extern bool click;
+extern HMUI::UIKeyboard* keyboardOpen;
 
 extern float rotateSensitivity;
 extern float moveSensitivity;

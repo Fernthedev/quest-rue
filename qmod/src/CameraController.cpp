@@ -7,11 +7,13 @@ DEFINE_TYPE(QRUE, CameraController);
 bool enabled = true;
 
 bool click = false;
+HMUI::UIKeyboard* keyboardOpen = nullptr;
 
 float rotateSensitivity = 1;
 float moveSensitivity = 1;
 float clickTime = 0.2;
 float movementThreshold = 1;
+float backspaceTime = 0.5;
 
 #include "VRUIControls/VRInputModule.hpp"
 #include "UnityEngine/EventSystems/PointerEventData.hpp"
@@ -144,15 +146,20 @@ void CameraController::OnDisable() {
 #include "UnityEngine/KeyCode.hpp"
 #include "GlobalNamespace/PauseController.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
+#include "GlobalNamespace/UIKeyboardManager.hpp"
+#include "System/Action_1.hpp"
+#include "System/Action.hpp"
 
 void CameraController::Update() {
-    if(Input::GetKey(KeyCode::X)) {
+    if(Input::GetKeyDown(KeyCode::X)) {
         LOG_INFO("Disabling FPFC due to X press (reenable with C)");
 
         enabled = false;
         set_enabled(false);
         return;
     }
+
+    float time = UnityEngine::Time::get_time();
 
     if (Input::get_touchCount() > 0) {
         auto touch = Input::GetTouch(0);
@@ -168,7 +175,7 @@ void CameraController::Update() {
         case TouchPhase::Canceled:
             Rotate(pos - lastPos);
             if(
-                (UnityEngine::Time::get_time() - lastTime) < clickTime
+                (time - lastTime) < clickTime
                 && lastMovement < movementThreshold
             )
                 click = true;
@@ -180,33 +187,62 @@ void CameraController::Update() {
         }
     }
 
-    Vector3 movement = {0};
-    if(Input::GetKey(KeyCode::W))
-        movement = movement + childTransform->get_forward();
-    if(Input::GetKey(KeyCode::S))
-        movement = movement - childTransform->get_forward();
-    if(Input::GetKey(KeyCode::D))
-        movement = movement + childTransform->get_right();
-    if(Input::GetKey(KeyCode::A))
-        movement = movement - childTransform->get_right();
-    if(Input::GetKey(KeyCode::Space))
-        movement = movement + childTransform->get_up();
-    if(Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
-        movement = movement - childTransform->get_up();
-    if(movement != Vector3{0})
-        Move(movement);
+    if(!keyboardOpen) {
+        Vector3 movement = {0};
+        if(Input::GetKey(KeyCode::W))
+            movement = movement + childTransform->get_forward();
+        if(Input::GetKey(KeyCode::S))
+            movement = movement - childTransform->get_forward();
+        if(Input::GetKey(KeyCode::D))
+            movement = movement + childTransform->get_right();
+        if(Input::GetKey(KeyCode::A))
+            movement = movement - childTransform->get_right();
+        if(Input::GetKey(KeyCode::Space))
+            movement = movement + childTransform->get_up();
+        if(Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
+            movement = movement - childTransform->get_up();
+        if(movement != Vector3{0})
+            Move(movement);
 
-    if(Input::GetKey(KeyCode::Escape)) {
-        if(auto pauser = Object::FindObjectOfType<PauseController*>())
-            pauser->Pause();
-    }
-    else if(Input::GetKey(KeyCode::Return)) {
-        if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
-            pauser->ContinueButtonPressed();
-    }
-    else if(Input::GetKey(KeyCode::Q)) {
-        if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
-            pauser->MenuButtonPressed();
+        if(Input::GetKeyDown(KeyCode::Escape)) {
+            if(auto pauser = Object::FindObjectOfType<PauseController*>())
+                pauser->Pause();
+        }
+        else if(Input::GetKeyDown(KeyCode::Return)) {
+            if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+                pauser->ContinueButtonPressed();
+        }
+        else if(Input::GetKeyDown(KeyCode::Q)) {
+            if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+                pauser->MenuButtonPressed();
+        }
+    } else {
+        if(Input::GetKey(KeyCode::Escape)) {
+            if(auto manager = Object::FindObjectOfType<UIKeyboardManager*>())
+                manager->CloseKeyboard();
+            return;
+        }
+
+        static auto getInputString = il2cpp_utils::resolve_icall<StringW>("UnityEngine.Input::get_inputString");
+        if(Input::get_anyKeyDown()) {
+            for(auto& c : getInputString()) {
+                if(c != u'\n' && c != u'\b')
+                    keyboardOpen->keyWasPressedEvent->Invoke(c);
+            }
+        }
+        if(Input::GetKey(KeyCode::Backspace)) {
+            if(backspaceHold || time - lastBackspace > backspaceTime) {
+                if(backspaceHoldStart)
+                    backspaceHold = true;
+                backspaceHoldStart = true;
+                lastBackspace = time;
+                keyboardOpen->deleteButtonWasPressedEvent->Invoke();
+            }
+        } else
+            backspaceHold = backspaceHoldStart = false;
+
+        if(Input::GetKeyDown(KeyCode::Return))
+            keyboardOpen->okButtonWasPressedEvent->Invoke();
     }
 
     if(controller0 && controller1) {
