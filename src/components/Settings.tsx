@@ -47,7 +47,7 @@ export function SettingsMenu() {
   } = useSettings();
 
   return (
-    <div class="absolute top-2 right-5 dropdown dropdown-bottom dropdown-end flex-0">
+    <div class="absolute top-2 right-5 dropdown dropdown-bottom dropdown-end flex-none">
       <button class="p-2" title="Settings">
         <Icon path={cog_6Tooth} class="w-6 h-6" />
       </button>

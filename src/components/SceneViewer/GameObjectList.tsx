@@ -72,7 +72,7 @@ function GameObjectListItem(props: {
           role="checkbox"
           tabIndex={"0"}
           aria-checked={!expanded()}
-          class="mr-1 flex-0 w-4 text-center"
+          class="mr-1 flex-none w-4 text-center"
           onKeyPress={toggle}
           onClick={toggle}
         >
@@ -216,7 +216,7 @@ export default function GameObjectList() {
   }
 
   const refreshButton = (
-    <button class="flex-0 p-2" onClick={refresh}>
+    <button class="flex-none p-2" onClick={refresh}>
       <Show
         when={requesting()}
         fallback={
@@ -301,7 +301,7 @@ function AddGameObject() {
   // but also only if there's a button somewhere inside
   // almost definitely related: https://github.com/solidjs/solid-start/issues/820
   return (
-    <div class="dropdown dropdown-bottom dropdown-end flex-0">
+    <div class="dropdown dropdown-bottom dropdown-end flex-none">
       <button class="p-2">
         <Icon path={plus} class="w-6 h-6" />
       </button>

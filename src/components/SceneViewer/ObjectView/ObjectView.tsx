@@ -149,7 +149,7 @@ export default function ObjectView(props: {
         />
       }
     >
-      <span class="dropdown dropdown-right dropdown-end h-6">
+      <span class="dropdown dropdown-left dropdown-end h-6">
         <ActionButton
           class="small-button"
           img="save.svg"
@@ -159,7 +159,7 @@ export default function ObjectView(props: {
           class="
           dropdown-content shadow menu text-base
           bg-neutral-400 dark:bg-zinc-800
-          justify-center gap-1 w-60 p-2 mx-1
+          justify-center gap-1 w-60 p-2 mx-1 -my-1
           flex flex-row flex-nowrap
           z-20 rounded-box cursor-auto"
         >
@@ -194,17 +194,21 @@ export default function ObjectView(props: {
         style={{ "--type-grid-columns": columnCount() }}
       >
         <div class="flex gap-4 mb-1 items-end pr-10">
-          <span class="text-lg flex-0 -mr-2">Selected:</span>
-          <span class="text-xl font-mono flex-0">{className()}</span>
-          <Show when={selectedAddress()}>
-            <span class="text-lg flex-0 -mx-2">at</span>
-            <span class="text-xl font-mono flex-0">
-              0x{selectedAddress()!.toString(16)}
-            </span>
-            {saveButton}
-          </Show>
-          <span class="text-lg font-mono flex-0">{interfaces()}</span>
-          <span class="flex-1" />
+          <div class="flex-grow-0 overflow-visible min-w-0">
+            <div class="flex gap-x-2 flex-wrap">
+              <span class="text-lg flex-none">Selected:</span>
+              <span class="text-xl font-mono flex-none">{className()}</span>
+              <Show when={selectedAddress()}>
+                <span class="text-lg flex-none">at</span>
+                <span class="text-xl font-mono flex-none">
+                  0x{selectedAddress()!.toString(16)}
+                </span>
+                {saveButton}
+              </Show>
+              <span class="text-lg font-mono">{interfaces()}</span>
+            </div>
+          </div>
+          <span class="flex-1 -ml-2" />
           <div class="whitespace-nowrap flex flex-row join">
             <input
               class="px-2 py-1 join-item"

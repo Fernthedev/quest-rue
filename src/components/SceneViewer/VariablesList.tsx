@@ -198,7 +198,7 @@ function SelectAddress() {
   const navigate = useNavigate();
 
   return (
-    <div class="dropdown dropdown-bottom flex-0">
+    <div class="dropdown dropdown-bottom flex-none">
       <ActionButton
         class="p-2"
         img={chevronDoubleRight}
@@ -240,7 +240,7 @@ function CreateObject() {
   }
 
   return (
-    <div class="dropdown dropdown-bottom flex-0">
+    <div class="dropdown dropdown-bottom flex-none">
       <ActionButton class="p-2" img={plus} tooltip="Create new object" />
 
       <div
@@ -319,7 +319,7 @@ function CameraSettings() {
     });
 
   return (
-    <div class="dropdown dropdown-bottom flex-0">
+    <div class="dropdown dropdown-bottom flex-none">
       <ActionButton class="p-2" img={videoCamera} tooltip="Camera options" />
 
       <div

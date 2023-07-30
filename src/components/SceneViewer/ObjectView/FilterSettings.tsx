@@ -46,7 +46,7 @@ export function FilterSettingsDropdown(
     <div
       {...divProps}
       ref={parent}
-      class={`dropdown dropdown-bottom dropdown-end flex-0 ${props.class}`}
+      class={`dropdown dropdown-bottom dropdown-end flex-none ${props.class}`}
       style={{ overflow: "hidden" }}
     >
       <button class="p-2" title="Settings">
