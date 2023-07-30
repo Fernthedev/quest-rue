@@ -8,7 +8,12 @@ import {
   on,
 } from "solid-js";
 import { PacketJSON } from "../../../misc/events";
-import { ProtoClassDetails, ProtoDataPayload, ProtoMethodInfo } from "../../../misc/proto/il2cpp";
+import {
+  ProtoClassDetails,
+  ProtoDataPayload,
+  ProtoDataSegment,
+  ProtoMethodInfo,
+} from "../../../misc/proto/il2cpp";
 import styles from "./ObjectView.module.css";
 import { FieldCell } from "./FieldCell";
 import { PropertyCell } from "./PropertyCell";
@@ -23,6 +28,7 @@ import {
   filterMethods,
   filterProperties,
 } from "./FilterSettings";
+import { GetInstanceValuesResult } from "../../../misc/proto/qrue";
 
 interface OverloadInfo {
   name: string;
@@ -31,6 +37,7 @@ interface OverloadInfo {
 
 export function TypeSection(props: {
   details?: PacketJSON<ProtoClassDetails>;
+  initVals?: GetInstanceValuesResult;
   selected: ProtoDataPayload;
   search: string;
   spanFn: SpanFn;
@@ -87,6 +94,23 @@ export function TypeSection(props: {
   });
   const filteredMethods = createDeferred(() =>
     filterMethods(methods() ?? [], props.search, props.filters)
+  );
+
+  const fieldVals = createMemo(
+    () =>
+      props.initVals?.fieldValues as
+        | {
+            [key: string]: ProtoDataSegment;
+          }
+        | undefined
+  );
+  const propVals = createMemo(
+    () =>
+      props.initVals?.propertyValues as
+        | {
+            [key: string]: ProtoDataSegment;
+          }
+        | undefined
   );
 
   // Groups methods as [methodName, Methods[]]
@@ -182,6 +206,7 @@ export function TypeSection(props: {
                 field={item}
                 colSize={colSize()}
                 selected={props.selected}
+                initVal={fieldVals()?.[item.id.toString()]}
               />
             )}
           </For>
@@ -197,6 +222,7 @@ export function TypeSection(props: {
                 colSize={colSize()}
                 selected={props.selected}
                 spanFn={props.spanFn}
+                initVal={propVals()?.[item.getterId?.toString() ?? ""]}
               />
             )}
           </For>
@@ -274,6 +300,7 @@ export function TypeSection(props: {
         {separator()}
         <TypeSection
           details={props.details?.parent}
+          initVals={props.initVals}
           selected={props.selected}
           search={props.search}
           spanFn={props.spanFn}

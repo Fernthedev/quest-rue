@@ -9,6 +9,7 @@ import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
 import {
   ProtoDataPayload,
+  ProtoDataSegment,
   ProtoPropertyInfo,
 } from "../../../misc/proto/il2cpp";
 import { stringToProtoData } from "../../../misc/types/type_format";
@@ -24,6 +25,7 @@ export function PropertyCell(props: {
   colSize: number;
   selected: ProtoDataPayload;
   spanFn: SpanFn;
+  initVal?: ProtoDataSegment;
 }) {
   // update element span when colSize updates
   let element: HTMLDivElement | undefined;
@@ -65,6 +67,16 @@ export function PropertyCell(props: {
     });
   }
   createEffect(() => setInputValue(protoDataToString(value()?.result)));
+
+  createEffect(() => {
+    if (!props.initVal) return;
+
+    const data = ProtoDataPayload.fromPartial({
+      typeInfo: props.prop.type,
+      data: props.initVal,
+    });
+    setInputValue(protoDataToString(data));
+  });
 
   const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
     const resultData = result();

@@ -1,6 +1,9 @@
 import { Show, createEffect, createMemo, createSignal, on } from "solid-js";
 import { useRequestAndResponsePacket } from "../../../misc/events";
-import { GetClassDetailsResult } from "../../../misc/proto/qrue";
+import {
+  GetClassDetailsResult,
+  GetInstanceValuesResult,
+} from "../../../misc/proto/qrue";
 
 import styles from "./ObjectView.module.css";
 import { protoTypeToString } from "../../../misc/types/type_format";
@@ -86,6 +89,28 @@ export default function ObjectView(props: {
       },
     });
   });
+
+  const [values, valuesLoading, requestValues] =
+    useRequestAndResponsePacket<GetInstanceValuesResult>();
+
+  createEffect(() => {
+    const info = props.selected?.typeInfo?.Info;
+    if (info?.$case != "classInfo" && info?.$case != "structInfo") return;
+
+    const selected = selectedAddress();
+    if (!selected) return;
+
+    console.log("request values")
+
+    requestValues({
+      $case: "getInstanceValues",
+      getInstanceValues: {
+        address: selected,
+      },
+    });
+  });
+
+  createEffect(() => console.log(values()));
 
   const classDetails = createMemo(() => {
     if (!props.selected) return undefined;
@@ -231,6 +256,7 @@ export default function ObjectView(props: {
           <TypeSection
             spanFn={spanFn()}
             details={classDetails()!}
+            initVals={values()}
             selected={props.selected!}
             search={search()}
             statics={false}

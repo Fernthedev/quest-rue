@@ -444,25 +444,30 @@ void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, ProtoClassDetails* classDetails) {
+GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, const ProtoClassDetails* classDetails) {
     GetInstanceValuesResult ret;
 
-    for(int i = 0; i < classDetails->fields_size(); i++) {
-        auto field = classDetails->fields(i);
-        auto fieldInfo = asPtr(FieldInfo, field.id());
-        (*ret.mutable_fieldvalues())[field.id()] = FieldUtils::Get(fieldInfo, instance).data();
-    }
-    for(int i = 0; i < classDetails->properties_size(); i++) {
-        auto prop = classDetails->properties(i);
-        if(!prop.has_getterid() || !prop.getterid())
-            continue;
-        auto getter = asPtr(MethodInfo, prop.getterid());
-        std::string err = "";
-        auto res = MethodUtils::Run(getter, instance, {}, err);
-        if(!err.empty())
-            LOG_INFO("getting property failed with error: {}", err);
-        else
-            (*ret.mutable_fieldvalues())[prop.getterid()] = res.data();
+    while(classDetails) {
+        for(int i = 0; i < classDetails->fields_size(); i++) {
+            auto field = classDetails->fields(i);
+            auto fieldInfo = asPtr(FieldInfo, field.id());
+            (*ret.mutable_fieldvalues())[field.id()] = FieldUtils::Get(fieldInfo, instance).data();
+        }
+        for(int i = 0; i < classDetails->properties_size(); i++) {
+            auto prop = classDetails->properties(i);
+            if(!prop.has_getterid() || !prop.getterid())
+                continue;
+            auto getter = asPtr(MethodInfo, prop.getterid());
+            std::string err = "";
+            auto res = MethodUtils::Run(getter, instance, {}, err);
+            if(!err.empty())
+                LOG_INFO("getting property failed with error: {}", err);
+            else
+                (*ret.mutable_propertyvalues())[prop.getterid()] = res.data();
+        }
+        if(!classDetails->has_parent())
+            break;
+        classDetails = &classDetails->parent();
     }
 
     return ret;

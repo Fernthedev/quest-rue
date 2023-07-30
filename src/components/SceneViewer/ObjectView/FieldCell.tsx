@@ -1,7 +1,11 @@
-import { createEffect, onMount } from "solid-js";
+import { createEffect, createMemo, onMount } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../../misc/proto/qrue";
-import { ProtoDataPayload, ProtoFieldInfo } from "../../../misc/proto/il2cpp";
+import {
+  ProtoDataPayload,
+  ProtoDataSegment,
+  ProtoFieldInfo,
+} from "../../../misc/proto/il2cpp";
 import { stringToProtoData } from "../../../misc/types/type_format";
 import { protoDataToString } from "../../../misc/types/type_format";
 import InputCell, { ActionButton } from "../InputCell";
@@ -14,6 +18,7 @@ export function FieldCell(props: {
   colSize: number;
   selected: ProtoDataPayload;
   spanFn: SpanFn;
+  initVal?: ProtoDataSegment;
 }) {
   // update element on resize
   let element: HTMLDivElement | undefined;
@@ -36,12 +41,23 @@ export function FieldCell(props: {
       },
     });
   }
-  // get initial value (to be moved)
-  onMount(() => refresh());
+
+  const valData = createMemo(() => {
+    const gotVal = value();
+    if (gotVal) return gotVal.value;
+
+    if (!props.initVal) return undefined;
+
+    return ProtoDataPayload.fromPartial({
+      typeInfo: props.field.type,
+      data: props.initVal,
+    });
+  });
 
   // field setting
   const [, valueSetting, requestSet] =
     useRequestAndResponsePacket<SetFieldResult>();
+
   function update(value: string) {
     console.log("Field setter");
     const protoData = stringToProtoData(value, props.field.type!);
@@ -54,6 +70,7 @@ export function FieldCell(props: {
       },
     });
   }
+
   return (
     <span
       ref={element}
@@ -64,7 +81,7 @@ export function FieldCell(props: {
         isInput
         isOutput
         onInput={update}
-        value={protoDataToString(value()?.value)}
+        value={protoDataToString(valData())}
         type={props.field.type!}
       />
       <ActionButton
