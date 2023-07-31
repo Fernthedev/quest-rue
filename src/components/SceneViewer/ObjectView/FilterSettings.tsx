@@ -160,10 +160,10 @@ export function filterMethods(
     const nameMatches = item.name?.toLocaleLowerCase().includes(search);
     const parameterMatches =
       settings.filterByParameterName &&
-      Object.entries(item.args).some(
-        ([argName, argData]) =>
-          argName.toLocaleLowerCase().includes(search) ||
-          (settings.filterByTypes && typeMatches(argData, search))
+      item.args.some(
+        ({ name, type }) =>
+          name.toLocaleLowerCase().includes(search) ||
+          (settings.filterByTypes && typeMatches(type!, search))
       );
     const retTypeMatches =
       settings.filterByTypes &&

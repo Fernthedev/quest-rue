@@ -22,15 +22,15 @@ import { SpanFn } from "./ObjectView";
 
 export function PropertyCell(props: {
   prop: PacketJSON<ProtoPropertyInfo>;
-  colSize: number;
+  colSize?: number;
   selected: ProtoDataPayload;
-  spanFn: SpanFn;
+  spanFn?: SpanFn;
   initVal?: ProtoDataSegment;
 }) {
   // update element span when colSize updates
   let element: HTMLDivElement | undefined;
   createEffect(() => {
-    if (element) props.spanFn(element, props.colSize);
+    if (element) props.spanFn?.(element, props.colSize!);
   });
 
   // run getter and get value

@@ -1,5 +1,5 @@
 import toast from "solid-toast";
-import { Signal, SignalOptions, createEffect, createSignal } from "solid-js";
+import { Signal, SignalOptions, createEffect, createSignal, Accessor } from "solid-js";
 
 export function createUpdatingSignal<T>(
   val: () => T,
@@ -23,6 +23,13 @@ export function createPersistentSignal(
     localStorage.setItem(key, valAccessor());
   });
   return [valAccessor, valSetter];
+}
+// important: anything reactive used after an await will not be tracked
+export function createAsyncMemo<T>(val: () => Promise<T>): [Accessor<T | undefined>, () => Promise<T>] {
+  const [valAccessor, valSetter] = createSignal<T>();
+  const update = () => val().then((val) => valSetter(() => val));
+  createEffect(update);
+  return [valAccessor, update];
 }
 
 export function uniqueNumber(min = 0, max = Number.MAX_SAFE_INTEGER) {

@@ -24,6 +24,7 @@ import {
 } from "../../../misc/handlers/variable_list";
 import { protoClassDetailsToString } from "../../../misc/types/type_matching";
 import { check } from "solid-heroicons/outline";
+import { TypeSpecifics } from "./TypeSpecifics/TypeSpecifics";
 
 export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 
@@ -253,6 +254,13 @@ export default function ObjectView(props: {
           when={!detailsLoading() && classDetails()}
           fallback={detailsFallback}
         >
+          <TypeSpecifics
+            details={classDetails()!}
+            initVals={values()}
+            selected={props.selected!}
+            search={search()}
+            filters={filters}
+          />
           <TypeSection
             spanFn={spanFn()}
             details={classDetails()!}

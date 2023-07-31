@@ -99,7 +99,29 @@ export function protoClassDetailsToTypeInfo(
     },
     isByref: false,
     // TODO: Needed?
-    size: details.fields.reduce((acc, x) => (acc += x.type?.size ?? 0), 0),
+    size: 8,
+  };
+}
+
+export function protoClassInfoToString(
+  details: ProtoClassInfo | undefined
+): string {
+  if (!details) return "Unknown";
+
+  return protoTypeToString(protoClassInfoToTypeInfo(details));
+}
+
+export function protoClassInfoToTypeInfo(
+  details: ProtoClassInfo
+): ProtoTypeInfo {
+  return {
+    Info: {
+      $case: "classInfo",
+      classInfo: details,
+    },
+    isByref: false,
+    // TODO: Needed?
+    size: 8,
   };
 }
 

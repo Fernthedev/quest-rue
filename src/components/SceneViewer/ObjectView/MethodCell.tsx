@@ -25,15 +25,15 @@ import { SpanFn } from "./ObjectView";
 
 export function MethodCell(props: {
   method: PacketJSON<ProtoMethodInfo>;
-  colSize: number;
+  colSize?: number;
   selected: ProtoDataPayload;
-  spanFn: SpanFn;
+  spanFn?: SpanFn;
   highlight: boolean;
 }) {
   // update element size
   let element: HTMLDivElement | undefined;
   createEffect(() => {
-    if (element) props.spanFn(element, props.colSize);
+    if (element) props.spanFn?.(element, props.colSize!);
   });
 
   // args and return type

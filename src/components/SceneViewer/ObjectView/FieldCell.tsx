@@ -15,15 +15,15 @@ import styles from "./ObjectView.module.css";
 
 export function FieldCell(props: {
   field: PacketJSON<ProtoFieldInfo>;
-  colSize: number;
+  colSize?: number;
   selected: ProtoDataPayload;
-  spanFn: SpanFn;
+  spanFn?: SpanFn;
   initVal?: ProtoDataSegment;
 }) {
   // update element on resize
   let element: HTMLDivElement | undefined;
   createEffect(() => {
-    if (element) props.spanFn(element, props.colSize);
+    if (element) props.spanFn?.(element, props.colSize!);
   });
 
   // field getting
