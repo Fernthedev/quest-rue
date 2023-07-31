@@ -37,7 +37,7 @@ export function TypeSpecifics(props: {
   const parentSection = createMemo(() => (
     <Show when={props.details?.parent}>
       <TypeSpecifics
-        details={props.details?.parent}
+        details={props.details!.parent}
         initVals={props.initVals}
         selected={props.selected}
         search={props.search}
@@ -56,7 +56,7 @@ export function TypeSpecifics(props: {
               props.selected,
               props.search,
               props.filters,
-              props.details,
+              props.details!,
               props.initVals
             )}
             {separator()}
@@ -67,7 +67,10 @@ export function TypeSpecifics(props: {
   );
 
   return (
-    <Show when={helpers().length > 0} fallback={parentSection()}>
+    <Show
+      when={helpers().length > 0 && props.details}
+      fallback={parentSection()}
+    >
       <div>
         {/* header div */}
         <div
@@ -85,7 +88,15 @@ export function TypeSpecifics(props: {
           </text>
           <text class="flex-1 min-w-0">{className()} Helper</text>
         </div>
-        <Show when={!collapsed()} fallback={separator()}>
+        <Show
+          when={!collapsed()}
+          fallback={
+            <>
+              {separator()}
+              {parentSection()}
+            </>
+          }
+        >
           {helperSections}
           {parentSection()}
         </Show>
@@ -100,15 +111,17 @@ export const TypeHelperMap: {
     selected: ProtoDataPayload,
     search: string,
     filters: Store<FilterSettings>,
-    details?: PacketJSON<ProtoClassDetails>,
+    details: PacketJSON<ProtoClassDetails>,
     initVals?: GetInstanceValuesResult
   ) => JSX.Element;
 } = {};
 
 import { GameObjectSection } from "./GameObject";
+import { RectTransformSection } from "./RectTransform";
 
 TypeHelperMap["UnityEngine::GameObject"] = GameObjectSection;
 TypeHelperMap["UnityEngine::Transform"] = GameObjectSection;
+TypeHelperMap["UnityEngine::RectTransform"] = RectTransformSection;
 
 // ---------- Utility Functions ----------
 import { FieldCell } from "../FieldCell";
@@ -145,9 +158,10 @@ export function FieldCellByName(props: {
   instanceDetails: ProtoClassDetails;
   initVals?: GetInstanceValuesResult;
   class?: string;
-  extraFilter?: (item: ProtoFieldInfo) => boolean
+  extraFilter?: (item: ProtoFieldInfo) => boolean;
 }) {
   const field = createMemo(() =>
+    // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
       findByName(details.fields, props.fieldName, props.extraFilter)
     )
@@ -180,9 +194,10 @@ export function PropertyCellByName(props: {
   instanceDetails: ProtoClassDetails;
   initVals?: GetInstanceValuesResult;
   class?: string;
-  extraFilter?: (item: ProtoPropertyInfo) => boolean
+  extraFilter?: (item: ProtoPropertyInfo) => boolean;
 }) {
   const property = createMemo(() =>
+    // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
       findByName(details.properties, props.propertyName, props.extraFilter)
     )
@@ -217,9 +232,10 @@ export function MethodCellByName(props: {
   instance: ProtoDataPayload;
   instanceDetails: ProtoClassDetails;
   class?: string;
-  extraFilter?: (item: ProtoMethodInfo) => boolean
+  extraFilter?: (item: ProtoMethodInfo) => boolean;
 }) {
   const method = createMemo(() =>
+    // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
       findByName(details.methods, props.methodName, props.extraFilter)
     )

@@ -38,7 +38,7 @@ export function GameObjectSection(
   selected: ProtoDataPayload,
   search: string,
   filters: Store<FilterSettings>,
-  details?: PacketJSON<ProtoClassDetails>,
+  details: PacketJSON<ProtoClassDetails>,
   initVals?: GetInstanceValuesResult
 ) {
   const isTransform = createMemo(() =>
@@ -84,7 +84,7 @@ export function GameObjectSection(
     const transform = isTransform();
     const search = transform ? "gameObject" : "transform";
     const methodId = () =>
-      searchSelfAndParents(details!, (classDetails) =>
+      searchSelfAndParents(details, (classDetails) =>
         classDetails.properties.find(({ name }) => name == search)
       );
 
