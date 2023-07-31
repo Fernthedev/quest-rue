@@ -149,6 +149,7 @@ export function MethodCell(props: {
               type={type}
               onInput={(str) => (genericInputs()[index()][1] = str)}
               onFocusExit={() => updateGenerics(false)}
+              onEnter={run} // TODO: should generic inputs run on enter?
             />
           )}
         </For>
@@ -163,6 +164,7 @@ export function MethodCell(props: {
             placeholder={arg().name}
             type={arg().type!}
             onInput={(str) => (argInputs()[index] = str)}
+            onEnter={run}
           />
         )}
       </Index>

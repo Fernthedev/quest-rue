@@ -62,7 +62,8 @@ a {
   text-decoration: inherit;
 }
 
-a:hover {
+a:hover,
+a:focus {
   color: #535bf2;
 }
 
@@ -96,7 +97,9 @@ button {
 }
 
 input:not(.toggle):hover,
-button:hover {
+button:hover,
+input:not(.toggle):focus,
+button:focus {
   border-color: #396cd8;
 }
 button:active {
@@ -104,7 +107,8 @@ button:active {
   background-color: #e8e8e8;
 }
 
-input:not(.toggle):hover {
+input:not(.toggle):hover,
+input:not(.toggle):focus {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -207,7 +211,8 @@ input[type="number"] {
     /* background-color: #2f2f2f; */
   }
 
-  a:hover {
+  a:hover,
+  a:focus {
     color: #24c8db;
   }
 

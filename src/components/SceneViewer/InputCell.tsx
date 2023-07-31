@@ -96,6 +96,7 @@ export default function InputCell(props: {
   isInput?: boolean; // receives user input
   isOutput?: boolean; // receives quest output
   onFocusExit?: () => void;
+  onEnter?: () => void;
 }) {
   const { rawInput } = useSettings();
 
@@ -103,7 +104,10 @@ export default function InputCell(props: {
   const navigate = useNavigate();
 
   // bool for when a field/prop has a non-null value
-  const hasValue = createMemo(() => props.value != undefined && props.value.length > 0 && props.value != "0x0");
+  const hasValue = createMemo(
+    () =>
+      props.value != undefined && props.value.length > 0 && props.value != "0x0"
+  );
 
   // either an input for a variable
   // (variable names can be entered into outputs once they have a value instead of after saving it)
@@ -186,6 +190,9 @@ export default function InputCell(props: {
       },
       true
     );
+    target!.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" && !ev.repeat) props.onEnter?.();
+    });
   });
 
   function onInput(val: string) {
@@ -308,9 +315,9 @@ export default function InputCell(props: {
   }
 
   createEffect(() => {
-    if(props.isInput && (variableInput() || isBool()))
+    if (props.isInput && (variableInput() || isBool()))
       console.log(props.value);
-  })
+  });
 
   return (
     <span
