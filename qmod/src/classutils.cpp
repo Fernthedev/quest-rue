@@ -105,8 +105,12 @@ std::vector<PropertyInfo*> ClassUtils::GetProperties(Il2CppClass const* klass) {
     // only a single pointer since properties are stored as values
     PropertyInfo* iter = nullptr;
     while(il2cpp_functions::class_get_properties(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(iter)
-            ret.push_back(iter);
+        if(iter) {
+            bool normal = !iter->get || iter->get->parameters_count == 0;
+            normal = normal && !iter->set || iter->set->parameters_count == 1;
+            if(normal)
+                ret.push_back(iter);
+        }
     }
     return ret;
 }
@@ -253,8 +257,19 @@ ProtoClassInfo ClassUtils::GetClassInfo(Il2CppType const* type) {
     ProtoClassInfo classInfo;
     LOG_DEBUG("Getting class info");
 
-    classInfo.set_namespaze(il2cpp_functions::class_get_namespace(classoftype(type)));
-    classInfo.set_clazz(il2cpp_functions::class_get_name(classoftype(type)));
+    auto declaring = il2cpp_functions::class_get_declaring_type(classoftype(type));
+
+    auto namespaze = il2cpp_functions::class_get_namespace(classoftype(type));
+    std::string name = il2cpp_functions::class_get_name(classoftype(type));
+
+    while (declaring) {
+        namespaze = il2cpp_functions::class_get_namespace(declaring);
+        name = il2cpp_functions::class_get_name(declaring) + ("/" + name);
+        declaring = il2cpp_functions::class_get_declaring_type(declaring);
+    }
+
+    classInfo.set_namespaze(namespaze);
+    classInfo.set_clazz(name);
 
     if (type->type == IL2CPP_TYPE_GENERICINST) {
         auto genericInst = type->data.generic_class->context.class_inst;

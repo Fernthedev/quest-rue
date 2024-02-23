@@ -1,5 +1,6 @@
 #include "methods.hpp"
 #include "classutils.hpp"
+#include "main.hpp"
 
 #include <sstream>
 #include <iomanip>
@@ -191,11 +192,15 @@ ProtoDataSegment OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int
     LOG_DEBUG("Outputting primitive {}", (int) info);
     switch(info) {
     case ProtoTypeInfo::STRING: {
-        auto str = *(Il2CppString**) value;
-        LOG_DEBUG("String of length {}", str->m_stringLength);
-        // while codegen says this is just one char16, it's actually a char16[]
-        std::string retStr((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
-        ret.set_primitivedata(retStr);
+        if (auto str = *(Il2CppString**) value) {
+            LOG_DEBUG("String of length {}", str->m_stringLength);
+            // while codegen says this is just one char16, it's actually a char16[]
+            std::string retStr((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
+            ret.set_primitivedata(retStr);
+        } else {
+            LOG_DEBUG("Null string");
+            ret.set_primitivedata("");
+        }
         break;
     } case ProtoTypeInfo::TYPE: {
         auto type = il2cpp_functions::class_from_system_type(*(Il2CppReflectionType**) value);
@@ -264,6 +269,11 @@ namespace MethodUtils {
         LOG_DEBUG("Running method {}", method->name);
         LOG_DEBUG("{} parameters", method->parameters_count);
 
+        if (method->name == std::string("get_renderingDisplaySize")) {
+            LOG_INFO("Skipping get_renderingDisplaySize due to crash");
+            return VoidDataPayload(method->return_type);
+        }
+
         void* il2cppArgs[args.size()];
         // TODO: type checking?
         FillList(args, il2cppArgs);
@@ -274,6 +284,7 @@ namespace MethodUtils {
         if(ex) {
             error = il2cpp_utils::ExceptionToString(ex);
             LOG_INFO("{}: Failed with exception: {}", method->name, error);
+            LOG_DEBUG("{}", static_cast<std::string>(ex->ToString()));
             return VoidDataPayload(method->return_type);
         }
 
