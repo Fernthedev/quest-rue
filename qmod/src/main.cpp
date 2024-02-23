@@ -87,6 +87,16 @@ void EnableFPFC() {
         go->AddComponent<QRUE::CameraController*>();
 }
 
+void DisableFPFC() {
+    auto cam = UnityEngine::Camera::get_main();
+    if(!cam)
+        return;
+
+    auto go = cam->get_gameObject();
+    if(auto existing = go->GetComponent<QRUE::CameraController*>())
+        existing->set_enabled(false);
+}
+
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
 
 MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &DefaultScenesTransitionsFromInit::TransitionToNextScene, void, DefaultScenesTransitionsFromInit* self, bool goStraightToMenu, bool goStraightToEditor, bool goToRecordingToolScene) {
@@ -94,24 +104,20 @@ MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &Default
     DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
 }
 
-#include "GlobalNamespace/MainMenuViewController.hpp"
+#include "GlobalNamespace/GameScenesManager_ScenePresentType.hpp"
+#include "GlobalNamespace/GameScenesManager_SceneDismissType.hpp"
+#include "System/Action_1.hpp"
+#include "Zenject/DiContainer.hpp"
 
-MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &MainMenuViewController::DidActivate, void, MainMenuViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, ScenesTransitionSetupDataSO* newScenesTransitionSetupData, List<StringW>* scenesToPresent, GameScenesManager::ScenePresentType presentType, List<StringW>* scenesToDismiss, GameScenesManager::SceneDismissType dismissType, float minDuration, System::Action* afterMinDurationCallback, System::Action_1<Zenject::DiContainer*>* extraBindingsCallback, System::Action_1<Zenject::DiContainer*>* finishCallback) {
 
-    MainMenuViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+    DisableFPFC();
 
-    if(enabled)
-        EnableFPFC();
-}
+    finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(finishCallback, custom_types::MakeDelegate<System::Action_1<Zenject::DiContainer*>*>((std::function<void (Zenject::DiContainer*)>) [](Zenject::DiContainer*) {
+        if (enabled) EnableFPFC();
+    }));
 
-#include "GlobalNamespace/AudioTimeSyncController.hpp"
-
-MAKE_HOOK_MATCH(AudioTimeSyncController_Start, &AudioTimeSyncController::Start, void, AudioTimeSyncController* self) {
-
-    AudioTimeSyncController_Start(self);
-
-    if(enabled)
-        EnableFPFC();
+    return GameScenesManager_ScenesTransitionCoroutine(self, newScenesTransitionSetupData, scenesToPresent, presentType, scenesToDismiss, dismissType, minDuration, afterMinDurationCallback, extraBindingsCallback, finishCallback);
 }
 
 #include "VRUIControls/VRInputModule.hpp"
@@ -124,8 +130,10 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData, &VRUIControls::VRInputMo
     using EventData = UnityEngine::EventSystems::PointerEventData;
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
-    ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
-    click = false;
+    if (enabled) {
+        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
+        click = false;
+    }
     return ret;
 }
 
@@ -153,11 +161,10 @@ extern "C" void load() {
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(getLogger(), DefaultScenesTransitionsFromInit_TransitionToNextScene);
-    INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
-    INSTALL_HOOK(getLogger(), AudioTimeSyncController_Start);
     INSTALL_HOOK(getLogger(), VRInputModule_GetMousePointerEventData);
     INSTALL_HOOK(getLogger(), UIKeyboardManager_OpenKeyboardFor);
     INSTALL_HOOK(getLogger(), UIKeyboardManager_CloseKeyboard);
+    INSTALL_HOOK(getLogger(), GameScenesManager_ScenesTransitionCoroutine);
     LOG_INFO("Installed hooks!");
 #endif
 

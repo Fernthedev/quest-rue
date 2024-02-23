@@ -29,6 +29,17 @@ UnityEngine::GameObject* GetHovered() {
     return nullptr;
 }
 
+UnityEngine::GameObject* GetPauseMenu() {
+    if(auto ret = UnityEngine::GameObject::Find("PauseMenu"))
+        return ret;
+    else if(auto ret = UnityEngine::GameObject::Find("TutorialPauseMenu"))
+        return ret;
+    else if(auto ret = UnityEngine::GameObject::Find("MultiplayerLocalActivePlayerInGameMenuViewController"))
+        return ret;
+    else
+        return nullptr;
+}
+
 using namespace QRUE;
 using namespace UnityEngine;
 using namespace GlobalNamespace;
@@ -60,8 +71,19 @@ void CameraController::OnEnable() {
     childTransform->set_localPosition({0, 0, 0});
     childTransform->set_localEulerAngles({0, 0, 0});
 
+    // in level
+    if(auto pauseMenu = GetPauseMenu()) {
+        // can't just search for "MenuControllers" because there are two, we need the one that's a child of the pause menu
+        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
+        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
+        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+            latestInputModule = vrInputModule;
+            vrInputModule->set_useMouseForPressInput(true);
+            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
+        }
     // in main menu
-    if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+    } else if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
         latestInputModule = objectsSource->vrInputModule;
         objectsSource->vrInputModule->set_useMouseForPressInput(true);
         objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
@@ -73,17 +95,6 @@ void CameraController::OnEnable() {
         }
         controller0 = objectsSource->controller0;
         controller1 = objectsSource->controller1;
-    // in level
-    } else if(auto pauseMenu = GameObject::Find("PauseMenu")) {
-        // can't just search for "MenuControllers" because there are two, we need the one that's a child of "PauseMenu"
-        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
-        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
-        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
-        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
-            latestInputModule = vrInputModule;
-            vrInputModule->set_useMouseForPressInput(true);
-            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
-        }
     }
 
     if(controller0 && controller1) {
@@ -110,7 +121,17 @@ void CameraController::OnDisable() {
     parentTransform->set_position({0, 0, 0});
     parentTransform->set_eulerAngles({0, 0, 0});
 
-    if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+    if(auto pauseMenu = GetPauseMenu()) {
+        LOG_DEBUG("Using controllers from pause menu");
+        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
+        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
+        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+            vrInputModule->set_useMouseForPressInput(false);
+            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
+        }
+    } else if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+        LOG_DEBUG("Using controllers from original fpfc");
         objectsSource->vrInputModule->set_useMouseForPressInput(false);
         objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
         objectsSource->centerAdjust->set_enabled(true);
@@ -120,14 +141,6 @@ void CameraController::OnDisable() {
         }
         controller0 = objectsSource->controller0;
         controller1 = objectsSource->controller1;
-    } else if(auto pauseMenu = GameObject::Find("PauseMenu")) {
-        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
-        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
-        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
-        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
-            vrInputModule->set_useMouseForPressInput(false);
-            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
-        }
     }
 
     latestInputModule = nullptr;
@@ -137,7 +150,8 @@ void CameraController::OnDisable() {
         controller1->set_enabled(true);
         if(auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
             pointer->get_gameObject()->SetActive(true);
-    }
+    } else
+        LOG_INFO("Failed to find menu controllers for FPFC");
 }
 
 #include "UnityEngine/Touch.hpp"
@@ -152,7 +166,7 @@ void CameraController::OnDisable() {
 
 void CameraController::Update() {
     if(Input::GetKeyDown(KeyCode::X)) {
-        LOG_INFO("Disabling FPFC due to X press (reenable with C)");
+        LOG_INFO("Disabling FPFC due to X press (reenable with Z)");
 
         enabled = false;
         set_enabled(false);
