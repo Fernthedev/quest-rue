@@ -91,7 +91,7 @@ export default function ObjectView(props: {
     });
   });
 
-  const [values, valuesLoading, requestValues] =
+  const [values, , requestValues] =
     useRequestAndResponsePacket<GetInstanceValuesResult>();
 
   createEffect(() => {
@@ -161,6 +161,16 @@ export default function ObjectView(props: {
 
   const [varNameInput, setVarNameInput] = createSignal("");
 
+  const trySaveVariable = () => {
+    const details = classDetails();
+    const addr = selectedAddress();
+    const name = varNameInput();
+    if (addr && details)
+      addVariable(addr, details, name.length > 0 ? name : undefined);
+  };
+
+  let input: HTMLInputElement | undefined;
+
   // TODO: make this a component instead of duplicated
   const saveButton = (
     <Show
@@ -180,6 +190,9 @@ export default function ObjectView(props: {
           class="small-button"
           img="save.svg"
           tooltip="Save variable"
+          onClick={() => {
+            input?.focus();
+          }}
         />
         <div
           class="
@@ -193,18 +206,16 @@ export default function ObjectView(props: {
             class="min-w-0 small-input"
             placeholder="Unnamed Variable"
             onInput={(e) => setVarNameInput(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') trySaveVariable();
+            }}
             classList={{ invalid: !isVariableNameFree(varNameInput()) }}
+            ref={input}
           />
           <ActionButton
             class="small-button"
             img={check}
-            onClick={() => {
-              const details = classDetails();
-              const addr = selectedAddress();
-              const name = varNameInput();
-              if (addr && details)
-                addVariable(addr, details, name.length > 0 ? name : undefined);
-            }}
+            onClick={trySaveVariable}
             tooltip="Confirm"
           />
         </div>

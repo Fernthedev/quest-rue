@@ -136,6 +136,9 @@ export function StaticsView(props: {
             placeholder="Add Class"
             onInput={(e) => setClassInput(e.target.value.trim())}
             value={classInput()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') addClass();
+            }}
           />
           <button class="p-2 join-item" onClick={addClass}>
             <Show
