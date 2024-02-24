@@ -33,66 +33,53 @@ void SocketLibHandler::connectEvent(Channel& channel, bool connected) {
         channelIncomingQueue.try_emplace(&channel, 0);
 }
 
-void SocketLibHandler::listenOnEvents(Channel& client, const Message& message) {
-    // read the bytes
-    // if no packet is being parsed, get the first 8 bytes
-    // the first 8 bytes are the size frame, which dictate the size of the incoming packet (excluding the frame)
-    // then continue reading bytes until the expected size matches the current byte size
-    // if excess bytes, loop again
+void SocketLibHandler::listenOnEvents(
+    Channel &client, SocketLib::ReadOnlyStreamQueue &incomingQueue) {
+  // read the bytes
+  // if no packet is being parsed, get the first 8 bytes
+  // the first 8 bytes are the size frame, which dictate the size of the
+  // incoming packet (excluding the frame) then continue reading bytes until the
+  // expected size matches the current byte size if excess bytes, loop again
 
-    std::span<const byte> receivedBytes = message;
-    auto &pendingPacket = channelIncomingQueue.at(&client);
 
-    // start of a new packet
-    if (!pendingPacket.isValid()) {
-        // get the first 8 bytes, then cast to size_t
-        size_t expectedLength = *reinterpret_cast<size_t const *>(receivedBytes.first(sizeof(size_t)).data());
-        expectedLength = ntohq(expectedLength);
-        
-        // LOG_INFO("Starting packet: is little endian {} {} flipped {} {}", std::endian::native == std::endian::little, expectedLength, ntohq(expectedLength), receivedBytes);
 
-        pendingPacket = {expectedLength};
+  auto &pendingPacket = channelIncomingQueue.at(&client);
 
-        auto subspanData = receivedBytes.subspan(sizeof(size_t));
-        pendingPacket.insertBytes(subspanData);
-        // continue appending to existing packet
-    } else {
-        pendingPacket.insertBytes(receivedBytes);
-    }
 
-    if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength()) {
-        return;
-    }
+  
+  // start of a new packet
+  if (!pendingPacket.isValid()) {
+    // get the first 8 bytes, then cast to size_t
+    size_t expectedLength = *reinterpret_cast<size_t const *>(incomingQueue.dequeueAsVec(sizeof(size_t)).data());
 
-    auto stream = std::move(pendingPacket.getData()); // avoid copying
-    std::span<const byte> const finalMessage = stream;
-    auto const packetBytes = (finalMessage).subspan(0, pendingPacket.getExpectedLength());
+    expectedLength = ntohq(expectedLength);
 
-    if (pendingPacket.getCurrentLength() > pendingPacket.getExpectedLength()) {
-        auto excessData = finalMessage.subspan(pendingPacket.getExpectedLength());
-        // get the first 8 bytes, then cast to size_t
-        size_t expectedLength = *reinterpret_cast<size_t const*>(excessData.data());
+    // LOG_INFO("Starting packet: is little endian {} {} flipped {} {}",
+    // std::endian::native == std::endian::little, expectedLength,
+    // ntohq(expectedLength), receivedBytes);
 
-        pendingPacket = IncomingPacket(expectedLength); // reset with excess data
+    pendingPacket = {expectedLength};
+  }
 
-        auto excessDataWithoutSize = excessData.subspan(sizeof(size_t));
+  // dequeue amount
+  if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength()) {
+    auto remainingLength = pendingPacket.getExpectedLength() - pendingPacket.getCurrentLength();
+    auto subspanData = incomingQueue.dequeueAsVec(remainingLength);
+    pendingPacket.insertBytes(subspanData);
+  }
 
-        // insert excess data, ignoring the size prefix
-        pendingPacket.insertBytes(excessDataWithoutSize);
-    } else {
-        pendingPacket = IncomingPacket(); // reset 
-    }
+  if (pendingPacket.getCurrentLength() < pendingPacket.getExpectedLength()) {
+    return;
+  }
 
-    PacketWrapper packet;
-    packet.ParseFromArray(packetBytes.data(), packetBytes.size());
-    scheduleFunction([this, packet = std::move(packet)]() {
-        onReceivePacket(packet);
-    });
+  auto packetBytes = std::move(pendingPacket.getData()); // avoid copying
+  pendingPacket = IncomingPacket(); // reset
+  
 
-    // Parse the next packet as it is ready
-    if (pendingPacket.isValid() && pendingPacket.getCurrentLength()  >= pendingPacket.getExpectedLength()) {
-        listenOnEvents(client, Message(""));
-    }
+  PacketWrapper packet;
+  packet.ParseFromArray(packetBytes.data(), packetBytes.size());
+  scheduleFunction(
+      [this, packet = std::move(packet)]() { onReceivePacket(packet); });
 }
 
 void SocketLibHandler::sendPacket(const PacketWrapper& packet) {

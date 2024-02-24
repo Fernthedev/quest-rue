@@ -62,5 +62,6 @@ class SocketLibHandler : public PacketHandler {
 
         std::unordered_map<SocketLib::Channel *, IncomingPacket> channelIncomingQueue;
         void connectEvent(SocketLib::Channel& channel, bool connected);
-        void listenOnEvents(SocketLib::Channel& client, const SocketLib::Message& message);
+        void listenOnEvents(SocketLib::Channel &client,
+                            SocketLib::ReadOnlyStreamQueue &incomingQueue);
 };
