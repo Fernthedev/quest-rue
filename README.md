@@ -30,18 +30,17 @@ Currently on the roadmap:
 
 ## Contribute/Testing
 
-### Quest mod
-Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variable on Unix to the root of the vcpkg installation. Then, install protobuf for `arm64-android` using the following command:
-```
-vcpkg install protobuf:arm64-android
-vcpkg install websocketpp:arm64-android
-```
+### Common setup
+Setup VCPKG on your system and set the `VCPKG_ROOT` environment on Windows or variable on Unix to the root of the vcpkg installation. Then, run `vcpkg install` in the qmod directory.
 
-Then run while in `qmod/` 
+This will download protobuf which is required for both frontend and qmod to build.
+
+Then finally run
 ```
 pwsh ./make-proto.ps1
 ```
 
+### Quest mod
 To build the mod, run `pwsh ./build.ps1`
 
 To copy the mod to your quest, run `pwsh ./copy.ps1`
