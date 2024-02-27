@@ -88,66 +88,74 @@ size_t fieldTypeSize(const Il2CppType* type) {
 }
 
 // field_get_value, field_set_value
-std::vector<FieldInfo*> ClassUtils::GetFields(Il2CppClass const* klass) {
-    std::vector<FieldInfo*> ret;
-    // only a single pointer since fields are stored as values
-    FieldInfo* iter = nullptr; // needs to be explicitly set to nullptr
-    while(il2cpp_functions::class_get_fields(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        // TODO: fix self referential types in static fields
-        if(iter && !GetIsStatic(iter))
-            ret.push_back(iter);
-    }
+std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
+  std::vector<FieldInfo const*> ret;
+  ret.reserve(klass->field_count);
+
+  for (auto const& field : std::span(klass->fields, klass->field_count)) {
+    if (!GetIsStatic(&field))
+      continue;
+
+    ret.emplace_back(&field);
+  }
     return ret;
 }
 
-std::vector<const MethodInfo*> ClassUtils::GetPropMethods(PropertyInfo const* prop) {
-    std::vector<const MethodInfo*> ret{};
-    if(auto m = il2cpp_functions::property_get_get_method(prop))
-        ret.push_back(m);
-    if(auto m = il2cpp_functions::property_get_set_method(prop))
-        ret.push_back(m);
-    return ret;
+std::pair<const MethodInfo *, const MethodInfo *>
+ClassUtils::GetPropMethods(PropertyInfo const *prop) {
+  std::pair<const MethodInfo *, const MethodInfo *> ret;
+
+  if (auto m = il2cpp_functions::property_get_get_method(prop))
+    ret.first = m;
+  if (auto m = il2cpp_functions::property_get_set_method(prop))
+    ret.second = m;
+  return ret;
 }
 
-std::vector<PropertyInfo*> ClassUtils::GetProperties(Il2CppClass const* klass) {
-    std::vector<PropertyInfo*> ret;
-    // only a single pointer since properties are stored as values
-    PropertyInfo* iter = nullptr;
-    while(il2cpp_functions::class_get_properties(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(iter) {
-            bool normal = !iter->get || iter->get->parameters_count == 0;
-            normal = normal && !iter->set || iter->set->parameters_count == 1;
-            if(normal)
-                ret.push_back(iter);
-        }
-    }
-    return ret;
+std::vector<PropertyInfo const *>
+ClassUtils::GetProperties(Il2CppClass const *klass) {
+  std::vector<PropertyInfo const *> ret;
+  ret.reserve(klass->property_count);
+
+  for (auto const& property : std::span(klass->properties, klass->property_count)) {
+    bool normal = !property.get || property.get->parameters_count == 0;
+    normal = normal && !property.set || property.set->parameters_count == 1;
+    if (!normal)
+      continue;
+    
+    ret.emplace_back(&property);
+  }
+  return ret;
 }
 
-std::vector<MethodInfo*> ClassUtils::GetMethods(Il2CppClass const* klass) {
-    std::vector<MethodInfo*> ret;
-    // double pointer because methods are stored as pointers
-    MethodInfo** iter = nullptr;
-    while(il2cpp_functions::class_get_methods(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(*iter)
-            ret.push_back(*iter);
-    }
-    return ret;
+std::vector<MethodInfo const *>
+ClassUtils::GetMethods(Il2CppClass const *klass) {
+  std::vector<MethodInfo const *> ret;
+  ret.reserve(klass->method_count);
+
+  for (auto const &method : std::span(klass->methods, klass->method_count)) {
+    if (!method)
+      continue;
+    ret.emplace_back(method);
+  }
+  return ret;
 }
 
-std::vector<Il2CppClass*> ClassUtils::GetInterfaces(Il2CppClass const* klass) {
-    std::vector<Il2CppClass*> ret;
-    // double pointer because classes are stored as pointers
-    Il2CppClass** iter = nullptr;
-    while(il2cpp_functions::class_get_interfaces(const_cast<Il2CppClass*>(klass), (void**)(&iter))) {
-        if(*iter)
-            ret.push_back(*iter);
-    }
-    return ret;
-}
+std::vector<Il2CppClass const *>
+ClassUtils::GetInterfaces(Il2CppClass const *klass) {
+  std::vector<Il2CppClass const *> ret;
+  ret.reserve(klass->interfaces_count);
 
-Il2CppClass* ClassUtils::GetParent(Il2CppClass const* klass) {
-    return il2cpp_functions::class_get_parent(const_cast<Il2CppClass*>(klass));
+  for (auto const &interface : std::span(klass->implementedInterfaces, klass->interfaces_count)) {
+    if (!interface)
+      continue;
+    ret.push_back(interface);
+  }
+    return ret;
+  }
+
+Il2CppClass const* ClassUtils::GetParent(Il2CppClass const* klass) {
+    return klass->parent;
 }
 
 bool ClassUtils::GetIsLiteral(FieldInfo const* field) {
