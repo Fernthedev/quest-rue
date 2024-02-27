@@ -192,6 +192,13 @@ export function createSignalEvent<T>(
   return val;
 }
 
+/**
+ * Runs the callback when the listener is called
+ * Does not run on mount
+ * @param listener 
+ * @param callback 
+ * @param once 
+ */
 export function createEventEffect<T>(
   listener: EventListener<T>,
   callback: (value: T) => void | Promise<void>,
