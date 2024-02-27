@@ -2,6 +2,8 @@
 #include "classutils.hpp"
 #include "main.hpp"
 
+#include "paper/shared/string_convert.hpp"
+
 #include <sstream>
 #include <iomanip>
 
@@ -193,9 +195,9 @@ ProtoDataSegment OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int
     switch(info) {
     case ProtoTypeInfo::STRING: {
         if (auto str = *(Il2CppString**) value) {
-            LOG_DEBUG("String of length {}", str->m_stringLength);
+            LOG_DEBUG("String of length {}", str->length);
             // while codegen says this is just one char16, it's actually a char16[]
-            std::string retStr((char*) &str->m_firstChar, str->m_stringLength * sizeof(Il2CppChar));
+            std::string retStr((char*) &str->chars[0], str->length * sizeof(Il2CppChar));
             ret.set_primitivedata(retStr);
         } else {
             LOG_DEBUG("Null string");
@@ -247,6 +249,7 @@ ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
     }
     size_t size = fieldTypeSize(method->return_type);
     char ownedValue[size];
+    
     if(ret && typeIsValuetype(method->return_type)) {
         memcpy(ownedValue, il2cpp_functions::object_unbox(ret), size);
         il2cpp_functions::GC_free(ret);
@@ -284,7 +287,7 @@ namespace MethodUtils {
         if(ex) {
             error = il2cpp_utils::ExceptionToString(ex);
             LOG_INFO("{}: Failed with exception: {}", method->name, error);
-            LOG_DEBUG("{}", static_cast<std::string>(ex->ToString()));
+            LOG_DEBUG("{}", static_cast<std::string>(StringW(ex->message)));
             return VoidDataPayload(method->return_type);
         }
 
@@ -304,27 +307,43 @@ namespace MethodUtils {
             *info.mutable_type() = ClassUtils::GetTypeInfo(getter->return_type);
         }
         if (auto setter = property->set) {
-            info.set_setterid(asInt(setter));
-            *info.mutable_type() = ClassUtils::GetTypeInfo(setter->parameters->parameter_type);
+          info.set_setterid(asInt(setter));
+#ifdef UNITY_2021
+          auto const& paramType = setter->parameters[0];
+#else
+          auto const &paramType =
+              setter->parameters[0]->parameter_type;
+#endif
+            *info.mutable_type() = ClassUtils::GetTypeInfo(paramType);
         }
         return info;
     }
 
-    ProtoMethodInfo GetMethodInfo(MethodInfo* method) {
-        ProtoMethodInfo info;
-        info.set_name(method->name);
-        info.set_id(asInt(method));
-        for(int i = 0; i < method->parameters_count; i++) {
-            auto const& param = method->parameters[i];
-            ProtoMethodInfo_Argument arg;
-            arg.set_name(param.name);
-            *arg.mutable_type() = ClassUtils::GetTypeInfo(param.parameter_type);
-            *info.add_args() = arg;
-        }
-        *info.mutable_returntype() = ClassUtils::GetTypeInfo(method->return_type);
-        return info;
+    ProtoMethodInfo GetMethodInfo(MethodInfo *method) {
+      ProtoMethodInfo info;
+      info.set_name(method->name);
+      info.set_id(asInt(method));
+      for (int i = 0; i < method->parameters_count; i++) {
+        auto const &param = method->parameters[i];
+
+#ifdef UNITY_2021
+        auto const &methodHandle = method->methodMetadataHandle;
+        auto const &paramName =
+            il2cpp_functions::method_get_param_name(method, i);
+        auto const &paramType = param;
+#else
+        auto const &paramName = param->name;
+        auto const &paramType = param->parameter_type;
+#endif
+        ProtoMethodInfo_Argument arg;
+        arg.set_name(paramName);
+        *arg.mutable_type() = ClassUtils::GetTypeInfo(paramType);
+        *info.add_args() = arg;
+      }
+      *info.mutable_returntype() = ClassUtils::GetTypeInfo(method->return_type);
+      return info;
     }
-}
+} // namespace MethodUtils
 
 namespace FieldUtils {
     ProtoDataPayload Get(FieldInfo* field, ProtoDataPayload const& object) {

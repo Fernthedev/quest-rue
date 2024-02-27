@@ -2,6 +2,8 @@
 #include "classutils.hpp"
 #include "methods.hpp"
 
+#include "System/RuntimeType.hpp"
+
 #include <span>
 
 using namespace ClassUtils;
@@ -66,8 +68,15 @@ size_t fieldTypeSize(const Il2CppType* type) {
                 return il2cpp_functions::class_instance_size(klass) - sizeof(Il2CppObject);
             }
         case IL2CPP_TYPE_GENERICINST:
-            // t = GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
+          // t =
+          // GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
+#ifdef UNITY_2021
+          t = il2cpp_functions::MetadataCache_GetTypeInfoFromHandle(
+                  type->data.generic_class->type->data.typeHandle)
+                  ->byval_arg.type;
+#else
             t = il2cpp_functions::MetadataCache_GetTypeInfoFromTypeDefinitionIndex(type->data.generic_class->typeDefinitionIndex)->byval_arg.type;
+#endif
             goto handle_enum;
         case IL2CPP_TYPE_VOID:
             // added myself but I mean it makes sense, probably doesn't actually matter for functionality though
@@ -305,8 +314,21 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     ProtoGenericInfo genericInfo;
     LOG_DEBUG("Getting generic info");
 
-    genericInfo.set_genericindex(type->data.genericParameterIndex);
-    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(type->data.genericParameterIndex);
+    
+#ifdef UNITY_2021
+    auto const& genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(type->data.genericParameterHandle);
+    auto const &parameter =
+        il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
+            genericIndex);
+#else
+    auto const &genericIndex = type->data.genericParameterIndex;
+    auto parameter =
+        il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
+            type->data.genericParameterIndex);
+
+#endif
+    genericInfo.set_genericindex(genericIndex);
+
     genericInfo.set_name(il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex));
     return genericInfo;
 }
@@ -319,15 +341,16 @@ Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
         return klass;
     // no MakeGenericMethod for classes in bshook
     auto runtimeClass = il2cpp_utils::GetSystemType(klass);
-    ArrayW<Il2CppReflectionType*> genericArgs(classInfo.generics_size());
-    for(int i = 0; i < genericArgs.Length(); i++) {
-        auto genericType = GetType(classInfo.generics(i));
-        if(!genericType)
-            return nullptr;
-        genericArgs[i] = il2cpp_utils::GetSystemType(genericType);
+    ArrayW<System::Type *> genericArgs(classInfo.generics_size());
+    for (int i = 0; i < genericArgs.size(); i++) {
+      auto genericType = GetType(classInfo.generics(i));
+      if (!genericType)
+        return nullptr;
+      genericArgs[i] = reinterpret_cast<System::Type *>(
+          il2cpp_utils::GetSystemType(genericType));
     }
 
-    auto inflated = System::RuntimeType::MakeGenericType(runtimeClass, genericArgs);
+    auto inflated = System::RuntimeType::MakeGenericType(reinterpret_cast<System::Type*>(runtimeClass), genericArgs);
     return il2cpp_functions::class_from_system_type((Il2CppReflectionType*) inflated);
 }
 
@@ -351,7 +374,13 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         LOG_DEBUG("Getting class from generic info");
         // I don't think this should even come up
         Il2CppType type = {};
+#ifdef UNITY_2021
+        type.data.genericParameterHandle =
+            Il2CppMetadataGenericParameterHandle(typeInfo.size());
+
+#else
         type.data.genericParameterIndex = typeInfo.size();
+        #endif
         type.type = IL2CPP_TYPE_VAR; // hmm, mvar?
         return classoftype(&type); // only uses the above two fields for var/mvar
     } else if(typeInfo.has_primitiveinfo()) {
@@ -378,8 +407,15 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
             return il2cpp_functions::defaults->string_class;
         case ProtoTypeInfo::TYPE:
             return il2cpp_functions::defaults->systemtype_class;
+
         case ProtoTypeInfo::PTR:
-            return il2cpp_functions::defaults->pointer_class;
+#ifdef UNITY_2021
+          // TODO: Is this right?
+          return il2cpp_functions::defaults->void_class;
+
+#else
+          return il2cpp_functions::defaults->pointer_class;
+          #endif
         case ProtoTypeInfo::VOID:
             return il2cpp_functions::defaults->void_class;
         case ProtoTypeInfo::UNKNOWN:

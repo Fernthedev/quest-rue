@@ -36,7 +36,8 @@ void Manager::Init() {
     // Logger sink
     // TODO: Make this a queue and flush
     Paper::Logger::AddLogSink(
-        [this](Paper::ThreadData const &data, std::string_view fmtMessage) {
+        [this](Paper::LogData const & data, std::string_view fmtMessage,
+               std::string_view originalString) {
           if(!sendLoggerUpdates)
             return;
 
