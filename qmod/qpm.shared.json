@@ -54,6 +54,11 @@
         "id": "sombrero",
         "versionRange": "^0.1.33",
         "additionalData": {}
+      },
+      {
+        "id": "sombrero",
+        "versionRange": "^0.1.40",
+        "additionalData": {}
       }
     ]
   },
@@ -115,21 +120,6 @@
     },
     {
       "dependency": {
-        "id": "socket_lib",
-        "versionRange": "=0.9.1",
-        "additionalData": {
-          "soLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/libsocket_lib.so",
-          "debugSoLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/debug_libsocket_lib.so",
-          "overrideSoName": "libsocket_lib.so",
-          "modLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/socket_lib.qmod",
-          "branchName": "version/v0_9_1",
-          "cmake": true
-        }
-      },
-      "version": "0.9.1"
-    },
-    {
-      "dependency": {
         "id": "bs-cordl",
         "versionRange": "=3402.1.2",
         "additionalData": {
@@ -150,6 +140,21 @@
         }
       },
       "version": "3402.1.2"
+    },
+    {
+      "dependency": {
+        "id": "socket_lib",
+        "versionRange": "=0.9.1",
+        "additionalData": {
+          "soLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/libsocket_lib.so",
+          "debugSoLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/debug_libsocket_lib.so",
+          "overrideSoName": "libsocket_lib.so",
+          "modLink": "https://github.com/Fernthedev/SocketLibLinux/releases/download/v0.9.1/socket_lib.qmod",
+          "branchName": "version/v0_9_1",
+          "cmake": true
+        }
+      },
+      "version": "0.9.1"
     },
     {
       "dependency": {

@@ -23,7 +23,7 @@ ProtoTransform ReadTransform(Transform* obj) {
     protoObj.set_name(obj->get_name());
 
     protoObj.set_childcount(obj->get_childCount());
-    protoObj.set_parent(asInt(obj->GetParent()));
+    protoObj.set_parent(asInt(obj->GetParent().unsafePtr()));
     return protoObj;
 }
 
@@ -59,25 +59,26 @@ SearchObjectsResult FindObjects(Il2CppClass* klass, std::string name) {
     SearchObjectsResult result;
     LOG_DEBUG("Searching for objects");
 
-    auto objects = Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType(klass));
+    auto objects = Resources::FindObjectsOfTypeAll(
+        reinterpret_cast<System::Type*>(il2cpp_utils::GetSystemType(klass)));
 
-    std::span<Object*> res = objects.ref_to();
-    std::vector<Object*> namedObjs;
+    std::span<UnityW<Object>> res = objects.ref_to();
+    std::vector<UnityW<Object>> namedObjs;
 
     if(!name.empty()) {
         LOG_DEBUG("Searching for name {}", name);
         StringW il2cppName(name);
-        for(auto const& obj : res) {
+        for(auto obj : res) {
             if(obj->get_name()->Contains(il2cppName))
                 namedObjs.push_back(obj);
         }
-        res = std::span<Object*>(namedObjs);
+        res = std::span<UnityW<Object>>(namedObjs);
     }
 
-    for(auto const& obj : res) {
+    for(auto obj : res) {
         ProtoObject& found = *result.add_objects();
         name = static_cast<std::string>(obj->get_name());
-        found.set_address(asInt(obj));
+        found.set_address(asInt(obj.unsafePtr()));
         found.set_name(name);
         *found.mutable_classinfo() = ClassUtils::GetClassInfo(typeofinst(obj));
     }
@@ -88,8 +89,8 @@ GetAllGameObjectsResult FindAllGameObjects() {
     GetAllGameObjectsResult result;
 
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
-    result.mutable_objects()->Reserve(objects.Length());
-    LOG_DEBUG("found {} game objects", objects.Length());
+    result.mutable_objects()->Reserve(objects.size());
+    LOG_DEBUG("found {} game objects", objects.size());
     for (const auto& obj : objects) {
         *result.add_objects() = ReadGameObject(obj);
     }

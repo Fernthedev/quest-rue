@@ -5,6 +5,8 @@
 #include "MainThreadRunner.hpp"
 #include "CameraController.hpp"
 
+#include "scotland2/shared/modloader.h"
+
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
@@ -21,7 +23,7 @@
 
 #include <filesystem>
 
-static ModInfo modInfo{MOD_ID, VERSION};
+static modloader::ModInfo modInfo{MOD_ID, VERSION, 1};
 
 using namespace UnityEngine;
 
@@ -49,13 +51,11 @@ std::string_view GetDataPath() {
     return s;
 }
 
-extern "C" void setup(ModInfo& info) {
+extern "C" void setup(CModInfo* info) {
     Paper::Logger::RegisterFileContextId("QuestEditor");
     Paper::Logger::RegisterFileContextId("SocketLib");
 
-    info.id = MOD_ID;
-    info.version = VERSION;
-    modInfo = info;
+    *info = modInfo.to_c();
 
     auto dataPath = GetDataPath();
     if (!direxists(dataPath))
@@ -104,12 +104,14 @@ MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &Default
     DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
 }
 
-#include "GlobalNamespace/GameScenesManager_ScenePresentType.hpp"
-#include "GlobalNamespace/GameScenesManager_SceneDismissType.hpp"
 #include "System/Action_1.hpp"
 #include "Zenject/DiContainer.hpp"
+#include "GlobalNamespace/GameScenesManager.hpp"
 
-MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, ScenesTransitionSetupDataSO* newScenesTransitionSetupData, List<StringW>* scenesToPresent, GameScenesManager::ScenePresentType presentType, List<StringW>* scenesToDismiss, GameScenesManager::SceneDismissType dismissType, float minDuration, System::Action* afterMinDurationCallback, System::Action_1<Zenject::DiContainer*>* extraBindingsCallback, System::Action_1<Zenject::DiContainer*>* finishCallback) {
+MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, ::GlobalNamespace::ScenesTransitionSetupDataSO* newScenesTransitionSetupData, ::System::Collections::Generic::List_1<::StringW>* scenesToPresent,
+                            ::GlobalNamespace::__GameScenesManager__ScenePresentType presentType, ::System::Collections::Generic::List_1<::StringW>* scenesToDismiss,
+                            ::GlobalNamespace::__GameScenesManager__SceneDismissType dismissType, float_t minDuration, ::System::Action* afterMinDurationCallback,
+                            ::System::Action_1<::Zenject::DiContainer*>* extraBindingsCallback, ::System::Action_1<::Zenject::DiContainer*>* finishCallback) {
 
     DisableFPFC();
 
@@ -143,7 +145,7 @@ MAKE_HOOK_MATCH(UIKeyboardManager_OpenKeyboardFor, &UIKeyboardManager::OpenKeybo
 
     UIKeyboardManager_OpenKeyboardFor(self, input);
 
-    keyboardOpen = self->uiKeyboard;
+    keyboardOpen = self->_uiKeyboard;
 }
 MAKE_HOOK_MATCH(UIKeyboardManager_CloseKeyboard, &UIKeyboardManager::CloseKeyboard, void, UIKeyboardManager* self) {
 

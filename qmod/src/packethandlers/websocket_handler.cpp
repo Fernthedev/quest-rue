@@ -73,7 +73,7 @@ void WebSocketHandler::stop() {
 void WebSocketHandler::scheduleAsync(std::function<void()> &&f)
 {
     // TODO: Thread pool or something
-    SocketLib::SocketHandler::getCommonSocketHandler().queueWork(std::move(f));
+    std::thread(std::move(f)).detach();
 }
 
 bool WebSocketHandler::hasConnection() {
