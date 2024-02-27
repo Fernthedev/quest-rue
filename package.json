@@ -21,7 +21,6 @@
         "@thisbeyond/solid-select": "^0.14.0",
         "daisyui": "^3.1.6",
         "long": "^5.2.3",
-        "protobufjs": "^7.2.6",
         "solid-heroicons": "^3.2.4",
         "solid-js": "^1.8.15",
         "solid-toast": "^0.5.0"
