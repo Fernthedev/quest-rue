@@ -1,4 +1,4 @@
-import { useNavigate, useRouteData } from "@solidjs/router";
+import { useNavigate } from "@solidjs/router";
 
 import styles from "./ConnectMenu.module.css";
 import { createEventEffect, getEvents } from "../misc/events";
@@ -8,14 +8,12 @@ import toast from "solid-toast";
 import { createPersistentSignal } from "../misc/utils";
 
 export default function ConnectMenu() {
-  const redirect = useRouteData<boolean>();
   const navigate = useNavigate();
 
-  if (redirect) {
-    createEventEffect(getEvents().CONNECTED_EVENT, () => {
-      navigate("/scene/");
-    });
-  }
+  // redirect on login
+  createEventEffect(getEvents().CONNECTED_EVENT, () => {
+    navigate("/scene/");
+  });
 
   const [ip, setIp] = createPersistentSignal(
     "connect.address",

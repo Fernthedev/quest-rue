@@ -1,4 +1,4 @@
-import { Route, Router, Routes, Navigator } from "@solidjs/router";
+import { Route, Router, Navigator } from "@solidjs/router";
 import { lazy } from "solid-js";
 
 import toast, { Toaster } from "solid-toast";
@@ -57,11 +57,9 @@ export default function App() {
     <div class="w-screen h-screen overflow-hidden">
       <SettingsProvider>
         <Router>
-          <Routes>
             <Route path="/scene/:selectedData?" component={SceneViewer} />
-            <Route path={"/"} component={ConnectMenu} data={() => true} />{" "}
+            <Route path={"/"} component={ConnectMenu} />{" "}
             {/* redirect */}
-          </Routes>
         </Router>
         <div>
           <Toaster />
