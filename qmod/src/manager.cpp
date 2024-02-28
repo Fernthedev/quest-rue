@@ -343,7 +343,10 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
 
 std::unordered_map<Il2CppClass const*, ProtoClassDetails> cachedClasses;
 
-ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
+ProtoClassDetails getClassDetails_internal(Il2CppClass *clazz) {
+    if(clazz == nullptr)
+        return ProtoClassDetails(); // don't add to cache
+  
     auto cached = cachedClasses.find(clazz);
     if(cached != cachedClasses.end()) {
         LOG_INFO("Returning cached details for {}::{}", il2cpp_functions::class_get_namespace(clazz), il2cpp_functions::class_get_name(clazz));
@@ -351,8 +354,6 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     }
 
     ProtoClassDetails ret;
-    if(clazz == nullptr)
-        return ret; // don't add to cache
 
     auto const* currentClass = clazz;
     auto currentClassProto = &ret;
