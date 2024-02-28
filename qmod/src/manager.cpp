@@ -341,7 +341,7 @@ void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-std::unordered_map<Il2CppClass*, ProtoClassDetails> cachedClasses;
+std::unordered_map<Il2CppClass const*, ProtoClassDetails> cachedClasses;
 
 ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     auto cached = cachedClasses.find(clazz);
@@ -354,7 +354,7 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     if(clazz == nullptr)
         return ret; // don't add to cache
 
-    auto currentClass = clazz;
+    auto const* currentClass = clazz;
     auto currentClassProto = &ret;
 
     // Use a while loop instead of recursive

@@ -299,7 +299,7 @@ namespace MethodUtils {
         return HandleReturn(method, ret);
     }
 
-    ProtoPropertyInfo GetPropertyInfo(PropertyInfo* property) {
+    ProtoPropertyInfo GetPropertyInfo(PropertyInfo const* property) {
         ProtoPropertyInfo info;
         info.set_name(property->name);
         if (auto getter = property->get) {
@@ -319,7 +319,7 @@ namespace MethodUtils {
         return info;
     }
 
-    ProtoMethodInfo GetMethodInfo(MethodInfo *method) {
+    ProtoMethodInfo GetMethodInfo(MethodInfo const* method) {
       ProtoMethodInfo info;
       info.set_name(method->name);
       info.set_id(asInt(method));
@@ -346,14 +346,14 @@ namespace MethodUtils {
 } // namespace MethodUtils
 
 namespace FieldUtils {
-    ProtoDataPayload Get(FieldInfo* field, ProtoDataPayload const& object) {
+    ProtoDataPayload Get(FieldInfo const* field, ProtoDataPayload const& object) {
         void* inst = nullptr;
         if(!ClassUtils::GetIsStatic(field))
             inst = HandleType(object.typeinfo(), object.data());
 
         return Get(field, inst, object.typeinfo().has_classinfo() | object.typeinfo().has_arrayinfo());
     }
-    ProtoDataPayload Get(FieldInfo* field, void* object, bool isObject) {
+    ProtoDataPayload Get(FieldInfo const* field, void* object, bool isObject) {
         LOG_DEBUG("Getting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
@@ -365,23 +365,26 @@ namespace FieldUtils {
         char ret[size];
         // in the case of either a value type or not, the value we want will be copied to what we return
         if(ClassUtils::GetIsStatic(field))
-            il2cpp_functions::field_static_get_value(field, (void*) ret);
+          il2cpp_functions::field_static_get_value(
+              const_cast<FieldInfo *>(field), (void *)ret);
         else
-            il2cpp_functions::field_get_value((Il2CppObject*) object, field, (void*) ret);
+          il2cpp_functions::field_get_value((Il2CppObject *)object,
+                                            const_cast<FieldInfo *>(field),
+                                            (void *)ret);
 
         // handles the transformation of the data if necessary
         auto typeInfo = ClassUtils::GetTypeInfo(field->type);
         return OutputData(typeInfo, ret);
     }
 
-    void Set(FieldInfo* field, ProtoDataPayload const& object, ProtoDataPayload const& arg) {
+    void Set(FieldInfo const* field, ProtoDataPayload const& object, ProtoDataPayload const& arg) {
         void* inst = nullptr;
         if(!ClassUtils::GetIsStatic(field))
             inst = HandleType(object.typeinfo(), object.data());
 
         return Set(field, inst, arg, object.typeinfo().has_classinfo() | object.typeinfo().has_arrayinfo());
     }
-    void Set(FieldInfo* field, void* object, ProtoDataPayload const& arg, bool isObject) {
+    void Set(FieldInfo const* field, void* object, ProtoDataPayload const& arg, bool isObject) {
         LOG_DEBUG("Setting field {}", field->name);
         LOG_DEBUG("Field type: {} = {}", (int) field->type->type, il2cpp_functions::type_get_name(field->type));
 
@@ -392,12 +395,13 @@ namespace FieldUtils {
         void* value = HandleType(arg.typeinfo(), arg.data());
 
         if(ClassUtils::GetIsStatic(field))
-            il2cpp_functions::field_static_set_value(field, value);
+          il2cpp_functions::field_static_set_value(
+              const_cast<FieldInfo *>(field), value);
         else
-            il2cpp_functions::field_set_value((Il2CppObject*) object, field, value);
+            il2cpp_functions::field_set_value((Il2CppObject*) object, const_cast<FieldInfo*>(field), value);
     }
 
-    ProtoFieldInfo GetFieldInfo(FieldInfo* field) {
+    ProtoFieldInfo GetFieldInfo(FieldInfo const* field) {
         ProtoFieldInfo info;
         info.set_name(field->name);
         info.set_id(asInt(field));
