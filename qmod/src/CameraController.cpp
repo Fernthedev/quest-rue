@@ -2,6 +2,9 @@
 #include "main.hpp"
 #include "CameraController.hpp"
 
+#include "sombrero/shared/FastVector2.hpp"
+#include "sombrero/shared/FastVector3.hpp"
+
 DEFINE_TYPE(QRUE, CameraController);
 
 bool enabled = true;
@@ -71,31 +74,44 @@ void CameraController::OnEnable() {
     childTransform->set_localPosition({0, 0, 0});
     childTransform->set_localEulerAngles({0, 0, 0});
 
+#ifdef UNITY_2021
+#else
+// TODO: Fix for OpenXR
+
     // in level
-    if(auto pauseMenu = GetPauseMenu()) {
-        // can't just search for "MenuControllers" because there are two, we need the one that's a child of the pause menu
-        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
-        controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
-        controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
-        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
-            latestInputModule = vrInputModule;
-            vrInputModule->set_useMouseForPressInput(true);
-            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
-        }
-    // in main menu
-    } else if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
-        latestInputModule = objectsSource->vrInputModule;
-        objectsSource->vrInputModule->set_useMouseForPressInput(true);
-        objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
-        objectsSource->centerAdjust->ResetRoom();
-        objectsSource->centerAdjust->set_enabled(false);
-        for(auto gameObject : objectsSource->controllerModels) {
-            if(gameObject)
-                gameObject->SetActive(false);
-        }
-        controller0 = objectsSource->controller0;
-        controller1 = objectsSource->controller1;
+    if (auto pauseMenu = GetPauseMenu()) {
+      // can't just search for "MenuControllers" because there are two, we need
+      // the one that's a child of the pause menu
+      auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+      controller0 =
+          transform->Find("ControllerLeft")->GetComponent<VRController *>();
+      controller1 =
+          transform->Find("ControllerRight")->GetComponent<VRController *>();
+      if (auto vrInputModule =
+              Object::FindObjectOfType<VRUIControls::VRInputModule *>()) {
+        latestInputModule = vrInputModule;
+        vrInputModule->set_useMouseForPressInput(true);
+        vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()
+            ->SetActive(false);
+      }
+      // in main menu
+    } else if (auto objectsSource =
+                   Object::FindObjectOfType<FirstPersonFlyingController *>()) {
+      latestInputModule = objectsSource->vrInputModule;
+      objectsSource->vrInputModule->set_useMouseForPressInput(true);
+      objectsSource->vrInputModule->vrPointer->laserPointerPrefab
+          ->get_gameObject()
+          ->SetActive(false);
+      objectsSource->centerAdjust->ResetRoom();
+      objectsSource->centerAdjust->set_enabled(false);
+      for (auto gameObject : objectsSource->controllerModels) {
+        if (gameObject)
+          gameObject->SetActive(false);
+      }
+      controller0 = objectsSource->controller0;
+      controller1 = objectsSource->controller1;
     }
+#endif
 
     if(controller0 && controller1) {
         controller0->set_enabled(false);
@@ -121,6 +137,10 @@ void CameraController::OnDisable() {
     parentTransform->set_position({0, 0, 0});
     parentTransform->set_eulerAngles({0, 0, 0});
 
+#ifdef UNITY_2021
+// TODO: Fix for OpenXR
+#else
+    
     if(auto pauseMenu = GetPauseMenu()) {
         LOG_DEBUG("Using controllers from pause menu");
         auto transform = pauseMenu->get_transform()->Find("MenuControllers");
@@ -144,6 +164,7 @@ void CameraController::OnDisable() {
     }
 
     latestInputModule = nullptr;
+#endif
 
     if(controller0 && controller1) {
         controller0->set_enabled(true);
@@ -187,7 +208,7 @@ void CameraController::Update() {
             break;
         case TouchPhase::Ended:
         case TouchPhase::Canceled:
-            Rotate(pos - lastPos);
+            Rotate(Sombrero::FastVector2(pos) - lastPos);
             if(
                 (time - lastTime) < clickTime
                 && lastMovement < movementThreshold
@@ -195,14 +216,15 @@ void CameraController::Update() {
                 click = true;
             break;
         default:
-            Rotate(pos - lastPos);
+            Rotate(Sombrero::FastVector2(pos) - lastPos);
+            
             lastPos = pos;
             break;
         }
     }
 
     if(!keyboardOpen) {
-        Vector3 movement = {0};
+        Sombrero::FastVector3 movement = {0};
         if(Input::GetKey(KeyCode::W))
             movement = movement + childTransform->get_forward();
         if(Input::GetKey(KeyCode::S))
@@ -215,8 +237,8 @@ void CameraController::Update() {
             movement = movement + childTransform->get_up();
         if(Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
             movement = movement - childTransform->get_up();
-        if(movement != Vector3{0})
-            Move(movement);
+        if (movement != Sombrero::FastVector3::zero())
+          Move(movement);
 
         if(Input::GetKeyDown(KeyCode::Escape)) {
             if(auto pauser = Object::FindObjectOfType<PauseController*>())
@@ -238,12 +260,16 @@ void CameraController::Update() {
         }
 
         static auto getInputString = il2cpp_utils::resolve_icall<StringW>("UnityEngine.Input::get_inputString");
+#ifdef UNITY_2021
+// TODO: Fix for OpenXR
+#else
         if(Input::get_anyKeyDown()) {
             for(auto& c : getInputString()) {
                 if(c != u'\n' && c != u'\b')
                     keyboardOpen->keyWasPressedEvent->Invoke(c);
             }
         }
+#endif
         if(Input::GetKey(KeyCode::Backspace)) {
             if(backspaceHold || time - lastBackspace > backspaceTime) {
                 if(backspaceHoldStart)
@@ -252,9 +278,13 @@ void CameraController::Update() {
                 lastBackspace = time;
                 keyboardOpen->deleteButtonWasPressedEvent->Invoke();
             }
-        } else
-            backspaceHold = backspaceHoldStart = false;
-
+        } else {
+#ifdef UNITY_2021
+          // TODO: Fix for OpenXR
+#else
+          backspaceHold = backspaceHoldStart = false;
+#endif
+        }
         if(Input::GetKeyDown(KeyCode::Return))
             keyboardOpen->okButtonWasPressedEvent->Invoke();
     }
@@ -265,16 +295,16 @@ void CameraController::Update() {
     }
 }
 
-void CameraController::Rotate(Vector2 delta) {
+void CameraController::Rotate(Sombrero::FastVector2 delta) {
     delta = delta * rotateSensitivity * 20;
     lastMovement += delta.get_magnitude();
-    auto prev = parentTransform->get_eulerAngles();
-    parentTransform->set_eulerAngles(prev + Vector3{-delta.y, delta.x, 0});
+    Sombrero::FastVector3 prev = parentTransform->get_eulerAngles();
+    parentTransform->set_eulerAngles(prev + Sombrero::FastVector3{-delta.y, delta.x, 0});
 }
 
-void CameraController::Move(Vector3 delta) {
+void CameraController::Move(Sombrero::FastVector3 delta) {
     delta = delta * moveSensitivity / 50;
-    auto prev = parentTransform->get_position();
+    Sombrero::FastVector3 prev = parentTransform->get_position();
     parentTransform->set_position(prev + delta);
 }
 #endif

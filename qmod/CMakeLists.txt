@@ -36,6 +36,8 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # compile options used
 add_compile_options(-frtti -fexceptions)
+add_compile_options(-flto -fexceptions -fvisibility=hidden)
+add_compile_options(-DUNITY_2021)
 add_compile_options(-O3)
 # compile definitions used
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
@@ -58,7 +60,7 @@ add_library(
 )
 
 # vcpkg stuff
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 target_link_libraries(${COMPILE_ID} PRIVATE protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
 find_package(websocketpp CONFIG REQUIRED)
 target_link_libraries(${COMPILE_ID} PRIVATE websocketpp::websocketpp)

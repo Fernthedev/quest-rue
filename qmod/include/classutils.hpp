@@ -2,6 +2,8 @@
 
 #include "main.hpp"
 
+#include <tuple>
+
 size_t fieldTypeSize(const Il2CppType* type);
 
 #define typeofclass(klass) &klass->byval_arg
@@ -10,16 +12,18 @@ size_t fieldTypeSize(const Il2CppType* type);
 #define typeofinst(instance) typeofclass(classofinst(instance))
 
 namespace ClassUtils {
-    std::vector<FieldInfo*> GetFields(Il2CppClass const* klass);
+    std::vector<FieldInfo const*> GetFields(Il2CppClass const* klass);
 
-    std::vector<const MethodInfo*> GetPropMethods(PropertyInfo const* prop);
-    std::vector<PropertyInfo*> GetProperties(Il2CppClass const* klass);
+    // [getter?, setter?]
+    std::pair<const MethodInfo *, const MethodInfo *>
+    GetPropMethods(PropertyInfo const *prop);
+    std::vector<PropertyInfo const*> GetProperties(Il2CppClass const* klass);
 
-    std::vector<MethodInfo*> GetMethods(Il2CppClass const* klass);
+    std::vector<MethodInfo const*> GetMethods(Il2CppClass const* klass);
 
-    std::vector<Il2CppClass*> GetInterfaces(Il2CppClass const* klass);
+    std::vector<Il2CppClass const*> GetInterfaces(Il2CppClass const* klass);
 
-    Il2CppClass* GetParent(Il2CppClass const* klass);
+    Il2CppClass const* GetParent(Il2CppClass const* klass);
 
     bool GetIsLiteral(FieldInfo const* field);
 
