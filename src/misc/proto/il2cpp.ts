@@ -36,7 +36,8 @@ export interface ProtoTypeInfo {
     | { $case: "arrayInfo"; arrayInfo: ProtoArrayInfo }
     | { $case: "structInfo"; structInfo: ProtoStructInfo }
     | { $case: "classInfo"; classInfo: ProtoClassInfo }
-    | { $case: "genericInfo"; genericInfo: ProtoGenericInfo };
+    | { $case: "genericInfo"; genericInfo: ProtoGenericInfo }
+    | undefined;
   size: number;
   isByref: boolean;
 }
@@ -208,7 +209,8 @@ export interface ProtoDataSegment {
     | { $case: "arrayData"; arrayData: ProtoDataSegment_ArrayData }
     | { $case: "structData"; structData: ProtoDataSegment_StructData }
     | { $case: "classData"; classData: bigint }
-    | { $case: "genericData"; genericData: Uint8Array };
+    | { $case: "genericData"; genericData: Uint8Array }
+    | undefined;
 }
 
 /** repeated fields aren't allowed directly in oneOf */
@@ -289,28 +291,31 @@ export const ProtoClassInfo = {
 
   fromJSON(object: any): ProtoClassInfo {
     return {
-      namespaze: isSet(object.namespaze) ? String(object.namespaze) : "",
-      clazz: isSet(object.clazz) ? String(object.clazz) : "",
-      generics: Array.isArray(object?.generics) ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e)) : [],
+      namespaze: isSet(object.namespaze) ? globalThis.String(object.namespaze) : "",
+      clazz: isSet(object.clazz) ? globalThis.String(object.clazz) : "",
+      generics: globalThis.Array.isArray(object?.generics)
+        ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e))
+        : [],
     };
   },
 
   toJSON(message: ProtoClassInfo): unknown {
     const obj: any = {};
-    message.namespaze !== undefined && (obj.namespaze = message.namespaze);
-    message.clazz !== undefined && (obj.clazz = message.clazz);
-    if (message.generics) {
-      obj.generics = message.generics.map((e) => e ? ProtoTypeInfo.toJSON(e) : undefined);
-    } else {
-      obj.generics = [];
+    if (message.namespaze !== "") {
+      obj.namespaze = message.namespaze;
+    }
+    if (message.clazz !== "") {
+      obj.clazz = message.clazz;
+    }
+    if (message.generics?.length) {
+      obj.generics = message.generics.map((e) => ProtoTypeInfo.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoClassInfo>, I>>(base?: I): ProtoClassInfo {
-    return ProtoClassInfo.fromPartial(base ?? {});
+    return ProtoClassInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoClassInfo>, I>>(object: I): ProtoClassInfo {
     const message = createBaseProtoClassInfo();
     message.namespaze = object.namespaze ?? "";
@@ -373,7 +378,7 @@ export const ProtoStructInfo = {
       clazz: isSet(object.clazz) ? ProtoClassInfo.fromJSON(object.clazz) : undefined,
       fieldOffsets: isObject(object.fieldOffsets)
         ? Object.entries(object.fieldOffsets).reduce<{ [key: number]: ProtoFieldInfo }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoFieldInfo.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoFieldInfo.fromJSON(value);
           return acc;
         }, {})
         : {},
@@ -382,20 +387,24 @@ export const ProtoStructInfo = {
 
   toJSON(message: ProtoStructInfo): unknown {
     const obj: any = {};
-    message.clazz !== undefined && (obj.clazz = message.clazz ? ProtoClassInfo.toJSON(message.clazz) : undefined);
-    obj.fieldOffsets = {};
+    if (message.clazz !== undefined) {
+      obj.clazz = ProtoClassInfo.toJSON(message.clazz);
+    }
     if (message.fieldOffsets) {
-      Object.entries(message.fieldOffsets).forEach(([k, v]) => {
-        obj.fieldOffsets[k] = ProtoFieldInfo.toJSON(v);
-      });
+      const entries = Object.entries(message.fieldOffsets);
+      if (entries.length > 0) {
+        obj.fieldOffsets = {};
+        entries.forEach(([k, v]) => {
+          obj.fieldOffsets[k] = ProtoFieldInfo.toJSON(v);
+        });
+      }
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoStructInfo>, I>>(base?: I): ProtoStructInfo {
-    return ProtoStructInfo.fromPartial(base ?? {});
+    return ProtoStructInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoStructInfo>, I>>(object: I): ProtoStructInfo {
     const message = createBaseProtoStructInfo();
     message.clazz = (object.clazz !== undefined && object.clazz !== null)
@@ -404,7 +413,7 @@ export const ProtoStructInfo = {
     message.fieldOffsets = Object.entries(object.fieldOffsets ?? {}).reduce<{ [key: number]: ProtoFieldInfo }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoFieldInfo.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoFieldInfo.fromPartial(value);
         }
         return acc;
       },
@@ -461,24 +470,27 @@ export const ProtoStructInfo_FieldOffsetsEntry = {
 
   fromJSON(object: any): ProtoStructInfo_FieldOffsetsEntry {
     return {
-      key: isSet(object.key) ? Number(object.key) : 0,
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
       value: isSet(object.value) ? ProtoFieldInfo.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: ProtoStructInfo_FieldOffsetsEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined && (obj.value = message.value ? ProtoFieldInfo.toJSON(message.value) : undefined);
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoFieldInfo.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoStructInfo_FieldOffsetsEntry>, I>>(
     base?: I,
   ): ProtoStructInfo_FieldOffsetsEntry {
-    return ProtoStructInfo_FieldOffsetsEntry.fromPartial(base ?? {});
+    return ProtoStructInfo_FieldOffsetsEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoStructInfo_FieldOffsetsEntry>, I>>(
     object: I,
   ): ProtoStructInfo_FieldOffsetsEntry {
@@ -532,15 +544,15 @@ export const ProtoArrayInfo = {
 
   toJSON(message: ProtoArrayInfo): unknown {
     const obj: any = {};
-    message.memberType !== undefined &&
-      (obj.memberType = message.memberType ? ProtoTypeInfo.toJSON(message.memberType) : undefined);
+    if (message.memberType !== undefined) {
+      obj.memberType = ProtoTypeInfo.toJSON(message.memberType);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoArrayInfo>, I>>(base?: I): ProtoArrayInfo {
-    return ProtoArrayInfo.fromPartial(base ?? {});
+    return ProtoArrayInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoArrayInfo>, I>>(object: I): ProtoArrayInfo {
     const message = createBaseProtoArrayInfo();
     message.memberType = (object.memberType !== undefined && object.memberType !== null)
@@ -597,22 +609,25 @@ export const ProtoGenericInfo = {
 
   fromJSON(object: any): ProtoGenericInfo {
     return {
-      genericIndex: isSet(object.genericIndex) ? Number(object.genericIndex) : 0,
-      name: isSet(object.name) ? String(object.name) : "",
+      genericIndex: isSet(object.genericIndex) ? globalThis.Number(object.genericIndex) : 0,
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
     };
   },
 
   toJSON(message: ProtoGenericInfo): unknown {
     const obj: any = {};
-    message.genericIndex !== undefined && (obj.genericIndex = Math.round(message.genericIndex));
-    message.name !== undefined && (obj.name = message.name);
+    if (message.genericIndex !== 0) {
+      obj.genericIndex = Math.round(message.genericIndex);
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoGenericInfo>, I>>(base?: I): ProtoGenericInfo {
-    return ProtoGenericInfo.fromPartial(base ?? {});
+    return ProtoGenericInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoGenericInfo>, I>>(object: I): ProtoGenericInfo {
     const message = createBaseProtoGenericInfo();
     message.genericIndex = object.genericIndex ?? 0;
@@ -731,33 +746,40 @@ export const ProtoTypeInfo = {
         : isSet(object.genericInfo)
         ? { $case: "genericInfo", genericInfo: ProtoGenericInfo.fromJSON(object.genericInfo) }
         : undefined,
-      size: isSet(object.size) ? Number(object.size) : 0,
-      isByref: isSet(object.isByref) ? Boolean(object.isByref) : false,
+      size: isSet(object.size) ? globalThis.Number(object.size) : 0,
+      isByref: isSet(object.isByref) ? globalThis.Boolean(object.isByref) : false,
     };
   },
 
   toJSON(message: ProtoTypeInfo): unknown {
     const obj: any = {};
-    message.Info?.$case === "primitiveInfo" && (obj.primitiveInfo = message.Info?.primitiveInfo !== undefined
-      ? protoTypeInfo_PrimitiveToJSON(message.Info?.primitiveInfo)
-      : undefined);
-    message.Info?.$case === "arrayInfo" &&
-      (obj.arrayInfo = message.Info?.arrayInfo ? ProtoArrayInfo.toJSON(message.Info?.arrayInfo) : undefined);
-    message.Info?.$case === "structInfo" &&
-      (obj.structInfo = message.Info?.structInfo ? ProtoStructInfo.toJSON(message.Info?.structInfo) : undefined);
-    message.Info?.$case === "classInfo" &&
-      (obj.classInfo = message.Info?.classInfo ? ProtoClassInfo.toJSON(message.Info?.classInfo) : undefined);
-    message.Info?.$case === "genericInfo" &&
-      (obj.genericInfo = message.Info?.genericInfo ? ProtoGenericInfo.toJSON(message.Info?.genericInfo) : undefined);
-    message.size !== undefined && (obj.size = Math.round(message.size));
-    message.isByref !== undefined && (obj.isByref = message.isByref);
+    if (message.Info?.$case === "primitiveInfo") {
+      obj.primitiveInfo = protoTypeInfo_PrimitiveToJSON(message.Info.primitiveInfo);
+    }
+    if (message.Info?.$case === "arrayInfo") {
+      obj.arrayInfo = ProtoArrayInfo.toJSON(message.Info.arrayInfo);
+    }
+    if (message.Info?.$case === "structInfo") {
+      obj.structInfo = ProtoStructInfo.toJSON(message.Info.structInfo);
+    }
+    if (message.Info?.$case === "classInfo") {
+      obj.classInfo = ProtoClassInfo.toJSON(message.Info.classInfo);
+    }
+    if (message.Info?.$case === "genericInfo") {
+      obj.genericInfo = ProtoGenericInfo.toJSON(message.Info.genericInfo);
+    }
+    if (message.size !== 0) {
+      obj.size = Math.round(message.size);
+    }
+    if (message.isByref === true) {
+      obj.isByref = message.isByref;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoTypeInfo>, I>>(base?: I): ProtoTypeInfo {
-    return ProtoTypeInfo.fromPartial(base ?? {});
+    return ProtoTypeInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoTypeInfo>, I>>(object: I): ProtoTypeInfo {
     const message = createBaseProtoTypeInfo();
     if (
@@ -801,6 +823,9 @@ export const ProtoFieldInfo = {
       writer.uint32(10).string(message.name);
     }
     if (message.id !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.id) !== message.id) {
+        throw new globalThis.Error("value provided for field message.id of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.id.toString());
     }
     if (message.type !== undefined) {
@@ -858,26 +883,33 @@ export const ProtoFieldInfo = {
 
   fromJSON(object: any): ProtoFieldInfo {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
       id: isSet(object.id) ? BigInt(object.id) : BigInt("0"),
       type: isSet(object.type) ? ProtoTypeInfo.fromJSON(object.type) : undefined,
-      literal: isSet(object.literal) ? Boolean(object.literal) : false,
+      literal: isSet(object.literal) ? globalThis.Boolean(object.literal) : false,
     };
   },
 
   toJSON(message: ProtoFieldInfo): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.id !== undefined && (obj.id = message.id.toString());
-    message.type !== undefined && (obj.type = message.type ? ProtoTypeInfo.toJSON(message.type) : undefined);
-    message.literal !== undefined && (obj.literal = message.literal);
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.id !== BigInt("0")) {
+      obj.id = message.id.toString();
+    }
+    if (message.type !== undefined) {
+      obj.type = ProtoTypeInfo.toJSON(message.type);
+    }
+    if (message.literal === true) {
+      obj.literal = message.literal;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoFieldInfo>, I>>(base?: I): ProtoFieldInfo {
-    return ProtoFieldInfo.fromPartial(base ?? {});
+    return ProtoFieldInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoFieldInfo>, I>>(object: I): ProtoFieldInfo {
     const message = createBaseProtoFieldInfo();
     message.name = object.name ?? "";
@@ -900,12 +932,21 @@ export const ProtoPropertyInfo = {
       writer.uint32(10).string(message.name);
     }
     if (message.getterId !== undefined) {
+      if (BigInt.asUintN(64, message.getterId) !== message.getterId) {
+        throw new globalThis.Error("value provided for field message.getterId of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.getterId.toString());
     }
     if (message.setterId !== undefined) {
+      if (BigInt.asUintN(64, message.setterId) !== message.setterId) {
+        throw new globalThis.Error("value provided for field message.setterId of type uint64 too large");
+      }
       writer.uint32(24).uint64(message.setterId.toString());
     }
     if (message.backingFieldId !== undefined) {
+      if (BigInt.asUintN(64, message.backingFieldId) !== message.backingFieldId) {
+        throw new globalThis.Error("value provided for field message.backingFieldId of type uint64 too large");
+      }
       writer.uint32(32).uint64(message.backingFieldId.toString());
     }
     if (message.type !== undefined) {
@@ -967,7 +1008,7 @@ export const ProtoPropertyInfo = {
 
   fromJSON(object: any): ProtoPropertyInfo {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
       getterId: isSet(object.getterId) ? BigInt(object.getterId) : undefined,
       setterId: isSet(object.setterId) ? BigInt(object.setterId) : undefined,
       backingFieldId: isSet(object.backingFieldId) ? BigInt(object.backingFieldId) : undefined,
@@ -977,18 +1018,27 @@ export const ProtoPropertyInfo = {
 
   toJSON(message: ProtoPropertyInfo): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.getterId !== undefined && (obj.getterId = message.getterId.toString());
-    message.setterId !== undefined && (obj.setterId = message.setterId.toString());
-    message.backingFieldId !== undefined && (obj.backingFieldId = message.backingFieldId.toString());
-    message.type !== undefined && (obj.type = message.type ? ProtoTypeInfo.toJSON(message.type) : undefined);
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.getterId !== undefined) {
+      obj.getterId = message.getterId.toString();
+    }
+    if (message.setterId !== undefined) {
+      obj.setterId = message.setterId.toString();
+    }
+    if (message.backingFieldId !== undefined) {
+      obj.backingFieldId = message.backingFieldId.toString();
+    }
+    if (message.type !== undefined) {
+      obj.type = ProtoTypeInfo.toJSON(message.type);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoPropertyInfo>, I>>(base?: I): ProtoPropertyInfo {
-    return ProtoPropertyInfo.fromPartial(base ?? {});
+    return ProtoPropertyInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoPropertyInfo>, I>>(object: I): ProtoPropertyInfo {
     const message = createBaseProtoPropertyInfo();
     message.name = object.name ?? "";
@@ -1012,6 +1062,9 @@ export const ProtoMethodInfo = {
       writer.uint32(10).string(message.name);
     }
     if (message.id !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.id) !== message.id) {
+        throw new globalThis.Error("value provided for field message.id of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.id.toString());
     }
     for (const v of message.args) {
@@ -1069,31 +1122,35 @@ export const ProtoMethodInfo = {
 
   fromJSON(object: any): ProtoMethodInfo {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
       id: isSet(object.id) ? BigInt(object.id) : BigInt("0"),
-      args: Array.isArray(object?.args) ? object.args.map((e: any) => ProtoMethodInfo_Argument.fromJSON(e)) : [],
+      args: globalThis.Array.isArray(object?.args)
+        ? object.args.map((e: any) => ProtoMethodInfo_Argument.fromJSON(e))
+        : [],
       returnType: isSet(object.returnType) ? ProtoTypeInfo.fromJSON(object.returnType) : undefined,
     };
   },
 
   toJSON(message: ProtoMethodInfo): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.id !== undefined && (obj.id = message.id.toString());
-    if (message.args) {
-      obj.args = message.args.map((e) => e ? ProtoMethodInfo_Argument.toJSON(e) : undefined);
-    } else {
-      obj.args = [];
+    if (message.name !== "") {
+      obj.name = message.name;
     }
-    message.returnType !== undefined &&
-      (obj.returnType = message.returnType ? ProtoTypeInfo.toJSON(message.returnType) : undefined);
+    if (message.id !== BigInt("0")) {
+      obj.id = message.id.toString();
+    }
+    if (message.args?.length) {
+      obj.args = message.args.map((e) => ProtoMethodInfo_Argument.toJSON(e));
+    }
+    if (message.returnType !== undefined) {
+      obj.returnType = ProtoTypeInfo.toJSON(message.returnType);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoMethodInfo>, I>>(base?: I): ProtoMethodInfo {
-    return ProtoMethodInfo.fromPartial(base ?? {});
+    return ProtoMethodInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoMethodInfo>, I>>(object: I): ProtoMethodInfo {
     const message = createBaseProtoMethodInfo();
     message.name = object.name ?? "";
@@ -1153,22 +1210,25 @@ export const ProtoMethodInfo_Argument = {
 
   fromJSON(object: any): ProtoMethodInfo_Argument {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
       type: isSet(object.type) ? ProtoTypeInfo.fromJSON(object.type) : undefined,
     };
   },
 
   toJSON(message: ProtoMethodInfo_Argument): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.type !== undefined && (obj.type = message.type ? ProtoTypeInfo.toJSON(message.type) : undefined);
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.type !== undefined) {
+      obj.type = ProtoTypeInfo.toJSON(message.type);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoMethodInfo_Argument>, I>>(base?: I): ProtoMethodInfo_Argument {
-    return ProtoMethodInfo_Argument.fromPartial(base ?? {});
+    return ProtoMethodInfo_Argument.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoMethodInfo_Argument>, I>>(object: I): ProtoMethodInfo_Argument {
     const message = createBaseProtoMethodInfo_Argument();
     message.name = object.name ?? "";
@@ -1307,21 +1367,23 @@ export const ProtoClassDetails = {
   fromJSON(object: any): ProtoClassDetails {
     return {
       clazz: isSet(object.clazz) ? ProtoClassInfo.fromJSON(object.clazz) : undefined,
-      fields: Array.isArray(object?.fields) ? object.fields.map((e: any) => ProtoFieldInfo.fromJSON(e)) : [],
-      properties: Array.isArray(object?.properties)
+      fields: globalThis.Array.isArray(object?.fields) ? object.fields.map((e: any) => ProtoFieldInfo.fromJSON(e)) : [],
+      properties: globalThis.Array.isArray(object?.properties)
         ? object.properties.map((e: any) => ProtoPropertyInfo.fromJSON(e))
         : [],
-      methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => ProtoMethodInfo.fromJSON(e)) : [],
-      staticFields: Array.isArray(object?.staticFields)
+      methods: globalThis.Array.isArray(object?.methods)
+        ? object.methods.map((e: any) => ProtoMethodInfo.fromJSON(e))
+        : [],
+      staticFields: globalThis.Array.isArray(object?.staticFields)
         ? object.staticFields.map((e: any) => ProtoFieldInfo.fromJSON(e))
         : [],
-      staticProperties: Array.isArray(object?.staticProperties)
+      staticProperties: globalThis.Array.isArray(object?.staticProperties)
         ? object.staticProperties.map((e: any) => ProtoPropertyInfo.fromJSON(e))
         : [],
-      staticMethods: Array.isArray(object?.staticMethods)
+      staticMethods: globalThis.Array.isArray(object?.staticMethods)
         ? object.staticMethods.map((e: any) => ProtoMethodInfo.fromJSON(e))
         : [],
-      interfaces: Array.isArray(object?.interfaces)
+      interfaces: globalThis.Array.isArray(object?.interfaces)
         ? object.interfaces.map((e: any) => ProtoClassInfo.fromJSON(e))
         : [],
       parent: isSet(object.parent) ? ProtoClassDetails.fromJSON(object.parent) : undefined,
@@ -1330,51 +1392,39 @@ export const ProtoClassDetails = {
 
   toJSON(message: ProtoClassDetails): unknown {
     const obj: any = {};
-    message.clazz !== undefined && (obj.clazz = message.clazz ? ProtoClassInfo.toJSON(message.clazz) : undefined);
-    if (message.fields) {
-      obj.fields = message.fields.map((e) => e ? ProtoFieldInfo.toJSON(e) : undefined);
-    } else {
-      obj.fields = [];
+    if (message.clazz !== undefined) {
+      obj.clazz = ProtoClassInfo.toJSON(message.clazz);
     }
-    if (message.properties) {
-      obj.properties = message.properties.map((e) => e ? ProtoPropertyInfo.toJSON(e) : undefined);
-    } else {
-      obj.properties = [];
+    if (message.fields?.length) {
+      obj.fields = message.fields.map((e) => ProtoFieldInfo.toJSON(e));
     }
-    if (message.methods) {
-      obj.methods = message.methods.map((e) => e ? ProtoMethodInfo.toJSON(e) : undefined);
-    } else {
-      obj.methods = [];
+    if (message.properties?.length) {
+      obj.properties = message.properties.map((e) => ProtoPropertyInfo.toJSON(e));
     }
-    if (message.staticFields) {
-      obj.staticFields = message.staticFields.map((e) => e ? ProtoFieldInfo.toJSON(e) : undefined);
-    } else {
-      obj.staticFields = [];
+    if (message.methods?.length) {
+      obj.methods = message.methods.map((e) => ProtoMethodInfo.toJSON(e));
     }
-    if (message.staticProperties) {
-      obj.staticProperties = message.staticProperties.map((e) => e ? ProtoPropertyInfo.toJSON(e) : undefined);
-    } else {
-      obj.staticProperties = [];
+    if (message.staticFields?.length) {
+      obj.staticFields = message.staticFields.map((e) => ProtoFieldInfo.toJSON(e));
     }
-    if (message.staticMethods) {
-      obj.staticMethods = message.staticMethods.map((e) => e ? ProtoMethodInfo.toJSON(e) : undefined);
-    } else {
-      obj.staticMethods = [];
+    if (message.staticProperties?.length) {
+      obj.staticProperties = message.staticProperties.map((e) => ProtoPropertyInfo.toJSON(e));
     }
-    if (message.interfaces) {
-      obj.interfaces = message.interfaces.map((e) => e ? ProtoClassInfo.toJSON(e) : undefined);
-    } else {
-      obj.interfaces = [];
+    if (message.staticMethods?.length) {
+      obj.staticMethods = message.staticMethods.map((e) => ProtoMethodInfo.toJSON(e));
     }
-    message.parent !== undefined &&
-      (obj.parent = message.parent ? ProtoClassDetails.toJSON(message.parent) : undefined);
+    if (message.interfaces?.length) {
+      obj.interfaces = message.interfaces.map((e) => ProtoClassInfo.toJSON(e));
+    }
+    if (message.parent !== undefined) {
+      obj.parent = ProtoClassDetails.toJSON(message.parent);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoClassDetails>, I>>(base?: I): ProtoClassDetails {
-    return ProtoClassDetails.fromPartial(base ?? {});
+    return ProtoClassDetails.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoClassDetails>, I>>(object: I): ProtoClassDetails {
     const message = createBaseProtoClassDetails();
     message.clazz = (object.clazz !== undefined && object.clazz !== null)
@@ -1411,6 +1461,9 @@ export const ProtoDataSegment = {
         ProtoDataSegment_StructData.encode(message.Data.structData, writer.uint32(26).fork()).ldelim();
         break;
       case "classData":
+        if (BigInt.asUintN(64, message.Data.classData) !== message.Data.classData) {
+          throw new globalThis.Error("value provided for field message.Data.classData of type uint64 too large");
+        }
         writer.uint32(32).uint64(message.Data.classData.toString());
         break;
       case "genericData":
@@ -1492,27 +1545,27 @@ export const ProtoDataSegment = {
 
   toJSON(message: ProtoDataSegment): unknown {
     const obj: any = {};
-    message.Data?.$case === "primitiveData" && (obj.primitiveData = message.Data?.primitiveData !== undefined
-      ? base64FromBytes(message.Data?.primitiveData)
-      : undefined);
-    message.Data?.$case === "arrayData" &&
-      (obj.arrayData = message.Data?.arrayData
-        ? ProtoDataSegment_ArrayData.toJSON(message.Data?.arrayData)
-        : undefined);
-    message.Data?.$case === "structData" && (obj.structData = message.Data?.structData
-      ? ProtoDataSegment_StructData.toJSON(message.Data?.structData)
-      : undefined);
-    message.Data?.$case === "classData" && (obj.classData = message.Data?.classData.toString());
-    message.Data?.$case === "genericData" && (obj.genericData = message.Data?.genericData !== undefined
-      ? base64FromBytes(message.Data?.genericData)
-      : undefined);
+    if (message.Data?.$case === "primitiveData") {
+      obj.primitiveData = base64FromBytes(message.Data.primitiveData);
+    }
+    if (message.Data?.$case === "arrayData") {
+      obj.arrayData = ProtoDataSegment_ArrayData.toJSON(message.Data.arrayData);
+    }
+    if (message.Data?.$case === "structData") {
+      obj.structData = ProtoDataSegment_StructData.toJSON(message.Data.structData);
+    }
+    if (message.Data?.$case === "classData") {
+      obj.classData = message.Data.classData.toString();
+    }
+    if (message.Data?.$case === "genericData") {
+      obj.genericData = base64FromBytes(message.Data.genericData);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoDataSegment>, I>>(base?: I): ProtoDataSegment {
-    return ProtoDataSegment.fromPartial(base ?? {});
+    return ProtoDataSegment.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoDataSegment>, I>>(object: I): ProtoDataSegment {
     const message = createBaseProtoDataSegment();
     if (
@@ -1583,23 +1636,22 @@ export const ProtoDataSegment_ArrayData = {
   },
 
   fromJSON(object: any): ProtoDataSegment_ArrayData {
-    return { data: Array.isArray(object?.data) ? object.data.map((e: any) => ProtoDataSegment.fromJSON(e)) : [] };
+    return {
+      data: globalThis.Array.isArray(object?.data) ? object.data.map((e: any) => ProtoDataSegment.fromJSON(e)) : [],
+    };
   },
 
   toJSON(message: ProtoDataSegment_ArrayData): unknown {
     const obj: any = {};
-    if (message.data) {
-      obj.data = message.data.map((e) => e ? ProtoDataSegment.toJSON(e) : undefined);
-    } else {
-      obj.data = [];
+    if (message.data?.length) {
+      obj.data = message.data.map((e) => ProtoDataSegment.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoDataSegment_ArrayData>, I>>(base?: I): ProtoDataSegment_ArrayData {
-    return ProtoDataSegment_ArrayData.fromPartial(base ?? {});
+    return ProtoDataSegment_ArrayData.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_ArrayData>, I>>(object: I): ProtoDataSegment_ArrayData {
     const message = createBaseProtoDataSegment_ArrayData();
     message.data = object.data?.map((e) => ProtoDataSegment.fromPartial(e)) || [];
@@ -1649,7 +1701,7 @@ export const ProtoDataSegment_StructData = {
     return {
       data: isObject(object.data)
         ? Object.entries(object.data).reduce<{ [key: number]: ProtoDataSegment }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromJSON(value);
           return acc;
         }, {})
         : {},
@@ -1658,25 +1710,27 @@ export const ProtoDataSegment_StructData = {
 
   toJSON(message: ProtoDataSegment_StructData): unknown {
     const obj: any = {};
-    obj.data = {};
     if (message.data) {
-      Object.entries(message.data).forEach(([k, v]) => {
-        obj.data[k] = ProtoDataSegment.toJSON(v);
-      });
+      const entries = Object.entries(message.data);
+      if (entries.length > 0) {
+        obj.data = {};
+        entries.forEach(([k, v]) => {
+          obj.data[k] = ProtoDataSegment.toJSON(v);
+        });
+      }
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoDataSegment_StructData>, I>>(base?: I): ProtoDataSegment_StructData {
-    return ProtoDataSegment_StructData.fromPartial(base ?? {});
+    return ProtoDataSegment_StructData.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_StructData>, I>>(object: I): ProtoDataSegment_StructData {
     const message = createBaseProtoDataSegment_StructData();
     message.data = Object.entries(object.data ?? {}).reduce<{ [key: number]: ProtoDataSegment }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromPartial(value);
         }
         return acc;
       },
@@ -1733,24 +1787,27 @@ export const ProtoDataSegment_StructData_DataEntry = {
 
   fromJSON(object: any): ProtoDataSegment_StructData_DataEntry {
     return {
-      key: isSet(object.key) ? Number(object.key) : 0,
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
       value: isSet(object.value) ? ProtoDataSegment.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: ProtoDataSegment_StructData_DataEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataSegment.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoDataSegment_StructData_DataEntry>, I>>(
     base?: I,
   ): ProtoDataSegment_StructData_DataEntry {
-    return ProtoDataSegment_StructData_DataEntry.fromPartial(base ?? {});
+    return ProtoDataSegment_StructData_DataEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoDataSegment_StructData_DataEntry>, I>>(
     object: I,
   ): ProtoDataSegment_StructData_DataEntry {
@@ -1817,16 +1874,18 @@ export const ProtoDataPayload = {
 
   toJSON(message: ProtoDataPayload): unknown {
     const obj: any = {};
-    message.typeInfo !== undefined &&
-      (obj.typeInfo = message.typeInfo ? ProtoTypeInfo.toJSON(message.typeInfo) : undefined);
-    message.data !== undefined && (obj.data = message.data ? ProtoDataSegment.toJSON(message.data) : undefined);
+    if (message.typeInfo !== undefined) {
+      obj.typeInfo = ProtoTypeInfo.toJSON(message.typeInfo);
+    }
+    if (message.data !== undefined) {
+      obj.data = ProtoDataSegment.toJSON(message.data);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ProtoDataPayload>, I>>(base?: I): ProtoDataPayload {
-    return ProtoDataPayload.fromPartial(base ?? {});
+    return ProtoDataPayload.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ProtoDataPayload>, I>>(object: I): ProtoDataPayload {
     const message = createBaseProtoDataPayload();
     message.typeInfo = (object.typeInfo !== undefined && object.typeInfo !== null)
@@ -1839,30 +1898,11 @@ export const ProtoDataPayload = {
   },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 function bytesFromBase64(b64: string): Uint8Array {
-  if (tsProtoGlobalThis.Buffer) {
-    return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, "base64"));
+  if ((globalThis as any).Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
   } else {
-    const bin = tsProtoGlobalThis.atob(b64);
+    const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; ++i) {
       arr[i] = bin.charCodeAt(i);
@@ -1872,21 +1912,22 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-  if (tsProtoGlobalThis.Buffer) {
-    return tsProtoGlobalThis.Buffer.from(arr).toString("base64");
+  if ((globalThis as any).Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {
-      bin.push(String.fromCharCode(byte));
+      bin.push(globalThis.String.fromCharCode(byte));
     });
-    return tsProtoGlobalThis.btoa(bin.join(""));
+    return globalThis.btoa(bin.join(""));
   }
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
