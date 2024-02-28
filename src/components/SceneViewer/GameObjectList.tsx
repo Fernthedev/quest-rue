@@ -1,5 +1,4 @@
 import {
-  Accessor,
   Show,
   createDeferred,
   createEffect,
@@ -32,33 +31,31 @@ import { CreateGameObjectResult } from "../../misc/proto/qrue";
 function GameObjectListItem(props: {
   item: GameObjectIndex;
   navigate: Navigator;
-  addressMap: Accessor<Map<GameObjectIndex, [boolean, boolean]> | undefined>;
+  addressMap: Map<GameObjectIndex, [boolean, boolean]> | undefined;
   updateAddressMap?: (map?: Map<GameObjectIndex, [boolean, boolean]>) => void;
-  addressTreeData: Accessor<
-    Map<GameObjectIndex, [number, boolean]> | undefined
-  >;
+  addressTreeData: Map<GameObjectIndex, [number, boolean]> | undefined;
 }) {
   const object = createMemo(
-    () => gameObjectsStore.objectsMap?.get(props.item)?.[0]
+    () => gameObjectsStore.objectsMap?.get(props.item)?.[0],
   );
 
   const highlighted = createMemo(
-    () => props.addressMap()?.get(props.item)?.[0] ?? false
+    () => props.addressMap?.get(props.item)?.[0] ?? false,
   );
   const expanded = createMemo(() => {
-    const map = props.addressMap();
+    const map = props.addressMap;
     return map ? map.get(props.item)?.[1] : true;
   });
 
   const toggle = () =>
     props.updateAddressMap?.(
-      props.addressMap()?.set(props.item, [highlighted(), !expanded()])
+      props.addressMap?.set(props.item, [highlighted(), !expanded()]),
     );
   const select = () => selectClass(props.navigate, object()?.address);
 
   // [indent, hasChildren]
   const treeData = createMemo<[number, boolean]>(
-    () => props.addressTreeData()?.get(props.item) ?? [0, false]
+    () => props.addressTreeData?.get(props.item) ?? [0, false],
   );
 
   return (
@@ -101,7 +98,7 @@ function inSearch(
     [selfMatches: boolean, childMatches: boolean]
   >,
   searchLower: string,
-  matchChild = false
+  matchChild = false,
 ): boolean {
   if (addressMap.has(object.transform!.address!)) return true;
 
@@ -111,7 +108,7 @@ function inSearch(
     selfMatches = true;
 
   for (const addr of gameObjectsStore.childrenMap?.get(
-    object.transform!.address!
+    object.transform!.address!,
   ) ?? []) {
     const child = gameObjectsStore.objectsMap!.get(addr)![0];
     if (inSearch(child, addressMap, searchLower, selfMatches || matchChild))
@@ -129,7 +126,7 @@ function addChildren(
   objectAddress: GameObjectIndex,
   dataMap: Map<GameObjectIndex, [number, boolean]>,
   filterMap?: Map<GameObjectIndex, [boolean, boolean]>,
-  parentIndent = 0
+  parentIndent = 0,
 ) {
   const children = gameObjectsStore.childrenMap?.get(objectAddress);
   dataMap.set(objectAddress, [parentIndent, (children?.length ?? 0) > 0]);
@@ -137,7 +134,7 @@ function addChildren(
     children
       ?.filter((addr) => filterMap?.has(addr) ?? true)
       ?.forEach((address) =>
-        addChildren(address, dataMap, filterMap, parentIndent + 1)
+        addChildren(address, dataMap, filterMap, parentIndent + 1),
       );
 }
 
@@ -155,8 +152,8 @@ export default function GameObjectList() {
 
   const rootObjects = createDeferred(() =>
     [...(gameObjectsStore.objectsMap?.entries() ?? [])].filter(
-      ([, [o]]) => !o.transform?.parent
-    )
+      ([, [o]]) => !o.transform?.parent,
+    ),
   );
 
   // createDeferred is a createMemo that runs when the browser is idle
@@ -168,12 +165,12 @@ export default function GameObjectList() {
       const searchLower = search().toLocaleLowerCase();
       const newAddresses = new Map<bigint, [boolean, boolean]>();
       const ret = rootObjects().filter(([, [obj]]) =>
-        inSearch(obj, newAddresses, searchLower)
+        inSearch(obj, newAddresses, searchLower),
       );
       setSearchAddresses(newAddresses);
       return ret;
     },
-    { timeoutMs: 1000 }
+    { timeoutMs: 1000 },
   );
   // #endregion
 
@@ -187,7 +184,7 @@ export default function GameObjectList() {
     const addresses = searchAddresses();
     const newTreeData = new Map<GameObjectIndex, [number, boolean]>();
     filteredRootObjects()?.forEach(([, [obj]]) =>
-      addChildren(obj.transform!.address, newTreeData, addresses)
+      addChildren(obj.transform!.address, newTreeData, addresses),
     );
     setAddressTreeData(newTreeData);
     return Array.from(newTreeData.keys());
@@ -205,7 +202,7 @@ export default function GameObjectList() {
         selectClass(navigate, undefined);
         setRequesting(false);
       }
-    }
+    },
   );
 
   // refresh state
@@ -266,9 +263,9 @@ export default function GameObjectList() {
               GameObjectListItem({
                 item: item,
                 navigate: navigate,
-                addressMap: searchAddresses,
+                addressMap: searchAddresses(),
                 updateAddressMap: setSearchAddresses,
-                addressTreeData: addressTreeData,
+                addressTreeData: addressTreeData(),
               })
             }
           />

@@ -1,4 +1,4 @@
-import { Accessor, For, Index, JSX } from "solid-js";
+import { Index, JSX } from "solid-js";
 
 interface SegmentedControlProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   values: string[];

@@ -17,7 +17,6 @@ import {
 import { FilterSettings } from "../FilterSettings";
 import { Show, createEffect, createMemo, For, createSignal } from "solid-js";
 import {
-  protoDataToString,
   protoTypeToString,
   stringToProtoData,
   stringToProtoType,
