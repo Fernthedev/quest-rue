@@ -24,7 +24,7 @@ export function FilterSettingsDropdown(
   props: {
     settings: Store<FilterSettings>;
     setSettings: SetStoreFunction<FilterSettings>;
-  } & JSX.HTMLAttributes<HTMLDivElement>
+  } & JSX.HTMLAttributes<HTMLDivElement>,
 ) {
   let parent: HTMLDivElement | undefined;
   let child: HTMLDivElement | undefined;
@@ -64,50 +64,38 @@ export function FilterSettingsDropdown(
         <Toggle
           class="h-8"
           title="Show Fields"
-          checkedSignal={[
-            () => props.settings.filterFields,
-            (b) => props.setSettings("filterFields", b),
-          ]}
+          value={props.settings.filterFields}
+          onToggle={(b) => props.setSettings("filterFields", b)}
         />
         <Toggle
           class="h-8"
           title="Show Getters"
-          checkedSignal={[
-            () => props.settings.filterGetters,
-            (b) => props.setSettings("filterGetters", b),
-          ]}
+          value={props.settings.filterGetters}
+          onToggle={(b) => props.setSettings("filterGetters", b)}
         />
         <Toggle
           class="h-8"
           title="Show Setters"
-          checkedSignal={[
-            () => props.settings.filterSetters,
-            (b) => props.setSettings("filterSetters", b),
-          ]}
+          value={props.settings.filterSetters}
+          onToggle={(b) => props.setSettings("filterSetters", b)}
         />
         <Toggle
           class="h-8"
           title="Show Methods"
-          checkedSignal={[
-            () => props.settings.filterMethods,
-            (b) => props.setSettings("filterMethods", b),
-          ]}
+          value={props.settings.filterMethods}
+          onToggle={(b) => props.setSettings("filterMethods", b)}
         />
         <Toggle
           class="h-8"
           title="Filter by parameter name"
-          checkedSignal={[
-            () => props.settings.filterByParameterName,
-            (b) => props.setSettings("filterByParameterName", b),
-          ]}
+          value={props.settings.filterByParameterName}
+          onToggle={(b) => props.setSettings("filterByParameterName", b)}
         />
         <Toggle
           class="h-8"
           title="Filter by type"
-          checkedSignal={[
-            () => props.settings.filterByTypes,
-            (b) => props.setSettings("filterByTypes", b),
-          ]}
+          value={props.settings.filterByTypes}
+          onToggle={(b) => props.setSettings("filterByTypes", b)}
         />
       </div>
     </div>
@@ -152,7 +140,7 @@ function typeMatches(type: Readonly<ProtoTypeInfo>, search: string): boolean {
 export function filterMethods(
   list: ProtoMethodInfo[],
   search: string,
-  settings: Readonly<FilterSettings>
+  settings: Readonly<FilterSettings>,
 ) {
   if (!settings.filterMethods) return [];
 
@@ -163,7 +151,7 @@ export function filterMethods(
       item.args.some(
         ({ name, type }) =>
           name.toLocaleLowerCase().includes(search) ||
-          (settings.filterByTypes && typeMatches(type!, search))
+          (settings.filterByTypes && typeMatches(type!, search)),
       );
     const retTypeMatches =
       settings.filterByTypes &&
@@ -178,7 +166,7 @@ export function filterMethods(
 export function filterProperties(
   list: ProtoPropertyInfo[],
   search: string,
-  settings: Readonly<FilterSettings>
+  settings: Readonly<FilterSettings>,
 ) {
   if (!settings.filterGetters && !settings.filterSetters) return [];
 
@@ -201,7 +189,7 @@ export function filterProperties(
 export function filterFields(
   list: Readonly<ProtoFieldInfo[]>,
   search: string,
-  settings: Readonly<FilterSettings>
+  settings: Readonly<FilterSettings>,
 ) {
   if (!settings.filterFields) return [];
 

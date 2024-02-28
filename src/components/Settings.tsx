@@ -62,12 +62,14 @@ export function SettingsMenu() {
         <Toggle
           class="h-8"
           title="Dark mode"
-          checkedSignal={[darkMode, setDarkMode]}
+          value={darkMode()}
+          onToggle={setDarkMode}
         />
         <Toggle
           class="h-8"
           title="Use raw input"
-          checkedSignal={[rawInput, setRawInput]}
+          value={rawInput()}
+          onToggle={setRawInput}
         />
         <SegmentedControl
           class={"h-8"}

@@ -1,5 +1,4 @@
 import {
-  Accessor,
   Show,
   createEffect,
   createMemo,
@@ -78,8 +77,8 @@ export function PropertyCell(props: {
     setInputValue(protoDataToString(data));
   });
 
-  const errorHandler = (result: Accessor<{ error?: string } | undefined>) => {
-    const resultData = result();
+  const errorHandler = (result: { error?: string } | undefined) => {
+    const resultData = result;
     if (!resultData?.error) return;
 
     toast.error(`Property exception error: ${resultData.error}`);
@@ -87,10 +86,10 @@ export function PropertyCell(props: {
 
   // Error handle
   createEffect(() => {
-    errorHandler(value);
+    errorHandler(value());
   });
   createEffect(() => {
-    errorHandler(valueSetter);
+    errorHandler(valueSetter());
   });
 
   const propertyGetter = createMemo(
