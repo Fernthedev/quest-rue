@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 namespace {
-    auto pageSize = sysconf(_SC_PAGESIZE);
+auto pageSize = sysconf(_SC_PAGESIZE);
 }
 
 int mem::operator&(protection a, protection b) noexcept {
@@ -25,8 +25,10 @@ int mem::protect(void* data, std::size_t size, protection prot) noexcept {
     ptrs -= diff;
 
     auto ret = mprotect(reinterpret_cast<void*>(ptrs), size + diff, mprot);
-    if (ret != 0) return errno;
-    else return 0;
+    if (ret != 0)
+        return errno;
+    else
+        return 0;
 }
 
 void* operator new(std::size_t size, mem::aligned_t, std::size_t align) noexcept {

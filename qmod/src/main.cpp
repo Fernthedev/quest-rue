@@ -29,7 +29,7 @@ using namespace UnityEngine;
 
 void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     static bool loaded;
-    if(!scene.IsValid() || loaded)
+    if (!scene.IsValid() || loaded)
         return;
     loaded = true;
 
@@ -40,8 +40,7 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     )
 }
 
-Logger &getLogger()
-{
+Logger& getLogger() {
     static Logger* logger = new Logger(modInfo, new LoggerOptions(false, true));
     return *logger;
 }
@@ -77,11 +76,11 @@ void EnableFPFC() {
     LOG_INFO("Enabling camera controller");
 
     auto cam = UnityEngine::Camera::get_main();
-    if(!cam)
+    if (!cam)
         return;
 
     auto go = cam->get_gameObject();
-    if(auto existing = go->GetComponent<QRUE::CameraController*>())
+    if (auto existing = go->GetComponent<QRUE::CameraController*>())
         existing->set_enabled(true);
     else
         go->AddComponent<QRUE::CameraController*>();
@@ -89,11 +88,11 @@ void EnableFPFC() {
 
 void DisableFPFC() {
     auto cam = UnityEngine::Camera::get_main();
-    if(!cam)
+    if (!cam)
         return;
 
     auto go = cam->get_gameObject();
-    if(auto existing = go->GetComponent<QRUE::CameraController*>())
+    if (auto existing = go->GetComponent<QRUE::CameraController*>())
         existing->set_enabled(false);
 }
 
@@ -108,10 +107,10 @@ MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &Default
 #include "Zenject/DiContainer.hpp"
 #include "GlobalNamespace/GameScenesManager.hpp"
 
-MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, ::GlobalNamespace::ScenesTransitionSetupDataSO* newScenesTransitionSetupData, ::System::Collections::Generic::List_1<::StringW>* scenesToPresent,
-                            ::GlobalNamespace::__GameScenesManager__ScenePresentType presentType, ::System::Collections::Generic::List_1<::StringW>* scenesToDismiss,
-                            ::GlobalNamespace::__GameScenesManager__SceneDismissType dismissType, float_t minDuration, ::System::Action* afterMinDurationCallback,
-                            ::System::Action_1<::Zenject::DiContainer*>* extraBindingsCallback, ::System::Action_1<::Zenject::DiContainer*>* finishCallback) {
+MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, GlobalNamespace::ScenesTransitionSetupDataSO* newScenesTransitionSetupData, System::Collections::Generic::List_1<StringW>* scenesToPresent,
+                GlobalNamespace::__GameScenesManager__ScenePresentType presentType, System::Collections::Generic::List_1<StringW>* scenesToDismiss,
+                GlobalNamespace::__GameScenesManager__SceneDismissType dismissType, float_t minDuration, System::Action* afterMinDurationCallback,
+                System::Action_1<Zenject::DiContainer*>* extraBindingsCallback, System::Action_1<Zenject::DiContainer*>* finishCallback) {
 
     DisableFPFC();
 

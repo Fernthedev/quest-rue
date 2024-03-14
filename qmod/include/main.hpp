@@ -15,20 +15,17 @@
 
 #ifdef UNITY_2021
 #define klassIsValuetype(type) il2cpp_functions::class_is_valuetype(type)
-#define typeIsValuetype(type)                                                  \
-  klassIsValuetype(il2cpp_functions::class_from_il2cpp_type(type))
+#define typeIsValuetype(type) klassIsValuetype(il2cpp_functions::class_from_il2cpp_type(type))
 
 #else
-#define typeIsValuetype(type)                                                  \
-  il2cpp_functions::class_from_il2cpp_type(type)->valuetype
+#define typeIsValuetype(type) il2cpp_functions::class_from_il2cpp_type(type)->valuetype
 #define klassIsValuetype(type) type->valuetype
 #endif
 
 #define asInt(p) reinterpret_cast<std::uintptr_t>(p)
-#define asPtr(type, p) reinterpret_cast<type *>(p)
+#define asPtr(type, p) reinterpret_cast<type*>(p)
 
-    static inline auto PaperQLogger =
-        Paper::Logger::WithContext<"QuestEditor", false>();
+static inline auto PaperQLogger = Paper::Logger::WithContext<"QuestEditor", false>();
 
 Logger& getLogger();
 
@@ -43,4 +40,3 @@ extern std::thread::id mainThreadId;
 #ifdef BEAT_SABER
 void EnableFPFC();
 #endif
-

@@ -24,20 +24,20 @@ float backspaceTime = 0.5;
 SafePtrUnity<VRUIControls::VRInputModule> latestInputModule;
 
 UnityEngine::GameObject* GetHovered() {
-    if(!latestInputModule)
+    if (!latestInputModule)
         return nullptr;
     auto eventData = latestInputModule->GetLastPointerEventData(-1);
-    if(eventData)
+    if (eventData)
         return eventData->pointerEnter;
     return nullptr;
 }
 
 UnityEngine::GameObject* GetPauseMenu() {
-    if(auto ret = UnityEngine::GameObject::Find("PauseMenu"))
+    if (auto ret = UnityEngine::GameObject::Find("PauseMenu"))
         return ret;
-    else if(auto ret = UnityEngine::GameObject::Find("TutorialPauseMenu"))
+    else if (auto ret = UnityEngine::GameObject::Find("TutorialPauseMenu"))
         return ret;
-    else if(auto ret = UnityEngine::GameObject::Find("MultiplayerLocalActivePlayerInGameMenuViewController"))
+    else if (auto ret = UnityEngine::GameObject::Find("MultiplayerLocalActivePlayerInGameMenuViewController"))
         return ret;
     else
         return nullptr;
@@ -53,20 +53,19 @@ using namespace GlobalNamespace;
 #include "GlobalNamespace/VRCenterAdjust.hpp"
 
 void CameraController::OnEnable() {
-    if(!enabled)
+    if (!enabled)
         return;
     LOG_INFO("CameraController enable");
 
     childTransform = get_transform();
     parentTransform = childTransform->GetParent();
 
-    if(!parentTransform) {
+    if (!parentTransform) {
         set_enabled(false);
         return;
     }
 
-    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
-        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
+    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
     disablePositionalTracking(true);
 
     parentTransform->set_position({0, 1.5, 0});
@@ -76,62 +75,61 @@ void CameraController::OnEnable() {
 
 #ifdef UNITY_2021
 #else
-// TODO: Fix for OpenXR
+    // TODO: Fix for OpenXR
 
     // in level
     if (auto pauseMenu = GetPauseMenu()) {
-      // can't just search for "MenuControllers" because there are two, we need
-      // the one that's a child of the pause menu
-      auto transform = pauseMenu->get_transform()->Find("MenuControllers");
-      controller0 =
-          transform->Find("ControllerLeft")->GetComponent<VRController *>();
-      controller1 =
-          transform->Find("ControllerRight")->GetComponent<VRController *>();
-      if (auto vrInputModule =
-              Object::FindObjectOfType<VRUIControls::VRInputModule *>()) {
-        latestInputModule = vrInputModule;
-        vrInputModule->set_useMouseForPressInput(true);
-        vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()
-            ->SetActive(false);
-      }
-      // in main menu
+        // can't just search for "MenuControllers" because there are two, we need
+        // the one that's a child of the pause menu
+        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+        controller0 =
+            transform->Find("ControllerLeft")->GetComponent<VRController*>();
+        controller1 =
+            transform->Find("ControllerRight")->GetComponent<VRController*>();
+        if (auto vrInputModule =
+                Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+            latestInputModule = vrInputModule;
+            vrInputModule->set_useMouseForPressInput(true);
+            vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()
+                ->SetActive(false);
+        }
+        // in main menu
     } else if (auto objectsSource =
-                   Object::FindObjectOfType<FirstPersonFlyingController *>()) {
-      latestInputModule = objectsSource->vrInputModule;
-      objectsSource->vrInputModule->set_useMouseForPressInput(true);
-      objectsSource->vrInputModule->vrPointer->laserPointerPrefab
-          ->get_gameObject()
-          ->SetActive(false);
-      objectsSource->centerAdjust->ResetRoom();
-      objectsSource->centerAdjust->set_enabled(false);
-      for (auto gameObject : objectsSource->controllerModels) {
-        if (gameObject)
-          gameObject->SetActive(false);
-      }
-      controller0 = objectsSource->controller0;
-      controller1 = objectsSource->controller1;
+                   Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+        latestInputModule = objectsSource->vrInputModule;
+        objectsSource->vrInputModule->set_useMouseForPressInput(true);
+        objectsSource->vrInputModule->vrPointer->laserPointerPrefab
+            ->get_gameObject()
+            ->SetActive(false);
+        objectsSource->centerAdjust->ResetRoom();
+        objectsSource->centerAdjust->set_enabled(false);
+        for (auto gameObject : objectsSource->controllerModels) {
+            if (gameObject)
+                gameObject->SetActive(false);
+        }
+        controller0 = objectsSource->controller0;
+        controller1 = objectsSource->controller1;
     }
 #endif
 
-    if(controller0 && controller1) {
+    if (controller0 && controller1) {
         controller0->set_enabled(false);
         controller1->set_enabled(false);
-        if(auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
+        if (auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
             pointer->get_gameObject()->SetActive(false);
     }
 }
 
 void CameraController::OnDisable() {
-    if(enabled)
+    if (enabled)
         return;
     LOG_INFO("CameraController disable");
 
-    if(!parentTransform)
+    if (!parentTransform)
         return;
 
     // reverse of enable
-    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>
-        ("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
+    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
     disablePositionalTracking(false);
 
     parentTransform->set_position({0, 0, 0});
@@ -140,23 +138,23 @@ void CameraController::OnDisable() {
 #ifdef UNITY_2021
 // TODO: Fix for OpenXR
 #else
-    
-    if(auto pauseMenu = GetPauseMenu()) {
+
+    if (auto pauseMenu = GetPauseMenu()) {
         LOG_DEBUG("Using controllers from pause menu");
         auto transform = pauseMenu->get_transform()->Find("MenuControllers");
         controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
         controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
-        if(auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
+        if (auto vrInputModule = Object::FindObjectOfType<VRUIControls::VRInputModule*>()) {
             vrInputModule->set_useMouseForPressInput(false);
             vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
         }
-    } else if(auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
+    } else if (auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
         LOG_DEBUG("Using controllers from original fpfc");
         objectsSource->vrInputModule->set_useMouseForPressInput(false);
         objectsSource->vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(true);
         objectsSource->centerAdjust->set_enabled(true);
-        for(auto gameObject : objectsSource->controllerModels) {
-            if(gameObject)
+        for (auto gameObject : objectsSource->controllerModels) {
+            if (gameObject)
                 gameObject->SetActive(true);
         }
         controller0 = objectsSource->controller0;
@@ -166,10 +164,10 @@ void CameraController::OnDisable() {
     latestInputModule = nullptr;
 #endif
 
-    if(controller0 && controller1) {
+    if (controller0 && controller1) {
         controller0->set_enabled(true);
         controller1->set_enabled(true);
-        if(auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
+        if (auto pointer = controller1->get_transform()->Find("VRLaserPointer(Clone)"))
             pointer->get_gameObject()->SetActive(true);
     } else
         LOG_INFO("Failed to find menu controllers for FPFC");
@@ -186,7 +184,7 @@ void CameraController::OnDisable() {
 #include "System/Action.hpp"
 
 void CameraController::Update() {
-    if(Input::GetKeyDown(KeyCode::X)) {
+    if (Input::GetKeyDown(KeyCode::X)) {
         LOG_INFO("Disabling FPFC due to X press (reenable with Z)");
 
         enabled = false;
@@ -200,61 +198,57 @@ void CameraController::Update() {
         auto touch = Input::GetTouch(0);
         auto& pos = touch.m_Position;
         auto phase = touch.m_Phase;
-        switch(phase) {
-        case TouchPhase::Began:
-            lastTime = UnityEngine::Time::get_time();
-            lastMovement = 0;
-            lastPos = pos;
-            break;
-        case TouchPhase::Ended:
-        case TouchPhase::Canceled:
-            Rotate(Sombrero::FastVector2(pos) - lastPos);
-            if(
-                (time - lastTime) < clickTime
-                && lastMovement < movementThreshold
-            )
-                click = true;
-            break;
-        default:
-            Rotate(Sombrero::FastVector2(pos) - lastPos);
-            
-            lastPos = pos;
-            break;
+        switch (phase) {
+            case TouchPhase::Began:
+                lastTime = UnityEngine::Time::get_time();
+                lastMovement = 0;
+                lastPos = pos;
+                break;
+            case TouchPhase::Ended:
+            case TouchPhase::Canceled:
+                Rotate(Sombrero::FastVector2(pos) - lastPos);
+                if (
+                    (time - lastTime) < clickTime && lastMovement < movementThreshold)
+                    click = true;
+                break;
+            default:
+                Rotate(Sombrero::FastVector2(pos) - lastPos);
+
+                lastPos = pos;
+                break;
         }
     }
 
-    if(!keyboardOpen) {
+    if (!keyboardOpen) {
         Sombrero::FastVector3 movement = {0};
-        if(Input::GetKey(KeyCode::W))
+        if (Input::GetKey(KeyCode::W))
             movement = movement + childTransform->get_forward();
-        if(Input::GetKey(KeyCode::S))
+        if (Input::GetKey(KeyCode::S))
             movement = movement - childTransform->get_forward();
-        if(Input::GetKey(KeyCode::D))
+        if (Input::GetKey(KeyCode::D))
             movement = movement + childTransform->get_right();
-        if(Input::GetKey(KeyCode::A))
+        if (Input::GetKey(KeyCode::A))
             movement = movement - childTransform->get_right();
-        if(Input::GetKey(KeyCode::Space))
+        if (Input::GetKey(KeyCode::Space))
             movement = movement + childTransform->get_up();
-        if(Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
+        if (Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
             movement = movement - childTransform->get_up();
         if (movement != Sombrero::FastVector3::zero())
-          Move(movement);
+            Move(movement);
 
-        if(Input::GetKeyDown(KeyCode::Escape)) {
-            if(auto pauser = Object::FindObjectOfType<PauseController*>())
+        if (Input::GetKeyDown(KeyCode::Escape)) {
+            if (auto pauser = Object::FindObjectOfType<PauseController*>())
                 pauser->Pause();
-        }
-        else if(Input::GetKeyDown(KeyCode::Return)) {
-            if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+        } else if (Input::GetKeyDown(KeyCode::Return)) {
+            if (auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
                 pauser->ContinueButtonPressed();
-        }
-        else if(Input::GetKeyDown(KeyCode::Q)) {
-            if(auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
+        } else if (Input::GetKeyDown(KeyCode::Q)) {
+            if (auto pauser = Object::FindObjectOfType<PauseMenuManager*>())
                 pauser->MenuButtonPressed();
         }
     } else {
-        if(Input::GetKey(KeyCode::Escape)) {
-            if(auto manager = Object::FindObjectOfType<UIKeyboardManager*>())
+        if (Input::GetKey(KeyCode::Escape)) {
+            if (auto manager = Object::FindObjectOfType<UIKeyboardManager*>())
                 manager->CloseKeyboard();
             return;
         }
@@ -263,16 +257,16 @@ void CameraController::Update() {
 #ifdef UNITY_2021
 // TODO: Fix for OpenXR
 #else
-        if(Input::get_anyKeyDown()) {
-            for(auto& c : getInputString()) {
-                if(c != u'\n' && c != u'\b')
+        if (Input::get_anyKeyDown()) {
+            for (auto& c : getInputString()) {
+                if (c != u'\n' && c != u'\b')
                     keyboardOpen->keyWasPressedEvent->Invoke(c);
             }
         }
 #endif
-        if(Input::GetKey(KeyCode::Backspace)) {
-            if(backspaceHold || time - lastBackspace > backspaceTime) {
-                if(backspaceHoldStart)
+        if (Input::GetKey(KeyCode::Backspace)) {
+            if (backspaceHold || time - lastBackspace > backspaceTime) {
+                if (backspaceHoldStart)
                     backspaceHold = true;
                 backspaceHoldStart = true;
                 lastBackspace = time;
@@ -280,16 +274,16 @@ void CameraController::Update() {
             }
         } else {
 #ifdef UNITY_2021
-          // TODO: Fix for OpenXR
+            // TODO: Fix for OpenXR
 #else
-          backspaceHold = backspaceHoldStart = false;
+            backspaceHold = backspaceHoldStart = false;
 #endif
         }
-        if(Input::GetKeyDown(KeyCode::Return))
+        if (Input::GetKeyDown(KeyCode::Return))
             keyboardOpen->okButtonWasPressedEvent->Invoke();
     }
 
-    if(controller0 && controller1) {
+    if (controller0 && controller1) {
         controller0->get_transform()->SetPositionAndRotation(childTransform->get_position(), childTransform->get_rotation());
         controller1->get_transform()->SetPositionAndRotation(childTransform->get_position(), childTransform->get_rotation());
     }

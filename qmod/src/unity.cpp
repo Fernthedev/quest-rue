@@ -34,7 +34,7 @@ ProtoGameObject ReadGameObject(GameObject* obj) {
 
     protoObj.set_active(obj->get_active());
     protoObj.set_layer(obj->get_layer());
-    if(obj->get_scene().IsValid())
+    if (obj->get_scene().IsValid())
         *protoObj.mutable_scene() = ReadScene(obj->get_scene());
     protoObj.set_tag(obj->get_tag());
     *protoObj.mutable_transform() = ReadTransform(obj->get_transform());
@@ -65,17 +65,17 @@ SearchObjectsResult FindObjects(Il2CppClass* klass, std::string name) {
     std::span<UnityW<Object>> res = objects.ref_to();
     std::vector<UnityW<Object>> namedObjs;
 
-    if(!name.empty()) {
+    if (!name.empty()) {
         LOG_DEBUG("Searching for name {}", name);
         StringW il2cppName(name);
-        for(auto obj : res) {
-            if(obj->get_name()->Contains(il2cppName))
+        for (auto obj : res) {
+            if (obj->get_name()->Contains(il2cppName))
                 namedObjs.push_back(obj);
         }
         res = std::span<UnityW<Object>>(namedObjs);
     }
 
-    for(auto obj : res) {
+    for (auto obj : res) {
         ProtoObject& found = *result.add_objects();
         name = static_cast<std::string>(obj->get_name());
         found.set_address(asInt(obj.unsafePtr()));
@@ -97,4 +97,3 @@ GetAllGameObjectsResult FindAllGameObjects() {
 
     return result;
 }
-

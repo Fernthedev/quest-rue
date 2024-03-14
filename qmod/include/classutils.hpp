@@ -15,8 +15,8 @@ namespace ClassUtils {
     std::vector<FieldInfo const*> GetFields(Il2CppClass const* klass);
 
     // [getter?, setter?]
-    std::pair<const MethodInfo *, const MethodInfo *>
-    GetPropMethods(PropertyInfo const *prop);
+    std::pair<const MethodInfo*, const MethodInfo*>
+    GetPropMethods(PropertyInfo const* prop);
     std::vector<PropertyInfo const*> GetProperties(Il2CppClass const* klass);
 
     std::vector<MethodInfo const*> GetMethods(Il2CppClass const* klass);

@@ -7,7 +7,7 @@
 #include <sstream>
 
 class Manager {
-    private:
+   private:
     static bool tryValidatePtr(const void* ptr);
 
     void processMessage(const PacketWrapper& packet);
@@ -34,7 +34,7 @@ class Manager {
     bool sendLoggerUpdates = false;
     std::unique_ptr<PacketHandler> handler;
 
-    public:
+   public:
     void Init();
 
     static Manager* GetInstance();

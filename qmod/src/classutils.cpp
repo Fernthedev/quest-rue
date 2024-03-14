@@ -20,7 +20,7 @@ size_t fieldTypeSize(const Il2CppType* type) {
         return sizeof(void*);
     }
     t = type->type;
-    handle_enum:
+handle_enum:
     switch (t) {
         case IL2CPP_TYPE_BOOLEAN:
         case IL2CPP_TYPE_I1:
@@ -43,7 +43,7 @@ size_t fieldTypeSize(const Il2CppType* type) {
             return sizeof(float);
         case IL2CPP_TYPE_R8:
             return sizeof(double);
-        case IL2CPP_TYPE_STRING: // note that this is overridden sometimes but should still return the size of an Il2CppString*
+        case IL2CPP_TYPE_STRING:  // note that this is overridden sometimes but should still return the size of an Il2CppString*
         case IL2CPP_TYPE_SZARRAY:
         case IL2CPP_TYPE_CLASS:
         case IL2CPP_TYPE_OBJECT:
@@ -68,12 +68,12 @@ size_t fieldTypeSize(const Il2CppType* type) {
                 return il2cpp_functions::class_instance_size(klass) - sizeof(Il2CppObject);
             }
         case IL2CPP_TYPE_GENERICINST:
-          // t =
-          // GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
+            // t =
+            // GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
 #ifdef UNITY_2021
-          t = il2cpp_functions::MetadataCache_GetTypeInfoFromHandle(
-                  type->data.generic_class->type->data.typeHandle)
-                  ->byval_arg.type;
+            t = il2cpp_functions::MetadataCache_GetTypeInfoFromHandle(
+                    type->data.generic_class->type->data.typeHandle)
+                    ->byval_arg.type;
 #else
             t = il2cpp_functions::MetadataCache_GetTypeInfoFromTypeDefinitionIndex(type->data.generic_class->typeDefinitionIndex)->byval_arg.type;
 #endif
@@ -89,70 +89,70 @@ size_t fieldTypeSize(const Il2CppType* type) {
 
 // field_get_value, field_set_value
 std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
-  std::vector<FieldInfo const*> ret;
-  ret.reserve(klass->field_count);
+    std::vector<FieldInfo const*> ret;
+    ret.reserve(klass->field_count);
 
-  for (auto const& field : std::span(klass->fields, klass->field_count)) {
-    if (!GetIsStatic(&field))
-      continue;
+    for (auto const& field : std::span(klass->fields, klass->field_count)) {
+        if (!GetIsStatic(&field))
+            continue;
 
-    ret.emplace_back(&field);
-  }
+        ret.emplace_back(&field);
+    }
     return ret;
 }
 
-std::pair<const MethodInfo *, const MethodInfo *>
-ClassUtils::GetPropMethods(PropertyInfo const *prop) {
-  std::pair<const MethodInfo *, const MethodInfo *> ret;
+std::pair<const MethodInfo*, const MethodInfo*>
+ClassUtils::GetPropMethods(PropertyInfo const* prop) {
+    std::pair<const MethodInfo*, const MethodInfo*> ret;
 
-  if (auto m = il2cpp_functions::property_get_get_method(prop))
-    ret.first = m;
-  if (auto m = il2cpp_functions::property_get_set_method(prop))
-    ret.second = m;
-  return ret;
-}
-
-std::vector<PropertyInfo const *>
-ClassUtils::GetProperties(Il2CppClass const *klass) {
-  std::vector<PropertyInfo const *> ret;
-  ret.reserve(klass->property_count);
-
-  for (auto const& property : std::span(klass->properties, klass->property_count)) {
-    bool normal = !property.get || property.get->parameters_count == 0;
-    normal = normal && !property.set || property.set->parameters_count == 1;
-    if (!normal)
-      continue;
-    
-    ret.emplace_back(&property);
-  }
-  return ret;
-}
-
-std::vector<MethodInfo const *>
-ClassUtils::GetMethods(Il2CppClass const *klass) {
-  std::vector<MethodInfo const *> ret;
-  ret.reserve(klass->method_count);
-
-  for (auto const &method : std::span(klass->methods, klass->method_count)) {
-    if (!method)
-      continue;
-    ret.emplace_back(method);
-  }
-  return ret;
-}
-
-std::vector<Il2CppClass const *>
-ClassUtils::GetInterfaces(Il2CppClass const *klass) {
-  std::vector<Il2CppClass const *> ret;
-  ret.reserve(klass->interfaces_count);
-
-  for (auto const &interface : std::span(klass->implementedInterfaces, klass->interfaces_count)) {
-    if (!interface)
-      continue;
-    ret.push_back(interface);
-  }
+    if (auto m = il2cpp_functions::property_get_get_method(prop))
+        ret.first = m;
+    if (auto m = il2cpp_functions::property_get_set_method(prop))
+        ret.second = m;
     return ret;
-  }
+}
+
+std::vector<PropertyInfo const*>
+ClassUtils::GetProperties(Il2CppClass const* klass) {
+    std::vector<PropertyInfo const*> ret;
+    ret.reserve(klass->property_count);
+
+    for (auto const& property : std::span(klass->properties, klass->property_count)) {
+        bool normal = !property.get || property.get->parameters_count == 0;
+        normal = normal && !property.set || property.set->parameters_count == 1;
+        if (!normal)
+            continue;
+
+        ret.emplace_back(&property);
+    }
+    return ret;
+}
+
+std::vector<MethodInfo const*>
+ClassUtils::GetMethods(Il2CppClass const* klass) {
+    std::vector<MethodInfo const*> ret;
+    ret.reserve(klass->method_count);
+
+    for (auto const& method : std::span(klass->methods, klass->method_count)) {
+        if (!method)
+            continue;
+        ret.emplace_back(method);
+    }
+    return ret;
+}
+
+std::vector<Il2CppClass const*>
+ClassUtils::GetInterfaces(Il2CppClass const* klass) {
+    std::vector<Il2CppClass const*> ret;
+    ret.reserve(klass->interfaces_count);
+
+    for (auto const& interface : std::span(klass->implementedInterfaces, klass->interfaces_count)) {
+        if (!interface)
+            continue;
+        ret.push_back(interface);
+    }
+    return ret;
+}
 
 Il2CppClass const* ClassUtils::GetParent(Il2CppClass const* klass) {
     return klass->parent;
@@ -167,9 +167,9 @@ bool ClassUtils::GetIsStatic(FieldInfo const* field) {
 }
 
 bool ClassUtils::GetIsStatic(PropertyInfo const* prop) {
-    if(prop->get)
+    if (prop->get)
         return (prop->get->flags & METHOD_ATTRIBUTE_STATIC) != 0;
-    if(prop->set)
+    if (prop->set)
         return (prop->set->flags & METHOD_ATTRIBUTE_STATIC) != 0;
     return false;
 }
@@ -182,7 +182,7 @@ bool ClassUtils::GetIsStatic(MethodInfo const* method) {
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     LOG_DEBUG("Getting type info {}", il2cpp_functions::type_get_name(type));
-    LOG_DEBUG("Type enum {}", (int) type->type);
+    LOG_DEBUG("Type enum {}", (int)type->type);
 
     auto cached = typeInfoCache.find(type);
     if (cached != typeInfoCache.end()) {
@@ -198,15 +198,14 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
         IL2CPP_TYPE_STRING,
         IL2CPP_TYPE_SZARRAY,
         IL2CPP_TYPE_VAR,
-        IL2CPP_TYPE_MVAR
-    };
+        IL2CPP_TYPE_MVAR};
 
     if (!typeIsValuetype(type) && !nonClassReferences.contains(type->type)) {
-        if(classoftype(type) == il2cpp_functions::defaults->systemtype_class)
+        if (classoftype(type) == il2cpp_functions::defaults->systemtype_class)
             info.set_primitiveinfo(ProtoTypeInfo::TYPE);
         else
             *info.mutable_classinfo() = GetClassInfo(type);
-    // szarray means regular array, array means some fancy multidimensional never used c# thing I think
+        // szarray means regular array, array means some fancy multidimensional never used c# thing I think
     } else if (type->type == IL2CPP_TYPE_SZARRAY)
         *info.mutable_arrayinfo() = GetArrayInfo(type);
     else if (type->type == IL2CPP_TYPE_VAR || type->type == IL2CPP_TYPE_MVAR)
@@ -214,53 +213,54 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     else {
         // TODO: make some of these more correct
         switch (type->type) {
-        case IL2CPP_TYPE_BOOLEAN:
-            info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
-            break;
-        case IL2CPP_TYPE_CHAR:
-            info.set_primitiveinfo(ProtoTypeInfo::CHAR);
-            break;
-        case IL2CPP_TYPE_I1:
-        case IL2CPP_TYPE_U1:
-            info.set_primitiveinfo(ProtoTypeInfo::BYTE);
-            break;
-        case IL2CPP_TYPE_I2:
-        case IL2CPP_TYPE_U2:
-            info.set_primitiveinfo(ProtoTypeInfo::SHORT);
-            break;
-        case IL2CPP_TYPE_I4:
-        case IL2CPP_TYPE_U4:
-            info.set_primitiveinfo(ProtoTypeInfo::INT);
-            break;
-        case IL2CPP_TYPE_I:
-        case IL2CPP_TYPE_U:
-        case IL2CPP_TYPE_I8:
-        case IL2CPP_TYPE_U8:
-            info.set_primitiveinfo(ProtoTypeInfo::LONG);
-            break;
-        case IL2CPP_TYPE_R4:
-            info.set_primitiveinfo(ProtoTypeInfo::FLOAT);
-            break;
-        case IL2CPP_TYPE_R8:
-            info.set_primitiveinfo(ProtoTypeInfo::DOUBLE);
-            break;
-        case IL2CPP_TYPE_STRING:
-            info.set_primitiveinfo(ProtoTypeInfo::STRING);
-            break;
-        case IL2CPP_TYPE_VOID:
-            info.set_primitiveinfo(ProtoTypeInfo::VOID);
-            break;
-        case IL2CPP_TYPE_PTR:
-            info.set_primitiveinfo(ProtoTypeInfo::PTR);
-            break;
-        case IL2CPP_TYPE_VALUETYPE: {
-            auto klass = classoftype(type);
-            if(klass->enumtype)
-                return GetTypeInfo(klass->element_class);
-            // don't break for non enums
-        } default:
-            *info.mutable_structinfo() = GetStructInfo(type);
-            break;
+            case IL2CPP_TYPE_BOOLEAN:
+                info.set_primitiveinfo(ProtoTypeInfo::BOOLEAN);
+                break;
+            case IL2CPP_TYPE_CHAR:
+                info.set_primitiveinfo(ProtoTypeInfo::CHAR);
+                break;
+            case IL2CPP_TYPE_I1:
+            case IL2CPP_TYPE_U1:
+                info.set_primitiveinfo(ProtoTypeInfo::BYTE);
+                break;
+            case IL2CPP_TYPE_I2:
+            case IL2CPP_TYPE_U2:
+                info.set_primitiveinfo(ProtoTypeInfo::SHORT);
+                break;
+            case IL2CPP_TYPE_I4:
+            case IL2CPP_TYPE_U4:
+                info.set_primitiveinfo(ProtoTypeInfo::INT);
+                break;
+            case IL2CPP_TYPE_I:
+            case IL2CPP_TYPE_U:
+            case IL2CPP_TYPE_I8:
+            case IL2CPP_TYPE_U8:
+                info.set_primitiveinfo(ProtoTypeInfo::LONG);
+                break;
+            case IL2CPP_TYPE_R4:
+                info.set_primitiveinfo(ProtoTypeInfo::FLOAT);
+                break;
+            case IL2CPP_TYPE_R8:
+                info.set_primitiveinfo(ProtoTypeInfo::DOUBLE);
+                break;
+            case IL2CPP_TYPE_STRING:
+                info.set_primitiveinfo(ProtoTypeInfo::STRING);
+                break;
+            case IL2CPP_TYPE_VOID:
+                info.set_primitiveinfo(ProtoTypeInfo::VOID);
+                break;
+            case IL2CPP_TYPE_PTR:
+                info.set_primitiveinfo(ProtoTypeInfo::PTR);
+                break;
+            case IL2CPP_TYPE_VALUETYPE: {
+                auto klass = classoftype(type);
+                if (klass->enumtype)
+                    return GetTypeInfo(klass->element_class);
+                // don't break for non enums
+            }
+            default:
+                *info.mutable_structinfo() = GetStructInfo(type);
+                break;
         }
     }
     info.set_isbyref(type->byref);
@@ -310,7 +310,7 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppType const* type) {
     LOG_DEBUG("Getting struct info");
 
     *structInfo.mutable_clazz() = GetClassInfo(type);
-    for(auto const& field : GetFields(classoftype(type))) {
+    for (auto const& field : GetFields(classoftype(type))) {
         LOG_DEBUG("Field {} ({}) at offset {}", field->name, il2cpp_functions::type_get_name(field->type), field->offset - sizeof(Il2CppObject));
         structInfo.mutable_fieldoffsets()->insert({field->offset - sizeof(Il2CppObject), FieldUtils::GetFieldInfo(field)});
     }
@@ -322,14 +322,13 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     ProtoGenericInfo genericInfo;
     LOG_DEBUG("Getting generic info");
 
-    
 #ifdef UNITY_2021
     auto const& genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(type->data.genericParameterHandle);
-    auto const &parameter =
+    auto const& parameter =
         il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
             genericIndex);
 #else
-    auto const &genericIndex = type->data.genericParameterIndex;
+    auto const& genericIndex = type->data.genericParameterIndex;
     auto parameter =
         il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
             type->data.genericParameterIndex);
@@ -345,40 +344,40 @@ Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
     LOG_DEBUG("Getting class from class info {}::{}", classInfo.namespaze(), classInfo.clazz());
 
     auto klass = il2cpp_utils::GetClassFromName(classInfo.namespaze(), classInfo.clazz());
-    if(!klass || classInfo.generics_size() <= 0)
+    if (!klass || classInfo.generics_size() <= 0)
         return klass;
     // no MakeGenericMethod for classes in bshook
     auto runtimeClass = il2cpp_utils::GetSystemType(klass);
-    ArrayW<System::Type *> genericArgs(classInfo.generics_size());
+    ArrayW<System::Type*> genericArgs(classInfo.generics_size());
     for (int i = 0; i < genericArgs.size(); i++) {
-      auto genericType = GetType(classInfo.generics(i));
-      if (!genericType)
-        return nullptr;
-      genericArgs[i] = reinterpret_cast<System::Type *>(
-          il2cpp_utils::GetSystemType(genericType));
+        auto genericType = GetType(classInfo.generics(i));
+        if (!genericType)
+            return nullptr;
+        genericArgs[i] = reinterpret_cast<System::Type*>(
+            il2cpp_utils::GetSystemType(genericType));
     }
 
     auto inflated = System::RuntimeType::MakeGenericType(reinterpret_cast<System::Type*>(runtimeClass), genericArgs);
-    return il2cpp_functions::class_from_system_type((Il2CppReflectionType*) inflated);
+    return il2cpp_functions::class_from_system_type((Il2CppReflectionType*)inflated);
 }
 
 Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
-    if(typeInfo.has_classinfo())
+    if (typeInfo.has_classinfo())
         return GetClass(typeInfo.classinfo());
-    else if(typeInfo.has_arrayinfo()) {
+    else if (typeInfo.has_arrayinfo()) {
         auto& arrayInfo = typeInfo.arrayinfo();
         LOG_DEBUG("Getting class from array info");
 
         auto memberType = GetType(arrayInfo.membertype());
-        if(!memberType)
+        if (!memberType)
             return nullptr;
 
-        return il2cpp_functions::bounded_array_class_get(classoftype(memberType), 1, false); // szarray
-    } else if(typeInfo.has_structinfo()) {
+        return il2cpp_functions::bounded_array_class_get(classoftype(memberType), 1, false);  // szarray
+    } else if (typeInfo.has_structinfo()) {
         LOG_DEBUG("Getting class from struct info");
 
         return GetClass(typeInfo.structinfo().clazz());
-    } else if(typeInfo.has_genericinfo()) {
+    } else if (typeInfo.has_genericinfo()) {
         LOG_DEBUG("Getting class from generic info");
         // I don't think this should even come up
         Il2CppType type = {};
@@ -388,47 +387,47 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
 
 #else
         type.data.genericParameterIndex = typeInfo.size();
-        #endif
-        type.type = IL2CPP_TYPE_VAR; // hmm, mvar?
-        return classoftype(&type); // only uses the above two fields for var/mvar
-    } else if(typeInfo.has_primitiveinfo()) {
+#endif
+        type.type = IL2CPP_TYPE_VAR;  // hmm, mvar?
+        return classoftype(&type);    // only uses the above two fields for var/mvar
+    } else if (typeInfo.has_primitiveinfo()) {
         LOG_DEBUG("Getting class from primitive info");
 
         switch (typeInfo.primitiveinfo()) {
-        case ProtoTypeInfo::BOOLEAN:
-            return il2cpp_functions::defaults->boolean_class;
-        case ProtoTypeInfo::CHAR:
-            return il2cpp_functions::defaults->char_class;
-        case ProtoTypeInfo::BYTE:
-            return il2cpp_functions::defaults->byte_class;
-        case ProtoTypeInfo::SHORT:
-            return il2cpp_functions::defaults->int16_class;
-        case ProtoTypeInfo::INT:
-            return il2cpp_functions::defaults->int32_class;
-        case ProtoTypeInfo::LONG:
-            return il2cpp_functions::defaults->int64_class;
-        case ProtoTypeInfo::FLOAT:
-            return il2cpp_functions::defaults->single_class;
-        case ProtoTypeInfo::DOUBLE:
-            return il2cpp_functions::defaults->double_class;
-        case ProtoTypeInfo::STRING:
-            return il2cpp_functions::defaults->string_class;
-        case ProtoTypeInfo::TYPE:
-            return il2cpp_functions::defaults->systemtype_class;
+            case ProtoTypeInfo::BOOLEAN:
+                return il2cpp_functions::defaults->boolean_class;
+            case ProtoTypeInfo::CHAR:
+                return il2cpp_functions::defaults->char_class;
+            case ProtoTypeInfo::BYTE:
+                return il2cpp_functions::defaults->byte_class;
+            case ProtoTypeInfo::SHORT:
+                return il2cpp_functions::defaults->int16_class;
+            case ProtoTypeInfo::INT:
+                return il2cpp_functions::defaults->int32_class;
+            case ProtoTypeInfo::LONG:
+                return il2cpp_functions::defaults->int64_class;
+            case ProtoTypeInfo::FLOAT:
+                return il2cpp_functions::defaults->single_class;
+            case ProtoTypeInfo::DOUBLE:
+                return il2cpp_functions::defaults->double_class;
+            case ProtoTypeInfo::STRING:
+                return il2cpp_functions::defaults->string_class;
+            case ProtoTypeInfo::TYPE:
+                return il2cpp_functions::defaults->systemtype_class;
 
-        case ProtoTypeInfo::PTR:
+            case ProtoTypeInfo::PTR:
 #ifdef UNITY_2021
-          // TODO: Is this right?
-          return il2cpp_functions::defaults->void_class;
+                // TODO: Is this right?
+                return il2cpp_functions::defaults->void_class;
 
 #else
-          return il2cpp_functions::defaults->pointer_class;
-          #endif
-        case ProtoTypeInfo::VOID:
-            return il2cpp_functions::defaults->void_class;
-        case ProtoTypeInfo::UNKNOWN:
-        default:
-            return nullptr;
+                return il2cpp_functions::defaults->pointer_class;
+#endif
+            case ProtoTypeInfo::VOID:
+                return il2cpp_functions::defaults->void_class;
+            case ProtoTypeInfo::UNKNOWN:
+            default:
+                return nullptr;
         }
     }
     return nullptr;
@@ -436,11 +435,11 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
 
 Il2CppType* ClassUtils::GetType(ProtoTypeInfo const& typeInfo) {
     auto klass = GetClass(typeInfo);
-    if(!klass)
+    if (!klass)
         return nullptr;
 
     // this probably handles byref
-    if(typeInfo.isbyref())
+    if (typeInfo.isbyref())
         return &klass->this_arg;
     return &klass->byval_arg;
 }

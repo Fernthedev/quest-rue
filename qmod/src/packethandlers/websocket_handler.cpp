@@ -30,11 +30,11 @@ void WebSocketHandler::listen(const int port) {
 
         serverSocket->listen(port);
         serverSocket->start_accept();
-        
+
         serverThread = std::thread([this]() {
             serverSocket->run();
         });
-        serverThread.detach(); 
+        serverThread.detach();
         LOG_INFO("Started server");
     } catch (exception const & e) {
         LOG_INFO("Server failed because: ({})!", e.what());
@@ -48,7 +48,7 @@ void WebSocketHandler::listen(const int port) {
 }
 
 void WebSocketHandler::stop() {
-    if(!serverSocket) {
+    if (!serverSocket) {
         connections.clear();
         return;
     }
@@ -70,8 +70,7 @@ void WebSocketHandler::stop() {
     connections.clear();
 }
 
-void WebSocketHandler::scheduleAsync(std::function<void()> &&f)
-{
+void WebSocketHandler::scheduleAsync(std::function<void ()> &&f) {
     // TODO: Thread pool or something
     std::thread(std::move(f)).detach();
 }
@@ -105,7 +104,7 @@ void WebSocketHandler::sendPacket(const PacketWrapper& packet) {
     for (auto const& hdl : connections) {
         try {
             serverSocket->send(hdl, string, frame::opcode::value::BINARY);
-        } catch (exception const & e) {
+        } catch (exception const& e) {
             LOG_INFO("Echo failed because: ({})", e.what());
         }
     }
