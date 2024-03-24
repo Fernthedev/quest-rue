@@ -1,5 +1,5 @@
-#include "MainThreadRunner.hpp"
 #include "main.hpp"
+#include "MainThreadRunner.hpp"
 
 #ifdef BEAT_SABER
 #include "CameraController.hpp"
@@ -7,7 +7,6 @@
 #include "UnityEngine/KeyCode.hpp"
 #endif
 
-#include <functional>
 #include <thread>
 
 DEFINE_TYPE(QRUE, MainThreadRunner);

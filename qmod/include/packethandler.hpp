@@ -1,7 +1,7 @@
 #pragma once
 
-#include "main.hpp"
 #include <functional>
+#include "protobuf/qrue.pb.h"
 
 using ReceivePacketFunc = std::function<void(const PacketWrapper& packet)>;
 

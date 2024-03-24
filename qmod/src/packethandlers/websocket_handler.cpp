@@ -1,10 +1,7 @@
-#include <algorithm>
-
+#include "main.hpp"
 #include "MainThreadRunner.hpp"
 
 #include "packethandlers/websocket_handler.hpp"
-
-#include "socket_lib/shared/SocketHandler.hpp"
 
 using namespace websocketpp;
 using lib::placeholders::_1;

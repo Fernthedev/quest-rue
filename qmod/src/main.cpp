@@ -1,11 +1,7 @@
 #include "main.hpp"
-#include "objectdump.hpp"
-#include "classutils.hpp"
 #include "manager.hpp"
 #include "MainThreadRunner.hpp"
 #include "CameraController.hpp"
-
-#include "scotland2/shared/modloader.h"
 
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
@@ -13,15 +9,13 @@
 #include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
 #include "UnityEngine/Events/UnityAction_2.hpp"
 
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "beatsaber-hook/shared/utils/utils.h"
+#include "scotland2/shared/modloader.h"
+
 #include "beatsaber-hook/shared/config/config-utils.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
 #include "custom-types/shared/register.hpp"
 #include "custom-types/shared/delegate.hpp"
-
-#include <filesystem>
 
 static modloader::ModInfo modInfo{MOD_ID, VERSION, 1};
 
@@ -38,11 +32,6 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
         UnityEngine::Object::DontDestroyOnLoad(go);
         go->AddComponent<QRUE::MainThreadRunner*>();
     )
-}
-
-Logger& getLogger() {
-    static Logger* logger = new Logger(modInfo, new LoggerOptions(false, true));
-    return *logger;
 }
 
 std::string_view GetDataPath() {
@@ -161,11 +150,11 @@ extern "C" void load() {
 
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
-    INSTALL_HOOK(getLogger(), DefaultScenesTransitionsFromInit_TransitionToNextScene);
-    INSTALL_HOOK(getLogger(), VRInputModule_GetMousePointerEventData);
-    INSTALL_HOOK(getLogger(), UIKeyboardManager_OpenKeyboardFor);
-    INSTALL_HOOK(getLogger(), UIKeyboardManager_CloseKeyboard);
-    INSTALL_HOOK(getLogger(), GameScenesManager_ScenesTransitionCoroutine);
+    INSTALL_HOOK(logger, DefaultScenesTransitionsFromInit_TransitionToNextScene);
+    INSTALL_HOOK(logger, VRInputModule_GetMousePointerEventData);
+    INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
+    INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);
+    INSTALL_HOOK(logger, GameScenesManager_ScenesTransitionCoroutine);
     LOG_INFO("Installed hooks!");
 #endif
 

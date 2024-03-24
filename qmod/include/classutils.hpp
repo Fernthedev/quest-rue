@@ -1,8 +1,7 @@
 #pragma once
 
-#include "main.hpp"
-
-#include <tuple>
+#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "protobuf/qrue.pb.h"
 
 size_t fieldTypeSize(const Il2CppType* type);
 
@@ -15,8 +14,7 @@ namespace ClassUtils {
     std::vector<FieldInfo const*> GetFields(Il2CppClass const* klass);
 
     // [getter?, setter?]
-    std::pair<const MethodInfo*, const MethodInfo*>
-    GetPropMethods(PropertyInfo const* prop);
+    std::pair<MethodInfo const*, MethodInfo const*> GetPropMethods(PropertyInfo const* prop);
     std::vector<PropertyInfo const*> GetProperties(Il2CppClass const* klass);
 
     std::vector<MethodInfo const*> GetMethods(Il2CppClass const* klass);

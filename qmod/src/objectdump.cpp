@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "objectdump.hpp"
 
+#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+
 void logIndent(std::ofstream& stream, int length) {
     for (int i = 0; i < length; i++)
         stream << "  ";

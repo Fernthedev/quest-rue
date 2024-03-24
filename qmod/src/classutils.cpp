@@ -4,8 +4,6 @@
 
 #include "System/RuntimeType.hpp"
 
-#include <span>
-
 using namespace ClassUtils;
 using namespace il2cpp_utils;
 
@@ -93,7 +91,7 @@ std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
     ret.reserve(klass->field_count);
 
     for (auto const& field : std::span(klass->fields, klass->field_count)) {
-        if (!GetIsStatic(&field))
+        if (GetIsStatic(&field))
             continue;
 
         ret.emplace_back(&field);
@@ -382,9 +380,7 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         // I don't think this should even come up
         Il2CppType type = {};
 #ifdef UNITY_2021
-        type.data.genericParameterHandle =
-            Il2CppMetadataGenericParameterHandle(typeInfo.size());
-
+        type.data.genericParameterHandle = Il2CppMetadataGenericParameterHandle(typeInfo.size());
 #else
         type.data.genericParameterIndex = typeInfo.size();
 #endif

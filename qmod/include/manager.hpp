@@ -1,10 +1,6 @@
 #pragma once
 
-#include "methods.hpp"
 #include "packethandler.hpp"
-#include "socket_lib/shared/SocketHandler.hpp"
-
-#include <sstream>
 
 class Manager {
    private:

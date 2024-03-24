@@ -6,9 +6,6 @@ Param(
     [Switch] $log,
 
     [Parameter(Mandatory=$false)]
-    [Switch] $scrcpy,
-
-    [Parameter(Mandatory=$false)]
     [Switch] $useDebug,
 
     [Parameter(Mandatory=$false)]
@@ -49,26 +46,26 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-# & $PSScriptRoot/validate-modjson.ps1
-# if ($LASTEXITCODE -ne 0) {
-#     exit $LASTEXITCODE
-# }
+& $PSScriptRoot/validate-modjson.ps1
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 $modJson = Get-Content "./mod.json" -Raw | ConvertFrom-Json
 
-$modFiles = $modJson.modFiles
-
-foreach ($fileName in $modFiles) {
+foreach ($fileName in $modJson.modFiles) {
     if ($useDebug -eq $true) {
-        & adb push build/debug/$fileName /sdcard/Android/data/com.beatgames.beatsaber/files/mods/$fileName
+        & adb push build/debug/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/early_mods/$fileName
     } else {
-        & adb push build/$fileName /sdcard/Android/data/com.beatgames.beatsaber/files/mods/$fileName
+        & adb push build/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/early_mods/$fileName
     }
 }
 
-& $PSScriptRoot/restart-game.ps1
-
-if ($scrcpy -eq $true) {
-    & scrcpy --crop 1600:1000:100:350 --power-off-on-close
+foreach ($fileName in $modJson.lateModFiles) {
+    if ($useDebug -eq $true) {
+        & adb push build/debug/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/mods/$fileName
+    } else {
+        & adb push build/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/mods/$fileName
+    }
 }
 
 if ($log -eq $true) {

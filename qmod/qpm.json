@@ -12,12 +12,36 @@
     }
   },
   "workspace": {
-    "scripts": {}
+    "scripts": {
+      "build": [
+        "pwsh ./scripts/build.ps1"
+      ],
+      "copy": [
+        "pwsh ./scripts/copy.ps1",
+        "pwsh ./scripts/restart-game.ps1"
+      ],
+      "log": [
+        "pwsh ./scripts/start-logging.ps1 $0:?"
+      ],
+      "qmod": [
+        "pwsh ./scripts/build.ps1",
+        "pwsh ./scripts/createqmod.ps1"
+      ],
+      "restart": [
+        "pwsh ./scripts/restart-game.ps1"
+      ],
+      "stack": [
+        "pwsh ./scripts/ndk-stack.ps1 $0"
+      ],
+      "tomb": [
+        "pwsh ./scripts/pull-tombstone.ps1 -analyze"
+      ]
+    }
   },
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^5.0.0",
+      "versionRange": "^5.1.2",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -26,32 +50,24 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "^3402.0.0",
-      "additionalData": {}
-    },
-    {
-      "id": "socket_lib",
-      "versionRange": "^0.10.0",
+      "versionRange": "^3500.0.0",
       "additionalData": {}
     },
     {
       "id": "paper",
-      "versionRange": "^3.0.0",
+      "versionRange": "^3.6.1",
       "additionalData": {}
     },
     {
       "id": "scotland2",
       "versionRange": "^0.1.0",
-      "additionalData": {}
+      "additionalData": {
+        "includeQmod": false
+      }
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.16.0",
-      "additionalData": {}
-    },
-    {
-      "id": "sombrero",
-      "versionRange": "^0.1.33",
+      "versionRange": "^0.17.3",
       "additionalData": {}
     },
     {
