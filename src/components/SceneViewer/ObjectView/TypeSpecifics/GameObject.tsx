@@ -52,7 +52,7 @@ export function GameObjectSection(
     };
   });
 
-  const [otherDetails, detailsLoading, requestDetails] =
+  const [otherDetails, , requestDetails] =
     useRequestAndResponsePacket<GetClassDetailsResult>();
 
   createEffect(() => {

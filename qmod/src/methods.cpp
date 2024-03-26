@@ -65,7 +65,11 @@ void* HandleStruct(ProtoStructInfo const& info, ProtoDataSegment arg) {
             last_size = field.second.type().size();
         }
     }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     void* ret = il2cpp_utils::__AllocateUnsafe(last_offset + last_size);
+#pragma GCC diagnostic pop
 
     for (auto& field : info.fieldoffsets()) {
         void* val = HandleType(field.second.type(), arg.structdata().data().at(field.first));
@@ -272,7 +276,7 @@ namespace MethodUtils {
         return Run(method, inst, args, error);
     }
     ProtoDataPayload Run(MethodInfo const* method, void* object, std::vector<ProtoDataPayload> const& args, std::string& error) {
-        LOG_DEBUG("Running method {}", method->name);
+        LOG_DEBUG("Running method {} {}", fmt::ptr(method), method->name);
         LOG_DEBUG("{} parameters", method->parameters_count);
 
         if (method->name == std::string("get_renderingDisplaySize")) {
@@ -290,7 +294,7 @@ namespace MethodUtils {
         if (ex) {
             error = il2cpp_utils::ExceptionToString(ex);
             LOG_INFO("{}: Failed with exception: {}", method->name, error);
-            LOG_DEBUG("{}", static_cast<std::string>(StringW(ex->message)));
+            LOG_DEBUG("{}", StringW(ex->stack_trace));
             return VoidDataPayload(method->return_type);
         }
 

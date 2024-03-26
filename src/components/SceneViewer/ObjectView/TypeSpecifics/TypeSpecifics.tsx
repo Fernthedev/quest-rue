@@ -1,4 +1,4 @@
-import { For, JSX, Show, createMemo, createSignal } from "solid-js";
+import { For, JSX, Show, createMemo, createSignal, on, untrack } from "solid-js";
 import styles from "../ObjectView.module.css";
 import { Store } from "solid-js/store";
 import { PacketJSON } from "../../../../misc/events";
@@ -46,7 +46,17 @@ export function TypeSpecifics(props: {
     </Show>
   ));
 
-  const helperSections = (
+  const [prev, setPrev] = createSignal<PacketJSON<ProtoClassDetails> | undefined>(undefined);
+
+  const details = createMemo(() => {
+    const eq = props.details === untrack(prev);
+    console.log("details", props.details, untrack(prev), eq);
+    setPrev(props.details);
+    return props.details;
+  });
+
+  const helperSections = createMemo(on(details, () => {
+    return (
     <For each={helpers()}>
       {(name) => {
         const fn = TypeHelperMap[name];
@@ -64,7 +74,7 @@ export function TypeSpecifics(props: {
         );
       }}
     </For>
-  );
+  )}));
 
   return (
     <Show
@@ -97,7 +107,7 @@ export function TypeSpecifics(props: {
             </>
           }
         >
-          {helperSections}
+          {helperSections()}
           {parentSection()}
         </Show>
       </div>

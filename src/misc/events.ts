@@ -102,6 +102,7 @@ export function useRequestAndResponsePacket<
     const randomId = uniqueBigNumber();
     expectedQueryID.value = randomId;
     setLoading(true);
+    setValue(undefined);
     writePacket({
       queryResultId: randomId,
       Packet: p,

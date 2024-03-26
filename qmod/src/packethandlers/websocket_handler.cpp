@@ -63,7 +63,7 @@ void WebSocketHandler::stop() {
             LOG_INFO("Close failed because: ({})", e.what());
         }
     }
-    serverSocket.release();
+    (void) serverSocket.release();
     connections.clear();
 }
 
@@ -87,7 +87,6 @@ void WebSocketHandler::OnClose(connection_hdl hdl) {
 }
 
 void WebSocketHandler::OnMessage(WebSocketServer* s, connection_hdl hdl, WebSocketServer::message_ptr msg) {
-    LOG_DEBUG("OnMessage called with hdl: {} and message: {}", hdl.lock().get(), msg->get_payload());
     PacketWrapper packet;
     packet.ParseFromArray(msg->get_payload().data(), msg->get_payload().size());
     scheduleFunction([this, packet = std::move(packet)]() {
