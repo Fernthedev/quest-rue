@@ -21,7 +21,7 @@ message ProtoArrayInfo {
 }
 
 message ProtoGenericInfo {
-    int32 genericIndex = 1;
+    uint64 genericHandle = 1;
     string name = 2;
 }
 

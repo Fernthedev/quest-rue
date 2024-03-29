@@ -26,7 +26,7 @@ export interface ProtoArrayInfo {
 }
 
 export interface ProtoGenericInfo {
-  genericIndex: number;
+  genericHandle: bigint;
   name: string;
 }
 
@@ -563,13 +563,16 @@ export const ProtoArrayInfo = {
 };
 
 function createBaseProtoGenericInfo(): ProtoGenericInfo {
-  return { genericIndex: 0, name: "" };
+  return { genericHandle: BigInt("0"), name: "" };
 }
 
 export const ProtoGenericInfo = {
   encode(message: ProtoGenericInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.genericIndex !== 0) {
-      writer.uint32(8).int32(message.genericIndex);
+    if (message.genericHandle !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.genericHandle) !== message.genericHandle) {
+        throw new globalThis.Error("value provided for field message.genericHandle of type uint64 too large");
+      }
+      writer.uint32(8).uint64(message.genericHandle.toString());
     }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
@@ -589,7 +592,7 @@ export const ProtoGenericInfo = {
             break;
           }
 
-          message.genericIndex = reader.int32();
+          message.genericHandle = longToBigint(reader.uint64() as Long);
           continue;
         case 2:
           if (tag !== 18) {
@@ -609,15 +612,15 @@ export const ProtoGenericInfo = {
 
   fromJSON(object: any): ProtoGenericInfo {
     return {
-      genericIndex: isSet(object.genericIndex) ? globalThis.Number(object.genericIndex) : 0,
+      genericHandle: isSet(object.genericHandle) ? BigInt(object.genericHandle) : BigInt("0"),
       name: isSet(object.name) ? globalThis.String(object.name) : "",
     };
   },
 
   toJSON(message: ProtoGenericInfo): unknown {
     const obj: any = {};
-    if (message.genericIndex !== 0) {
-      obj.genericIndex = Math.round(message.genericIndex);
+    if (message.genericHandle !== BigInt("0")) {
+      obj.genericHandle = message.genericHandle.toString();
     }
     if (message.name !== "") {
       obj.name = message.name;
@@ -630,7 +633,7 @@ export const ProtoGenericInfo = {
   },
   fromPartial<I extends Exact<DeepPartial<ProtoGenericInfo>, I>>(object: I): ProtoGenericInfo {
     const message = createBaseProtoGenericInfo();
-    message.genericIndex = object.genericIndex ?? 0;
+    message.genericHandle = object.genericHandle ?? BigInt("0");
     message.name = object.name ?? "";
     return message;
   },

@@ -331,15 +331,15 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
 
 #ifdef UNITY_2021
     // todo: store genericParameterHandle as is in larger field
-    auto const& genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(type->data.genericParameterHandle);
-    auto const& parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(genericIndex);
+    auto genericHandle = type->data.genericParameterHandle;
+    auto genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(genericHandle);
 #else
-    auto const& genericIndex = type->data.genericParameterIndex;
-    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(type->data.genericParameterIndex);
+    auto genericHandle = type->data.genericParameterIndex;
+    auto genericIndex = genericHandle;
 #endif
+    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(genericIndex);
 
-    genericInfo.set_genericindex(genericIndex);
-
+    genericInfo.set_generichandle((uint64_t) genericHandle);
     genericInfo.set_name(il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex));
     return genericInfo;
 }
@@ -385,10 +385,9 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         // I don't think this should even come up
         Il2CppType type = {};
 #ifdef UNITY_2021
-        // this definitely doesn't work
-        // type.data.genericParameterHandle = Il2CppMetadataGenericParameterHandle(typeInfo.size());
+        type.data.genericParameterHandle = (Il2CppMetadataGenericParameterHandle) typeInfo.genericinfo().generichandle();
 #else
-        type.data.genericParameterIndex = typeInfo.size();
+        type.data.genericParameterIndex = (int32_t) typeInfo.genericinfo().generichandle();
 #endif
         type.type = IL2CPP_TYPE_VAR;  // hmm, mvar?
         return classoftype(&type);  // only uses the above two fields for var/mvar
