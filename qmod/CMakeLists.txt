@@ -12,10 +12,13 @@ add_compile_definitions(BEAT_SABER)
 # - Fern
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-# vcpkg config
+
+# vcpkg config. Must be before project
 message("VCPKG $ENV{VCPKG_ROOT}")
 set(VCPKG_TARGET_TRIPLET arm64-android)
 set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE ${CMAKE_ANDROID_NDK}/build/cmake/android.toolchain.cmake)
+set(VCPKG_MANIFEST_DIR ${CMAKE_SOURCE_DIR}/..)
+set(VCPKG_INSTALLED_DIR ${CMAKE_SOURCE_DIR}/../vcpkg_installed)
 string(REPLACE "\\" "/" VCPKG_ROOT_WINDOWS_FIX $ENV{VCPKG_ROOT})
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT_WINDOWS_FIX}/scripts/buildsystems/vcpkg.cmake)
 
