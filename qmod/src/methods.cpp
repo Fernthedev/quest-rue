@@ -333,7 +333,10 @@ namespace MethodUtils {
             auto const& param = method->parameters[i];
 
 #ifdef UNITY_2021
-            auto const& paramName = il2cpp_functions::method_get_param_name(method, i);
+            std::string paramName = "";
+            // custom types doesn't appear to set method->klass anyway
+            if (method->klass && !ClassUtils::GetIsCustom(method->klass))
+                paramName = il2cpp_functions::method_get_param_name(method, i);
             auto const& paramType = param;
 #else
             auto const& paramName = param->name;

@@ -29,6 +29,11 @@ namespace ClassUtils {
     bool GetIsStatic(PropertyInfo const* prop);
     bool GetIsStatic(MethodInfo const* method);
 
+    bool GetIsCustom(Il2CppType const* type);
+    inline bool GetIsCustom(Il2CppClass const* klass) {
+        return GetIsCustom(typeofclass(klass));
+    }
+
     ProtoTypeInfo GetTypeInfo(Il2CppType const* type);
     inline ProtoTypeInfo GetTypeInfo(Il2CppClass const* klass) {
         return GetTypeInfo(typeofclass(klass));

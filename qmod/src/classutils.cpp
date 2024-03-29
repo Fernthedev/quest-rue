@@ -170,6 +170,25 @@ bool ClassUtils::GetIsStatic(MethodInfo const* method) {
     return (method->flags & METHOD_ATTRIBUTE_STATIC) != 0;
 }
 
+#ifdef UNITY_2021
+// from custom-types
+// checks whether the ty->data could be a pointer. technically could be UB if the address is low enough
+static bool MetadataHandleSet(Il2CppType const* type) {
+    return ((uint64_t) type->data.typeHandle >> 32);
+}
+
+bool ClassUtils::GetIsCustom(Il2CppType const* type) {
+    if (MetadataHandleSet(type))
+        return false;
+    return type->data.__klassIndex <= kTypeDefinitionIndexInvalid;
+}
+#else
+bool ClassUtils::GetIsCustom(Il2CppType const* type) {
+    // shouldn't be needed anywhere on old unity
+    return false;
+}
+#endif
+
 // from here, use type instead of class, as it is slightly more specific in cases such as byrefs
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
