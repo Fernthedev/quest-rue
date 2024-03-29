@@ -18,6 +18,8 @@ export function initSocket() {
   } else {
     socket = new NodeWebSocket();
   }
+
+  socket = Object.freeze(socket);
 }
 
 export function handleGlobalPacketWrapper(packet: PacketWrapper) {
