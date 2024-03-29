@@ -1,20 +1,18 @@
-#include "main.hpp"
 #include "manager.hpp"
-#include "classutils.hpp"
-#include "mem.hpp"
-#include "methods.hpp"
-#include "unity.hpp"
-#include "MainThreadRunner.hpp"
-#include "CameraController.hpp"
 
 #include <fmt/ranges.h>
 
+#include "CameraController.hpp"
+#include "MainThreadRunner.hpp"
+#include "UnityEngine/Transform.hpp"
+#include "classutils.hpp"
+#include "main.hpp"
+#include "mem.hpp"
+#include "methods.hpp"
 #include "packethandlers/websocket_handler.hpp"
-
 #include "sombrero/shared/linq.hpp"
 #include "sombrero/shared/linq_functional.hpp"
-
-#include "UnityEngine/Transform.hpp"
+#include "unity.hpp"
 
 #define MESSAGE_LOGGING
 
@@ -30,42 +28,37 @@ Manager* Manager::GetInstance() {
 void Manager::Init() {
     initialized = true;
     LOG_INFO("Starting server at port 3306");
-    handler = std::make_unique<WebSocketHandler>((ReceivePacketFunc)std::bind(&Manager::processMessage, this, std::placeholders::_1));
+    handler = std::make_unique<WebSocketHandler>((ReceivePacketFunc) std::bind(&Manager::processMessage, this, std::placeholders::_1));
     handler->listen(3306);
     LOG_INFO("Server fully initialized");
 
     // Logger sink
     // TODO: Make this a queue and flush
-    Paper::Logger::AddLogSink(
-        [this](Paper::LogData const& data, std::string_view fmtMessage, std::string_view originalString) {
-            if (!sendLoggerUpdates)
-                return;
+    Paper::Logger::AddLogSink([this](Paper::LogData const& data, std::string_view fmtMessage, std::string_view originalString) {
+        if (!sendLoggerUpdates)
+            return;
 
-            PacketWrapper wrapper;
-            wrapper.set_queryresultid(-1);
+        PacketWrapper wrapper;
+        wrapper.set_queryresultid(-1);
 
-            auto& loggerUpdate = *wrapper.mutable_responseloggerupdate();
+        auto& loggerUpdate = *wrapper.mutable_responseloggerupdate();
 
-            auto* log = loggerUpdate.add_paperlogs();
-            log->set_str(fmtMessage.data(), fmtMessage.length());
-            log->set_threadid(((uint64_t*)(&data.threadId))[0]);
-            log->set_tag(data.tag);
-            auto filename = data.loc.file_name();
-            log->set_filename(filename.data(), filename.length());
-            auto fname = data.loc.function_name();
-            log->set_functionname(fname.data(), fname.length());
-            log->set_fileline(data.loc.line());
-            log->mutable_logtime()->set_nanos(
-                std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    data.logTime.time_since_epoch())
-                    .count());
+        auto* log = loggerUpdate.add_paperlogs();
+        log->set_str(fmtMessage.data(), fmtMessage.length());
+        log->set_threadid(((uint64_t*) (&data.threadId))[0]);
+        log->set_tag(data.tag);
+        auto filename = data.loc.file_name();
+        log->set_filename(filename.data(), filename.length());
+        auto fname = data.loc.function_name();
+        log->set_functionname(fname.data(), fname.length());
+        log->set_fileline(data.loc.line());
+        log->mutable_logtime()->set_nanos(std::chrono::duration_cast<std::chrono::nanoseconds>(data.logTime.time_since_epoch()).count());
 
-            handler->sendPacket(wrapper);
-        }
-    );
+        handler->sendPacket(wrapper);
+    });
 }
 
-bool Manager::tryValidatePtr(const void* ptr) {
+bool Manager::tryValidatePtr(void const* ptr) {
     if (asInt(ptr) <= 0 || asInt(ptr) > UINTPTR_MAX) {
         LOG_INFO("invalid ptr was {}", fmt::ptr(ptr));
         return false;
@@ -74,10 +67,10 @@ bool Manager::tryValidatePtr(const void* ptr) {
 }
 
 #pragma region parsing
-void Manager::processMessage(const PacketWrapper& packet) {
+void Manager::processMessage(PacketWrapper const& packet) {
     scheduleFunction([this, packet] {
         auto id = packet.queryresultid();
-        LOG_INFO("Processing packet type {}", (int)packet.Packet_case());
+        LOG_INFO("Processing packet type {}", (int) packet.Packet_case());
         LOG_DEBUG("Packet is {}", packet.DebugString());
 
         switch (packet.Packet_case()) {
@@ -147,7 +140,7 @@ void Manager::processMessage(const PacketWrapper& packet) {
     wrapper.set_inputerror(fmt::format(__VA_ARGS__)); \
 }
 
-void Manager::setField(const SetField& packet, uint64_t queryId) {
+void Manager::setField(SetField const& packet, uint64_t queryId) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
 
@@ -166,7 +159,7 @@ void Manager::setField(const SetField& packet, uint64_t queryId) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getField(const GetField& packet, uint64_t queryId) {
+void Manager::getField(GetField const& packet, uint64_t queryId) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
 
@@ -187,11 +180,11 @@ void Manager::getField(const GetField& packet, uint64_t queryId) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
+void Manager::invokeMethod(InvokeMethod const& packet, uint64_t queryId) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(queryId);
 
-    auto method = asPtr(const MethodInfo, packet.methodid());
+    auto method = asPtr(MethodInfo const, packet.methodid());
 
     if (!tryValidatePtr(method))
         INPUT_ERROR("method info pointer was invalid")
@@ -236,7 +229,7 @@ void Manager::invokeMethod(const InvokeMethod& packet, uint64_t queryId) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
+void Manager::searchObjects(SearchObjects const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -254,7 +247,7 @@ void Manager::searchObjects(const SearchObjects& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
+void Manager::getAllGameObjects(GetAllGameObjects const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -263,7 +256,7 @@ void Manager::getAllGameObjects(const GetAllGameObjects& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uint64_t id) {
+void Manager::getGameObjectComponents(GetGameObjectComponents const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -277,7 +270,7 @@ void Manager::getGameObjectComponents(const GetGameObjectComponents& packet, uin
     handler->sendPacket(wrapper);
 }
 
-void Manager::createGameObject(const CreateGameObject& packet, uint64_t id) {
+void Manager::createGameObject(CreateGameObject const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -294,7 +287,7 @@ void Manager::createGameObject(const CreateGameObject& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::readMemory(const ReadMemory& packet, uint64_t id) {
+void Manager::readMemory(ReadMemory const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -318,7 +311,7 @@ void Manager::readMemory(const ReadMemory& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::writeMemory(const WriteMemory& packet, uint64_t id) {
+void Manager::writeMemory(WriteMemory const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -364,7 +357,8 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     // Use a while loop instead of recursive
     // method to improve stack allocations
     while (currentClass != nullptr) {
-        LOG_INFO("Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
+        LOG_INFO(
+            "Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
         *currentClassProto->mutable_clazz() = GetClassInfo(typeofclass(currentClass));
 
         for (auto f : GetFields(currentClass)) {
@@ -374,7 +368,7 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
                 *currentClassProto->add_fields() = FieldUtils::GetFieldInfo(f);
         }
 
-        std::set<const MethodInfo*> propertyMethods = {};
+        std::set<MethodInfo const*> propertyMethods = {};
         for (auto p : GetProperties(currentClass)) {
             propertyMethods.insert(p->get);
             propertyMethods.insert(p->set);
@@ -384,8 +378,9 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
                 *currentClassProto->add_properties() = MethodUtils::GetPropertyInfo(p);
         }
 
-        for (const auto& m : GetMethods(currentClass)) {
-            if (propertyMethods.find(m) != propertyMethods.end()) continue;
+        for (auto const& m : GetMethods(currentClass)) {
+            if (propertyMethods.find(m) != propertyMethods.end())
+                continue;
             if (GetIsStatic(m))
                 *currentClassProto->add_staticmethods() = MethodUtils::GetMethodInfo(m);
             else
@@ -415,7 +410,7 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     return ret;
 }
 
-void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
+void Manager::getClassDetails(GetClassDetails const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -433,7 +428,7 @@ void Manager::getClassDetails(const GetClassDetails& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
+void Manager::getInstanceClass(GetInstanceClass const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -449,7 +444,7 @@ void Manager::getInstanceClass(const GetInstanceClass& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, const ProtoClassDetails* classDetails) {
+GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, ProtoClassDetails const* classDetails) {
     GetInstanceValuesResult ret;
 
     while (classDetails) {
@@ -478,7 +473,7 @@ GetInstanceValuesResult getInstanceValues_internal(Il2CppObject* instance, const
     return ret;
 }
 
-void Manager::getInstanceValues(const GetInstanceValues& packet, uint64_t id) {
+void Manager::getInstanceValues(GetInstanceValues const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -494,7 +489,7 @@ void Manager::getInstanceValues(const GetInstanceValues& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getInstanceDetails(const GetInstanceDetails& packet, uint64_t id) {
+void Manager::getInstanceDetails(GetInstanceDetails const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -532,8 +527,7 @@ void Manager::sendSafePtrList(uint64_t id) {
     auto& resMap = *res->mutable_address();
 
     for (auto const& addr : objs) {
-        resMap[asInt(addr)] =
-            ClassUtils::GetClassInfo(typeofclass(addr->klass));
+        resMap[asInt(addr)] = ClassUtils::GetClassInfo(typeofclass(addr->klass));
     }
 
     handler->sendPacket(wrapper);
@@ -543,7 +537,7 @@ void Manager::setLoggerListener(RequestLogger const& packet, uint64_t id) {
     this->sendLoggerUpdates = packet.listen();
 }
 
-void Manager::setCameraOptions(const CameraOptions& packet, uint64_t id) {
+void Manager::setCameraOptions(CameraOptions const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 
@@ -565,7 +559,7 @@ void Manager::setCameraOptions(const CameraOptions& packet, uint64_t id) {
     handler->sendPacket(wrapper);
 }
 
-void Manager::getHoveredObject(const GetCameraHovered& packet, uint64_t id) {
+void Manager::getHoveredObject(GetCameraHovered const& packet, uint64_t id) {
     PacketWrapper wrapper;
     wrapper.set_queryresultid(id);
 

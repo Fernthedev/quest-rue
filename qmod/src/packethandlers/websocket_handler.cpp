@@ -1,18 +1,18 @@
-#include "main.hpp"
-#include "MainThreadRunner.hpp"
-
 #include "packethandlers/websocket_handler.hpp"
 
+#include "MainThreadRunner.hpp"
+#include "main.hpp"
+
 using namespace websocketpp;
+using lib::bind;
 using lib::placeholders::_1;
 using lib::placeholders::_2;
-using lib::bind;
 
 WebSocketHandler::~WebSocketHandler() {
     stop();
 }
 
-void WebSocketHandler::listen(const int port) {
+void WebSocketHandler::listen(int const port) {
     stop();
     try {
         serverSocket = std::make_unique<WebSocketServer>();
@@ -28,12 +28,10 @@ void WebSocketHandler::listen(const int port) {
         serverSocket->listen(port);
         serverSocket->start_accept();
 
-        serverThread = std::thread([this]() {
-            serverSocket->run();
-        });
+        serverThread = std::thread([this]() { serverSocket->run(); });
         serverThread.detach();
         LOG_INFO("Started server");
-    } catch (exception const & e) {
+    } catch (exception const& e) {
         LOG_INFO("Server failed because: ({})!", e.what());
         stop();
         LOG_INFO("Retrying in 5 seconds!");
@@ -51,15 +49,15 @@ void WebSocketHandler::stop() {
     }
     LOG_INFO("Stopping server!");
     try {
-        if(serverSocket->is_listening())
+        if (serverSocket->is_listening())
             serverSocket->stop_listening();
-    } catch (exception const & e) {
+    } catch (exception const& e) {
         LOG_INFO("Stop_listening failed because: ({})", e.what());
     }
     for (auto const& hdl : connections) {
         try {
             serverSocket->close(hdl, close::status::going_away, "shutdown");
-        } catch (exception const & e) {
+        } catch (exception const& e) {
             LOG_INFO("Close failed because: ({})", e.what());
         }
     }
@@ -67,7 +65,7 @@ void WebSocketHandler::stop() {
     connections.clear();
 }
 
-void WebSocketHandler::scheduleAsync(std::function<void ()> &&f) {
+void WebSocketHandler::scheduleAsync(std::function<void()>&& f) {
     // TODO: Thread pool or something
     std::thread(std::move(f)).detach();
 }
@@ -89,12 +87,10 @@ void WebSocketHandler::OnClose(connection_hdl hdl) {
 void WebSocketHandler::OnMessage(WebSocketServer* s, connection_hdl hdl, WebSocketServer::message_ptr msg) {
     PacketWrapper packet;
     packet.ParseFromArray(msg->get_payload().data(), msg->get_payload().size());
-    scheduleFunction([this, packet = std::move(packet)]() {
-        onReceivePacket(packet);
-    });
+    scheduleFunction([this, packet = std::move(packet)]() { onReceivePacket(packet); });
 }
 
-void WebSocketHandler::sendPacket(const PacketWrapper& packet) {
+void WebSocketHandler::sendPacket(PacketWrapper const& packet) {
     packet.CheckInitialized();
     auto string = packet.SerializeAsString();
     for (auto const& hdl : connections) {

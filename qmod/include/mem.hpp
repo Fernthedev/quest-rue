@@ -21,13 +21,21 @@ namespace mem {
     // WARNING: THIS WILL ALIGN THE POINTER TO THE NEXT PAGE BOUNDARY BEFORE AND CHANGE **ALL** OF IT
     int protect(void*, std::size_t, protection) noexcept;
     template <typename T>
-    int protect(T* data, std::size_t count, protection prot) noexcept { return protect(reinterpret_cast<void*>(data), count * sizeof(T), prot); }
+    int protect(T* data, std::size_t count, protection prot) noexcept {
+        return protect(reinterpret_cast<void*>(data), count * sizeof(T), prot);
+    }
     template <typename T, std::size_t N>
-    int protect(T (&data)[N], protection prot) noexcept { return protect(data, N, prot); }
+    int protect(T (&data)[N], protection prot) noexcept {
+        return protect(data, N, prot);
+    }
     template <typename T>
-    int protect(std::span<T> data, protection prot) noexcept { return protect(data.data(), data.size(), prot); }
+    int protect(std::span<T> data, protection prot) noexcept {
+        return protect(data.data(), data.size(), prot);
+    }
     template <typename T, std::ptrdiff_t N>
-    int protect(std::span<T, N> data, protection prot) noexcept { return protect(data, N, prot); }
+    int protect(std::span<T, N> data, protection prot) noexcept {
+        return protect(data, N, prot);
+    }
 
     struct aligned_t {};
     constexpr aligned_t aligned = {};

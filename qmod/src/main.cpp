@@ -1,21 +1,18 @@
 #include "main.hpp"
-#include "manager.hpp"
-#include "MainThreadRunner.hpp"
+
 #include "CameraController.hpp"
-
-#include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/SceneManagement/SceneManager.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
-#include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
+#include "MainThreadRunner.hpp"
 #include "UnityEngine/Events/UnityAction_2.hpp"
-
-#include "scotland2/shared/modloader.h"
-
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
+#include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
-
-#include "custom-types/shared/register.hpp"
 #include "custom-types/shared/delegate.hpp"
+#include "custom-types/shared/register.hpp"
+#include "manager.hpp"
+#include "scotland2/shared/modloader.h"
 
 static modloader::ModInfo modInfo{MOD_ID, VERSION, 1};
 
@@ -27,11 +24,8 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
         return;
     loaded = true;
 
-    IL2CPP_CATCH_HANDLER(
-        auto go = UnityEngine::GameObject::New_ctor("QuestRUE");
-        UnityEngine::Object::DontDestroyOnLoad(go);
-        go->AddComponent<QRUE::MainThreadRunner*>();
-    )
+    IL2CPP_CATCH_HANDLER(auto go = UnityEngine::GameObject::New_ctor("QuestRUE"); UnityEngine::Object::DontDestroyOnLoad(go);
+                         go->AddComponent<QRUE::MainThreadRunner*>();)
 }
 
 std::string_view GetDataPath() {
@@ -87,41 +81,72 @@ void DisableFPFC() {
 
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
 
-MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene, &DefaultScenesTransitionsFromInit::TransitionToNextScene, void, DefaultScenesTransitionsFromInit* self, bool goStraightToMenu, bool goStraightToEditor, bool goToRecordingToolScene) {
+MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene,
+    &DefaultScenesTransitionsFromInit::TransitionToNextScene,
+    void,
+    DefaultScenesTransitionsFromInit* self,
+    bool goStraightToMenu,
+    bool goStraightToEditor,
+    bool goToRecordingToolScene) {
 
     DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
 }
 
+#include "GlobalNamespace/GameScenesManager.hpp"
 #include "System/Action_1.hpp"
 #include "Zenject/DiContainer.hpp"
-#include "GlobalNamespace/GameScenesManager.hpp"
 
-MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine, &GameScenesManager::ScenesTransitionCoroutine, System::Collections::IEnumerator*, GameScenesManager* self, GlobalNamespace::ScenesTransitionSetupDataSO* newScenesTransitionSetupData, System::Collections::Generic::List_1<StringW>* scenesToPresent,
-                GlobalNamespace::__GameScenesManager__ScenePresentType presentType, System::Collections::Generic::List_1<StringW>* scenesToDismiss,
-                GlobalNamespace::__GameScenesManager__SceneDismissType dismissType, float_t minDuration, System::Action* afterMinDurationCallback,
-                System::Action_1<Zenject::DiContainer*>* extraBindingsCallback, System::Action_1<Zenject::DiContainer*>* finishCallback) {
+MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
+    &GameScenesManager::ScenesTransitionCoroutine,
+    System::Collections::IEnumerator*,
+    GameScenesManager* self,
+    GlobalNamespace::ScenesTransitionSetupDataSO* newScenesTransitionSetupData,
+    System::Collections::Generic::List_1<StringW>* scenesToPresent,
+    GlobalNamespace::__GameScenesManager__ScenePresentType presentType,
+    System::Collections::Generic::List_1<StringW>* scenesToDismiss,
+    GlobalNamespace::__GameScenesManager__SceneDismissType dismissType,
+    float_t minDuration,
+    System::Action* afterMinDurationCallback,
+    System::Action_1<Zenject::DiContainer*>* extraBindingsCallback,
+    System::Action_1<Zenject::DiContainer*>* finishCallback) {
 
     DisableFPFC();
 
-    finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(finishCallback, custom_types::MakeDelegate<System::Action_1<Zenject::DiContainer*>*>((std::function<void (Zenject::DiContainer*)>) [](Zenject::DiContainer*) {
-        if (enabled) EnableFPFC();
-    }));
+    finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(finishCallback,
+        custom_types::MakeDelegate<System::Action_1<Zenject::DiContainer*>*>((std::function<void(Zenject::DiContainer*)>) [](Zenject::DiContainer*) {
+            if (enabled)
+                EnableFPFC();
+        }));
 
-    return GameScenesManager_ScenesTransitionCoroutine(self, newScenesTransitionSetupData, scenesToPresent, presentType, scenesToDismiss, dismissType, minDuration, afterMinDurationCallback, extraBindingsCallback, finishCallback);
+    return GameScenesManager_ScenesTransitionCoroutine(self,
+        newScenesTransitionSetupData,
+        scenesToPresent,
+        presentType,
+        scenesToDismiss,
+        dismissType,
+        minDuration,
+        afterMinDurationCallback,
+        extraBindingsCallback,
+        finishCallback);
 }
 
-#include "VRUIControls/VRInputModule.hpp"
-#include "VRUIControls/MouseState.hpp"
 #include "VRUIControls/ButtonState.hpp"
 #include "VRUIControls/MouseButtonEventData.hpp"
+#include "VRUIControls/MouseState.hpp"
+#include "VRUIControls/VRInputModule.hpp"
 
-MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData, &VRUIControls::VRInputModule::GetMousePointerEventData, VRUIControls::MouseState*, VRUIControls::VRInputModule* self, int id) {
+MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
+    &VRUIControls::VRInputModule::GetMousePointerEventData,
+    VRUIControls::MouseState*,
+    VRUIControls::VRInputModule* self,
+    int id) {
 
     using EventData = UnityEngine::EventSystems::PointerEventData;
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
     if (enabled) {
-        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
+        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState =
+            click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
         click = false;
     }
     return ret;

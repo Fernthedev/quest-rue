@@ -1,5 +1,6 @@
-#include "main.hpp"
 #include "MainThreadRunner.hpp"
+
+#include "main.hpp"
 
 #ifdef BEAT_SABER
 #include "CameraController.hpp"
@@ -17,9 +18,9 @@ std::thread::id mainThreadId;
 
 static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
-static MainThreadRunner *mainThreadRunnerInstance;
+static MainThreadRunner* mainThreadRunnerInstance;
 
-void scheduleFunction(std::function<void()> const &func) {
+void scheduleFunction(std::function<void()> const& func) {
     if (mainThreadId == std::this_thread::get_id()) {
         func();
         return;
@@ -30,11 +31,13 @@ void scheduleFunction(std::function<void()> const &func) {
 }
 
 void MainThreadRunner::Awake() {
-    this->keepAliveObjects = System::Collections::Generic::List_1<Il2CppObject *>::New_ctor();
+    this->keepAliveObjects = System::Collections::Generic::List_1<Il2CppObject*>::New_ctor();
     mainThreadRunnerInstance = this;
 }
 
-MainThreadRunner *getUnityHandle() { return mainThreadRunnerInstance; }
+MainThreadRunner* getUnityHandle() {
+    return mainThreadRunnerInstance;
+}
 
 void MainThreadRunner::Update() {
 #ifdef BEAT_SABER
@@ -54,17 +57,17 @@ void MainThreadRunner::Update() {
     scheduledFunctions.clear();
     lock.unlock();
 
-    for (auto const &function : functions)
+    for (auto const& function : functions)
         function();
 }
 
-void MainThreadRunner::addKeepAlive(Il2CppObject *obj) {
+void MainThreadRunner::addKeepAlive(Il2CppObject* obj) {
     if (this->keepAliveObjects->Contains(obj))
         return;
 
     this->keepAliveObjects->Add(obj);
 }
 
-void MainThreadRunner::removeKeepAlive(Il2CppObject *obj) {
+void MainThreadRunner::removeKeepAlive(Il2CppObject* obj) {
     this->keepAliveObjects->Remove(obj);
 }

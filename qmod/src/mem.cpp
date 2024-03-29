@@ -1,10 +1,11 @@
 #include "mem.hpp"
-#include <sys/mman.h>
+
 #include <errno.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 namespace {
-auto pageSize = sysconf(_SC_PAGESIZE);
+    auto pageSize = sysconf(_SC_PAGESIZE);
 }
 
 int mem::operator&(protection a, protection b) noexcept {

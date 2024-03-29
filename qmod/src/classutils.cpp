@@ -1,8 +1,8 @@
-#include "main.hpp"
 #include "classutils.hpp"
-#include "methods.hpp"
 
 #include "System/RuntimeType.hpp"
+#include "main.hpp"
+#include "methods.hpp"
 
 using namespace ClassUtils;
 using namespace il2cpp_utils;
@@ -11,7 +11,7 @@ std::unordered_map<Il2CppType const*, ProtoTypeInfo> typeInfoCache;
 
 // basically copied from il2cpp (field setting). what could go wrong?
 // (so blame them for the gotos)
-size_t fieldTypeSize(const Il2CppType* type) {
+size_t fieldTypeSize(Il2CppType const* type) {
     int t;
     if (type->byref) {
         // never does gc allocation, notably ig
@@ -69,9 +69,7 @@ handle_enum:
             // t =
             // GenericClass::GetTypeDefinition(type->data.generic_class)->byval_arg.type;
 #ifdef UNITY_2021
-            t = il2cpp_functions::MetadataCache_GetTypeInfoFromHandle(
-                    type->data.generic_class->type->data.typeHandle)
-                    ->byval_arg.type;
+            t = il2cpp_functions::MetadataCache_GetTypeInfoFromHandle(type->data.generic_class->type->data.typeHandle)->byval_arg.type;
 #else
             t = il2cpp_functions::MetadataCache_GetTypeInfoFromTypeDefinitionIndex(type->data.generic_class->typeDefinitionIndex)->byval_arg.type;
 #endif
@@ -99,9 +97,8 @@ std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
     return ret;
 }
 
-std::pair<const MethodInfo*, const MethodInfo*>
-ClassUtils::GetPropMethods(PropertyInfo const* prop) {
-    std::pair<const MethodInfo*, const MethodInfo*> ret;
+std::pair<MethodInfo const*, MethodInfo const*> ClassUtils::GetPropMethods(PropertyInfo const* prop) {
+    std::pair<MethodInfo const*, MethodInfo const*> ret;
 
     if (auto m = il2cpp_functions::property_get_get_method(prop))
         ret.first = m;
@@ -110,8 +107,7 @@ ClassUtils::GetPropMethods(PropertyInfo const* prop) {
     return ret;
 }
 
-std::vector<PropertyInfo const*>
-ClassUtils::GetProperties(Il2CppClass const* klass) {
+std::vector<PropertyInfo const*> ClassUtils::GetProperties(Il2CppClass const* klass) {
     std::vector<PropertyInfo const*> ret;
     ret.reserve(klass->property_count);
 
@@ -126,8 +122,7 @@ ClassUtils::GetProperties(Il2CppClass const* klass) {
     return ret;
 }
 
-std::vector<MethodInfo const*>
-ClassUtils::GetMethods(Il2CppClass const* klass) {
+std::vector<MethodInfo const*> ClassUtils::GetMethods(Il2CppClass const* klass) {
     std::vector<MethodInfo const*> ret;
     ret.reserve(klass->method_count);
 
@@ -139,8 +134,7 @@ ClassUtils::GetMethods(Il2CppClass const* klass) {
     return ret;
 }
 
-std::vector<Il2CppClass const*>
-ClassUtils::GetInterfaces(Il2CppClass const* klass) {
+std::vector<Il2CppClass const*> ClassUtils::GetInterfaces(Il2CppClass const* klass) {
     std::vector<Il2CppClass const*> ret;
     ret.reserve(klass->interfaces_count);
 
@@ -180,7 +174,7 @@ bool ClassUtils::GetIsStatic(MethodInfo const* method) {
 
 ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     LOG_DEBUG("Getting type info {}", il2cpp_functions::type_get_name(type));
-    LOG_DEBUG("Type enum {}", (int)type->type);
+    LOG_DEBUG("Type enum {}", (int) type->type);
 
     auto cached = typeInfoCache.find(type);
     if (cached != typeInfoCache.end()) {
@@ -192,11 +186,7 @@ ProtoTypeInfo ClassUtils::GetTypeInfo(Il2CppType const* type) {
     info.set_size(fieldTypeSize(type));
     LOG_DEBUG("Found size {}", info.size());
 
-    static const std::set<Il2CppTypeEnum> nonClassReferences = {
-        IL2CPP_TYPE_STRING,
-        IL2CPP_TYPE_SZARRAY,
-        IL2CPP_TYPE_VAR,
-        IL2CPP_TYPE_MVAR};
+    static std::set<Il2CppTypeEnum> const nonClassReferences = {IL2CPP_TYPE_STRING, IL2CPP_TYPE_SZARRAY, IL2CPP_TYPE_VAR, IL2CPP_TYPE_MVAR};
 
     if (!typeIsValuetype(type) && !nonClassReferences.contains(type->type)) {
         if (classoftype(type) == il2cpp_functions::defaults->systemtype_class)
@@ -310,7 +300,7 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppType const* type) {
     *structInfo.mutable_clazz() = GetClassInfo(type);
     for (auto const& field : GetFields(classoftype(type))) {
         LOG_DEBUG("Field {} ({}) at offset {}", field->name, il2cpp_functions::type_get_name(field->type), field->offset - sizeof(Il2CppObject));
-        structInfo.mutable_fieldoffsets()->insert({field->offset - sizeof(Il2CppObject), FieldUtils::GetFieldInfo(field)});
+        structInfo.mutable_fieldoffsets()->insert({(int) (field->offset - sizeof(Il2CppObject)), FieldUtils::GetFieldInfo(field)});
     }
     LOG_DEBUG("Got struct info");
     return structInfo;
@@ -321,17 +311,14 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     LOG_DEBUG("Getting generic info");
 
 #ifdef UNITY_2021
+    // todo: store genericParameterHandle as is in larger field
     auto const& genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(type->data.genericParameterHandle);
-    auto const& parameter =
-        il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
-            genericIndex);
+    auto const& parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(genericIndex);
 #else
     auto const& genericIndex = type->data.genericParameterIndex;
-    auto parameter =
-        il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(
-            type->data.genericParameterIndex);
-
+    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(type->data.genericParameterIndex);
 #endif
+
     genericInfo.set_genericindex(genericIndex);
 
     genericInfo.set_name(il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex));
@@ -351,12 +338,11 @@ Il2CppClass* ClassUtils::GetClass(ProtoClassInfo const& classInfo) {
         auto genericType = GetType(classInfo.generics(i));
         if (!genericType)
             return nullptr;
-        genericArgs[i] = reinterpret_cast<System::Type*>(
-            il2cpp_utils::GetSystemType(genericType));
+        genericArgs[i] = reinterpret_cast<System::Type*>(il2cpp_utils::GetSystemType(genericType));
     }
 
     auto inflated = System::RuntimeType::MakeGenericType(reinterpret_cast<System::Type*>(runtimeClass), genericArgs);
-    return il2cpp_functions::class_from_system_type((Il2CppReflectionType*)inflated);
+    return il2cpp_functions::class_from_system_type((Il2CppReflectionType*) inflated);
 }
 
 Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
@@ -380,12 +366,13 @@ Il2CppClass* ClassUtils::GetClass(ProtoTypeInfo const& typeInfo) {
         // I don't think this should even come up
         Il2CppType type = {};
 #ifdef UNITY_2021
-        type.data.genericParameterHandle = Il2CppMetadataGenericParameterHandle(typeInfo.size());
+        // this definitely doesn't work
+        // type.data.genericParameterHandle = Il2CppMetadataGenericParameterHandle(typeInfo.size());
 #else
         type.data.genericParameterIndex = typeInfo.size();
 #endif
         type.type = IL2CPP_TYPE_VAR;  // hmm, mvar?
-        return classoftype(&type);    // only uses the above two fields for var/mvar
+        return classoftype(&type);  // only uses the above two fields for var/mvar
     } else if (typeInfo.has_primitiveinfo()) {
         LOG_DEBUG("Getting class from primitive info");
 

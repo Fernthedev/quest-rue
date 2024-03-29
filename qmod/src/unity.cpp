@@ -1,12 +1,12 @@
-#include "main.hpp"
 #include "unity.hpp"
-#include "classutils.hpp"
 
-#include "UnityEngine/Transform.hpp"
 #include "UnityEngine/Component.hpp"
 #include "UnityEngine/Object.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/Resources.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
+#include "UnityEngine/Transform.hpp"
+#include "classutils.hpp"
+#include "main.hpp"
 
 using namespace UnityEngine;
 
@@ -45,7 +45,7 @@ ProtoGameObject ReadGameObject(GameObject* obj) {
 GetGameObjectComponentsResult GetComponents(UnityEngine::GameObject* obj) {
     GetGameObjectComponentsResult result;
 
-    for (const auto comp : obj->GetComponents<Component*>()) {
+    for (auto const comp : obj->GetComponents<Component*>()) {
         ProtoComponent& found = *result.add_components();
 
         found.set_address(asInt(comp));
@@ -60,8 +60,7 @@ SearchObjectsResult FindObjects(Il2CppClass* klass, std::string name) {
     SearchObjectsResult result;
     LOG_DEBUG("Searching for objects");
 
-    auto objects = Resources::FindObjectsOfTypeAll(
-        reinterpret_cast<System::Type*>(il2cpp_utils::GetSystemType(klass)));
+    auto objects = Resources::FindObjectsOfTypeAll(reinterpret_cast<System::Type*>(il2cpp_utils::GetSystemType(klass)));
 
     std::span<UnityW<Object>> res = objects.ref_to();
     std::vector<UnityW<Object>> namedObjs;
@@ -92,7 +91,7 @@ GetAllGameObjectsResult FindAllGameObjects() {
     auto objects = Resources::FindObjectsOfTypeAll<GameObject*>();
     result.mutable_objects()->Reserve(objects.size());
     LOG_DEBUG("found {} game objects", objects.size());
-    for (const auto& obj : objects) {
+    for (auto const& obj : objects) {
         *result.add_objects() = ReadGameObject(obj);
     }
 

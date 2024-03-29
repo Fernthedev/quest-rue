@@ -1,7 +1,7 @@
 #ifdef BEAT_SABER
-#include "main.hpp"
 #include "CameraController.hpp"
 
+#include "main.hpp"
 #include "sombrero/shared/FastVector2.hpp"
 #include "sombrero/shared/FastVector3.hpp"
 
@@ -18,8 +18,8 @@ float clickTime = 0.2;
 float movementThreshold = 1;
 float backspaceTime = 0.5;
 
-#include "VRUIControls/VRInputModule.hpp"
 #include "UnityEngine/EventSystems/PointerEventData.hpp"
+#include "VRUIControls/VRInputModule.hpp"
 
 SafePtrUnity<VRUIControls::VRInputModule> latestInputModule;
 
@@ -48,9 +48,9 @@ using namespace UnityEngine;
 using namespace GlobalNamespace;
 
 #include "GlobalNamespace/FirstPersonFlyingController.hpp"
-#include "VRUIControls/VRPointer.hpp"
-#include "VRUIControls/VRLaserPointer.hpp"
 #include "GlobalNamespace/VRCenterAdjust.hpp"
+#include "VRUIControls/VRLaserPointer.hpp"
+#include "VRUIControls/VRPointer.hpp"
 
 void CameraController::OnEnable() {
     if (!enabled)
@@ -81,7 +81,7 @@ void CameraController::OnEnable() {
         auto transform = pauseMenu->get_transform()->Find("MenuControllers");
         controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
         controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
-    // in main menu
+        // in main menu
     } else if (auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
         objectsSource->_centerAdjust->ResetRoom();
         objectsSource->_centerAdjust->set_enabled(false);
@@ -110,7 +110,7 @@ void CameraController::OnEnable() {
             vrInputModule->set_useMouseForPressInput(true);
             vrInputModule->vrPointer->laserPointerPrefab->get_gameObject()->SetActive(false);
         }
-    // in main menu
+        // in main menu
     } else if (auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
         latestInputModule = objectsSource->vrInputModule;
         objectsSource->vrInputModule->set_useMouseForPressInput(true);
@@ -210,15 +210,15 @@ void CameraController::OnDisable() {
         LOG_INFO("Failed to find menu controllers for FPFC");
 }
 
-#include "UnityEngine/Touch.hpp"
-#include "UnityEngine/Input.hpp"
-#include "UnityEngine/Time.hpp"
-#include "UnityEngine/KeyCode.hpp"
 #include "GlobalNamespace/PauseController.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
 #include "GlobalNamespace/UIKeyboardManager.hpp"
-#include "System/Action_1.hpp"
 #include "System/Action.hpp"
+#include "System/Action_1.hpp"
+#include "UnityEngine/Input.hpp"
+#include "UnityEngine/KeyCode.hpp"
+#include "UnityEngine/Time.hpp"
+#include "UnityEngine/Touch.hpp"
 
 void CameraController::Update() {
     if (Input::GetKeyDown(KeyCode::X)) {
@@ -244,8 +244,7 @@ void CameraController::Update() {
             case TouchPhase::Ended:
             case TouchPhase::Canceled:
                 Rotate(Sombrero::FastVector2(pos) - lastPos);
-                if (
-                    (time - lastTime) < clickTime && lastMovement < movementThreshold)
+                if ((time - lastTime) < clickTime && lastMovement < movementThreshold)
                     click = true;
                 break;
             default:

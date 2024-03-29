@@ -1,11 +1,11 @@
 #include "methods.hpp"
+
+#include <iomanip>
+#include <sstream>
+
 #include "classutils.hpp"
 #include "main.hpp"
-
 #include "paper/shared/string_convert.hpp"
-
-#include <sstream>
-#include <iomanip>
 
 // array of arguments:
 // pointers to whatever data is stored, whether it be value or reference
@@ -15,7 +15,7 @@
 // so int*, Vector3*, Il2CppObject*
 
 inline void** pointerOffset(void* ptr, int offset) {
-    return (void**)(((char*)ptr) + offset);
+    return (void**) (((char*) ptr) + offset);
 }
 
 void* HandleType(ProtoTypeInfo const& typeInfo, ProtoDataSegment arg);
@@ -23,7 +23,7 @@ void* HandleType(ProtoTypeInfo const& typeInfo, ProtoDataSegment arg);
 void* HandleClass(ProtoClassInfo const& info, ProtoDataSegment arg) {
     if (arg.Data_case() != ProtoDataSegment::DataCase::kClassData)
         return nullptr;
-    return (void*)arg.classdata();
+    return (void*) arg.classdata();
 }
 
 void* HandleArray(ProtoArrayInfo const& info, ProtoDataSegment arg) {
@@ -87,7 +87,7 @@ void* HandleGeneric(ProtoGenericInfo const& info, ProtoDataSegment arg) {
         return nullptr;
     // This shouldn't be called as it represents an unspecified generic
     LOG_INFO("Unspecified generic passed as a parameter!");
-    return (void*)arg.genericdata().data();
+    return (void*) arg.genericdata().data();
 }
 
 void* HandlePrimitive(ProtoTypeInfo::Primitive info, ProtoDataSegment arg) {
@@ -150,15 +150,15 @@ ProtoDataSegment OutputType(ProtoTypeInfo const& typeInfo, void* value);
 
 ProtoDataSegment OutputClass(ProtoClassInfo const& info, void* value, int size) {
     ProtoDataSegment ret;
-    LOG_DEBUG("Outputting class pointer {} {}", *(int64_t*)value, fmt::ptr(*(void**)value));
-    ret.set_classdata(*(int64_t*)value);
+    LOG_DEBUG("Outputting class pointer {} {}", *(int64_t*) value, fmt::ptr(*(void**) value));
+    ret.set_classdata(*(int64_t*) value);
     return ret;
 }
 
 ProtoDataSegment OutputArray(ProtoArrayInfo const& info, void* value, int size) {
     ProtoDataSegment ret;
-    LOG_DEBUG("Outputting array {}", fmt::ptr(*(void**)value));
-    auto arr = *(Il2CppArray**)value;
+    LOG_DEBUG("Outputting array {}", fmt::ptr(*(void**) value));
+    auto arr = *(Il2CppArray**) value;
     if (!arr || arr->max_length <= 0)
         return ret;
 
@@ -196,7 +196,7 @@ ProtoDataSegment OutputGeneric(ProtoGenericInfo const& info, void* value, int si
 
 ProtoDataSegment OutputPrimitive(ProtoTypeInfo::Primitive info, void* value, int size) {
     ProtoDataSegment ret;
-    LOG_DEBUG("Outputting primitive {}", (int)info);
+    LOG_DEBUG("Outputting primitive {}", (int) info);
     switch (info) {
         case ProtoTypeInfo::STRING: {
             if (auto str = *(Il2CppString**) value) {
@@ -318,8 +318,7 @@ namespace MethodUtils {
 #ifdef UNITY_2021
             auto const& paramType = setter->parameters[0];
 #else
-            auto const& paramType =
-                setter->parameters[0]->parameter_type;
+            auto const& paramType = setter->parameters[0]->parameter_type;
 #endif
             *info.mutable_type() = ClassUtils::GetTypeInfo(paramType);
         }
@@ -334,9 +333,7 @@ namespace MethodUtils {
             auto const& param = method->parameters[i];
 
 #ifdef UNITY_2021
-            auto const& methodHandle = method->methodMetadataHandle;
-            auto const& paramName =
-                il2cpp_functions::method_get_param_name(method, i);
+            auto const& paramName = il2cpp_functions::method_get_param_name(method, i);
             auto const& paramType = param;
 #else
             auto const& paramName = param->name;
@@ -366,7 +363,7 @@ namespace FieldUtils {
 
         // since fields only use pointer math to find the offsets, we don't need to box things properly
         if (!isObject)
-            object = (void*)((char*) object - sizeof(Il2CppObject));
+            object = (void*) ((char*) object - sizeof(Il2CppObject));
 
         size_t size = fieldTypeSize(field->type);
         char ret[size];
@@ -374,7 +371,7 @@ namespace FieldUtils {
         if (ClassUtils::GetIsStatic(field))
             il2cpp_functions::field_static_get_value(const_cast<FieldInfo*>(field), (void*) ret);
         else
-            il2cpp_functions::field_get_value((Il2CppObject*) object,const_cast<FieldInfo*>(field), (void*)ret);
+            il2cpp_functions::field_get_value((Il2CppObject*) object, const_cast<FieldInfo*>(field), (void*) ret);
 
         // handles the transformation of the data if necessary
         auto typeInfo = ClassUtils::GetTypeInfo(field->type);
@@ -394,13 +391,12 @@ namespace FieldUtils {
 
         // since fields only use pointer math to find the offsets, we don't need to box things properly
         if (!isObject)
-            object = (void*)((char*) object - sizeof(Il2CppObject));
+            object = (void*) ((char*) object - sizeof(Il2CppObject));
 
         void* value = HandleType(arg.typeinfo(), arg.data());
 
         if (ClassUtils::GetIsStatic(field))
-            il2cpp_functions::field_static_set_value(
-                const_cast<FieldInfo*>(field), value);
+            il2cpp_functions::field_static_set_value(const_cast<FieldInfo*>(field), value);
         else
             il2cpp_functions::field_set_value((Il2CppObject*) object, const_cast<FieldInfo*>(field), value);
     }

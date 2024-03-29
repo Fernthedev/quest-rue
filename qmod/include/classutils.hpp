@@ -3,7 +3,7 @@
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "protobuf/qrue.pb.h"
 
-size_t fieldTypeSize(const Il2CppType* type);
+size_t fieldTypeSize(Il2CppType const* type);
 
 #define typeofclass(klass) &klass->byval_arg
 #define classoftype(type) il2cpp_functions::class_from_il2cpp_type(type)
