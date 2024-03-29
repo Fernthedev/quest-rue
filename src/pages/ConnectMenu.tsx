@@ -2,10 +2,10 @@ import { useNavigate } from "@solidjs/router";
 
 import styles from "./ConnectMenu.module.css";
 import { createEventEffect, getEvents } from "../misc/events";
-import { connect } from "../misc/commands";
 
 import toast from "solid-toast";
 import { createPersistentSignal } from "../misc/utils";
+import { socket } from "../misc/commands";
 
 export default function ConnectMenu() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function ConnectMenu() {
     // Stop refresh
     e.preventDefault();
 
-    const promise = connect(ip(), Number.parseInt(port()));
+    const promise = socket.connect(ip(), Number.parseInt(port()));
     toast.promise(promise, {
       loading: `Connecting to ${ip()}:${port()}`,
       success: "Connected successfully!",

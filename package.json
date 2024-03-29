@@ -22,10 +22,11 @@
     "daisyui": "^3.1.6",
     "long": "^5.2.3",
     "protobufjs": "^7.2.6",
-    "ts-proto": "^1.167.8",
     "solid-heroicons": "^3.2.4",
     "solid-js": "^1.8.15",
-    "solid-toast": "^0.5.0"
+    "solid-toast": "^0.5.0",
+    "tauri-plugin-websocket-api": "github:tauri-apps/tauri-plugin-websocket#v1",
+    "ts-proto": "^1.167.8"
   },
   "devDependencies": {
     "@solidjs/meta": "^0.29.3",

@@ -41,6 +41,7 @@ async fn main() -> anyhow::Result<()> {
         //     request_game_objects,
         //     is_connected
         // ])
+        .plugin(tauri_plugin_websocket::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
