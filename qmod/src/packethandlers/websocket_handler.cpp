@@ -30,7 +30,14 @@ void WebSocketHandler::listen(int const port) {
 
         serverThread = std::thread([this]() { serverSocket->run(); });
         serverThread.detach();
-        LOG_INFO("Started server");
+
+        lib::asio::error_code ec;
+        auto endpoint = serverSocket->get_local_endpoint(ec);
+        if (ec.failed()) {
+          LOG_INFO("Failed to listen {} ({})", ec.message(), ec.to_string());
+        } else {
+          LOG_INFO("Listening to {}:{}", endpoint.address().to_string(), endpoint.port());
+        }
     } catch (exception const& e) {
         LOG_INFO("Server failed because: ({})!", e.what());
         stop();
