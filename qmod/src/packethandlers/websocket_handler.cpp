@@ -25,13 +25,26 @@ void WebSocketHandler::listen(int const port) {
         serverSocket->set_close_handler(bind(&WebSocketHandler::OnClose, this, ::_1));
         serverSocket->set_message_handler(bind(&WebSocketHandler::OnMessage, this, serverSocket.get(), ::_1, ::_2));
 
-        serverSocket->listen(port);
+        lib::asio::error_code ec;
+        serverSocket->listen(lib::asio::ip::tcp::v4(), port, ec);
+
+        // TODO: Fix to allow both ipv6 and ipv4
+        // serverSocket->listen(port, ec);
+        // if (ec.failed()) {
+        //   LOG_INFO("Failed to listen {} ({}), attempting v4", ec.message(), ec.to_string());
+        //   serverSocket->listen(lib::asio::ip::tcp::v4(), port, ec);
+        // }
+        if (ec.failed()) {
+          LOG_INFO("Failed to listen after trying v4: {} ({})", ec.message(),
+                   ec.to_string());
+          return;
+        }
+        
         serverSocket->start_accept();
 
         serverThread = std::thread([this]() { serverSocket->run(); });
         serverThread.detach();
 
-        lib::asio::error_code ec;
         auto endpoint = serverSocket->get_local_endpoint(ec);
         if (ec.failed()) {
           LOG_INFO("Failed to listen {} ({})", ec.message(), ec.to_string());
