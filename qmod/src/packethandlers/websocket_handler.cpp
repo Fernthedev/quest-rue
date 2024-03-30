@@ -36,7 +36,22 @@ void WebSocketHandler::listen(int const port) {
         if (ec.failed()) {
           LOG_INFO("Failed to listen {} ({})", ec.message(), ec.to_string());
         } else {
-          LOG_INFO("Listening to {}:{}", endpoint.address().to_string(), endpoint.port());
+          LOG_INFO("Listening to {}:{} ipv4 {} ipv6 {}",
+                   endpoint.address().to_string(ec), endpoint.port(),
+                   endpoint.address().is_v4(), endpoint.address().is_v6());
+
+          LOG_INFO("Is loopback {}", endpoint.address().is_loopback());
+
+          if (endpoint.address().is_v4()) {
+            LOG_INFO("IPv4 {}:{}", endpoint.address().to_v4().to_string(ec),
+                     endpoint.port());
+          }
+
+          if (endpoint.address().is_v6()) {
+            auto ipv6 = endpoint.address().to_v6();
+            LOG_INFO("IPv6 {}:{} ipv4 compatible {}", ipv6.to_string(ec),
+                     endpoint.port(), ipv6.is_v4_compatible());
+          }
         }
     } catch (exception const& e) {
         LOG_INFO("Server failed because: ({})!", e.what());
