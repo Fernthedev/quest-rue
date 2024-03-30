@@ -15,8 +15,10 @@ export let socket: QuestRUESocket = undefined!;
 export function initSocket() {
   if (isTauri()) {
     socket = new TauriWebSocket();
+    console.log("Using tauri web socket")
   } else {
     socket = new NodeWebSocket();
+    console.log("Using node web socket")
   }
 
   socket = Object.freeze(socket);
