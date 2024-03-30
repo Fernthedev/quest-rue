@@ -16,7 +16,7 @@ export function isTauri(): boolean {
   const unsafeWindow = window as any;
   
   // no strict equality here
-  return (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) == true;
+  return (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) != undefined;
 }
 
 export async function devSetup() {
