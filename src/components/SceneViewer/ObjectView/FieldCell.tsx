@@ -88,7 +88,7 @@ export function FieldCell(props: {
         class={"small-button"}
         onClick={refresh}
         loading={valueLoading() || valueSetting()}
-        img="refresh.svg"
+        img="refresh"
         tooltip="Refresh"
       />
     </span>

@@ -146,7 +146,7 @@ export function StaticsView(props: {
               fallback={<Icon path={plus} class="w-6 h-6" />}
             >
               <img
-                src="/src/assets/loading.svg"
+                src="/loading.svg"
                 class="animate-spin"
                 elementtiming={"Loading"}
                 fetchpriority={"auto"}

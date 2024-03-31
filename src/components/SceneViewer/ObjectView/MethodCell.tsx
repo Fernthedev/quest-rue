@@ -173,7 +173,7 @@ export function MethodCell(props: {
         class={"small-button"}
         onClick={run}
         loading={resultLoading()}
-        img="enter.svg"
+        img="enter"
         tooltip="Invoke"
       />
       <InputCell

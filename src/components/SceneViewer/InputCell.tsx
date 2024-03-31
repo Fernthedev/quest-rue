@@ -38,9 +38,9 @@ import { BetterSelect } from "../form/BetterSelect";
 export function ActionButton(props: {
   img:
     | { path: JSX.Element; outline: boolean; mini: boolean }
-    | "enter.svg"
-    | "save.svg"
-    | "refresh.svg";
+    | "enter"
+    | "save"
+    | "refresh";
   onClick?: () => void;
   loading?: boolean;
   class?: string;
@@ -52,7 +52,7 @@ export function ActionButton(props: {
   const icon = createMemo(() =>
     typeof props.img == "string" ? (
       <img
-        src={`/src/assets/${props.img}`}
+        src={`/${props.img}.svg`}
         elementtiming={"Action"}
         fetchpriority={"auto"}
         alt="Action"
@@ -77,7 +77,7 @@ export function ActionButton(props: {
     >
       <Show when={props.loading} fallback={icon()}>
         <img
-          src="/src/assets/loading.svg"
+          src="/loading.svg"
           class="animate-spin"
           elementtiming={"Loading"}
           fetchpriority={"auto"}
@@ -266,7 +266,7 @@ export default function InputCell(props: {
           <span class="dropdown dropdown-bottom dropdown-end h-6">
             <ActionButton
               class="small-button"
-              img="save.svg"
+              img="save"
               tooltip="Save variable"
             />
             <div

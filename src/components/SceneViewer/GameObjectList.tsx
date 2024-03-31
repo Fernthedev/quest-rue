@@ -218,7 +218,7 @@ export default function GameObjectList() {
         when={requesting()}
         fallback={
           <img
-            src="/src/assets/refresh.svg"
+            src="/refresh.svg"
             elementtiming={"Refresh icon"}
             fetchpriority={"auto"}
             alt="Refresh"
@@ -226,7 +226,7 @@ export default function GameObjectList() {
         }
       >
         <img
-          src="/src/assets/loading.svg"
+          src="/loading.svg"
           class="animate-spin"
           elementtiming={"Spinning icon"}
           fetchpriority={"auto"}

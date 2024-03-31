@@ -193,7 +193,7 @@ export default function ObjectView(props: {
       <span class="dropdown dropdown-left dropdown-end h-6">
         <ActionButton
           class="small-button"
-          img="save.svg"
+          img="save"
           tooltip="Save variable"
           onClick={() => {
             input?.focus();

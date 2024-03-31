@@ -256,7 +256,7 @@ export function GameObjectSection(
             </For>
             <ActionButton
               class="small-button"
-              img="refresh.svg"
+              img="refresh"
               tooltip="Refresh Components"
               onClick={() => updateComponents()}
               loading={componentsLoading()}

@@ -123,7 +123,7 @@ export function PropertyCell(props: {
           class={"small-button"}
           onClick={get}
           loading={valueLoading() || valueSetting()}
-          img="refresh.svg"
+          img="refresh"
           tooltip="Refresh"
         />
       </Show>
@@ -132,7 +132,7 @@ export function PropertyCell(props: {
           class={"small-button"}
           onClick={set}
           loading={valueLoading() || valueSetting()}
-          img="enter.svg"
+          img="enter"
           tooltip="Set"
         />
       </Show>
