@@ -12,7 +12,9 @@ let test_game_object_class_details: Promise<
 
 // https://github.com/tauri-apps/tauri-docs/issues/699
 export function isTauri(): boolean {
-  return !window.location.host.startsWith('localhost:');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const unsafeWindow = window as any;
+  return (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) != undefined;
 }
 
 export async function devSetup() {
