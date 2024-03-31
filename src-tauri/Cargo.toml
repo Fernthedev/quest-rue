@@ -22,7 +22,7 @@ futures = "*"
 anyhow = "1.0"
 protobuf = { version = "3", features = ["with-bytes"] }
 serde_json = "1.0"
-tauri = { version = "1.6", features = [ "shell-open", "shell-open-api", "devtools"] }
+tauri = { version = "1.6", features = ["shell-open", "shell-open-api", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 env_logger = "0.10"

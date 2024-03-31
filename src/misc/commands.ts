@@ -20,8 +20,6 @@ export function initSocket() {
     socket = new NodeWebSocket();
     console.log("Using node web socket")
   }
-
-  socket = Object.freeze(socket);
 }
 
 export function handleGlobalPacketWrapper(packet: PacketWrapper) {
