@@ -330,17 +330,16 @@ ProtoGenericInfo ClassUtils::GetGenericInfo(Il2CppType const* type) {
     LOG_DEBUG("Getting generic info");
 
 #ifdef UNITY_2021
-    // todo: store genericParameterHandle as is in larger field
     auto genericHandle = type->data.genericParameterHandle;
-    auto genericIndex = il2cpp_functions::MetadataCache_GetGenericParameterIndexFromParameter(genericHandle);
+    auto name = il2cpp_functions::Type_GetName(type, Il2CppTypeNameFormat::IL2CPP_TYPE_NAME_FORMAT_FULL_NAME);
 #else
     auto genericHandle = type->data.genericParameterIndex;
-    auto genericIndex = genericHandle;
+    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(genericHandle);
+    auto name = il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex);
 #endif
-    auto parameter = il2cpp_functions::MetadataCache_GetGenericParameterFromIndex(genericIndex);
 
     genericInfo.set_generichandle((uint64_t) genericHandle);
-    genericInfo.set_name(il2cpp_functions::MetadataCache_GetStringFromIndex(parameter->nameIndex));
+    genericInfo.set_name(name);
     return genericInfo;
 }
 

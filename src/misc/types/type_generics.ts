@@ -22,7 +22,7 @@ export function getGenerics(type?: PacketJSON<ProtoTypeInfo>): ProtoTypeInfo[] {
 
 export function getInstantiation(
   type: PacketJSON<ProtoTypeInfo>,
-  generics: Map<number, ProtoTypeInfo>
+  generics: Map<bigint, ProtoTypeInfo>
 ): ProtoTypeInfo {
   let ret = ProtoTypeInfo.fromJSON(ProtoTypeInfo.toJSON(type));
 
@@ -32,8 +32,8 @@ export function getInstantiation(
         (g) =>
           generics.get(
             g.Info?.$case == "genericInfo"
-              ? g.Info?.genericInfo?.genericIndex
-              : -1
+              ? g.Info?.genericInfo?.genericHandle
+              : BigInt(-1)
           ) ?? g
       );
       return ret;
@@ -50,14 +50,14 @@ export function getInstantiation(
             (g) =>
               generics.get(
                 g.Info?.$case == "genericInfo"
-                  ? g.Info?.genericInfo?.genericIndex
-                  : -1
+                  ? g.Info?.genericInfo?.genericHandle
+                  : BigInt(-1)
               ) ?? g
           );
       }
       return ret;
     case "genericInfo":
-      ret = generics.get(ret.Info.genericInfo.genericIndex) ?? ret;
+      ret = generics.get(ret.Info.genericInfo.genericHandle) ?? ret;
       ret.isByref = type.isByref;
       return ret;
   }

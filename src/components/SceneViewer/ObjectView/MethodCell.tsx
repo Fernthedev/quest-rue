@@ -53,7 +53,7 @@ export function MethodCell(props: {
 
   // set latestArgs types to the current generic inputs
   function updateGenerics(requireValid: boolean) {
-    const genericsData = genericInputs().map<[number, ProtoTypeInfo]>(
+    const genericsData = genericInputs().map<[bigint, ProtoTypeInfo]>(
       ([index, str]) => [
         index,
         stringToProtoType(str, requireValid) ?? genericArgsMap().get(index)!,
@@ -61,7 +61,7 @@ export function MethodCell(props: {
     );
     const generics = genericsData.reduce(
       (map, [index, type]) => map.set(index, type),
-      new Map<number, ProtoTypeInfo>()
+      new Map<bigint, ProtoTypeInfo>()
     );
     // set from base args, not latest args
     setLatestArgs(
@@ -110,18 +110,18 @@ export function MethodCell(props: {
             console.log("bad type", t, args());
             throw "Non generic ProtoTypeInfo in generics";
           }
-          const index = t.Info.genericInfo.genericIndex;
+          const index = t.Info.genericInfo.genericHandle;
           return map.set(index, t);
-        }, new Map<number, ProtoTypeInfo>())
+        }, new Map<bigint, ProtoTypeInfo>())
     );
   });
   // all generic ProtoTypeInfos in order
   const genericArgs = createMemo(() => Array.from(genericArgsMap().values()));
   // [genericParameterIndex, input value][]
   const genericInputs = createMemo(() =>
-    genericArgs().map<[number, string]>((t: ProtoTypeInfo) => [
+    genericArgs().map<[bigint, string]>((t: ProtoTypeInfo) => [
       // the case should always be this but typescript moment
-      t.Info?.$case == "genericInfo" ? t.Info.genericInfo.genericIndex : -1,
+      t.Info?.$case == "genericInfo" ? t.Info.genericInfo.genericHandle : BigInt(-1),
       "",
     ])
   );

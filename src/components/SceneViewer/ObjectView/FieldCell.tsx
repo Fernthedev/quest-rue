@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onMount } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../../misc/proto/qrue";
 import {
