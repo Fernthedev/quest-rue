@@ -31,7 +31,7 @@ jobs:
 
       - name: install pnpm
         run: npm -g install pnpm # change this to npm or pnpm depending on which one you use
-        
+
       - name: install frontend dependencies
         run: pnpm install # change this to npm or pnpm depending on which one you use
 
@@ -49,7 +49,7 @@ jobs:
             # A file, directory or wildcard pattern that describes what to upload
             # Required.
             path: |
-                target/release/*
+                ${GITHUB_WORKSPACE/src-tauri/target/release/*
             # The desired behavior if no files are found using the provided path.
             # Available Options:
             #   warn: Output a warning but do not fail the action
