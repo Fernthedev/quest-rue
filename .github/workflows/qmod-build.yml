@@ -33,7 +33,7 @@ jobs:
           workflow_token: ${{ secrets.GITHUB_TOKEN }}
 
           restore: false
-          cache: true
+          cache: false
 
           publish: false
 
