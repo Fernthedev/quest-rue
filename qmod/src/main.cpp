@@ -135,6 +135,8 @@ MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
 #include "VRUIControls/MouseState.hpp"
 #include "VRUIControls/VRInputModule.hpp"
 
+static bool clickedLastFrame = false;
+
 MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
     &VRUIControls::VRInputModule::GetMousePointerEventData,
     VRUIControls::MouseState*,
@@ -145,10 +147,33 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
     if (fpfcEnabled) {
-        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState =
-            click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
-        click = false;
-    }
+        auto state = EventData::FramePressState::NotChanged;
+        if (click && !clickedLastFrame)
+            state = EventData::FramePressState::Pressed;
+        if (!click && clickedLastFrame)
+            state = EventData::FramePressState::Released;
+        if (clickOnce) {
+            state = EventData::FramePressState::PressedAndReleased;
+            clickOnce = false;
+        }
+        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = state;
+        clickedLastFrame = click;
+    } else
+        clickedLastFrame = false;
+    return ret;
+}
+
+#include "GlobalNamespace/VRPlatformUtils.hpp"
+#include "UnityEngine/Input.hpp"
+
+MAKE_HOOK_MATCH(VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation,
+    &VRPlatformUtils::GetAnyJoystickMaxAxisDefaultImplementation,
+    Vector2,
+    IVRPlatformHelper* self) {
+
+    auto ret = VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation(self);
+    if (fpfcEnabled)
+        return {0, UnityEngine::Input::GetAxis("Mouse ScrollWheel")};
     return ret;
 }
 
@@ -176,6 +201,7 @@ extern "C" void load() {
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(logger, DefaultScenesTransitionsFromInit_TransitionToNextScene);
+    INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
     INSTALL_HOOK(logger, VRInputModule_GetMousePointerEventData);
     INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
     INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);

@@ -10,6 +10,7 @@ DEFINE_TYPE(QRUE, CameraController);
 bool fpfcEnabled = true;
 
 bool click = false;
+bool clickOnce = false;
 HMUI::UIKeyboard* keyboardOpen = nullptr;
 
 float rotateSensitivity = 1;
@@ -235,22 +236,25 @@ void CameraController::Update() {
         auto touch = Input::GetTouch(0);
         auto& pos = touch.m_Position;
         auto phase = touch.m_Phase;
+        bool drag = Input::GetKey(KeyCode::LeftShift) || Input::GetKey(KeyCode::RightShift);
         switch (phase) {
             case TouchPhase::Began:
                 lastTime = UnityEngine::Time::get_time();
                 lastMovement = 0;
                 lastPos = pos;
+                click = drag;
                 break;
             case TouchPhase::Ended:
             case TouchPhase::Canceled:
                 Rotate(Sombrero::FastVector2(pos) - lastPos);
-                if ((time - lastTime) < clickTime && lastMovement < movementThreshold)
-                    click = true;
+                if (!click && (time - lastTime) < clickTime && lastMovement < movementThreshold)
+                    clickOnce = true;
+                click = false;
                 break;
             default:
                 Rotate(Sombrero::FastVector2(pos) - lastPos);
-
                 lastPos = pos;
+                click = drag;
                 break;
         }
     }

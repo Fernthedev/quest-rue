@@ -34,6 +34,7 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
 extern bool fpfcEnabled;
 
 extern bool click;
+extern bool clickOnce;
 extern HMUI::UIKeyboard* keyboardOpen;
 
 extern float rotateSensitivity;
