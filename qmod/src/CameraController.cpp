@@ -7,7 +7,7 @@
 
 DEFINE_TYPE(QRUE, CameraController);
 
-bool enabled = true;
+bool fpfcEnabled = true;
 
 bool click = false;
 HMUI::UIKeyboard* keyboardOpen = nullptr;
@@ -53,7 +53,7 @@ using namespace GlobalNamespace;
 #include "VRUIControls/VRPointer.hpp"
 
 void CameraController::OnEnable() {
-    if (!enabled)
+    if (!fpfcEnabled)
         return;
     LOG_INFO("CameraController enable");
 
@@ -137,7 +137,7 @@ void CameraController::OnEnable() {
 }
 
 void CameraController::OnDisable() {
-    if (enabled)
+    if (fpfcEnabled)
         return;
     LOG_INFO("CameraController disable");
 
@@ -224,7 +224,7 @@ void CameraController::Update() {
     if (Input::GetKeyDown(KeyCode::X)) {
         LOG_INFO("Disabling FPFC due to X press (reenable with Z)");
 
-        enabled = false;
+        fpfcEnabled = false;
         set_enabled(false);
         return;
     }

@@ -31,7 +31,7 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, childTransform);
 )
 
-extern bool enabled;
+extern bool fpfcEnabled;
 
 extern bool click;
 extern HMUI::UIKeyboard* keyboardOpen;

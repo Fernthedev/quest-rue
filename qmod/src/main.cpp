@@ -114,7 +114,7 @@ MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
 
     finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(finishCallback,
         custom_types::MakeDelegate<System::Action_1<Zenject::DiContainer*>*>((std::function<void(Zenject::DiContainer*)>) [](Zenject::DiContainer*) {
-            if (enabled)
+            if (fpfcEnabled)
                 EnableFPFC();
         }));
 
@@ -144,7 +144,7 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
     using EventData = UnityEngine::EventSystems::PointerEventData;
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
-    if (enabled) {
+    if (fpfcEnabled) {
         ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState =
             click ? EventData::FramePressState::PressedAndReleased : EventData::FramePressState::NotChanged;
         click = false;
