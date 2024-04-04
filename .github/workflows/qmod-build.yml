@@ -26,7 +26,7 @@ jobs:
           lfs: true
 
       - uses: friendlyanon/setup-vcpkg@v1
-        with: { committish: 8a83681f921b10d86ae626fd833c253f4f8c355b }
+        with: { committish: 7f9f0e44db287e8e67c0e888141bfa200ab45121 }
 
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
