@@ -30,6 +30,11 @@ jobs:
 
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
+      - name: Create ndkpath.txt
+        run: |
+          echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
+          cat ${GITHUB_WORKSPACE}/ndkpath.txt
+
       - name: QPM Action
         uses: Fernthedev/qpm-action@main
         with:
@@ -50,6 +55,10 @@ jobs:
           ls -la ./extern/includes
           echo libs:
           ls -la ./extern/libs
+
+      - name: Create protobuf files
+        run: |
+          pwsh ../make_proto.ps1
 
       - name: Build & create qmod
         run: |
