@@ -25,14 +25,11 @@ jobs:
           submodules: true
           lfs: true
 
-      - uses: friendlyanon/setup-vcpkg@v1
-        with: { committish: 7f9f0e44db287e8e67c0e888141bfa200ab45121 }
-
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
       - name: Create ndkpath.txt
         run: |
-          echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
+          echo "$ANDROID_NDK_LATEST_HOME" > ./ndkpath.txt
           cat ${GITHUB_WORKSPACE}/ndkpath.txt
 
       - name: QPM Action
@@ -60,9 +57,9 @@ jobs:
         run: |
           cd ..
           pwsh install_deps.ps1
-          pwsh make-proto.ps1
+          make-proto.sh
           cd ./qmod
-          ls ./protobuf
+          ls -la ./protobuf
 
       - name: Build & create qmod
         run: |
