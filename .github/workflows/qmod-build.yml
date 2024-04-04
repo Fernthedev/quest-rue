@@ -30,7 +30,7 @@ jobs:
       - name: Create ndkpath.txt
         run: |
           echo "$ANDROID_NDK_LATEST_HOME" > ./ndkpath.txt
-          cat ${GITHUB_WORKSPACE}/ndkpath.txt
+          cat ./ndkpath.txt
 
       - name: QPM Action
         uses: Fernthedev/qpm-action@main
