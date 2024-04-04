@@ -58,7 +58,10 @@ jobs:
 
       - name: Create protobuf files
         run: |
-          pwsh ../make-proto.ps1
+          cd ..
+          pwsh make-proto.ps1
+          cd ./qmod
+          ls ./protobuf
 
       - name: Build & create qmod
         run: |
