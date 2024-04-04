@@ -25,6 +25,9 @@ jobs:
           submodules: true
           lfs: true
 
+      - uses: friendlyanon/setup-vcpkg@v1
+        with: { committish: 8a83681f921b10d86ae626fd833c253f4f8c355b }
+
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
       - name: QPM Action
