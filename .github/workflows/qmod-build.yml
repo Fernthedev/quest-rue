@@ -57,7 +57,7 @@ jobs:
         run: |
           cd ..
           pwsh install_deps.ps1
-          make-proto.sh
+          ./make-proto.sh
           cd ./qmod
           ls -la ./protobuf
 
