@@ -3,7 +3,7 @@ $modTemplate = Get-Item "./mod.template.json"
 
 if (-not (Test-Path -Path $mod) -or $modTemplate.LastWriteTime -gt (Get-Item $mod).LastWriteTime) {
     if (Test-Path -Path ".\mod.template.json") {
-        & qpm qmod manifest
+        & qpm qmod build
         if ($LASTEXITCODE -ne 0) {
             exit $LASTEXITCODE
         }

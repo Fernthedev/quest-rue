@@ -65,7 +65,9 @@ jobs:
           cd ..
           pwsh install-deps.ps1
           pwsh make-proto.ps1 -y
-          cd ./qmod
+
+      - name: List protobuf files
+        run: |
           ls -la ./protobuf
 
       - name: Build & create qmod
