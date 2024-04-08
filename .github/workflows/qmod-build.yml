@@ -2,7 +2,7 @@ name: Build Qmod
 
 env:
   module_id: questeditor
-  qmodName: QuestEditor
+  qmodName: Quest Editor
 
 on:
   workflow_dispatch:
