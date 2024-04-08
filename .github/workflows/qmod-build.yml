@@ -53,16 +53,24 @@ jobs:
           echo libs:
           ls -la ./extern/libs
 
+      - name: Cache vcpkg_installed
+        id: cache-vcpkg-install
+        uses: actions/cache@v4
+        with:
+          path: ${GITHUB_WORKSPACE}/vcpkg_installed
+          key: ${{ runner.os }}-vcpkg_installed
+
       - name: Create protobuf files
         run: |
           cd ..
-          pwsh install_deps.ps1
-          pwsh make-proto.ps1
+          pwsh install-deps.ps1
+          pwsh make-proto.ps1 -y
           cd ./qmod
           ls -la ./protobuf
 
       - name: Build & create qmod
         run: |
+          export VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}
           qpm s qmod
 
       - name: Get Library Name
@@ -75,25 +83,25 @@ jobs:
 
       - name: Rename debug
         run: |
-          mv ./build/debug/${{ steps.libname.outputs.NAME }} ./build/debug/debug_${{ steps.libname.outputs.NAME }}
+          mv ${GITHUB_WORKSPACE}/qmod/build/debug/${{ steps.libname.outputs.NAME }} ${GITHUB_WORKSPACE}/qmod/build/debug/debug_${{ steps.libname.outputs.NAME }}
 
       - name: Upload non-debug artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.libname.outputs.NAME }}
-          path: ./build/${{ steps.libname.outputs.NAME }}
+          path: ${GITHUB_WORKSPACE}/qmod/build/${{ steps.libname.outputs.NAME }}
           if-no-files-found: error
 
       - name: Upload debug artifact
         uses: actions/upload-artifact@v2
         with:
           name: debug_${{ steps.libname.outputs.NAME }}
-          path: ./build/debug/debug_${{ steps.libname.outputs.NAME }}
+          path: ${GITHUB_WORKSPACE}/qmod/build/debug/debug_${{ steps.libname.outputs.NAME }}
           if-no-files-found: error
 
       - name: Upload qmod artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.qmodName }}.qmod
-          path: ./${{ env.qmodName }}.qmod
+          path: ${GITHUB_WORKSPACE}/qmod/${{ env.qmodName }}.qmod
           if-no-files-found: error
