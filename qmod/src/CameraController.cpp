@@ -53,12 +53,21 @@ using namespace GlobalNamespace;
 #include "VRUIControls/VRLaserPointer.hpp"
 #include "VRUIControls/VRPointer.hpp"
 
+#ifdef UNITY_2021
+#include "UnityEngine/SpatialTracking/TrackedPoseDriver.hpp"
+#endif
+
 void CameraController::OnEnable() {
     if (!fpfcEnabled)
         return;
     LOG_INFO("CameraController enable");
 
     childTransform = get_transform();
+#ifdef UNITY_2021
+    if (auto tracker = GetComponent<SpatialTracking::TrackedPoseDriver*>())
+        tracker->enabled = false;
+    childTransform->set_position({0, 1.5, 0});
+#else
     parentTransform = childTransform->GetParent();
 
     if (!parentTransform) {
@@ -73,6 +82,7 @@ void CameraController::OnEnable() {
     parentTransform->set_eulerAngles({0, 0, 0});
     childTransform->set_localPosition({0, 0, 0});
     childTransform->set_localEulerAngles({0, 0, 0});
+#endif
 
 #ifdef UNITY_2021
     // in level
@@ -142,6 +152,10 @@ void CameraController::OnDisable() {
         return;
     LOG_INFO("CameraController disable");
 
+#ifdef UNITY_2021
+    if (auto tracker = GetComponent<SpatialTracking::TrackedPoseDriver*>())
+        tracker->enabled = true;
+#else
     if (!parentTransform)
         return;
 
@@ -151,6 +165,7 @@ void CameraController::OnDisable() {
 
     parentTransform->set_position({0, 0, 0});
     parentTransform->set_eulerAngles({0, 0, 0});
+#endif
 
 #ifdef UNITY_2021
     if (auto pauseMenu = GetPauseMenu()) {
@@ -326,13 +341,23 @@ void CameraController::Update() {
 void CameraController::Rotate(Sombrero::FastVector2 delta) {
     delta = delta * rotateSensitivity * 20;
     lastMovement += delta.get_magnitude();
+#ifdef UNITY_2021
+    Sombrero::FastVector3 prev = childTransform->get_eulerAngles();
+    childTransform->set_eulerAngles(prev + Sombrero::FastVector3{-delta.y, delta.x, 0});
+#else
     Sombrero::FastVector3 prev = parentTransform->get_eulerAngles();
     parentTransform->set_eulerAngles(prev + Sombrero::FastVector3{-delta.y, delta.x, 0});
+#endif
 }
 
 void CameraController::Move(Sombrero::FastVector3 delta) {
     delta = delta * moveSensitivity / 50;
+#ifdef UNITY_2021
+    Sombrero::FastVector3 prev = childTransform->get_position();
+    childTransform->set_position(prev + delta);
+#else
     Sombrero::FastVector3 prev = parentTransform->get_position();
     parentTransform->set_position(prev + delta);
+#endif
 }
 #endif
