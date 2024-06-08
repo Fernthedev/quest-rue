@@ -267,6 +267,16 @@ ProtoDataPayload HandleReturn(MethodInfo const* method, Il2CppObject* ret) {
     return OutputData(typeInfo, ownedValue);
 }
 
+#ifdef UNITY_2021
+bool shouldGetParamName(MethodInfo const* method) {
+    if (!method->klass || ClassUtils::GetIsCustom(method->klass))
+        return false;
+    if (method->klass->byval_arg.type == IL2CPP_TYPE_SZARRAY)
+        return false;
+    return true;
+}
+#endif
+
 namespace MethodUtils {
     ProtoDataPayload Run(MethodInfo const* method, ProtoDataPayload const& object, std::vector<ProtoDataPayload> const& args, std::string& error) {
         void* inst = nullptr;
@@ -335,7 +345,7 @@ namespace MethodUtils {
 #ifdef UNITY_2021
             std::string paramName = "";
             // custom types doesn't appear to set method->klass anyway
-            if (method->klass && !ClassUtils::GetIsCustom(method->klass))
+            if (shouldGetParamName(method))
                 paramName = il2cpp_functions::method_get_param_name(method, i);
             auto const& paramType = param;
 #else
