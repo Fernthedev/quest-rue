@@ -75,8 +75,10 @@ void DisableFPFC() {
         return;
 
     auto go = cam->get_gameObject();
+    bool enabledState = fpfcEnabled;
     if (auto existing = go->GetComponent<QRUE::CameraController*>())
         existing->set_enabled(false);
+    fpfcEnabled = enabledState;
 }
 
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
@@ -191,6 +193,27 @@ MAKE_HOOK_MATCH(UIKeyboardManager_CloseKeyboard, &UIKeyboardManager::CloseKeyboa
 
     keyboardOpen = nullptr;
 }
+
+#ifdef UNITY_2021
+#include "UnityEngine/Pose.hpp"
+#include "UnityEngine/SpatialTracking/PoseDataFlags.hpp"
+#include "UnityEngine/SpatialTracking/TrackedPoseDriver.hpp"
+
+MAKE_HOOK_MATCH(TrackedPoseDriver_GetPoseData,
+    &SpatialTracking::TrackedPoseDriver::GetPoseData,
+    SpatialTracking::PoseDataFlags,
+    SpatialTracking::TrackedPoseDriver* self,
+    SpatialTracking::TrackedPoseDriver::DeviceType device,
+    SpatialTracking::TrackedPoseDriver::TrackedPose poseSource,
+    ByRef<Pose> resultPose) {
+
+    if (fpfcEnabled) {
+        resultPose = Pose(fpfcPos, Quaternion::Euler(fpfcRot));
+        return (int) SpatialTracking::PoseDataFlags::Position | (int) SpatialTracking::PoseDataFlags::Rotation;
+    } else
+        return TrackedPoseDriver_GetPoseData(self, device, poseSource, resultPose);
+}
+#endif
 #endif
 
 extern "C" void load() {
@@ -206,6 +229,9 @@ extern "C" void load() {
     INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
     INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);
     INSTALL_HOOK(logger, GameScenesManager_ScenesTransitionCoroutine);
+#ifdef UNITY_2021
+    INSTALL_HOOK(logger, TrackedPoseDriver_GetPoseData);
+#endif
     LOG_INFO("Installed hooks!");
 #endif
 

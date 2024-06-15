@@ -32,6 +32,10 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
 )
 
 extern bool fpfcEnabled;
+#ifdef UNITY_2021
+extern Sombrero::FastVector3 fpfcPos;
+extern Sombrero::FastVector3 fpfcRot;
+#endif
 
 extern bool click;
 extern bool clickOnce;
