@@ -49,9 +49,6 @@ export default function App() {
   createEventEffect(getEvents().DISCONNECTED_EVENT, () => {
     toast.error("Disconnected from Quest");
   });
-  createEventEffect(getEvents().ERROR_EVENT, (e) => {
-    toast.error(`Suffered error: ${e}`);
-  });
 
   return (
     <div class="w-screen h-screen overflow-hidden">

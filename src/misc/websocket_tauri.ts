@@ -6,7 +6,7 @@ import { PacketWrapper } from "./proto/qrue";
 
 export class TauriWebSocket implements QuestRUESocket {
   socket: WebSocket | undefined;
-  connected?: boolean | undefined;
+  connected: boolean = false;
 
   async connect(ip: string, port: number): Promise<boolean> {
     if (this.socket && this.connected) {
@@ -27,11 +27,10 @@ export class TauriWebSocket implements QuestRUESocket {
     getEvents().CONNECTED_EVENT.invoke();
     ws.addListener((arg) => {
       switch (arg.type) {
+        case undefined: // error: close without handshake
         case "Close": {
-          console.warn(
-            "Sending disconnect event with undefined! This is just me being lazy, ignore the following error if any",
-          );
-          getEvents().DISCONNECTED_EVENT.invoke(undefined!);
+          if (this.connected) getEvents().DISCONNECTED_EVENT.invoke();
+          this.connected = false;
           break;
         }
         case "Binary": {
@@ -50,7 +49,7 @@ export class TauriWebSocket implements QuestRUESocket {
   isConnected(): boolean {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return true;
 
-    return this.connected ?? false;
+    return this.connected;
   }
 
   async send(data: Uint8Array): Promise<void> {

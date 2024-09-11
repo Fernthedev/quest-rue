@@ -12,6 +12,7 @@ export interface QuestRUESocket {
 
 export class NodeWebSocket implements QuestRUESocket {
   socket: WebSocket | undefined;
+  connected: boolean = false;
 
   connect(ip: string, port: number): Promise<boolean> {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
@@ -26,14 +27,16 @@ export class NodeWebSocket implements QuestRUESocket {
       this.socket = new WebSocket(url);
       this.socket.binaryType = "arraybuffer";
       this.socket.onopen = () => {
+        this.connected = true;
         res(true);
         getEvents().CONNECTED_EVENT.invoke();
       };
-      this.socket.onclose = (event) => {
-        res(false);
-        getEvents().DISCONNECTED_EVENT.invoke(event);
+      this.socket.onclose = () => {
+        if (this.connected) getEvents().DISCONNECTED_EVENT.invoke();
+        this.connected = false;
       };
       this.socket.onerror = (event) => {
+        console.log("socket error:", event);
         err(event);
         getEvents().ERROR_EVENT.invoke(event);
       };
@@ -49,7 +52,7 @@ export class NodeWebSocket implements QuestRUESocket {
   isConnected() {
     if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return true;
 
-    return this.socket?.readyState == WebSocket.OPEN;
+    return this.connected;
   }
 
   async send(data: Uint8Array): Promise<void> {
