@@ -6,8 +6,8 @@ type SelectProps = Parameters<typeof Select>[0];
 
 /**
  * Add tooltip
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export function BetterSelect(props: SelectProps & { title?: string }) {
   // set the title (tooltip) to the actual input element

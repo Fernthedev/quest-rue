@@ -38,10 +38,10 @@ export function GameObjectSection(
   search: string,
   filters: Store<FilterSettings>,
   details: PacketJSON<ProtoClassDetails>,
-  initVals?: GetInstanceValuesResult
+  initVals?: GetInstanceValuesResult,
 ) {
   const isTransform = createMemo(() =>
-    protoTypeToString(selected.typeInfo).includes("Transform")
+    protoTypeToString(selected.typeInfo).includes("Transform"),
   );
 
   const otherClassInfo = createMemo(() => {
@@ -66,17 +66,17 @@ export function GameObjectSection(
   });
 
   const transformDetails = createMemo(() =>
-    isTransform() ? details : otherDetails()?.classDetails
+    isTransform() ? details : otherDetails()?.classDetails,
   );
   const gameObjectDetails = createMemo(() =>
-    isTransform() ? otherDetails()?.classDetails : details
+    isTransform() ? otherDetails()?.classDetails : details,
   );
 
   const [transformInst, setTransformInst] = createUpdatingSignal(() =>
-    isTransform() ? selected : undefined
+    isTransform() ? selected : undefined,
   );
   const [gameObjectInst, setGameObjectInst] = createUpdatingSignal(() =>
-    isTransform() ? undefined : selected
+    isTransform() ? undefined : selected,
   );
 
   createEffect(() => {
@@ -84,7 +84,7 @@ export function GameObjectSection(
     const search = transform ? "gameObject" : "transform";
     const methodId = () =>
       searchSelfAndParents(details, (classDetails) =>
-        classDetails.properties.find(({ name }) => name == search)
+        classDetails.properties.find(({ name }) => name == search),
       );
 
     const [getOtherPromise] = sendPacketResult<InvokeMethodResult>({
@@ -106,7 +106,7 @@ export function GameObjectSection(
     () =>
       otherDetails() != undefined &&
       transformInst() != undefined &&
-      gameObjectInst() != undefined
+      gameObjectInst() != undefined,
   );
 
   const [componentsLoading, setCompsLoading] = createSignal(true);
@@ -119,8 +119,8 @@ export function GameObjectSection(
       classDetails.methods.find(
         ({ name, returnType }) =>
           name == "GetComponents" &&
-          protoTypeToString(returnType) == "UnityEngine::Component[]"
-      )
+          protoTypeToString(returnType) == "UnityEngine::Component[]",
+      ),
     );
     if (!method) return undefined;
 
@@ -135,7 +135,7 @@ export function GameObjectSection(
         args: [
           stringToProtoData(
             "UnityEngine::Component",
-            stringToProtoType("type")!
+            stringToProtoType("type")!,
           ),
         ],
       },
@@ -145,7 +145,7 @@ export function GameObjectSection(
     if (!result.result) return undefined;
     const arr = protoDataToRealValue(
       result.result.typeInfo!,
-      result.result.data
+      result.result.data,
     );
     if (!Array.isArray(arr)) return [];
     if (arr.length == 0 || typeof arr[0] != "bigint") return [];

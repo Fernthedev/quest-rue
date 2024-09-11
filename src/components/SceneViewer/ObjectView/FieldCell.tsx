@@ -31,7 +31,7 @@ export function FieldCell(props: {
     useRequestAndResponsePacket<GetFieldResult>();
   function refresh() {
     console.log(
-      `Requesting ${props.field.id} ${protoDataToString(props.selected)}`
+      `Requesting ${props.field.id} ${protoDataToString(props.selected)}`,
     );
     requestValue({
       $case: "getField",

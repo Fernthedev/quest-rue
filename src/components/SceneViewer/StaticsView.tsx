@@ -97,7 +97,7 @@ export function StaticsView(props: {
         container.style.setProperty("--type-grid-columns", columnCount());
         setDeferredColumnCount(Number.parseInt(columnCount()));
       }
-    })
+    }),
   );
 
   const spanFn = createMemo<SpanFn>(() => {
@@ -137,7 +137,7 @@ export function StaticsView(props: {
             onInput={(e) => setClassInput(e.target.value.trim())}
             value={classInput()}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') addClass();
+              if (e.key === "Enter") addClass();
             }}
           />
           <button class="p-2 join-item" onClick={addClass}>

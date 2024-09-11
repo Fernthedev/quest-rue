@@ -9,7 +9,7 @@ import { parseShallow } from "../utils";
 
 export function stringToDataSegment(
   input: string,
-  typeInfo: PacketJSON<ProtoTypeInfo>
+  typeInfo: PacketJSON<ProtoTypeInfo>,
 ): ProtoDataSegment {
   switch (typeInfo.Info?.$case) {
     case "classInfo":
@@ -25,8 +25,8 @@ export function stringToDataSegment(
           ([offset, { name, type }]) => [
             Number(offset),
             stringToDataSegment(struct[name], type!),
-          ]
-        )
+          ],
+        ),
       ) as { [offset: number]: ProtoDataSegment }; // ts doesn't understand the key is a number
       return ProtoDataSegment.create({
         Data: {
@@ -110,7 +110,7 @@ export function stringToDataSegment(
 
 export function protoDataToRealValue(
   typeInfo: PacketJSON<ProtoTypeInfo>,
-  data?: ProtoDataSegment
+  data?: ProtoDataSegment,
 ) {
   switch (typeInfo.Info?.$case) {
     case "classInfo":
@@ -125,7 +125,7 @@ export function protoDataToRealValue(
         console.log("struct field at offset:", offset);
         struct[field.name!] = protoDataToRealValue(
           field.type!,
-          data.Data.structData.data[offset]
+          data.Data.structData.data[offset],
         );
       }
       return struct;
@@ -166,7 +166,7 @@ export function protoDataToRealValue(
         case ProtoTypeInfo_Primitive.STRING: {
           const slice = bytes.buffer.slice(
             arr.byteOffset,
-            arr.byteOffset + arr.byteLength
+            arr.byteOffset + arr.byteLength,
           );
           return new TextDecoder("utf-16").decode(slice);
         }

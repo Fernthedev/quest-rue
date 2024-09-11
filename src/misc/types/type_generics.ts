@@ -22,7 +22,7 @@ export function getGenerics(type?: PacketJSON<ProtoTypeInfo>): ProtoTypeInfo[] {
 
 export function getInstantiation(
   type: PacketJSON<ProtoTypeInfo>,
-  generics: Map<bigint, ProtoTypeInfo>
+  generics: Map<bigint, ProtoTypeInfo>,
 ): ProtoTypeInfo {
   let ret = ProtoTypeInfo.fromJSON(ProtoTypeInfo.toJSON(type));
 
@@ -33,14 +33,14 @@ export function getInstantiation(
           generics.get(
             g.Info?.$case == "genericInfo"
               ? g.Info?.genericInfo?.genericHandle
-              : BigInt(-1)
-          ) ?? g
+              : BigInt(-1),
+          ) ?? g,
       );
       return ret;
     case "arrayInfo":
       ret.Info.arrayInfo.memberType = getInstantiation(
         ret.Info.arrayInfo.memberType!,
-        generics
+        generics,
       );
       return ret;
     case "structInfo":
@@ -51,8 +51,8 @@ export function getInstantiation(
               generics.get(
                 g.Info?.$case == "genericInfo"
                   ? g.Info?.genericInfo?.genericHandle
-                  : BigInt(-1)
-              ) ?? g
+                  : BigInt(-1),
+              ) ?? g,
           );
       }
       return ret;

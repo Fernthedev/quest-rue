@@ -8,17 +8,17 @@ import SegmentedControl from "./form/SegmentedControl";
 function makeSettingsContext(
   rawInput = false,
   darkMode = true,
-  columnCount = 2
+  columnCount = 2,
 ) {
   const [getRawInput, setRawInput] = createPersistentSignal("rawInput", () =>
-    rawInput ? "true" : "false"
+    rawInput ? "true" : "false",
   );
   const [getDarkMode, setDarkMode] = createPersistentSignal("darkMode", () =>
-    darkMode ? "true" : "false"
+    darkMode ? "true" : "false",
   );
   const [getColumnCount, setColumnCount] = createPersistentSignal(
     "columnCount",
-    () => columnCount.toString()
+    () => columnCount.toString(),
   );
 
   // convert to and from strings
@@ -88,7 +88,7 @@ export function SettingsProvider(
     rawInput?: boolean;
     darkMode?: boolean;
     columnCount?: number;
-  } & ParentProps
+  } & ParentProps,
 ) {
   const val = makeSettingsContext(
     // eslint-disable-next-line solid/reactivity
@@ -96,7 +96,7 @@ export function SettingsProvider(
     // eslint-disable-next-line solid/reactivity
     props.darkMode,
     // eslint-disable-next-line solid/reactivity
-    props.columnCount
+    props.columnCount,
   );
 
   return (

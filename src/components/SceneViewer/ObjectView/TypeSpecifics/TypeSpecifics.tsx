@@ -1,4 +1,12 @@
-import { For, JSX, Show, createMemo, createSignal, on, untrack } from "solid-js";
+import {
+  For,
+  JSX,
+  Show,
+  createMemo,
+  createSignal,
+  on,
+  untrack,
+} from "solid-js";
 import styles from "../ObjectView.module.css";
 import { Store } from "solid-js/store";
 import { PacketJSON } from "../../../../misc/events";
@@ -31,7 +39,7 @@ export function TypeSpecifics(props: {
   const helpers = createMemo(() =>
     Object.entries(TypeHelperMap)
       .filter(([typeString]) => typeString === className())
-      .map(([typeString]) => typeString)
+      .map(([typeString]) => typeString),
   );
 
   const parentSection = createMemo(() => (
@@ -46,7 +54,9 @@ export function TypeSpecifics(props: {
     </Show>
   ));
 
-  const [prev, setPrev] = createSignal<PacketJSON<ProtoClassDetails> | undefined>(undefined);
+  const [prev, setPrev] = createSignal<
+    PacketJSON<ProtoClassDetails> | undefined
+  >(undefined);
 
   const details = createMemo(() => {
     const eq = props.details === untrack(prev);
@@ -55,26 +65,29 @@ export function TypeSpecifics(props: {
     return props.details;
   });
 
-  const helperSections = createMemo(on(details, () => {
-    return (
-    <For each={helpers()}>
-      {(name) => {
-        const fn = TypeHelperMap[name];
-        return (
-          <div>
-            {fn(
-              props.selected,
-              props.search,
-              props.filters,
-              props.details!,
-              props.initVals
-            )}
-            {separator()}
-          </div>
-        );
-      }}
-    </For>
-  )}));
+  const helperSections = createMemo(
+    on(details, () => {
+      return (
+        <For each={helpers()}>
+          {(name) => {
+            const fn = TypeHelperMap[name];
+            return (
+              <div>
+                {fn(
+                  props.selected,
+                  props.search,
+                  props.filters,
+                  props.details!,
+                  props.initVals,
+                )}
+                {separator()}
+              </div>
+            );
+          }}
+        </For>
+      );
+    }),
+  );
 
   return (
     <Show
@@ -122,7 +135,7 @@ export const TypeHelperMap: {
     search: string,
     filters: Store<FilterSettings>,
     details: PacketJSON<ProtoClassDetails>,
-    initVals?: GetInstanceValuesResult
+    initVals?: GetInstanceValuesResult,
   ) => JSX.Element;
 } = {};
 
@@ -140,7 +153,7 @@ import { MethodCell } from "../MethodCell";
 
 export function searchSelfAndParents<T>(
   details: ProtoClassDetails,
-  fn: (details: ProtoClassDetails) => T | undefined
+  fn: (details: ProtoClassDetails) => T | undefined,
 ) {
   let classDetails: ProtoClassDetails | undefined = details;
   let ret: T | undefined = undefined;
@@ -155,10 +168,10 @@ export function searchSelfAndParents<T>(
 function findByName<T extends { name: string }>(
   list: T[],
   search: string,
-  extraFilter?: (item: T) => boolean
+  extraFilter?: (item: T) => boolean,
 ) {
   return list.find(
-    (item) => item.name === search && (extraFilter?.(item) ?? true)
+    (item) => item.name === search && (extraFilter?.(item) ?? true),
   );
 }
 
@@ -173,8 +186,8 @@ export function FieldCellByName(props: {
   const field = createMemo(() =>
     // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
-      findByName(details.fields, props.fieldName, props.extraFilter)
-    )
+      findByName(details.fields, props.fieldName, props.extraFilter),
+    ),
   );
   const fieldVals = createMemo(
     () =>
@@ -182,7 +195,7 @@ export function FieldCellByName(props: {
         | {
             [key: string]: ProtoDataSegment;
           }
-        | undefined
+        | undefined,
   );
 
   return (
@@ -209,8 +222,8 @@ export function PropertyCellByName(props: {
   const property = createMemo(() =>
     // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
-      findByName(details.properties, props.propertyName, props.extraFilter)
-    )
+      findByName(details.properties, props.propertyName, props.extraFilter),
+    ),
   );
   const propVals = createMemo(
     () =>
@@ -218,7 +231,7 @@ export function PropertyCellByName(props: {
         | {
             [key: string]: ProtoDataSegment;
           }
-        | undefined
+        | undefined,
   );
 
   return (
@@ -247,8 +260,8 @@ export function MethodCellByName(props: {
   const method = createMemo(() =>
     // eslint-disable-next-line solid/reactivity
     searchSelfAndParents(props.instanceDetails, (details) =>
-      findByName(details.methods, props.methodName, props.extraFilter)
-    )
+      findByName(details.methods, props.methodName, props.extraFilter),
+    ),
   );
 
   return (

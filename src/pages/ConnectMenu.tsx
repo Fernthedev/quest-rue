@@ -17,7 +17,7 @@ export default function ConnectMenu() {
 
   const [ip, setIp] = createPersistentSignal(
     "connect.address",
-    () => "192.168.0.1"
+    () => "192.168.0.1",
   );
   const [port, setPort] = createPersistentSignal("connect.port", () => "3306");
 

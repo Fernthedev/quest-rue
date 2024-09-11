@@ -53,13 +53,11 @@ export class TauriWebSocket implements QuestRUESocket {
     return this.connected ?? false;
   }
 
-  async send(
-    data: Uint8Array,
-  ): Promise<void> {
-      if (typeof data === "string") {
-          return
-      }
-      
+  async send(data: Uint8Array): Promise<void> {
+    if (typeof data === "string") {
+      return;
+    }
+
     this.socket?.send(Array.from<number>(data));
   }
 }

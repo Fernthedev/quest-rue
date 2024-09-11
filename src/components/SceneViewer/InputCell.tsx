@@ -59,7 +59,7 @@ export function ActionButton(props: {
       />
     ) : (
       <Icon path={props.img} />
-    )
+    ),
   );
 
   return (
@@ -106,13 +106,15 @@ export default function InputCell(props: {
   // bool for when a field/prop has a non-null value
   const hasValue = createMemo(
     () =>
-      props.value != undefined && props.value.length > 0 && props.value != "0x0"
+      props.value != undefined &&
+      props.value.length > 0 &&
+      props.value != "0x0",
   );
 
   // either an input for a variable
   // (variable names can be entered into outputs once they have a value instead of after saving it)
   const variableInput = createMemo(
-    () => props.isInput && !rawInput() && props.type.Info?.$case == "classInfo"
+    () => props.isInput && !rawInput() && props.type.Info?.$case == "classInfo",
   );
 
   // restrict values for some data types
@@ -156,14 +158,14 @@ export default function InputCell(props: {
   const detail = createMemo(
     () =>
       (props.placeholder ? props.placeholder + ": " : "") +
-      protoTypeToString(props.type)
+      protoTypeToString(props.type),
   );
 
   // true/false selector for booleans
   const isBool = createMemo(
     () =>
       props.type.Info?.$case == "primitiveInfo" &&
-      props.type.Info.primitiveInfo == ProtoTypeInfo_Primitive.BOOLEAN
+      props.type.Info.primitiveInfo == ProtoTypeInfo_Primitive.BOOLEAN,
   );
 
   const opts = createDeferred(() => {
@@ -172,7 +174,7 @@ export default function InputCell(props: {
     const inputClassInfo = props.type.Info.classInfo;
 
     const validEntries = Object.values(variables).filter(({ type }) =>
-      isProtoClassInstanceOf(type, inputClassInfo)
+      isProtoClassInstanceOf(type, inputClassInfo),
     );
 
     return createOptions(validEntries.map(({ name }) => name).concat("Null"));
@@ -188,7 +190,7 @@ export default function InputCell(props: {
       (focused) => {
         if (!focused) props.onFocusExit?.();
       },
-      true
+      true,
     );
     target!.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter" && !ev.repeat) props.onEnter?.();

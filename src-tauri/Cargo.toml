@@ -11,7 +11,6 @@ edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1.5", features = [] }
-protoc-rust = "2"
 
 [dependencies]
 tauri-plugin-websocket = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
@@ -20,7 +19,6 @@ tokio-util = { version = "0.7", features = ["full"] }
 bytes = "*"
 futures = "*"
 anyhow = "1.0"
-protobuf = { version = "3", features = ["with-bytes"] }
 serde_json = "1.0"
 tauri = { version = "1.6", features = ["shell-open", "shell-open-api", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }

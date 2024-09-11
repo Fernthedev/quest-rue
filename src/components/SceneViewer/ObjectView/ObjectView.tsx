@@ -31,7 +31,7 @@ export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 export function adaptiveSpanSize(
   element: HTMLDivElement,
   colSize: number,
-  maxCols: number
+  maxCols: number,
 ) {
   if (colSize == 0 || maxCols == 1) {
     element.style.setProperty("grid-column", `span 1`);
@@ -86,10 +86,12 @@ export default function ObjectView(props: {
     });
   });
 
-  const selectedAndDetails = createMemo(on(details, () => {
-    if (!details) return {};
-    return { selected: props.selected, details: details() };
-  }));
+  const selectedAndDetails = createMemo(
+    on(details, () => {
+      if (!details) return {};
+      return { selected: props.selected, details: details() };
+    }),
+  );
 
   const [values, , requestValues] =
     useRequestAndResponsePacket<GetInstanceValuesResult>();
@@ -106,7 +108,7 @@ export default function ObjectView(props: {
     const selected = selectedAddress();
     if (!selected) return;
 
-    console.log("request values")
+    console.log("request values");
 
     requestValues({
       $case: "getInstanceValues",
@@ -136,7 +138,7 @@ export default function ObjectView(props: {
             $case: "classInfo",
             classInfo: info,
           },
-        })
+        }),
       )
       .join(", ");
   });
@@ -144,7 +146,7 @@ export default function ObjectView(props: {
   const [search, setSearch] = createSignal("");
   // we need to make sure the span calculation happens after the grid has updated its column number
   const [deferredColumnCount, setDeferredColumnCount] = createSignal(
-    Number.parseInt(columnCount())
+    Number.parseInt(columnCount()),
   );
 
   let container: HTMLDivElement | undefined;
@@ -154,7 +156,7 @@ export default function ObjectView(props: {
         container.style.setProperty("--type-grid-columns", columnCount());
         setDeferredColumnCount(Number.parseInt(columnCount()));
       }
-    })
+    }),
   );
 
   const spanFn = createMemo<SpanFn>(() => {
@@ -212,7 +214,7 @@ export default function ObjectView(props: {
             placeholder="Unnamed Variable"
             onInput={(e) => setVarNameInput(e.currentTarget.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') trySaveVariable();
+              if (e.key === "Enter") trySaveVariable();
             }}
             classList={{ invalid: !isVariableNameFree(varNameInput()) }}
             ref={input}

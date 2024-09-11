@@ -42,8 +42,8 @@ export function MethodCell(props: {
       ProtoMethodInfo_Argument.fromPartial({
         name: "ret",
         type: props.method.returnType,
-      })
-    )
+      }),
+    ),
   );
 
   // args with types updated to the latest inputs for generics
@@ -57,11 +57,11 @@ export function MethodCell(props: {
       ([index, str]) => [
         index,
         stringToProtoType(str, requireValid) ?? genericArgsMap().get(index)!,
-      ]
+      ],
     );
     const generics = genericsData.reduce(
       (map, [index, type]) => map.set(index, type),
-      new Map<bigint, ProtoTypeInfo>()
+      new Map<bigint, ProtoTypeInfo>(),
     );
     // set from base args, not latest args
     setLatestArgs(
@@ -69,8 +69,8 @@ export function MethodCell(props: {
         ProtoMethodInfo_Argument.fromPartial({
           name: name,
           type: getInstantiation(type!, generics),
-        })
-      )
+        }),
+      ),
     );
     return genericsData;
   }
@@ -78,7 +78,7 @@ export function MethodCell(props: {
   const argInputs = createMemo(() =>
     args()
       .slice(0, -1)
-      .map(() => "")
+      .map(() => ""),
   );
   const [result, resultLoading, runMethod] =
     useRequestAndResponsePacket<InvokeMethodResult>();
@@ -86,7 +86,7 @@ export function MethodCell(props: {
   function run() {
     const genericsData = updateGenerics(true);
     const argsData = argInputs().map((str, index) =>
-      stringToProtoData(str, latestArgs()[index].type!)
+      stringToProtoData(str, latestArgs()[index].type!),
     );
     runMethod({
       $case: "invokeMethod",
@@ -121,9 +121,11 @@ export function MethodCell(props: {
   const genericInputs = createMemo(() =>
     genericArgs().map<[bigint, string]>((t: ProtoTypeInfo) => [
       // the case should always be this but typescript moment
-      t.Info?.$case == "genericInfo" ? t.Info.genericInfo.genericHandle : BigInt(-1),
+      t.Info?.$case == "genericInfo"
+        ? t.Info.genericInfo.genericHandle
+        : BigInt(-1),
       "",
-    ])
+    ]),
   );
 
   createEffect(() => {

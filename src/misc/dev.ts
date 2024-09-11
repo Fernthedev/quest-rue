@@ -14,7 +14,9 @@ let test_game_object_class_details: Promise<
 export function isTauri(): boolean {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const unsafeWindow = window as any;
-  return (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) != undefined;
+  return (
+    (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) != undefined
+  );
 }
 
 export async function devSetup() {

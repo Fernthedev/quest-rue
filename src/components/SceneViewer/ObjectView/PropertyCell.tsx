@@ -1,9 +1,4 @@
-import {
-  Show,
-  createEffect,
-  createMemo,
-  createSignal,
-} from "solid-js";
+import { Show, createEffect, createMemo, createSignal } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
 import {
@@ -93,13 +88,13 @@ export function PropertyCell(props: {
   });
 
   const propertyGetter = createMemo(
-    () => props.prop.getterId && styles.propertyGetter
+    () => props.prop.getterId && styles.propertyGetter,
   );
   const propertySetter = createMemo(
-    () => props.prop.setterId && styles.propertySetter
+    () => props.prop.setterId && styles.propertySetter,
   );
   const propertyBoth = createMemo(
-    () => props.prop.getterId && props.prop.setterId && styles.propertyBoth
+    () => props.prop.getterId && props.prop.setterId && styles.propertyBoth,
   );
 
   return (

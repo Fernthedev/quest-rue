@@ -20,7 +20,7 @@ import {
  */
 export function createUpdatingSignal<T>(
   val: () => T,
-  options?: SignalOptions<T>
+  options?: SignalOptions<T>,
 ): Signal<T> {
   const [valAccessor, valSetter] = createSignal(val(), options);
   // reset the value when val is modified
@@ -40,11 +40,11 @@ export function createUpdatingSignal<T>(
 export function createPersistentSignal(
   key: string,
   defaultVal: () => string,
-  options?: SignalOptions<string>
+  options?: SignalOptions<string>,
 ): Signal<string> {
   const [valAccessor, valSetter] = createSignal(
     localStorage.getItem(key) ?? defaultVal(),
-    options
+    options,
   );
   // store the value every time val is modified
   createEffect(() => {
@@ -62,7 +62,7 @@ export function createPersistentSignal(
  * @returns
  */
 export function createAsyncMemo<T>(
-  valPromise: () => Promise<T>
+  valPromise: () => Promise<T>,
 ): [Accessor<T | undefined>, () => Promise<T>] {
   // TODO: Use createResource or handle errors properly
   const [valAccessor, valSetter] = createSignal<T>();
@@ -87,7 +87,7 @@ export function uniqueBigNumber(min = 0, max = Number.MAX_SAFE_INTEGER) {
 
 function stringifyQuotesless(obj: unknown) {
   return JSON.stringify(obj, (_, value) =>
-    typeof value == "bigint" ? value.toString() : value
+    typeof value == "bigint" ? value.toString() : value,
   ).replace(/^"|"$/g, "");
 }
 
@@ -106,7 +106,7 @@ export function parseShallow(jsonStr: string) {
   if (Array.isArray(parsed))
     return parsed.map((elem) => stringifyQuotesless(elem));
   Object.keys(parsed).forEach(
-    (key) => (parsed[key] = stringifyQuotesless(parsed[key]))
+    (key) => (parsed[key] = stringifyQuotesless(parsed[key])),
   );
   return parsed;
 }

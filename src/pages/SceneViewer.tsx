@@ -40,13 +40,13 @@ export default function SceneViewer() {
   const selected = createMemo(() =>
     routeParams.selectedData
       ? ProtoDataPayload.fromJSON(
-          JSON.parse(decodeURIComponent(routeParams.selectedData))
+          JSON.parse(decodeURIComponent(routeParams.selectedData)),
         )
-      : undefined
+      : undefined,
   );
 
   const [leftPanel, setLeftPanel] = createSignal<JSX.Element | undefined>(
-    undefined
+    undefined,
   );
 
   return (
