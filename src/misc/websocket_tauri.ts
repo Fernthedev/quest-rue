@@ -1,62 +1,43 @@
 import WebSocket from "tauri-plugin-websocket-api";
 import { QuestRUESocket } from "./websocket";
-import { handleGlobalPacketWrapper } from "./commands";
-import { getEvents } from "./events";
-import { PacketWrapper } from "./proto/qrue";
 
-export class TauriWebSocket implements QuestRUESocket {
+export class TauriWebSocket extends QuestRUESocket {
   socket: WebSocket | undefined;
-  connected: boolean = false;
 
-  async connect(ip: string, port: number): Promise<boolean> {
-    if (this.socket && this.connected) {
-      console.warn("Web socket is already connected! Call disconnect first!");
-      return true;
-    }
-    this.connected = false;
-    if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
-      getEvents().CONNECTED_EVENT.invoke();
-      this.connected = true;
-      return Promise.resolve(true);
-    }
-
+  async connectImpl(ip: string, port: number, id: number): Promise<boolean> {
     const url = `ws://${ip}:${port}`;
 
-    const ws = (this.socket = await WebSocket.connect(url));
-    this.connected = true;
-    getEvents().CONNECTED_EVENT.invoke();
-    ws.addListener((arg) => {
+    const socket = await WebSocket.connect(url);
+    if (this.connectionId !== id) {
+      socket.disconnect();
+      return false;
+    }
+
+    this.socket = socket;
+    this.socket.addListener((arg) => {
+      if (this.connectionId !== id) return;
       switch (arg.type) {
         case undefined: // error: close without handshake
         case "Close": {
-          if (this.connected) getEvents().DISCONNECTED_EVENT.invoke();
-          this.connected = false;
+          this.onDisconnect();
           break;
         }
         case "Binary": {
-          const bytes = arg.data;
-          const packetWrapper = PacketWrapper.decode(new Uint8Array(bytes));
-          // console.log(JSON.stringify(packetWrapper));
-          handleGlobalPacketWrapper(packetWrapper);
+          this.onMessage(new Uint8Array(arg.data));
           break;
         }
       }
     });
 
+    this.onConnect();
     return true;
   }
 
-  isConnected(): boolean {
-    if (import.meta.env.VITE_USE_QUEST_MOCK == "true") return true;
-
-    return this.connected;
+  disconnectImpl() {
+    this.socket?.disconnect();
   }
 
   async send(data: Uint8Array): Promise<void> {
-    if (typeof data === "string") {
-      return;
-    }
-
-    this.socket?.send(Array.from<number>(data));
+    if (typeof data !== "string") this.socket?.send(Array.from<number>(data));
   }
 }

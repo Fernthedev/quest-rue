@@ -11,7 +11,7 @@ Currently on the roadmap:
 
 - [x] Connect to Quest
 - [ ] Reconnection and state
-- [ ] Wired-only connection
+- [x] Wired-only connection
 - [x] Unity components list
 - [x] Adding components
 - [x] Modifying fields

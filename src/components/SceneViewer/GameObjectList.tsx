@@ -27,6 +27,7 @@ import { VirtualList } from "../utils/VirtualList";
 import { plus } from "solid-heroicons/outline";
 import { Icon } from "solid-heroicons";
 import { CreateGameObjectResult } from "../../misc/proto/qrue";
+import { ActionButton } from "./InputCell";
 
 function GameObjectListItem(props: {
   item: GameObjectIndex;
@@ -217,32 +218,7 @@ export default function GameObjectList() {
   function refresh() {
     if (!requesting()) requestGameObjects();
     setRequesting(true);
-    // setSearch(""); // TODO: Is this necessary?
   }
-
-  const refreshButton = (
-    <button class="flex-none p-2" onClick={refresh}>
-      <Show
-        when={requesting()}
-        fallback={
-          <img
-            src="/refresh.svg"
-            elementtiming={"Refresh icon"}
-            fetchpriority={"auto"}
-            alt="Refresh"
-          />
-        }
-      >
-        <img
-          src="/loading.svg"
-          class="animate-spin"
-          elementtiming={"Spinning icon"}
-          fetchpriority={"auto"}
-          alt="Loading"
-        />
-      </Show>
-    </button>
-  );
 
   return (
     <div class="flex flex-col items-stretch h-full">
@@ -255,7 +231,12 @@ export default function GameObjectList() {
           }}
           class="flex-1 w-0"
         />
-        {refreshButton}
+        <ActionButton
+          class="flex-none p-2"
+          onClick={refresh}
+          img="refresh"
+          loading={requesting()}
+        />
         <AddGameObject />
       </div>
       <Show when={!requesting()} fallback="Loading...">

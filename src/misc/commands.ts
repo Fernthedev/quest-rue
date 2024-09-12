@@ -4,14 +4,17 @@ import { handleGameObjects } from "./handlers/gameobject";
 import { handleSafePtrAddresses } from "./handlers/variable_list";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueBigNumber } from "./utils";
-import { NodeWebSocket, QuestRUESocket } from "./websocket";
+import { MockWebSocket, NodeWebSocket, QuestRUESocket } from "./websocket";
 import { TauriWebSocket } from "./websocket_tauri";
 
 // late init!
 export let socket: QuestRUESocket = undefined!;
 
 export function initSocket() {
-  if (isTauri()) {
+  if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
+    socket = new MockWebSocket();
+    console.log("Using mock web socket");
+  } else if (isTauri()) {
     socket = new TauriWebSocket();
     console.log("Using tauri web socket");
   } else {
@@ -45,7 +48,7 @@ export async function writePacket<P extends PacketWrapper = PacketWrapper>(
     return;
   }
 
-  if (socket && socket.isConnected()) {
+  if (socket && socket.connected()) {
     socket.send(PacketWrapper.encode(p).finish());
   } else {
     // queue send for when connection starts

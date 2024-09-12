@@ -63,19 +63,22 @@ export function createPersistentSignal(
  */
 export function createAsyncMemo<T>(
   valPromise: () => Promise<T>,
-): [Accessor<T | undefined>, () => Promise<T>] {
+): [Accessor<T | undefined>, Accessor<boolean>, () => Promise<T>] {
   // TODO: Use createResource or handle errors properly
   const [valAccessor, valSetter] = createSignal<T>();
+  const [loading, setLoading] = createSignal(true);
   const update = async () => {
+    setLoading(true);
     // resolve promise before setter
     const v = await valPromise();
+    setLoading(false);
 
     return valSetter(() => v);
   };
   // run even if inital render phase
   // we use effect to listen to changes
   createRenderEffect(update);
-  return [valAccessor, update];
+  return [valAccessor, loading, update];
 }
 
 export function uniqueNumber(min = 0, max = Number.MAX_SAFE_INTEGER) {

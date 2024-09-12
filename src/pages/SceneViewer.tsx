@@ -26,9 +26,7 @@ export default function SceneViewer() {
 
   // TODO: Reconnect if possible
   onMount(() => {
-    if (socket.isConnected()) return;
-
-    navigate("/");
+    if (!socket.connected()) navigate("/");
   });
   getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
 

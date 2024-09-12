@@ -4,6 +4,7 @@ import { createContext, useContext, ParentProps } from "solid-js";
 import { createPersistentSignal } from "../misc/utils";
 import Toggle from "./form/Toggle";
 import SegmentedControl from "./form/SegmentedControl";
+import { socket } from "../misc/commands";
 
 function makeSettingsContext(
   rawInput = false,
@@ -78,6 +79,14 @@ export function SettingsMenu() {
           selectedValue={columnCount()}
           title="Columns"
         />
+        <button
+          class="small-button mt-1 mb-1"
+          onClick={() => {
+            socket.disconnect();
+          }}
+        >
+          Disconnect
+        </button>
       </div>
     </div>
   );

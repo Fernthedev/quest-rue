@@ -26,7 +26,7 @@ function buildEvents() {
     // PACKET EVENTS
     ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
     CONNECTED_EVENT: new EventListener<void>(),
-    DISCONNECTED_EVENT: new EventListener<void>(),
+    DISCONNECTED_EVENT: new EventListener<[boolean, boolean]>(),
     ERROR_EVENT: new EventListener<Event>(),
   } as const;
 }

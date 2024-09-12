@@ -15,7 +15,7 @@ import {
   InvokeMethodResult,
 } from "../../../../misc/proto/qrue";
 import { FilterSettings } from "../FilterSettings";
-import { Show, createEffect, createMemo, For, createSignal } from "solid-js";
+import { Show, createEffect, createMemo, For } from "solid-js";
 import {
   protoTypeToString,
   stringToProtoData,
@@ -109,48 +109,46 @@ export function GameObjectSection(
       gameObjectInst() != undefined,
   );
 
-  const [componentsLoading, setCompsLoading] = createSignal(true);
-  const [components, updateComponents] = createAsyncMemo(async () => {
-    const inst = gameObjectInst();
-    const dets = gameObjectDetails();
-    if (!inst || !dets) return undefined;
+  const [components, componentsLoading, updateComponents] = createAsyncMemo(
+    async () => {
+      const inst = gameObjectInst();
+      const dets = gameObjectDetails();
+      if (!inst || !dets) return undefined;
 
-    const method = searchSelfAndParents(dets, (classDetails) =>
-      classDetails.methods.find(
-        ({ name, returnType }) =>
-          name == "GetComponents" &&
-          protoTypeToString(returnType) == "UnityEngine::Component[]",
-      ),
-    );
-    if (!method) return undefined;
+      const method = searchSelfAndParents(dets, (classDetails) =>
+        classDetails.methods.find(
+          ({ name, returnType }) =>
+            name == "GetComponents" &&
+            protoTypeToString(returnType) == "UnityEngine::Component[]",
+        ),
+      );
+      if (!method) return undefined;
 
-    setCompsLoading(true);
-
-    const [runMethod] = sendPacketResult<InvokeMethodResult>({
-      $case: "invokeMethod",
-      invokeMethod: {
-        methodId: method.id,
-        inst: inst,
-        generics: [],
-        args: [
-          stringToProtoData(
-            "UnityEngine::Component",
-            stringToProtoType("type")!,
-          ),
-        ],
-      },
-    });
-    const result = await runMethod;
-    setCompsLoading(false);
-    if (!result.result) return undefined;
-    const arr = protoDataToRealValue(
-      result.result.typeInfo!,
-      result.result.data,
-    );
-    if (!Array.isArray(arr)) return [];
-    if (arr.length == 0 || typeof arr[0] != "bigint") return [];
-    return arr as bigint[];
-  });
+      const [runMethod] = sendPacketResult<InvokeMethodResult>({
+        $case: "invokeMethod",
+        invokeMethod: {
+          methodId: method.id,
+          inst: inst,
+          generics: [],
+          args: [
+            stringToProtoData(
+              "UnityEngine::Component",
+              stringToProtoType("type")!,
+            ),
+          ],
+        },
+      });
+      const result = await runMethod;
+      if (!result.result) return undefined;
+      const arr = protoDataToRealValue(
+        result.result.typeInfo!,
+        result.result.data,
+      );
+      if (!Array.isArray(arr)) return [];
+      if (arr.length == 0 || typeof arr[0] != "bigint") return [];
+      return arr as bigint[];
+    },
+  );
 
   return (
     <Show when={ready()}>
