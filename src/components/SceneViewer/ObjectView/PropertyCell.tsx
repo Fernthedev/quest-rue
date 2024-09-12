@@ -13,6 +13,7 @@ import toast from "solid-toast";
 
 import styles from "./ObjectView.module.css";
 import { SpanFn } from "./ObjectView";
+import { createUpdatingSignal } from "../../../misc/utils";
 
 export function PropertyCell(props: {
   prop: PacketJSON<ProtoPropertyInfo>;
@@ -47,7 +48,7 @@ export function PropertyCell(props: {
     useRequestAndResponsePacket<InvokeMethodResult>();
   // always update the input value so that it overrides anything typed in
   // when the refresh button is pressed, even if it hasn't changed
-  const [inputValue, setInputValue] = createSignal("", { equals: false });
+  const [inputValue, setInputValue] = createSignal("");
   function set() {
     const protoData = stringToProtoData(inputValue(), props.prop.type!);
     requestSet({
@@ -60,7 +61,9 @@ export function PropertyCell(props: {
       },
     });
   }
-  createEffect(() => setInputValue(protoDataToString(value()?.result)));
+  const [serverValue, setServerValue] = createUpdatingSignal(() =>
+    protoDataToString(value()?.result),
+  );
 
   createEffect(() => {
     if (!props.initVal) return;
@@ -69,7 +72,7 @@ export function PropertyCell(props: {
       typeInfo: props.prop.type,
       data: props.initVal,
     });
-    setInputValue(protoDataToString(data));
+    setServerValue(protoDataToString(data));
   });
 
   const errorHandler = (result: { error?: string } | undefined) => {
@@ -110,7 +113,7 @@ export function PropertyCell(props: {
         isOutput
         onInput={setInputValue}
         onEnter={set}
-        value={inputValue()}
+        value={serverValue()}
         type={props.prop.type!}
       />
       <Show when={props.prop.getterId}>
