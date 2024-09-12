@@ -102,10 +102,18 @@ function inSearch(
 ): boolean {
   if (addressMap.has(object.transform!.address!)) return true;
 
+  let thisSearch = searchLower;
+  const hierarchySplit = searchLower.split("/");
+  if (hierarchySplit.length > 1) thisSearch = hierarchySplit.splice(0, 1)[0];
+
   let childMatches = false;
-  let selfMatches = false;
-  if (object.name?.toLocaleLowerCase().includes(searchLower))
-    selfMatches = true;
+  // require all parts separated by spaces match
+  const selfMatches =
+    thisSearch.split(" ").findIndex((searchPart) => {
+      if (!object.name?.toLocaleLowerCase().includes(searchPart)) return true;
+    }) == -1;
+
+  if (selfMatches) searchLower = hierarchySplit.join("/");
 
   for (const addr of gameObjectsStore.childrenMap?.get(
     object.transform!.address!,
