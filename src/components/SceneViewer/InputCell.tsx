@@ -117,6 +117,29 @@ export default function InputCell(props: {
     () => props.isInput && !rawInput() && props.type.Info?.$case == "classInfo",
   );
 
+  // placeholder and title (which is a tooltip)
+  const detail = createMemo(
+    () =>
+      (props.placeholder ? props.placeholder + ": " : "") +
+      protoTypeToString(props.type),
+  );
+
+  const displayValue = createMemo(() => {
+    if (rawInput() || props.type.Info?.$case !== "classInfo")
+      return props.value;
+    if (!props.value) return undefined;
+    if (props.value === "0x0") return "Null";
+    // trim namespace for easier reading
+    return (
+      protoTypeToString({
+        Info: {
+          $case: "classInfo",
+          classInfo: { ...props.type.Info.classInfo, namespaze: "" },
+        },
+      }) + "*"
+    );
+  });
+
   // restrict values for some data types
   const inputType = createMemo(() => {
     if (props.type.Info?.$case == "primitiveInfo") {
@@ -134,6 +157,8 @@ export default function InputCell(props: {
   });
   // some data types need more space than others
   const minWidth = createMemo(() => {
+    if (!rawInput() && props.type.Info?.$case == "classInfo")
+      return ((displayValue() ?? detail()).length + 5) * 8;
     if (props.type.Info?.$case == "structInfo") return 150;
     if (props.type.Info?.$case == "arrayInfo") return 150;
     if (props.type.Info?.$case == "genericInfo") return 80;
@@ -149,17 +174,10 @@ export default function InputCell(props: {
       }
     }
 
-    return 100;
+    return 120;
   });
   // and others would look ugly if too big
-  const maxWidth = createMemo(() => minWidth() * 2);
-
-  // placeholder and title (which is a tooltip)
-  const detail = createMemo(
-    () =>
-      (props.placeholder ? props.placeholder + ": " : "") +
-      protoTypeToString(props.type),
-  );
+  const maxWidth = createMemo(() => minWidth() * 1.5);
 
   // true/false selector for booleans
   const isBool = createMemo(
@@ -232,7 +250,7 @@ export default function InputCell(props: {
         onInput={(e) => {
           onInput(e.target.value);
         }}
-        value={props.value ?? ""}
+        value={displayValue() ?? ""}
         disabled={!variableInput() && !props.isInput}
         placeholder={detail()}
         title={detail()}
@@ -341,7 +359,7 @@ export default function InputCell(props: {
           <span ref={target} class="w-full">
             <BetterSelect
               onChange={onInput}
-              initialValue={props.value ?? ""}
+              initialValue={displayValue() ?? ""}
               placeholder={detail()}
               title={detail()}
               {...opts()}

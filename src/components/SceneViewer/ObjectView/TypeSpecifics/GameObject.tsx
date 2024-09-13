@@ -242,13 +242,11 @@ export function GameObjectSection(
                 });
 
                 return (
-                  <span class="flex" style={{ width: "175px" }}>
-                    <InputCell
-                      type={componentType() ?? ProtoTypeInfo.fromPartial({})}
-                      value={`0x${addr.toString(16)}`}
-                      isOutput
-                    />
-                  </span>
+                  <InputCell
+                    type={componentType() ?? ProtoTypeInfo.fromPartial({})}
+                    value={`0x${addr.toString(16)}`}
+                    isOutput
+                  />
                 );
               }}
             </For>

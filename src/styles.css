@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 :root {
   @apply bg-white dark:bg-zinc-900;
@@ -12,9 +11,6 @@
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-
-  color: #0f0f0f;
-  /* background-color: #f6f6f6; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -173,12 +169,38 @@ input[type="number"] {
   background-color: #ffffff;
 }
 
+.solid-select-placeholder {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+.solid-select-single-value {
+  text-overflow: clip;
+  overflow-x: scroll;
+}
 .solid-select-placeholder,
 .solid-select-single-value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-  padding-left: 2px;
+  white-space: pre;
+  line-height: 16px;
+  align-content: center;
+  cursor: text;
+  scrollbar-width: 0;
+  padding: 1px;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  transition: border-color 0.25s;
+  transition: border-radius 0.1s;
+  border-radius: 8px;
+}
+.solid-select-placeholder::-webkit-scrollbar,
+.solid-select-single-value::-webkit-scrollbar {
+  display: none;
+}
+.solid-select-placeholder:hover,
+.solid-select-single-value:hover {
+  background-color: #0f0f0f;
+  border-bottom-color: #396cd8;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .solid-select-input {
