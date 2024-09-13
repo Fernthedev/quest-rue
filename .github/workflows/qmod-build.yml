@@ -7,8 +7,8 @@ env:
 on:
   workflow_dispatch:
   push:
-    branches-ignore:
-      - 'version*'
+    branches:
+      - master
   pull_request:
 
 jobs:
@@ -53,11 +53,11 @@ jobs:
           echo libs:
           ls -la ./extern/libs
 
-      - name: Cache vcpkg_installed
-        id: cache-vcpkg-install
-        uses: actions/cache@v4
+      - name: Restore vcpkg_installed
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v4
         with:
-          path: ${GITHUB_WORKSPACE}/vcpkg_installed
+          path: ${GITHUB_WORKSPACE}/../vcpkg_installed
           key: ${{ runner.os }}-vcpkg_installed
 
       - name: Create protobuf files
@@ -69,6 +69,13 @@ jobs:
       - name: List protobuf files
         run: |
           ls -la ./protobuf
+
+      - name: Save vcpkg_installed
+        id: cache-vcpkg-save
+        uses: actions/cache/save@v4
+        with:
+          path: ${GITHUB_WORKSPACE}/../vcpkg_installed
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build & create qmod
         run: |
