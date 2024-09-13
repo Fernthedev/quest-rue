@@ -8,9 +8,17 @@ import App from "./App";
 import { initializeEvents } from "./misc/events";
 import { devSetup } from "./misc/dev";
 import "solid-devtools";
+import { initSocket } from "./misc/commands";
+import { cleanup_forward } from "./misc/adb";
+import { appWindow } from "@tauri-apps/api/window";
 
+initSocket();
 initializeEvents();
 
 devSetup();
+
+appWindow.onCloseRequested(async () => {
+    await cleanup_forward();
+});
 
 render(() => <App />, document.getElementById("root") as HTMLElement);

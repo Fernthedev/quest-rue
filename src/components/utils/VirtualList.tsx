@@ -22,7 +22,7 @@ export function VirtualList<T>(props: {
 
   const [height, setHeight] = createSignal(0);
   const itemCount = createMemo(
-    () => Math.floor(height() / props.itemHeight) + 1
+    () => Math.floor(height() / props.itemHeight) + 1,
   );
 
   // signal for the index of the first element shown
@@ -30,14 +30,14 @@ export function VirtualList<T>(props: {
 
   // track the height of the list container
   const listObserver = new ResizeObserver(([entry]) =>
-    setHeight(entry.target.getBoundingClientRect().height)
+    setHeight(entry.target.getBoundingClientRect().height),
   );
 
   // update the first element shown when scrolled
   onMount(() => {
     listObserver.observe(container!);
     container!.addEventListener("scroll", () =>
-      setTopIndex(Math.floor((container?.scrollTop ?? 0) / props.itemHeight))
+      setTopIndex(Math.floor((container?.scrollTop ?? 0) / props.itemHeight)),
     );
   });
 
@@ -60,11 +60,11 @@ export function VirtualList<T>(props: {
   createEffect(
     on([() => props.generator, () => props.items], () => {
       childrenCache().clear();
-    })
+    }),
   );
 
   const renderableItems = createMemo(() =>
-    props.items.slice(topIndex(), topIndex() + itemCount())
+    props.items.slice(topIndex(), topIndex() + itemCount()),
   );
 
   return (

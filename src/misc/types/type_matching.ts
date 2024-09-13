@@ -14,7 +14,7 @@ import { protoTypeToString } from "./type_format";
 
 export function isExactProtoTypeConvertibleTo(
   targetType: ProtoTypeInfo,
-  typeToCheck: ProtoTypeInfo
+  typeToCheck: ProtoTypeInfo,
 ): boolean {
   // TODO: Should we be more strict with primitives?
   if (targetType.Info?.$case === "primitiveInfo") {
@@ -56,7 +56,7 @@ export function isExactProtoTypeConvertibleTo(
 }
 export function isProtoClassMatch(
   clazzT1: ProtoClassInfo | undefined,
-  clazzT2: ProtoClassInfo | undefined
+  clazzT2: ProtoClassInfo | undefined,
 ) {
   if (clazzT1 === clazzT2) return true;
   if (typeof clazzT1 !== typeof clazzT2) return false;
@@ -69,7 +69,7 @@ export function isProtoClassMatch(
 }
 function isProtoGenericsMatch(
   clazzT1: ProtoClassInfo | undefined,
-  clazzT2: ProtoClassInfo | undefined
+  clazzT2: ProtoClassInfo | undefined,
 ) {
   return (
     clazzT1 !== undefined &&
@@ -82,7 +82,7 @@ function isProtoGenericsMatch(
   );
 }
 export function protoClassDetailsToString(
-  details: ProtoClassDetails | undefined
+  details: ProtoClassDetails | undefined,
 ): string {
   if (!details?.clazz) return "Unknown";
 
@@ -90,7 +90,7 @@ export function protoClassDetailsToString(
 }
 
 export function protoClassDetailsToTypeInfo(
-  details: ProtoClassDetails
+  details: ProtoClassDetails,
 ): ProtoTypeInfo {
   return {
     Info: {
@@ -104,7 +104,7 @@ export function protoClassDetailsToTypeInfo(
 }
 
 export function protoClassInfoToString(
-  details: ProtoClassInfo | undefined
+  details: ProtoClassInfo | undefined,
 ): string {
   if (!details) return "Unknown";
 
@@ -112,7 +112,7 @@ export function protoClassInfoToString(
 }
 
 export function protoClassInfoToTypeInfo(
-  details: ProtoClassInfo
+  details: ProtoClassInfo,
 ): ProtoTypeInfo {
   return {
     Info: {
@@ -127,12 +127,12 @@ export function protoClassInfoToTypeInfo(
 
 export function isProtoClassInstanceOf(
   instance: ProtoClassDetails,
-  targetType: ProtoClassInfo
+  targetType: ProtoClassInfo,
 ): boolean {
   if (isProtoClassMatch(instance.clazz, targetType)) return true;
 
   const interfacesMatch = instance.interfaces.some((interf) =>
-    isProtoClassMatch(interf, targetType)
+    isProtoClassMatch(interf, targetType),
   );
   if (interfacesMatch) return true;
 
@@ -145,7 +145,7 @@ export function isProtoClassInstanceOf(
 
     // check interfaces
     const parentInterfacesMatch = parent.interfaces.some((interf) =>
-      isProtoClassMatch(interf, targetType)
+      isProtoClassMatch(interf, targetType),
     );
     if (parentInterfacesMatch) return true;
 

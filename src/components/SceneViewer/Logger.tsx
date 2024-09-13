@@ -1,7 +1,7 @@
 export function Logger() {
-    return (
-      <>
-        <h1>Loggers!</h1>
-      </>
-    );
+  return (
+    <>
+      <h1>Loggers!</h1>
+    </>
+  );
 }

@@ -4,21 +4,22 @@ import { createContext, useContext, ParentProps } from "solid-js";
 import { createPersistentSignal } from "../misc/utils";
 import Toggle from "./form/Toggle";
 import SegmentedControl from "./form/SegmentedControl";
+import { socket } from "../misc/commands";
 
 function makeSettingsContext(
   rawInput = false,
   darkMode = true,
-  columnCount = 2
+  columnCount = 2,
 ) {
   const [getRawInput, setRawInput] = createPersistentSignal("rawInput", () =>
-    rawInput ? "true" : "false"
+    rawInput ? "true" : "false",
   );
   const [getDarkMode, setDarkMode] = createPersistentSignal("darkMode", () =>
-    darkMode ? "true" : "false"
+    darkMode ? "true" : "false",
   );
   const [getColumnCount, setColumnCount] = createPersistentSignal(
     "columnCount",
-    () => columnCount.toString()
+    () => columnCount.toString(),
   );
 
   // convert to and from strings
@@ -78,6 +79,14 @@ export function SettingsMenu() {
           selectedValue={columnCount()}
           title="Columns"
         />
+        <button
+          class="small-button mt-1 mb-1"
+          onClick={() => {
+            socket.disconnect();
+          }}
+        >
+          Disconnect
+        </button>
       </div>
     </div>
   );
@@ -88,7 +97,7 @@ export function SettingsProvider(
     rawInput?: boolean;
     darkMode?: boolean;
     columnCount?: number;
-  } & ParentProps
+  } & ParentProps,
 ) {
   const val = makeSettingsContext(
     // eslint-disable-next-line solid/reactivity
@@ -96,7 +105,7 @@ export function SettingsProvider(
     // eslint-disable-next-line solid/reactivity
     props.darkMode,
     // eslint-disable-next-line solid/reactivity
-    props.columnCount
+    props.columnCount,
   );
 
   return (

@@ -1,9 +1,4 @@
-import {
-  Show,
-  createEffect,
-  createMemo,
-  createSignal,
-} from "solid-js";
+import { Show, createEffect, createMemo, createSignal } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { InvokeMethodResult } from "../../../misc/proto/qrue";
 import {
@@ -18,6 +13,7 @@ import toast from "solid-toast";
 
 import styles from "./ObjectView.module.css";
 import { SpanFn } from "./ObjectView";
+import { createUpdatingSignal } from "../../../misc/utils";
 
 export function PropertyCell(props: {
   prop: PacketJSON<ProtoPropertyInfo>;
@@ -52,7 +48,7 @@ export function PropertyCell(props: {
     useRequestAndResponsePacket<InvokeMethodResult>();
   // always update the input value so that it overrides anything typed in
   // when the refresh button is pressed, even if it hasn't changed
-  const [inputValue, setInputValue] = createSignal("", { equals: false });
+  const [inputValue, setInputValue] = createSignal("");
   function set() {
     const protoData = stringToProtoData(inputValue(), props.prop.type!);
     requestSet({
@@ -65,7 +61,9 @@ export function PropertyCell(props: {
       },
     });
   }
-  createEffect(() => setInputValue(protoDataToString(value()?.result)));
+  const [serverValue, setServerValue] = createUpdatingSignal(() =>
+    protoDataToString(value()?.result),
+  );
 
   createEffect(() => {
     if (!props.initVal) return;
@@ -74,7 +72,7 @@ export function PropertyCell(props: {
       typeInfo: props.prop.type,
       data: props.initVal,
     });
-    setInputValue(protoDataToString(data));
+    setServerValue(protoDataToString(data));
   });
 
   const errorHandler = (result: { error?: string } | undefined) => {
@@ -93,13 +91,13 @@ export function PropertyCell(props: {
   });
 
   const propertyGetter = createMemo(
-    () => props.prop.getterId && styles.propertyGetter
+    () => props.prop.getterId && styles.propertyGetter,
   );
   const propertySetter = createMemo(
-    () => props.prop.setterId && styles.propertySetter
+    () => props.prop.setterId && styles.propertySetter,
   );
   const propertyBoth = createMemo(
-    () => props.prop.getterId && props.prop.setterId && styles.propertyBoth
+    () => props.prop.getterId && props.prop.setterId && styles.propertyBoth,
   );
 
   return (
@@ -115,7 +113,7 @@ export function PropertyCell(props: {
         isOutput
         onInput={setInputValue}
         onEnter={set}
-        value={inputValue()}
+        value={serverValue()}
         type={props.prop.type!}
       />
       <Show when={props.prop.getterId}>
@@ -123,7 +121,7 @@ export function PropertyCell(props: {
           class={"small-button"}
           onClick={get}
           loading={valueLoading() || valueSetting()}
-          img="refresh.svg"
+          img="refresh"
           tooltip="Refresh"
         />
       </Show>
@@ -132,7 +130,7 @@ export function PropertyCell(props: {
           class={"small-button"}
           onClick={set}
           loading={valueLoading() || valueSetting()}
-          img="enter.svg"
+          img="enter"
           tooltip="Set"
         />
       </Show>

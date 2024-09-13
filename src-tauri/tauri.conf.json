@@ -13,9 +13,20 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "window": {
+        "all": true
+      },
       "shell": {
         "all": false,
-        "open": true
+        "open": true,
+        "execute": true,
+        "scope": [
+          {
+            "name": "adb",
+            "cmd": "adb",
+            "args": true
+          }
+        ]
       }
     },
     "bundle": {
@@ -27,7 +38,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.github.Fernthedev.questrue",
       "targets": "all"
     },
     "security": {
@@ -40,9 +51,8 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "quest-rue",
-        "width": 800,
-        "height": 600
+        "maximized": true,
+        "title": "quest-rue"
       }
     ]
   }

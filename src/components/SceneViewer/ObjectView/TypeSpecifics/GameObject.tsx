@@ -15,7 +15,7 @@ import {
   InvokeMethodResult,
 } from "../../../../misc/proto/qrue";
 import { FilterSettings } from "../FilterSettings";
-import { Show, createEffect, createMemo, For, createSignal } from "solid-js";
+import { Show, createEffect, createMemo, For } from "solid-js";
 import {
   protoTypeToString,
   stringToProtoData,
@@ -38,10 +38,10 @@ export function GameObjectSection(
   search: string,
   filters: Store<FilterSettings>,
   details: PacketJSON<ProtoClassDetails>,
-  initVals?: GetInstanceValuesResult
+  initVals?: GetInstanceValuesResult,
 ) {
   const isTransform = createMemo(() =>
-    protoTypeToString(selected.typeInfo).includes("Transform")
+    protoTypeToString(selected.typeInfo).includes("Transform"),
   );
 
   const otherClassInfo = createMemo(() => {
@@ -52,7 +52,7 @@ export function GameObjectSection(
     };
   });
 
-  const [otherDetails, detailsLoading, requestDetails] =
+  const [otherDetails, , requestDetails] =
     useRequestAndResponsePacket<GetClassDetailsResult>();
 
   createEffect(() => {
@@ -66,17 +66,17 @@ export function GameObjectSection(
   });
 
   const transformDetails = createMemo(() =>
-    isTransform() ? details : otherDetails()?.classDetails
+    isTransform() ? details : otherDetails()?.classDetails,
   );
   const gameObjectDetails = createMemo(() =>
-    isTransform() ? otherDetails()?.classDetails : details
+    isTransform() ? otherDetails()?.classDetails : details,
   );
 
   const [transformInst, setTransformInst] = createUpdatingSignal(() =>
-    isTransform() ? selected : undefined
+    isTransform() ? selected : undefined,
   );
   const [gameObjectInst, setGameObjectInst] = createUpdatingSignal(() =>
-    isTransform() ? undefined : selected
+    isTransform() ? undefined : selected,
   );
 
   createEffect(() => {
@@ -84,7 +84,7 @@ export function GameObjectSection(
     const search = transform ? "gameObject" : "transform";
     const methodId = () =>
       searchSelfAndParents(details, (classDetails) =>
-        classDetails.properties.find(({ name }) => name == search)
+        classDetails.properties.find(({ name }) => name == search),
       );
 
     const [getOtherPromise] = sendPacketResult<InvokeMethodResult>({
@@ -106,51 +106,49 @@ export function GameObjectSection(
     () =>
       otherDetails() != undefined &&
       transformInst() != undefined &&
-      gameObjectInst() != undefined
+      gameObjectInst() != undefined,
   );
 
-  const [componentsLoading, setCompsLoading] = createSignal(true);
-  const [components, updateComponents] = createAsyncMemo(async () => {
-    const inst = gameObjectInst();
-    const dets = gameObjectDetails();
-    if (!inst || !dets) return undefined;
+  const [components, componentsLoading, updateComponents] = createAsyncMemo(
+    async () => {
+      const inst = gameObjectInst();
+      const dets = gameObjectDetails();
+      if (!inst || !dets) return undefined;
 
-    const method = searchSelfAndParents(dets, (classDetails) =>
-      classDetails.methods.find(
-        ({ name, returnType }) =>
-          name == "GetComponents" &&
-          protoTypeToString(returnType) == "UnityEngine::Component[]"
-      )
-    );
-    if (!method) return undefined;
+      const method = searchSelfAndParents(dets, (classDetails) =>
+        classDetails.methods.find(
+          ({ name, returnType }) =>
+            name == "GetComponents" &&
+            protoTypeToString(returnType) == "UnityEngine::Component[]",
+        ),
+      );
+      if (!method) return undefined;
 
-    setCompsLoading(true);
-
-    const [runMethod] = sendPacketResult<InvokeMethodResult>({
-      $case: "invokeMethod",
-      invokeMethod: {
-        methodId: method.id,
-        inst: inst,
-        generics: [],
-        args: [
-          stringToProtoData(
-            "UnityEngine::Component",
-            stringToProtoType("type")!
-          ),
-        ],
-      },
-    });
-    const result = await runMethod;
-    setCompsLoading(false);
-    if (!result.result) return undefined;
-    const arr = protoDataToRealValue(
-      result.result.typeInfo!,
-      result.result.data
-    );
-    if (!Array.isArray(arr)) return [];
-    if (arr.length == 0 || typeof arr[0] != "bigint") return [];
-    return arr as bigint[];
-  });
+      const [runMethod] = sendPacketResult<InvokeMethodResult>({
+        $case: "invokeMethod",
+        invokeMethod: {
+          methodId: method.id,
+          inst: inst,
+          generics: [],
+          args: [
+            stringToProtoData(
+              "UnityEngine::Component",
+              stringToProtoType("type")!,
+            ),
+          ],
+        },
+      });
+      const result = await runMethod;
+      if (!result.result) return undefined;
+      const arr = protoDataToRealValue(
+        result.result.typeInfo!,
+        result.result.data,
+      );
+      if (!Array.isArray(arr)) return [];
+      if (arr.length == 0 || typeof arr[0] != "bigint") return [];
+      return arr as bigint[];
+    },
+  );
 
   return (
     <Show when={ready()}>
@@ -256,7 +254,7 @@ export function GameObjectSection(
             </For>
             <ActionButton
               class="small-button"
-              img="refresh.svg"
+              img="refresh"
               tooltip="Refresh Components"
               onClick={() => updateComponents()}
               loading={componentsLoading()}

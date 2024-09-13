@@ -1,8 +1,9 @@
 #pragma once
 
-#include "main.hpp"
+#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "protobuf/qrue.pb.h"
 
-size_t fieldTypeSize(const Il2CppType* type);
+size_t fieldTypeSize(Il2CppType const* type);
 
 #define typeofclass(klass) &klass->byval_arg
 #define classoftype(type) il2cpp_functions::class_from_il2cpp_type(type)
@@ -10,22 +11,28 @@ size_t fieldTypeSize(const Il2CppType* type);
 #define typeofinst(instance) typeofclass(classofinst(instance))
 
 namespace ClassUtils {
-    std::vector<FieldInfo*> GetFields(Il2CppClass const* klass);
+    std::vector<FieldInfo const*> GetFields(Il2CppClass const* klass);
 
-    std::vector<const MethodInfo*> GetPropMethods(PropertyInfo const* prop);
-    std::vector<PropertyInfo*> GetProperties(Il2CppClass const* klass);
+    // [getter?, setter?]
+    std::pair<MethodInfo const*, MethodInfo const*> GetPropMethods(PropertyInfo const* prop);
+    std::vector<PropertyInfo const*> GetProperties(Il2CppClass const* klass);
 
-    std::vector<MethodInfo*> GetMethods(Il2CppClass const* klass);
+    std::vector<MethodInfo const*> GetMethods(Il2CppClass const* klass);
 
-    std::vector<Il2CppClass*> GetInterfaces(Il2CppClass const* klass);
+    std::vector<Il2CppClass const*> GetInterfaces(Il2CppClass const* klass);
 
-    Il2CppClass* GetParent(Il2CppClass const* klass);
+    Il2CppClass const* GetParent(Il2CppClass const* klass);
 
     bool GetIsLiteral(FieldInfo const* field);
 
     bool GetIsStatic(FieldInfo const* field);
     bool GetIsStatic(PropertyInfo const* prop);
     bool GetIsStatic(MethodInfo const* method);
+
+    bool GetIsCustom(Il2CppType const* type);
+    inline bool GetIsCustom(Il2CppClass const* klass) {
+        return GetIsCustom(typeofclass(klass));
+    }
 
     ProtoTypeInfo GetTypeInfo(Il2CppType const* type);
     inline ProtoTypeInfo GetTypeInfo(Il2CppClass const* klass) {

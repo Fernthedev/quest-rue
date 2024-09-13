@@ -10,19 +10,30 @@ let test_game_object_class_details: Promise<
   GetClassDetailsResult | GetInstanceDetailsResult
 >;
 
+// https://github.com/tauri-apps/tauri-docs/issues/699
+export function isTauri(): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const unsafeWindow = window as any;
+  return (
+    (unsafeWindow.__TAURI__ || unsafeWindow.__TAURI_INTERNAL__) != undefined
+  );
+}
+
 export async function devSetup() {
   if (import.meta.env.VITE_USE_QUEST_MOCK != "true") return;
   test_data_in_main_menu ??= import(
     "../misc/test_data_in_main_menu.json"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) as any;
   test_game_object_class_details ??= import(
     "../misc/test_game_object_class_details.json"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) as any;
 }
 
 export async function devPacketResponse(
   p: PacketWrapper,
-  callback: (response: PacketWrapper) => void
+  callback: (response: PacketWrapper) => void,
 ) {
   switch (p.Packet?.$case) {
     case "getAllGameObjects": {

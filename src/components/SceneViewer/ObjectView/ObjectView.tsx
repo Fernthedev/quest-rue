@@ -31,7 +31,7 @@ export type SpanFn = (e: HTMLDivElement, colSize: number) => void;
 export function adaptiveSpanSize(
   element: HTMLDivElement,
   colSize: number,
-  maxCols: number
+  maxCols: number,
 ) {
   if (colSize == 0 || maxCols == 1) {
     element.style.setProperty("grid-column", `span 1`);
@@ -70,11 +70,6 @@ export default function ObjectView(props: {
   const [details, detailsLoading, requestDetails] =
     useRequestAndResponsePacket<GetClassDetailsResult>();
 
-  const selectedAddress = createMemo(() => {
-    const data = props.selected?.data?.Data;
-    return data?.$case == "classData" ? data.classData : undefined;
-  });
-
   // request the instance data on select
   createEffect(() => {
     const info = props.selected?.typeInfo?.Info;
@@ -91,17 +86,29 @@ export default function ObjectView(props: {
     });
   });
 
+  const selectedAndDetails = createMemo(
+    on(details, () => {
+      if (!details) return {};
+      return { selected: props.selected, details: details() };
+    }),
+  );
+
   const [values, , requestValues] =
     useRequestAndResponsePacket<GetInstanceValuesResult>();
 
+  const selectedAddress = createMemo(() => {
+    const data = selectedAndDetails().selected?.data?.Data;
+    return data?.$case == "classData" ? data.classData : undefined;
+  });
+
   createEffect(() => {
-    const info = props.selected?.typeInfo?.Info;
+    const info = selectedAndDetails().selected?.typeInfo?.Info;
     if (info?.$case != "classInfo" && info?.$case != "structInfo") return;
 
     const selected = selectedAddress();
     if (!selected) return;
 
-    console.log("request values")
+    console.log("request values");
 
     requestValues({
       $case: "getInstanceValues",
@@ -114,8 +121,8 @@ export default function ObjectView(props: {
   createEffect(() => console.log(values()));
 
   const classDetails = createMemo(() => {
-    if (!props.selected) return undefined;
-    return details()?.classDetails;
+    if (!selectedAndDetails().selected) return undefined;
+    return selectedAndDetails().details?.classDetails;
   });
   const className = createMemo(() => {
     const details = classDetails();
@@ -131,7 +138,7 @@ export default function ObjectView(props: {
             $case: "classInfo",
             classInfo: info,
           },
-        })
+        }),
       )
       .join(", ");
   });
@@ -139,7 +146,7 @@ export default function ObjectView(props: {
   const [search, setSearch] = createSignal("");
   // we need to make sure the span calculation happens after the grid has updated its column number
   const [deferredColumnCount, setDeferredColumnCount] = createSignal(
-    Number.parseInt(columnCount())
+    Number.parseInt(columnCount()),
   );
 
   let container: HTMLDivElement | undefined;
@@ -149,7 +156,7 @@ export default function ObjectView(props: {
         container.style.setProperty("--type-grid-columns", columnCount());
         setDeferredColumnCount(Number.parseInt(columnCount()));
       }
-    })
+    }),
   );
 
   const spanFn = createMemo<SpanFn>(() => {
@@ -188,7 +195,7 @@ export default function ObjectView(props: {
       <span class="dropdown dropdown-left dropdown-end h-6">
         <ActionButton
           class="small-button"
-          img="save.svg"
+          img="save"
           tooltip="Save variable"
           onClick={() => {
             input?.focus();
@@ -207,7 +214,7 @@ export default function ObjectView(props: {
             placeholder="Unnamed Variable"
             onInput={(e) => setVarNameInput(e.currentTarget.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') trySaveVariable();
+              if (e.key === "Enter") trySaveVariable();
             }}
             classList={{ invalid: !isVariableNameFree(varNameInput()) }}
             ref={input}
@@ -224,7 +231,7 @@ export default function ObjectView(props: {
   );
 
   return (
-    <Show when={props.selected} fallback={globalFallback} keyed>
+    <Show when={selectedAndDetails().selected} fallback={globalFallback} keyed>
       <div
         class={`p-4 w-full h-full overflow-x-hidden`}
         ref={container}
@@ -268,7 +275,7 @@ export default function ObjectView(props: {
           <TypeSpecifics
             details={classDetails()!}
             initVals={values()}
-            selected={props.selected!}
+            selected={selectedAndDetails().selected!}
             search={search()}
             filters={filters}
           />
@@ -276,7 +283,7 @@ export default function ObjectView(props: {
             spanFn={spanFn()}
             details={classDetails()!}
             initVals={values()}
-            selected={props.selected!}
+            selected={selectedAndDetails().selected!}
             search={search()}
             statics={false}
             setStatics={props.setStatics}

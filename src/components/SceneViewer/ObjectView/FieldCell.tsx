@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onMount } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 import { PacketJSON, useRequestAndResponsePacket } from "../../../misc/events";
 import { GetFieldResult, SetFieldResult } from "../../../misc/proto/qrue";
 import {
@@ -31,7 +31,7 @@ export function FieldCell(props: {
     useRequestAndResponsePacket<GetFieldResult>();
   function refresh() {
     console.log(
-      `Requesting ${props.field.id} ${protoDataToString(props.selected)}`
+      `Requesting ${props.field.id} ${protoDataToString(props.selected)}`,
     );
     requestValue({
       $case: "getField",
@@ -88,7 +88,7 @@ export function FieldCell(props: {
         class={"small-button"}
         onClick={refresh}
         loading={valueLoading() || valueSetting()}
-        img="refresh.svg"
+        img="refresh"
         tooltip="Refresh"
       />
     </span>

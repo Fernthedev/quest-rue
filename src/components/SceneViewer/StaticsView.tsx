@@ -97,7 +97,7 @@ export function StaticsView(props: {
         container.style.setProperty("--type-grid-columns", columnCount());
         setDeferredColumnCount(Number.parseInt(columnCount()));
       }
-    })
+    }),
   );
 
   const spanFn = createMemo<SpanFn>(() => {
@@ -137,7 +137,7 @@ export function StaticsView(props: {
             onInput={(e) => setClassInput(e.target.value.trim())}
             value={classInput()}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') addClass();
+              if (e.key === "Enter") addClass();
             }}
           />
           <button class="p-2 join-item" onClick={addClass}>
@@ -146,7 +146,7 @@ export function StaticsView(props: {
               fallback={<Icon path={plus} class="w-6 h-6" />}
             >
               <img
-                src="/src/assets/loading.svg"
+                src="/loading.svg"
                 class="animate-spin"
                 elementtiming={"Loading"}
                 fetchpriority={"auto"}

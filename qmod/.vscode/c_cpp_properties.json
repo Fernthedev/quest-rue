@@ -6,7 +6,8 @@
                 "__aarch64__",
                 "VERSION=\"0.1.0\"",
                 "MOD_ID=\"qec\"",
-                "BEAT_SABER"
+                "BEAT_SABER",
+                "UNITY_2021"
             ],
             "includePath": [
                 "${workspaceFolder}/extern/includes/libil2cpp/il2cpp/libil2cpp",

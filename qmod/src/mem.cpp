@@ -1,6 +1,7 @@
 #include "mem.hpp"
-#include <sys/mman.h>
+
 #include <errno.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 namespace {
@@ -25,8 +26,10 @@ int mem::protect(void* data, std::size_t size, protection prot) noexcept {
     ptrs -= diff;
 
     auto ret = mprotect(reinterpret_cast<void*>(ptrs), size + diff, mprot);
-    if (ret != 0) return errno;
-    else return 0;
+    if (ret != 0)
+        return errno;
+    else
+        return 0;
 }
 
 void* operator new(std::size_t size, mem::aligned_t, std::size_t align) noexcept {

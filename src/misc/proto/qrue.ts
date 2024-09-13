@@ -350,7 +350,8 @@ export interface PacketWrapper {
     | { $case: "cameraOptions"; cameraOptions: CameraOptions }
     | { $case: "cameraOptionsResult"; cameraOptionsResult: CameraOptionsResult }
     | { $case: "getCameraHovered"; getCameraHovered: GetCameraHovered }
-    | { $case: "getCameraHoveredResult"; getCameraHoveredResult: GetCameraHoveredResult };
+    | { $case: "getCameraHoveredResult"; getCameraHoveredResult: GetCameraHoveredResult }
+    | undefined;
 }
 
 function createBaseSetField(): SetField {
@@ -360,6 +361,9 @@ function createBaseSetField(): SetField {
 export const SetField = {
   encode(message: SetField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.fieldId) !== message.fieldId) {
+        throw new globalThis.Error("value provided for field message.fieldId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.fieldId.toString());
     }
     if (message.inst !== undefined) {
@@ -418,16 +422,21 @@ export const SetField = {
 
   toJSON(message: SetField): unknown {
     const obj: any = {};
-    message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
-    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
+    if (message.fieldId !== BigInt("0")) {
+      obj.fieldId = message.fieldId.toString();
+    }
+    if (message.inst !== undefined) {
+      obj.inst = ProtoDataPayload.toJSON(message.inst);
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataPayload.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SetField>, I>>(base?: I): SetField {
-    return SetField.fromPartial(base ?? {});
+    return SetField.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SetField>, I>>(object: I): SetField {
     const message = createBaseSetField();
     message.fieldId = object.fieldId ?? BigInt("0");
@@ -448,6 +457,9 @@ function createBaseSetFieldResult(): SetFieldResult {
 export const SetFieldResult = {
   encode(message: SetFieldResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.fieldId) !== message.fieldId) {
+        throw new globalThis.Error("value provided for field message.fieldId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.fieldId.toString());
     }
     return writer;
@@ -482,14 +494,15 @@ export const SetFieldResult = {
 
   toJSON(message: SetFieldResult): unknown {
     const obj: any = {};
-    message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
+    if (message.fieldId !== BigInt("0")) {
+      obj.fieldId = message.fieldId.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SetFieldResult>, I>>(base?: I): SetFieldResult {
-    return SetFieldResult.fromPartial(base ?? {});
+    return SetFieldResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SetFieldResult>, I>>(object: I): SetFieldResult {
     const message = createBaseSetFieldResult();
     message.fieldId = object.fieldId ?? BigInt("0");
@@ -504,6 +517,9 @@ function createBaseGetField(): GetField {
 export const GetField = {
   encode(message: GetField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.fieldId) !== message.fieldId) {
+        throw new globalThis.Error("value provided for field message.fieldId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.fieldId.toString());
     }
     if (message.inst !== undefined) {
@@ -551,15 +567,18 @@ export const GetField = {
 
   toJSON(message: GetField): unknown {
     const obj: any = {};
-    message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
+    if (message.fieldId !== BigInt("0")) {
+      obj.fieldId = message.fieldId.toString();
+    }
+    if (message.inst !== undefined) {
+      obj.inst = ProtoDataPayload.toJSON(message.inst);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetField>, I>>(base?: I): GetField {
-    return GetField.fromPartial(base ?? {});
+    return GetField.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetField>, I>>(object: I): GetField {
     const message = createBaseGetField();
     message.fieldId = object.fieldId ?? BigInt("0");
@@ -577,6 +596,9 @@ function createBaseGetFieldResult(): GetFieldResult {
 export const GetFieldResult = {
   encode(message: GetFieldResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fieldId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.fieldId) !== message.fieldId) {
+        throw new globalThis.Error("value provided for field message.fieldId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.fieldId.toString());
     }
     if (message.value !== undefined) {
@@ -624,15 +646,18 @@ export const GetFieldResult = {
 
   toJSON(message: GetFieldResult): unknown {
     const obj: any = {};
-    message.fieldId !== undefined && (obj.fieldId = message.fieldId.toString());
-    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
+    if (message.fieldId !== BigInt("0")) {
+      obj.fieldId = message.fieldId.toString();
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataPayload.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetFieldResult>, I>>(base?: I): GetFieldResult {
-    return GetFieldResult.fromPartial(base ?? {});
+    return GetFieldResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetFieldResult>, I>>(object: I): GetFieldResult {
     const message = createBaseGetFieldResult();
     message.fieldId = object.fieldId ?? BigInt("0");
@@ -650,6 +675,9 @@ function createBaseInvokeMethod(): InvokeMethod {
 export const InvokeMethod = {
   encode(message: InvokeMethod, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.methodId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.methodId) !== message.methodId) {
+        throw new globalThis.Error("value provided for field message.methodId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.methodId.toString());
     }
     if (message.inst !== undefined) {
@@ -712,32 +740,33 @@ export const InvokeMethod = {
     return {
       methodId: isSet(object.methodId) ? BigInt(object.methodId) : BigInt("0"),
       inst: isSet(object.inst) ? ProtoDataPayload.fromJSON(object.inst) : undefined,
-      generics: Array.isArray(object?.generics) ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e)) : [],
-      args: Array.isArray(object?.args) ? object.args.map((e: any) => ProtoDataPayload.fromJSON(e)) : [],
+      generics: globalThis.Array.isArray(object?.generics)
+        ? object.generics.map((e: any) => ProtoTypeInfo.fromJSON(e))
+        : [],
+      args: globalThis.Array.isArray(object?.args) ? object.args.map((e: any) => ProtoDataPayload.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: InvokeMethod): unknown {
     const obj: any = {};
-    message.methodId !== undefined && (obj.methodId = message.methodId.toString());
-    message.inst !== undefined && (obj.inst = message.inst ? ProtoDataPayload.toJSON(message.inst) : undefined);
-    if (message.generics) {
-      obj.generics = message.generics.map((e) => e ? ProtoTypeInfo.toJSON(e) : undefined);
-    } else {
-      obj.generics = [];
+    if (message.methodId !== BigInt("0")) {
+      obj.methodId = message.methodId.toString();
     }
-    if (message.args) {
-      obj.args = message.args.map((e) => e ? ProtoDataPayload.toJSON(e) : undefined);
-    } else {
-      obj.args = [];
+    if (message.inst !== undefined) {
+      obj.inst = ProtoDataPayload.toJSON(message.inst);
+    }
+    if (message.generics?.length) {
+      obj.generics = message.generics.map((e) => ProtoTypeInfo.toJSON(e));
+    }
+    if (message.args?.length) {
+      obj.args = message.args.map((e) => ProtoDataPayload.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<InvokeMethod>, I>>(base?: I): InvokeMethod {
-    return InvokeMethod.fromPartial(base ?? {});
+    return InvokeMethod.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<InvokeMethod>, I>>(object: I): InvokeMethod {
     const message = createBaseInvokeMethod();
     message.methodId = object.methodId ?? BigInt("0");
@@ -760,6 +789,9 @@ export const InvokeMethodResult = {
       writer.uint32(8).int32(message.status);
     }
     if (message.methodId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.methodId) !== message.methodId) {
+        throw new globalThis.Error("value provided for field message.methodId of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.methodId.toString());
     }
     if (message.result !== undefined) {
@@ -835,33 +867,43 @@ export const InvokeMethodResult = {
       result: isSet(object.result) ? ProtoDataPayload.fromJSON(object.result) : undefined,
       byrefChanges: isObject(object.byrefChanges)
         ? Object.entries(object.byrefChanges).reduce<{ [key: number]: ProtoDataPayload }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoDataPayload.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoDataPayload.fromJSON(value);
           return acc;
         }, {})
         : {},
-      error: isSet(object.error) ? String(object.error) : undefined,
+      error: isSet(object.error) ? globalThis.String(object.error) : undefined,
     };
   },
 
   toJSON(message: InvokeMethodResult): unknown {
     const obj: any = {};
-    message.status !== undefined && (obj.status = invokeMethodResult_StatusToJSON(message.status));
-    message.methodId !== undefined && (obj.methodId = message.methodId.toString());
-    message.result !== undefined && (obj.result = message.result ? ProtoDataPayload.toJSON(message.result) : undefined);
-    obj.byrefChanges = {};
-    if (message.byrefChanges) {
-      Object.entries(message.byrefChanges).forEach(([k, v]) => {
-        obj.byrefChanges[k] = ProtoDataPayload.toJSON(v);
-      });
+    if (message.status !== 0) {
+      obj.status = invokeMethodResult_StatusToJSON(message.status);
     }
-    message.error !== undefined && (obj.error = message.error);
+    if (message.methodId !== BigInt("0")) {
+      obj.methodId = message.methodId.toString();
+    }
+    if (message.result !== undefined) {
+      obj.result = ProtoDataPayload.toJSON(message.result);
+    }
+    if (message.byrefChanges) {
+      const entries = Object.entries(message.byrefChanges);
+      if (entries.length > 0) {
+        obj.byrefChanges = {};
+        entries.forEach(([k, v]) => {
+          obj.byrefChanges[k] = ProtoDataPayload.toJSON(v);
+        });
+      }
+    }
+    if (message.error !== undefined) {
+      obj.error = message.error;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(base?: I): InvokeMethodResult {
-    return InvokeMethodResult.fromPartial(base ?? {});
+    return InvokeMethodResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<InvokeMethodResult>, I>>(object: I): InvokeMethodResult {
     const message = createBaseInvokeMethodResult();
     message.status = object.status ?? 0;
@@ -872,7 +914,7 @@ export const InvokeMethodResult = {
     message.byrefChanges = Object.entries(object.byrefChanges ?? {}).reduce<{ [key: number]: ProtoDataPayload }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoDataPayload.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoDataPayload.fromPartial(value);
         }
         return acc;
       },
@@ -930,24 +972,27 @@ export const InvokeMethodResult_ByrefChangesEntry = {
 
   fromJSON(object: any): InvokeMethodResult_ByrefChangesEntry {
     return {
-      key: isSet(object.key) ? Number(object.key) : 0,
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
       value: isSet(object.value) ? ProtoDataPayload.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: InvokeMethodResult_ByrefChangesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined && (obj.value = message.value ? ProtoDataPayload.toJSON(message.value) : undefined);
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataPayload.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<InvokeMethodResult_ByrefChangesEntry>, I>>(
     base?: I,
   ): InvokeMethodResult_ByrefChangesEntry {
-    return InvokeMethodResult_ByrefChangesEntry.fromPartial(base ?? {});
+    return InvokeMethodResult_ByrefChangesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<InvokeMethodResult_ByrefChangesEntry>, I>>(
     object: I,
   ): InvokeMethodResult_ByrefChangesEntry {
@@ -1008,22 +1053,24 @@ export const SearchObjects = {
   fromJSON(object: any): SearchObjects {
     return {
       componentClass: isSet(object.componentClass) ? ProtoClassInfo.fromJSON(object.componentClass) : undefined,
-      name: isSet(object.name) ? String(object.name) : undefined,
+      name: isSet(object.name) ? globalThis.String(object.name) : undefined,
     };
   },
 
   toJSON(message: SearchObjects): unknown {
     const obj: any = {};
-    message.componentClass !== undefined &&
-      (obj.componentClass = message.componentClass ? ProtoClassInfo.toJSON(message.componentClass) : undefined);
-    message.name !== undefined && (obj.name = message.name);
+    if (message.componentClass !== undefined) {
+      obj.componentClass = ProtoClassInfo.toJSON(message.componentClass);
+    }
+    if (message.name !== undefined) {
+      obj.name = message.name;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SearchObjects>, I>>(base?: I): SearchObjects {
-    return SearchObjects.fromPartial(base ?? {});
+    return SearchObjects.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SearchObjects>, I>>(object: I): SearchObjects {
     const message = createBaseSearchObjects();
     message.componentClass = (object.componentClass !== undefined && object.componentClass !== null)
@@ -1070,23 +1117,22 @@ export const SearchObjectsResult = {
   },
 
   fromJSON(object: any): SearchObjectsResult {
-    return { objects: Array.isArray(object?.objects) ? object.objects.map((e: any) => ProtoObject.fromJSON(e)) : [] };
+    return {
+      objects: globalThis.Array.isArray(object?.objects) ? object.objects.map((e: any) => ProtoObject.fromJSON(e)) : [],
+    };
   },
 
   toJSON(message: SearchObjectsResult): unknown {
     const obj: any = {};
-    if (message.objects) {
-      obj.objects = message.objects.map((e) => e ? ProtoObject.toJSON(e) : undefined);
-    } else {
-      obj.objects = [];
+    if (message.objects?.length) {
+      obj.objects = message.objects.map((e) => ProtoObject.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(base?: I): SearchObjectsResult {
-    return SearchObjectsResult.fromPartial(base ?? {});
+    return SearchObjectsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SearchObjectsResult>, I>>(object: I): SearchObjectsResult {
     const message = createBaseSearchObjectsResult();
     message.objects = object.objects?.map((e) => ProtoObject.fromPartial(e)) || [];
@@ -1129,9 +1175,8 @@ export const GetAllGameObjects = {
   },
 
   create<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(base?: I): GetAllGameObjects {
-    return GetAllGameObjects.fromPartial(base ?? {});
+    return GetAllGameObjects.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetAllGameObjects>, I>>(_: I): GetAllGameObjects {
     const message = createBaseGetAllGameObjects();
     return message;
@@ -1175,24 +1220,23 @@ export const GetAllGameObjectsResult = {
 
   fromJSON(object: any): GetAllGameObjectsResult {
     return {
-      objects: Array.isArray(object?.objects) ? object.objects.map((e: any) => ProtoGameObject.fromJSON(e)) : [],
+      objects: globalThis.Array.isArray(object?.objects)
+        ? object.objects.map((e: any) => ProtoGameObject.fromJSON(e))
+        : [],
     };
   },
 
   toJSON(message: GetAllGameObjectsResult): unknown {
     const obj: any = {};
-    if (message.objects) {
-      obj.objects = message.objects.map((e) => e ? ProtoGameObject.toJSON(e) : undefined);
-    } else {
-      obj.objects = [];
+    if (message.objects?.length) {
+      obj.objects = message.objects.map((e) => ProtoGameObject.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(base?: I): GetAllGameObjectsResult {
-    return GetAllGameObjectsResult.fromPartial(base ?? {});
+    return GetAllGameObjectsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetAllGameObjectsResult>, I>>(object: I): GetAllGameObjectsResult {
     const message = createBaseGetAllGameObjectsResult();
     message.objects = object.objects?.map((e) => ProtoGameObject.fromPartial(e)) || [];
@@ -1207,6 +1251,9 @@ function createBaseGetGameObjectComponents(): GetGameObjectComponents {
 export const GetGameObjectComponents = {
   encode(message: GetGameObjectComponents, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     return writer;
@@ -1241,14 +1288,15 @@ export const GetGameObjectComponents = {
 
   toJSON(message: GetGameObjectComponents): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(base?: I): GetGameObjectComponents {
-    return GetGameObjectComponents.fromPartial(base ?? {});
+    return GetGameObjectComponents.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetGameObjectComponents>, I>>(object: I): GetGameObjectComponents {
     const message = createBaseGetGameObjectComponents();
     message.address = object.address ?? BigInt("0");
@@ -1293,7 +1341,7 @@ export const GetGameObjectComponentsResult = {
 
   fromJSON(object: any): GetGameObjectComponentsResult {
     return {
-      components: Array.isArray(object?.components)
+      components: globalThis.Array.isArray(object?.components)
         ? object.components.map((e: any) => ProtoComponent.fromJSON(e))
         : [],
     };
@@ -1301,18 +1349,15 @@ export const GetGameObjectComponentsResult = {
 
   toJSON(message: GetGameObjectComponentsResult): unknown {
     const obj: any = {};
-    if (message.components) {
-      obj.components = message.components.map((e) => e ? ProtoComponent.toJSON(e) : undefined);
-    } else {
-      obj.components = [];
+    if (message.components?.length) {
+      obj.components = message.components.map((e) => ProtoComponent.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetGameObjectComponentsResult>, I>>(base?: I): GetGameObjectComponentsResult {
-    return GetGameObjectComponentsResult.fromPartial(base ?? {});
+    return GetGameObjectComponentsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetGameObjectComponentsResult>, I>>(
     object: I,
   ): GetGameObjectComponentsResult {
@@ -1329,9 +1374,15 @@ function createBaseReadMemory(): ReadMemory {
 export const ReadMemory = {
   encode(message: ReadMemory, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     if (message.size !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.size) !== message.size) {
+        throw new globalThis.Error("value provided for field message.size of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.size.toString());
     }
     return writer;
@@ -1376,15 +1427,18 @@ export const ReadMemory = {
 
   toJSON(message: ReadMemory): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
-    message.size !== undefined && (obj.size = message.size.toString());
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
+    if (message.size !== BigInt("0")) {
+      obj.size = message.size.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ReadMemory>, I>>(base?: I): ReadMemory {
-    return ReadMemory.fromPartial(base ?? {});
+    return ReadMemory.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ReadMemory>, I>>(object: I): ReadMemory {
     const message = createBaseReadMemory();
     message.address = object.address ?? BigInt("0");
@@ -1403,6 +1457,9 @@ export const ReadMemoryResult = {
       writer.uint32(8).int32(message.status);
     }
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.address.toString());
     }
     if (message.data.length !== 0) {
@@ -1458,17 +1515,21 @@ export const ReadMemoryResult = {
 
   toJSON(message: ReadMemoryResult): unknown {
     const obj: any = {};
-    message.status !== undefined && (obj.status = readMemoryResult_StatusToJSON(message.status));
-    message.address !== undefined && (obj.address = message.address.toString());
-    message.data !== undefined &&
-      (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array(0)));
+    if (message.status !== 0) {
+      obj.status = readMemoryResult_StatusToJSON(message.status);
+    }
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(base?: I): ReadMemoryResult {
-    return ReadMemoryResult.fromPartial(base ?? {});
+    return ReadMemoryResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ReadMemoryResult>, I>>(object: I): ReadMemoryResult {
     const message = createBaseReadMemoryResult();
     message.status = object.status ?? 0;
@@ -1485,6 +1546,9 @@ function createBaseWriteMemory(): WriteMemory {
 export const WriteMemory = {
   encode(message: WriteMemory, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     if (message.data.length !== 0) {
@@ -1532,16 +1596,18 @@ export const WriteMemory = {
 
   toJSON(message: WriteMemory): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
-    message.data !== undefined &&
-      (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array(0)));
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<WriteMemory>, I>>(base?: I): WriteMemory {
-    return WriteMemory.fromPartial(base ?? {});
+    return WriteMemory.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<WriteMemory>, I>>(object: I): WriteMemory {
     const message = createBaseWriteMemory();
     message.address = object.address ?? BigInt("0");
@@ -1560,9 +1626,15 @@ export const WriteMemoryResult = {
       writer.uint32(8).int32(message.status);
     }
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.address.toString());
     }
     if (message.size !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.size) !== message.size) {
+        throw new globalThis.Error("value provided for field message.size of type uint64 too large");
+      }
       writer.uint32(24).uint64(message.size.toString());
     }
     return writer;
@@ -1615,16 +1687,21 @@ export const WriteMemoryResult = {
 
   toJSON(message: WriteMemoryResult): unknown {
     const obj: any = {};
-    message.status !== undefined && (obj.status = writeMemoryResult_StatusToJSON(message.status));
-    message.address !== undefined && (obj.address = message.address.toString());
-    message.size !== undefined && (obj.size = message.size.toString());
+    if (message.status !== 0) {
+      obj.status = writeMemoryResult_StatusToJSON(message.status);
+    }
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
+    if (message.size !== BigInt("0")) {
+      obj.size = message.size.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(base?: I): WriteMemoryResult {
-    return WriteMemoryResult.fromPartial(base ?? {});
+    return WriteMemoryResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<WriteMemoryResult>, I>>(object: I): WriteMemoryResult {
     const message = createBaseWriteMemoryResult();
     message.status = object.status ?? 0;
@@ -1675,15 +1752,15 @@ export const GetClassDetails = {
 
   toJSON(message: GetClassDetails): unknown {
     const obj: any = {};
-    message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
+    if (message.classInfo !== undefined) {
+      obj.classInfo = ProtoClassInfo.toJSON(message.classInfo);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetClassDetails>, I>>(base?: I): GetClassDetails {
-    return GetClassDetails.fromPartial(base ?? {});
+    return GetClassDetails.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetClassDetails>, I>>(object: I): GetClassDetails {
     const message = createBaseGetClassDetails();
     message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
@@ -1734,15 +1811,15 @@ export const GetClassDetailsResult = {
 
   toJSON(message: GetClassDetailsResult): unknown {
     const obj: any = {};
-    message.classDetails !== undefined &&
-      (obj.classDetails = message.classDetails ? ProtoClassDetails.toJSON(message.classDetails) : undefined);
+    if (message.classDetails !== undefined) {
+      obj.classDetails = ProtoClassDetails.toJSON(message.classDetails);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(base?: I): GetClassDetailsResult {
-    return GetClassDetailsResult.fromPartial(base ?? {});
+    return GetClassDetailsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetClassDetailsResult>, I>>(object: I): GetClassDetailsResult {
     const message = createBaseGetClassDetailsResult();
     message.classDetails = (object.classDetails !== undefined && object.classDetails !== null)
@@ -1759,6 +1836,9 @@ function createBaseGetInstanceClass(): GetInstanceClass {
 export const GetInstanceClass = {
   encode(message: GetInstanceClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     return writer;
@@ -1793,14 +1873,15 @@ export const GetInstanceClass = {
 
   toJSON(message: GetInstanceClass): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceClass>, I>>(base?: I): GetInstanceClass {
-    return GetInstanceClass.fromPartial(base ?? {});
+    return GetInstanceClass.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceClass>, I>>(object: I): GetInstanceClass {
     const message = createBaseGetInstanceClass();
     message.address = object.address ?? BigInt("0");
@@ -1849,15 +1930,15 @@ export const GetInstanceClassResult = {
 
   toJSON(message: GetInstanceClassResult): unknown {
     const obj: any = {};
-    message.classInfo !== undefined &&
-      (obj.classInfo = message.classInfo ? ProtoClassInfo.toJSON(message.classInfo) : undefined);
+    if (message.classInfo !== undefined) {
+      obj.classInfo = ProtoClassInfo.toJSON(message.classInfo);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(base?: I): GetInstanceClassResult {
-    return GetInstanceClassResult.fromPartial(base ?? {});
+    return GetInstanceClassResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceClassResult>, I>>(object: I): GetInstanceClassResult {
     const message = createBaseGetInstanceClassResult();
     message.classInfo = (object.classInfo !== undefined && object.classInfo !== null)
@@ -1874,6 +1955,9 @@ function createBaseGetInstanceValues(): GetInstanceValues {
 export const GetInstanceValues = {
   encode(message: GetInstanceValues, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     return writer;
@@ -1908,14 +1992,15 @@ export const GetInstanceValues = {
 
   toJSON(message: GetInstanceValues): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceValues>, I>>(base?: I): GetInstanceValues {
-    return GetInstanceValues.fromPartial(base ?? {});
+    return GetInstanceValues.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceValues>, I>>(object: I): GetInstanceValues {
     const message = createBaseGetInstanceValues();
     message.address = object.address ?? BigInt("0");
@@ -1978,13 +2063,13 @@ export const GetInstanceValuesResult = {
     return {
       fieldValues: isObject(object.fieldValues)
         ? Object.entries(object.fieldValues).reduce<{ [key: bigint]: ProtoDataSegment }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromJSON(value);
           return acc;
         }, {})
         : {},
       propertyValues: isObject(object.propertyValues)
         ? Object.entries(object.propertyValues).reduce<{ [key: bigint]: ProtoDataSegment }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoDataSegment.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromJSON(value);
           return acc;
         }, {})
         : {},
@@ -1993,31 +2078,36 @@ export const GetInstanceValuesResult = {
 
   toJSON(message: GetInstanceValuesResult): unknown {
     const obj: any = {};
-    obj.fieldValues = {};
     if (message.fieldValues) {
-      Object.entries(message.fieldValues).forEach(([k, v]) => {
-        obj.fieldValues[k] = ProtoDataSegment.toJSON(v);
-      });
+      const entries = Object.entries(message.fieldValues);
+      if (entries.length > 0) {
+        obj.fieldValues = {};
+        entries.forEach(([k, v]) => {
+          obj.fieldValues[k] = ProtoDataSegment.toJSON(v);
+        });
+      }
     }
-    obj.propertyValues = {};
     if (message.propertyValues) {
-      Object.entries(message.propertyValues).forEach(([k, v]) => {
-        obj.propertyValues[k] = ProtoDataSegment.toJSON(v);
-      });
+      const entries = Object.entries(message.propertyValues);
+      if (entries.length > 0) {
+        obj.propertyValues = {};
+        entries.forEach(([k, v]) => {
+          obj.propertyValues[k] = ProtoDataSegment.toJSON(v);
+        });
+      }
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(base?: I): GetInstanceValuesResult {
-    return GetInstanceValuesResult.fromPartial(base ?? {});
+    return GetInstanceValuesResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult>, I>>(object: I): GetInstanceValuesResult {
     const message = createBaseGetInstanceValuesResult();
     message.fieldValues = Object.entries(object.fieldValues ?? {}).reduce<{ [key: bigint]: ProtoDataSegment }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromPartial(value);
         }
         return acc;
       },
@@ -2026,7 +2116,7 @@ export const GetInstanceValuesResult = {
     message.propertyValues = Object.entries(object.propertyValues ?? {}).reduce<{ [key: bigint]: ProtoDataSegment }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoDataSegment.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoDataSegment.fromPartial(value);
         }
         return acc;
       },
@@ -2043,6 +2133,9 @@ function createBaseGetInstanceValuesResult_FieldValuesEntry(): GetInstanceValues
 export const GetInstanceValuesResult_FieldValuesEntry = {
   encode(message: GetInstanceValuesResult_FieldValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.key) !== message.key) {
+        throw new globalThis.Error("value provided for field message.key of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.key.toString());
     }
     if (message.value !== undefined) {
@@ -2090,17 +2183,20 @@ export const GetInstanceValuesResult_FieldValuesEntry = {
 
   toJSON(message: GetInstanceValuesResult_FieldValuesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
+    if (message.key !== BigInt("0")) {
+      obj.key = message.key.toString();
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataSegment.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
     base?: I,
   ): GetInstanceValuesResult_FieldValuesEntry {
-    return GetInstanceValuesResult_FieldValuesEntry.fromPartial(base ?? {});
+    return GetInstanceValuesResult_FieldValuesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_FieldValuesEntry>, I>>(
     object: I,
   ): GetInstanceValuesResult_FieldValuesEntry {
@@ -2120,6 +2216,9 @@ function createBaseGetInstanceValuesResult_PropertyValuesEntry(): GetInstanceVal
 export const GetInstanceValuesResult_PropertyValuesEntry = {
   encode(message: GetInstanceValuesResult_PropertyValuesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.key) !== message.key) {
+        throw new globalThis.Error("value provided for field message.key of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.key.toString());
     }
     if (message.value !== undefined) {
@@ -2167,17 +2266,20 @@ export const GetInstanceValuesResult_PropertyValuesEntry = {
 
   toJSON(message: GetInstanceValuesResult_PropertyValuesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined && (obj.value = message.value ? ProtoDataSegment.toJSON(message.value) : undefined);
+    if (message.key !== BigInt("0")) {
+      obj.key = message.key.toString();
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoDataSegment.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
     base?: I,
   ): GetInstanceValuesResult_PropertyValuesEntry {
-    return GetInstanceValuesResult_PropertyValuesEntry.fromPartial(base ?? {});
+    return GetInstanceValuesResult_PropertyValuesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceValuesResult_PropertyValuesEntry>, I>>(
     object: I,
   ): GetInstanceValuesResult_PropertyValuesEntry {
@@ -2197,6 +2299,9 @@ function createBaseGetInstanceDetails(): GetInstanceDetails {
 export const GetInstanceDetails = {
   encode(message: GetInstanceDetails, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     return writer;
@@ -2231,14 +2336,15 @@ export const GetInstanceDetails = {
 
   toJSON(message: GetInstanceDetails): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(base?: I): GetInstanceDetails {
-    return GetInstanceDetails.fromPartial(base ?? {});
+    return GetInstanceDetails.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceDetails>, I>>(object: I): GetInstanceDetails {
     const message = createBaseGetInstanceDetails();
     message.address = object.address ?? BigInt("0");
@@ -2300,17 +2406,18 @@ export const GetInstanceDetailsResult = {
 
   toJSON(message: GetInstanceDetailsResult): unknown {
     const obj: any = {};
-    message.classDetails !== undefined &&
-      (obj.classDetails = message.classDetails ? ProtoClassDetails.toJSON(message.classDetails) : undefined);
-    message.values !== undefined &&
-      (obj.values = message.values ? GetInstanceValuesResult.toJSON(message.values) : undefined);
+    if (message.classDetails !== undefined) {
+      obj.classDetails = ProtoClassDetails.toJSON(message.classDetails);
+    }
+    if (message.values !== undefined) {
+      obj.values = GetInstanceValuesResult.toJSON(message.values);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(base?: I): GetInstanceDetailsResult {
-    return GetInstanceDetailsResult.fromPartial(base ?? {});
+    return GetInstanceDetailsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetInstanceDetailsResult>, I>>(object: I): GetInstanceDetailsResult {
     const message = createBaseGetInstanceDetailsResult();
     message.classDetails = (object.classDetails !== undefined && object.classDetails !== null)
@@ -2333,6 +2440,9 @@ export const CreateGameObject = {
       writer.uint32(10).string(message.name);
     }
     if (message.parent !== undefined) {
+      if (BigInt.asUintN(64, message.parent) !== message.parent) {
+        throw new globalThis.Error("value provided for field message.parent of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.parent.toString());
     }
     return writer;
@@ -2370,22 +2480,25 @@ export const CreateGameObject = {
 
   fromJSON(object: any): CreateGameObject {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
       parent: isSet(object.parent) ? BigInt(object.parent) : undefined,
     };
   },
 
   toJSON(message: CreateGameObject): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.parent !== undefined && (obj.parent = message.parent.toString());
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.parent !== undefined) {
+      obj.parent = message.parent.toString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<CreateGameObject>, I>>(base?: I): CreateGameObject {
-    return CreateGameObject.fromPartial(base ?? {});
+    return CreateGameObject.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<CreateGameObject>, I>>(object: I): CreateGameObject {
     const message = createBaseCreateGameObject();
     message.name = object.name ?? "";
@@ -2429,9 +2542,8 @@ export const CreateGameObjectResult = {
   },
 
   create<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(base?: I): CreateGameObjectResult {
-    return CreateGameObjectResult.fromPartial(base ?? {});
+    return CreateGameObjectResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<CreateGameObjectResult>, I>>(_: I): CreateGameObjectResult {
     const message = createBaseCreateGameObjectResult();
     return message;
@@ -2445,6 +2557,9 @@ function createBaseAddSafePtrAddress(): AddSafePtrAddress {
 export const AddSafePtrAddress = {
   encode(message: AddSafePtrAddress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.address) !== message.address) {
+        throw new globalThis.Error("value provided for field message.address of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.address.toString());
     }
     if (message.remove === true) {
@@ -2486,21 +2601,24 @@ export const AddSafePtrAddress = {
   fromJSON(object: any): AddSafePtrAddress {
     return {
       address: isSet(object.address) ? BigInt(object.address) : BigInt("0"),
-      remove: isSet(object.remove) ? Boolean(object.remove) : false,
+      remove: isSet(object.remove) ? globalThis.Boolean(object.remove) : false,
     };
   },
 
   toJSON(message: AddSafePtrAddress): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address.toString());
-    message.remove !== undefined && (obj.remove = message.remove);
+    if (message.address !== BigInt("0")) {
+      obj.address = message.address.toString();
+    }
+    if (message.remove === true) {
+      obj.remove = message.remove;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<AddSafePtrAddress>, I>>(base?: I): AddSafePtrAddress {
-    return AddSafePtrAddress.fromPartial(base ?? {});
+    return AddSafePtrAddress.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<AddSafePtrAddress>, I>>(object: I): AddSafePtrAddress {
     const message = createBaseAddSafePtrAddress();
     message.address = object.address ?? BigInt("0");
@@ -2544,9 +2662,8 @@ export const GetSafePtrAddresses = {
   },
 
   create<I extends Exact<DeepPartial<GetSafePtrAddresses>, I>>(base?: I): GetSafePtrAddresses {
-    return GetSafePtrAddresses.fromPartial(base ?? {});
+    return GetSafePtrAddresses.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetSafePtrAddresses>, I>>(_: I): GetSafePtrAddresses {
     const message = createBaseGetSafePtrAddresses();
     return message;
@@ -2595,7 +2712,7 @@ export const GetSafePtrAddressesResult = {
     return {
       address: isObject(object.address)
         ? Object.entries(object.address).reduce<{ [key: bigint]: ProtoClassInfo }>((acc, [key, value]) => {
-          acc[Number(key)] = ProtoClassInfo.fromJSON(value);
+          acc[globalThis.Number(key)] = ProtoClassInfo.fromJSON(value);
           return acc;
         }, {})
         : {},
@@ -2604,25 +2721,27 @@ export const GetSafePtrAddressesResult = {
 
   toJSON(message: GetSafePtrAddressesResult): unknown {
     const obj: any = {};
-    obj.address = {};
     if (message.address) {
-      Object.entries(message.address).forEach(([k, v]) => {
-        obj.address[k] = ProtoClassInfo.toJSON(v);
-      });
+      const entries = Object.entries(message.address);
+      if (entries.length > 0) {
+        obj.address = {};
+        entries.forEach(([k, v]) => {
+          obj.address[k] = ProtoClassInfo.toJSON(v);
+        });
+      }
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetSafePtrAddressesResult>, I>>(base?: I): GetSafePtrAddressesResult {
-    return GetSafePtrAddressesResult.fromPartial(base ?? {});
+    return GetSafePtrAddressesResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetSafePtrAddressesResult>, I>>(object: I): GetSafePtrAddressesResult {
     const message = createBaseGetSafePtrAddressesResult();
     message.address = Object.entries(object.address ?? {}).reduce<{ [key: bigint]: ProtoClassInfo }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = ProtoClassInfo.fromPartial(value);
+          acc[globalThis.Number(key)] = ProtoClassInfo.fromPartial(value);
         }
         return acc;
       },
@@ -2639,6 +2758,9 @@ function createBaseGetSafePtrAddressesResult_AddressEntry(): GetSafePtrAddresses
 export const GetSafePtrAddressesResult_AddressEntry = {
   encode(message: GetSafePtrAddressesResult_AddressEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.key) !== message.key) {
+        throw new globalThis.Error("value provided for field message.key of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.key.toString());
     }
     if (message.value !== undefined) {
@@ -2686,17 +2808,20 @@ export const GetSafePtrAddressesResult_AddressEntry = {
 
   toJSON(message: GetSafePtrAddressesResult_AddressEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key.toString());
-    message.value !== undefined && (obj.value = message.value ? ProtoClassInfo.toJSON(message.value) : undefined);
+    if (message.key !== BigInt("0")) {
+      obj.key = message.key.toString();
+    }
+    if (message.value !== undefined) {
+      obj.value = ProtoClassInfo.toJSON(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetSafePtrAddressesResult_AddressEntry>, I>>(
     base?: I,
   ): GetSafePtrAddressesResult_AddressEntry {
-    return GetSafePtrAddressesResult_AddressEntry.fromPartial(base ?? {});
+    return GetSafePtrAddressesResult_AddressEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetSafePtrAddressesResult_AddressEntry>, I>>(
     object: I,
   ): GetSafePtrAddressesResult_AddressEntry {
@@ -2745,19 +2870,20 @@ export const RequestLogger = {
   },
 
   fromJSON(object: any): RequestLogger {
-    return { listen: isSet(object.listen) ? Boolean(object.listen) : false };
+    return { listen: isSet(object.listen) ? globalThis.Boolean(object.listen) : false };
   },
 
   toJSON(message: RequestLogger): unknown {
     const obj: any = {};
-    message.listen !== undefined && (obj.listen = message.listen);
+    if (message.listen === true) {
+      obj.listen = message.listen;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RequestLogger>, I>>(base?: I): RequestLogger {
-    return RequestLogger.fromPartial(base ?? {});
+    return RequestLogger.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RequestLogger>, I>>(object: I): RequestLogger {
     const message = createBaseRequestLogger();
     message.listen = object.listen ?? false;
@@ -2802,24 +2928,23 @@ export const ResponseLoggerUpdate = {
 
   fromJSON(object: any): ResponseLoggerUpdate {
     return {
-      paperLogs: Array.isArray(object?.paperLogs) ? object.paperLogs.map((e: any) => PaperLogData.fromJSON(e)) : [],
+      paperLogs: globalThis.Array.isArray(object?.paperLogs)
+        ? object.paperLogs.map((e: any) => PaperLogData.fromJSON(e))
+        : [],
     };
   },
 
   toJSON(message: ResponseLoggerUpdate): unknown {
     const obj: any = {};
-    if (message.paperLogs) {
-      obj.paperLogs = message.paperLogs.map((e) => e ? PaperLogData.toJSON(e) : undefined);
-    } else {
-      obj.paperLogs = [];
+    if (message.paperLogs?.length) {
+      obj.paperLogs = message.paperLogs.map((e) => PaperLogData.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ResponseLoggerUpdate>, I>>(base?: I): ResponseLoggerUpdate {
-    return ResponseLoggerUpdate.fromPartial(base ?? {});
+    return ResponseLoggerUpdate.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ResponseLoggerUpdate>, I>>(object: I): ResponseLoggerUpdate {
     const message = createBaseResponseLoggerUpdate();
     message.paperLogs = object.paperLogs?.map((e) => PaperLogData.fromPartial(e)) || [];
@@ -2894,26 +3019,35 @@ export const CameraOptions = {
 
   fromJSON(object: any): CameraOptions {
     return {
-      moveSensitivity: isSet(object.moveSensitivity) ? Number(object.moveSensitivity) : 0,
-      rotSensitivity: isSet(object.rotSensitivity) ? Number(object.rotSensitivity) : 0,
-      clickTime: isSet(object.clickTime) ? Number(object.clickTime) : 0,
-      clickMovementThreshold: isSet(object.clickMovementThreshold) ? Number(object.clickMovementThreshold) : 0,
+      moveSensitivity: isSet(object.moveSensitivity) ? globalThis.Number(object.moveSensitivity) : 0,
+      rotSensitivity: isSet(object.rotSensitivity) ? globalThis.Number(object.rotSensitivity) : 0,
+      clickTime: isSet(object.clickTime) ? globalThis.Number(object.clickTime) : 0,
+      clickMovementThreshold: isSet(object.clickMovementThreshold)
+        ? globalThis.Number(object.clickMovementThreshold)
+        : 0,
     };
   },
 
   toJSON(message: CameraOptions): unknown {
     const obj: any = {};
-    message.moveSensitivity !== undefined && (obj.moveSensitivity = message.moveSensitivity);
-    message.rotSensitivity !== undefined && (obj.rotSensitivity = message.rotSensitivity);
-    message.clickTime !== undefined && (obj.clickTime = message.clickTime);
-    message.clickMovementThreshold !== undefined && (obj.clickMovementThreshold = message.clickMovementThreshold);
+    if (message.moveSensitivity !== 0) {
+      obj.moveSensitivity = message.moveSensitivity;
+    }
+    if (message.rotSensitivity !== 0) {
+      obj.rotSensitivity = message.rotSensitivity;
+    }
+    if (message.clickTime !== 0) {
+      obj.clickTime = message.clickTime;
+    }
+    if (message.clickMovementThreshold !== 0) {
+      obj.clickMovementThreshold = message.clickMovementThreshold;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<CameraOptions>, I>>(base?: I): CameraOptions {
-    return CameraOptions.fromPartial(base ?? {});
+    return CameraOptions.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<CameraOptions>, I>>(object: I): CameraOptions {
     const message = createBaseCameraOptions();
     message.moveSensitivity = object.moveSensitivity ?? 0;
@@ -2991,26 +3125,35 @@ export const CameraOptionsResult = {
 
   fromJSON(object: any): CameraOptionsResult {
     return {
-      moveSensitivity: isSet(object.moveSensitivity) ? Number(object.moveSensitivity) : 0,
-      rotSensitivity: isSet(object.rotSensitivity) ? Number(object.rotSensitivity) : 0,
-      clickTime: isSet(object.clickTime) ? Number(object.clickTime) : 0,
-      clickMovementThreshold: isSet(object.clickMovementThreshold) ? Number(object.clickMovementThreshold) : 0,
+      moveSensitivity: isSet(object.moveSensitivity) ? globalThis.Number(object.moveSensitivity) : 0,
+      rotSensitivity: isSet(object.rotSensitivity) ? globalThis.Number(object.rotSensitivity) : 0,
+      clickTime: isSet(object.clickTime) ? globalThis.Number(object.clickTime) : 0,
+      clickMovementThreshold: isSet(object.clickMovementThreshold)
+        ? globalThis.Number(object.clickMovementThreshold)
+        : 0,
     };
   },
 
   toJSON(message: CameraOptionsResult): unknown {
     const obj: any = {};
-    message.moveSensitivity !== undefined && (obj.moveSensitivity = message.moveSensitivity);
-    message.rotSensitivity !== undefined && (obj.rotSensitivity = message.rotSensitivity);
-    message.clickTime !== undefined && (obj.clickTime = message.clickTime);
-    message.clickMovementThreshold !== undefined && (obj.clickMovementThreshold = message.clickMovementThreshold);
+    if (message.moveSensitivity !== 0) {
+      obj.moveSensitivity = message.moveSensitivity;
+    }
+    if (message.rotSensitivity !== 0) {
+      obj.rotSensitivity = message.rotSensitivity;
+    }
+    if (message.clickTime !== 0) {
+      obj.clickTime = message.clickTime;
+    }
+    if (message.clickMovementThreshold !== 0) {
+      obj.clickMovementThreshold = message.clickMovementThreshold;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(base?: I): CameraOptionsResult {
-    return CameraOptionsResult.fromPartial(base ?? {});
+    return CameraOptionsResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(object: I): CameraOptionsResult {
     const message = createBaseCameraOptionsResult();
     message.moveSensitivity = object.moveSensitivity ?? 0;
@@ -3056,9 +3199,8 @@ export const GetCameraHovered = {
   },
 
   create<I extends Exact<DeepPartial<GetCameraHovered>, I>>(base?: I): GetCameraHovered {
-    return GetCameraHovered.fromPartial(base ?? {});
+    return GetCameraHovered.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetCameraHovered>, I>>(_: I): GetCameraHovered {
     const message = createBaseGetCameraHovered();
     return message;
@@ -3106,15 +3248,15 @@ export const GetCameraHoveredResult = {
 
   toJSON(message: GetCameraHoveredResult): unknown {
     const obj: any = {};
-    message.hoveredObject !== undefined &&
-      (obj.hoveredObject = message.hoveredObject ? ProtoGameObject.toJSON(message.hoveredObject) : undefined);
+    if (message.hoveredObject !== undefined) {
+      obj.hoveredObject = ProtoGameObject.toJSON(message.hoveredObject);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<GetCameraHoveredResult>, I>>(base?: I): GetCameraHoveredResult {
-    return GetCameraHoveredResult.fromPartial(base ?? {});
+    return GetCameraHoveredResult.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<GetCameraHoveredResult>, I>>(object: I): GetCameraHoveredResult {
     const message = createBaseGetCameraHoveredResult();
     message.hoveredObject = (object.hoveredObject !== undefined && object.hoveredObject !== null)
@@ -3131,6 +3273,9 @@ function createBasePacketWrapper(): PacketWrapper {
 export const PacketWrapper = {
   encode(message: PacketWrapper, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.queryResultId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.queryResultId) !== message.queryResultId) {
+        throw new globalThis.Error("value provided for field message.queryResultId of type uint64 too large");
+      }
       writer.uint32(8).uint64(message.queryResultId.toString());
     }
     switch (message.Packet?.$case) {
@@ -3601,7 +3746,7 @@ export const PacketWrapper = {
     return {
       queryResultId: isSet(object.queryResultId) ? BigInt(object.queryResultId) : BigInt("0"),
       Packet: isSet(object.inputError)
-        ? { $case: "inputError", inputError: String(object.inputError) }
+        ? { $case: "inputError", inputError: globalThis.String(object.inputError) }
         : isSet(object.setField)
         ? { $case: "setField", setField: SetField.fromJSON(object.setField) }
         : isSet(object.setFieldResult)
@@ -3720,125 +3865,125 @@ export const PacketWrapper = {
 
   toJSON(message: PacketWrapper): unknown {
     const obj: any = {};
-    message.queryResultId !== undefined && (obj.queryResultId = message.queryResultId.toString());
-    message.Packet?.$case === "inputError" && (obj.inputError = message.Packet?.inputError);
-    message.Packet?.$case === "setField" &&
-      (obj.setField = message.Packet?.setField ? SetField.toJSON(message.Packet?.setField) : undefined);
-    message.Packet?.$case === "setFieldResult" && (obj.setFieldResult = message.Packet?.setFieldResult
-      ? SetFieldResult.toJSON(message.Packet?.setFieldResult)
-      : undefined);
-    message.Packet?.$case === "getField" &&
-      (obj.getField = message.Packet?.getField ? GetField.toJSON(message.Packet?.getField) : undefined);
-    message.Packet?.$case === "getFieldResult" && (obj.getFieldResult = message.Packet?.getFieldResult
-      ? GetFieldResult.toJSON(message.Packet?.getFieldResult)
-      : undefined);
-    message.Packet?.$case === "invokeMethod" &&
-      (obj.invokeMethod = message.Packet?.invokeMethod ? InvokeMethod.toJSON(message.Packet?.invokeMethod) : undefined);
-    message.Packet?.$case === "invokeMethodResult" && (obj.invokeMethodResult = message.Packet?.invokeMethodResult
-      ? InvokeMethodResult.toJSON(message.Packet?.invokeMethodResult)
-      : undefined);
-    message.Packet?.$case === "searchObjects" && (obj.searchObjects = message.Packet?.searchObjects
-      ? SearchObjects.toJSON(message.Packet?.searchObjects)
-      : undefined);
-    message.Packet?.$case === "searchObjectsResult" && (obj.searchObjectsResult = message.Packet?.searchObjectsResult
-      ? SearchObjectsResult.toJSON(message.Packet?.searchObjectsResult)
-      : undefined);
-    message.Packet?.$case === "getAllGameObjects" && (obj.getAllGameObjects = message.Packet?.getAllGameObjects
-      ? GetAllGameObjects.toJSON(message.Packet?.getAllGameObjects)
-      : undefined);
-    message.Packet?.$case === "getAllGameObjectsResult" &&
-      (obj.getAllGameObjectsResult = message.Packet?.getAllGameObjectsResult
-        ? GetAllGameObjectsResult.toJSON(message.Packet?.getAllGameObjectsResult)
-        : undefined);
-    message.Packet?.$case === "getGameObjectComponents" &&
-      (obj.getGameObjectComponents = message.Packet?.getGameObjectComponents
-        ? GetGameObjectComponents.toJSON(message.Packet?.getGameObjectComponents)
-        : undefined);
-    message.Packet?.$case === "getGameObjectComponentsResult" &&
-      (obj.getGameObjectComponentsResult = message.Packet?.getGameObjectComponentsResult
-        ? GetGameObjectComponentsResult.toJSON(message.Packet?.getGameObjectComponentsResult)
-        : undefined);
-    message.Packet?.$case === "readMemory" &&
-      (obj.readMemory = message.Packet?.readMemory ? ReadMemory.toJSON(message.Packet?.readMemory) : undefined);
-    message.Packet?.$case === "readMemoryResult" && (obj.readMemoryResult = message.Packet?.readMemoryResult
-      ? ReadMemoryResult.toJSON(message.Packet?.readMemoryResult)
-      : undefined);
-    message.Packet?.$case === "writeMemory" &&
-      (obj.writeMemory = message.Packet?.writeMemory ? WriteMemory.toJSON(message.Packet?.writeMemory) : undefined);
-    message.Packet?.$case === "writeMemoryResult" && (obj.writeMemoryResult = message.Packet?.writeMemoryResult
-      ? WriteMemoryResult.toJSON(message.Packet?.writeMemoryResult)
-      : undefined);
-    message.Packet?.$case === "getClassDetails" && (obj.getClassDetails = message.Packet?.getClassDetails
-      ? GetClassDetails.toJSON(message.Packet?.getClassDetails)
-      : undefined);
-    message.Packet?.$case === "getClassDetailsResult" &&
-      (obj.getClassDetailsResult = message.Packet?.getClassDetailsResult
-        ? GetClassDetailsResult.toJSON(message.Packet?.getClassDetailsResult)
-        : undefined);
-    message.Packet?.$case === "getInstanceClass" && (obj.getInstanceClass = message.Packet?.getInstanceClass
-      ? GetInstanceClass.toJSON(message.Packet?.getInstanceClass)
-      : undefined);
-    message.Packet?.$case === "getInstanceClassResult" &&
-      (obj.getInstanceClassResult = message.Packet?.getInstanceClassResult
-        ? GetInstanceClassResult.toJSON(message.Packet?.getInstanceClassResult)
-        : undefined);
-    message.Packet?.$case === "getInstanceValues" && (obj.getInstanceValues = message.Packet?.getInstanceValues
-      ? GetInstanceValues.toJSON(message.Packet?.getInstanceValues)
-      : undefined);
-    message.Packet?.$case === "getInstanceValuesResult" &&
-      (obj.getInstanceValuesResult = message.Packet?.getInstanceValuesResult
-        ? GetInstanceValuesResult.toJSON(message.Packet?.getInstanceValuesResult)
-        : undefined);
-    message.Packet?.$case === "getInstanceDetails" && (obj.getInstanceDetails = message.Packet?.getInstanceDetails
-      ? GetInstanceDetails.toJSON(message.Packet?.getInstanceDetails)
-      : undefined);
-    message.Packet?.$case === "getInstanceDetailsResult" &&
-      (obj.getInstanceDetailsResult = message.Packet?.getInstanceDetailsResult
-        ? GetInstanceDetailsResult.toJSON(message.Packet?.getInstanceDetailsResult)
-        : undefined);
-    message.Packet?.$case === "createGameObject" && (obj.createGameObject = message.Packet?.createGameObject
-      ? CreateGameObject.toJSON(message.Packet?.createGameObject)
-      : undefined);
-    message.Packet?.$case === "createGameObjectResult" &&
-      (obj.createGameObjectResult = message.Packet?.createGameObjectResult
-        ? CreateGameObjectResult.toJSON(message.Packet?.createGameObjectResult)
-        : undefined);
-    message.Packet?.$case === "addSafePtrAddress" && (obj.addSafePtrAddress = message.Packet?.addSafePtrAddress
-      ? AddSafePtrAddress.toJSON(message.Packet?.addSafePtrAddress)
-      : undefined);
-    message.Packet?.$case === "getSafePtrAddresses" && (obj.getSafePtrAddresses = message.Packet?.getSafePtrAddresses
-      ? GetSafePtrAddresses.toJSON(message.Packet?.getSafePtrAddresses)
-      : undefined);
-    message.Packet?.$case === "getSafePtrAddressesResult" &&
-      (obj.getSafePtrAddressesResult = message.Packet?.getSafePtrAddressesResult
-        ? GetSafePtrAddressesResult.toJSON(message.Packet?.getSafePtrAddressesResult)
-        : undefined);
-    message.Packet?.$case === "requestLogger" && (obj.requestLogger = message.Packet?.requestLogger
-      ? RequestLogger.toJSON(message.Packet?.requestLogger)
-      : undefined);
-    message.Packet?.$case === "responseLoggerUpdate" && (obj.responseLoggerUpdate = message.Packet?.responseLoggerUpdate
-      ? ResponseLoggerUpdate.toJSON(message.Packet?.responseLoggerUpdate)
-      : undefined);
-    message.Packet?.$case === "cameraOptions" && (obj.cameraOptions = message.Packet?.cameraOptions
-      ? CameraOptions.toJSON(message.Packet?.cameraOptions)
-      : undefined);
-    message.Packet?.$case === "cameraOptionsResult" && (obj.cameraOptionsResult = message.Packet?.cameraOptionsResult
-      ? CameraOptionsResult.toJSON(message.Packet?.cameraOptionsResult)
-      : undefined);
-    message.Packet?.$case === "getCameraHovered" && (obj.getCameraHovered = message.Packet?.getCameraHovered
-      ? GetCameraHovered.toJSON(message.Packet?.getCameraHovered)
-      : undefined);
-    message.Packet?.$case === "getCameraHoveredResult" &&
-      (obj.getCameraHoveredResult = message.Packet?.getCameraHoveredResult
-        ? GetCameraHoveredResult.toJSON(message.Packet?.getCameraHoveredResult)
-        : undefined);
+    if (message.queryResultId !== BigInt("0")) {
+      obj.queryResultId = message.queryResultId.toString();
+    }
+    if (message.Packet?.$case === "inputError") {
+      obj.inputError = message.Packet.inputError;
+    }
+    if (message.Packet?.$case === "setField") {
+      obj.setField = SetField.toJSON(message.Packet.setField);
+    }
+    if (message.Packet?.$case === "setFieldResult") {
+      obj.setFieldResult = SetFieldResult.toJSON(message.Packet.setFieldResult);
+    }
+    if (message.Packet?.$case === "getField") {
+      obj.getField = GetField.toJSON(message.Packet.getField);
+    }
+    if (message.Packet?.$case === "getFieldResult") {
+      obj.getFieldResult = GetFieldResult.toJSON(message.Packet.getFieldResult);
+    }
+    if (message.Packet?.$case === "invokeMethod") {
+      obj.invokeMethod = InvokeMethod.toJSON(message.Packet.invokeMethod);
+    }
+    if (message.Packet?.$case === "invokeMethodResult") {
+      obj.invokeMethodResult = InvokeMethodResult.toJSON(message.Packet.invokeMethodResult);
+    }
+    if (message.Packet?.$case === "searchObjects") {
+      obj.searchObjects = SearchObjects.toJSON(message.Packet.searchObjects);
+    }
+    if (message.Packet?.$case === "searchObjectsResult") {
+      obj.searchObjectsResult = SearchObjectsResult.toJSON(message.Packet.searchObjectsResult);
+    }
+    if (message.Packet?.$case === "getAllGameObjects") {
+      obj.getAllGameObjects = GetAllGameObjects.toJSON(message.Packet.getAllGameObjects);
+    }
+    if (message.Packet?.$case === "getAllGameObjectsResult") {
+      obj.getAllGameObjectsResult = GetAllGameObjectsResult.toJSON(message.Packet.getAllGameObjectsResult);
+    }
+    if (message.Packet?.$case === "getGameObjectComponents") {
+      obj.getGameObjectComponents = GetGameObjectComponents.toJSON(message.Packet.getGameObjectComponents);
+    }
+    if (message.Packet?.$case === "getGameObjectComponentsResult") {
+      obj.getGameObjectComponentsResult = GetGameObjectComponentsResult.toJSON(
+        message.Packet.getGameObjectComponentsResult,
+      );
+    }
+    if (message.Packet?.$case === "readMemory") {
+      obj.readMemory = ReadMemory.toJSON(message.Packet.readMemory);
+    }
+    if (message.Packet?.$case === "readMemoryResult") {
+      obj.readMemoryResult = ReadMemoryResult.toJSON(message.Packet.readMemoryResult);
+    }
+    if (message.Packet?.$case === "writeMemory") {
+      obj.writeMemory = WriteMemory.toJSON(message.Packet.writeMemory);
+    }
+    if (message.Packet?.$case === "writeMemoryResult") {
+      obj.writeMemoryResult = WriteMemoryResult.toJSON(message.Packet.writeMemoryResult);
+    }
+    if (message.Packet?.$case === "getClassDetails") {
+      obj.getClassDetails = GetClassDetails.toJSON(message.Packet.getClassDetails);
+    }
+    if (message.Packet?.$case === "getClassDetailsResult") {
+      obj.getClassDetailsResult = GetClassDetailsResult.toJSON(message.Packet.getClassDetailsResult);
+    }
+    if (message.Packet?.$case === "getInstanceClass") {
+      obj.getInstanceClass = GetInstanceClass.toJSON(message.Packet.getInstanceClass);
+    }
+    if (message.Packet?.$case === "getInstanceClassResult") {
+      obj.getInstanceClassResult = GetInstanceClassResult.toJSON(message.Packet.getInstanceClassResult);
+    }
+    if (message.Packet?.$case === "getInstanceValues") {
+      obj.getInstanceValues = GetInstanceValues.toJSON(message.Packet.getInstanceValues);
+    }
+    if (message.Packet?.$case === "getInstanceValuesResult") {
+      obj.getInstanceValuesResult = GetInstanceValuesResult.toJSON(message.Packet.getInstanceValuesResult);
+    }
+    if (message.Packet?.$case === "getInstanceDetails") {
+      obj.getInstanceDetails = GetInstanceDetails.toJSON(message.Packet.getInstanceDetails);
+    }
+    if (message.Packet?.$case === "getInstanceDetailsResult") {
+      obj.getInstanceDetailsResult = GetInstanceDetailsResult.toJSON(message.Packet.getInstanceDetailsResult);
+    }
+    if (message.Packet?.$case === "createGameObject") {
+      obj.createGameObject = CreateGameObject.toJSON(message.Packet.createGameObject);
+    }
+    if (message.Packet?.$case === "createGameObjectResult") {
+      obj.createGameObjectResult = CreateGameObjectResult.toJSON(message.Packet.createGameObjectResult);
+    }
+    if (message.Packet?.$case === "addSafePtrAddress") {
+      obj.addSafePtrAddress = AddSafePtrAddress.toJSON(message.Packet.addSafePtrAddress);
+    }
+    if (message.Packet?.$case === "getSafePtrAddresses") {
+      obj.getSafePtrAddresses = GetSafePtrAddresses.toJSON(message.Packet.getSafePtrAddresses);
+    }
+    if (message.Packet?.$case === "getSafePtrAddressesResult") {
+      obj.getSafePtrAddressesResult = GetSafePtrAddressesResult.toJSON(message.Packet.getSafePtrAddressesResult);
+    }
+    if (message.Packet?.$case === "requestLogger") {
+      obj.requestLogger = RequestLogger.toJSON(message.Packet.requestLogger);
+    }
+    if (message.Packet?.$case === "responseLoggerUpdate") {
+      obj.responseLoggerUpdate = ResponseLoggerUpdate.toJSON(message.Packet.responseLoggerUpdate);
+    }
+    if (message.Packet?.$case === "cameraOptions") {
+      obj.cameraOptions = CameraOptions.toJSON(message.Packet.cameraOptions);
+    }
+    if (message.Packet?.$case === "cameraOptionsResult") {
+      obj.cameraOptionsResult = CameraOptionsResult.toJSON(message.Packet.cameraOptionsResult);
+    }
+    if (message.Packet?.$case === "getCameraHovered") {
+      obj.getCameraHovered = GetCameraHovered.toJSON(message.Packet.getCameraHovered);
+    }
+    if (message.Packet?.$case === "getCameraHoveredResult") {
+      obj.getCameraHoveredResult = GetCameraHoveredResult.toJSON(message.Packet.getCameraHoveredResult);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<PacketWrapper>, I>>(base?: I): PacketWrapper {
-    return PacketWrapper.fromPartial(base ?? {});
+    return PacketWrapper.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<PacketWrapper>, I>>(object: I): PacketWrapper {
     const message = createBasePacketWrapper();
     message.queryResultId = object.queryResultId ?? BigInt("0");
@@ -4186,30 +4331,11 @@ export const PacketWrapper = {
   },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 function bytesFromBase64(b64: string): Uint8Array {
-  if (tsProtoGlobalThis.Buffer) {
-    return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, "base64"));
+  if ((globalThis as any).Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
   } else {
-    const bin = tsProtoGlobalThis.atob(b64);
+    const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; ++i) {
       arr[i] = bin.charCodeAt(i);
@@ -4219,21 +4345,22 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-  if (tsProtoGlobalThis.Buffer) {
-    return tsProtoGlobalThis.Buffer.from(arr).toString("base64");
+  if ((globalThis as any).Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {
-      bin.push(String.fromCharCode(byte));
+      bin.push(globalThis.String.fromCharCode(byte));
     });
-    return tsProtoGlobalThis.btoa(bin.join(""));
+    return globalThis.btoa(bin.join(""));
   }
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

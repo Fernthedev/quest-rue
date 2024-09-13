@@ -26,7 +26,7 @@ function buildEvents() {
     // PACKET EVENTS
     ALL_PACKETS: new EventListener<PacketWrapperCustomJSON>(),
     CONNECTED_EVENT: new EventListener<void>(),
-    DISCONNECTED_EVENT: new EventListener<CloseEvent>(),
+    DISCONNECTED_EVENT: new EventListener<[boolean, boolean]>(),
     ERROR_EVENT: new EventListener<Event>(),
   } as const;
 }
@@ -47,11 +47,11 @@ export type PacketJSON<T> = T; // ReturnType<T["toObject"]>;
 export function useRequestAndResponsePacket<
   TTResponse,
   TRequest extends PacketTypes = PacketTypes,
-  TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>
+  TResponse extends PacketJSON<TTResponse> = PacketJSON<TTResponse>,
 >(
   once = false,
   allowConcurrent = false,
-  allowUnexpectedPackets = false
+  allowUnexpectedPackets = false,
 ): [Accessor<TResponse | undefined>, Accessor<boolean>, (p: TRequest) => void] {
   const [val, setValue] = createSignal<TResponse | undefined>(undefined);
   const [loading, setLoading] = createSignal<boolean>(false);
@@ -102,6 +102,7 @@ export function useRequestAndResponsePacket<
     const randomId = uniqueBigNumber();
     expectedQueryID.value = randomId;
     setLoading(true);
+    setValue(undefined);
     writePacket({
       queryResultId: randomId,
       Packet: p,
@@ -177,7 +178,7 @@ export function useRequestAndResponsePacket<
  */
 export function createSignalEvent<T>(
   listener: EventListener<T>,
-  once = false
+  once = false,
 ): Accessor<T | undefined> {
   const [val, setValue] = createSignal<T | undefined>(undefined);
 
@@ -195,14 +196,14 @@ export function createSignalEvent<T>(
 /**
  * Runs the callback when the listener is called
  * Does not run on mount
- * @param listener 
- * @param callback 
- * @param once 
+ * @param listener
+ * @param callback
+ * @param once
  */
 export function createEventEffect<T>(
   listener: EventListener<T>,
   callback: (value: T) => void | Promise<void>,
-  once = false
+  once = false,
 ) {
   const id = listener.addListener(callback, once);
 
@@ -218,14 +219,14 @@ export class EventListener<T> {
   private otherListeners: (
     | [
         invoker: ListenerCallbackFunction<T>,
-        id: ListenerCallbackFunction<T> | undefined
+        id: ListenerCallbackFunction<T> | undefined,
       ]
     | undefined
   )[] = [];
 
   addListener(
     callback: ListenerCallbackFunction<T>,
-    once = false
+    once = false,
   ): ListenerCallbackFunction<T> {
     const index = this.otherListeners.length++;
     if (once) {
@@ -244,7 +245,7 @@ export class EventListener<T> {
 
   removeListener(callback: ListenerCallbackFunction<T>) {
     const index = this.otherListeners.findIndex(
-      (e) => e && (e[0] === callback || (e[1] && e[1] === callback))
+      (e) => e && (e[0] === callback || (e[1] && e[1] === callback)),
     );
     if (index >= 0) this.otherListeners[index] = undefined;
   }

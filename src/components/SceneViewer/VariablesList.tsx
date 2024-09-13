@@ -60,7 +60,7 @@ function VariableCell(props: { addr: bigint }) {
           input!.value = name();
         }
       },
-      false
+      false,
     );
   });
 
@@ -143,7 +143,7 @@ function VariablesListContent() {
       else entry[1].push(addrBigInt);
 
       return prev;
-    }, new Map<string, [ProtoClassDetails, bigint[]]>())
+    }, new Map<string, [ProtoClassDetails, bigint[]]>()),
   );
 
   const emptyFallback = (
@@ -285,7 +285,7 @@ function CameraSettings() {
       if (clickInput() == "") setClickInput(result.clickTime.toFixed(2));
       if (moveInput() == "")
         setClickMoveInput(result.clickMovementThreshold.toFixed(2));
-    })
+    }),
   );
 
   onMount(async () => {

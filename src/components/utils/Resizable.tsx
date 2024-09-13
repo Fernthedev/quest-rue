@@ -7,19 +7,19 @@ export function Resizable(
     size: number;
     minSize?: number;
     maxSize?: number;
-  } & ParentProps
+  } & ParentProps,
 ) {
   const vertical = createMemo(
-    () => props.direction == "up" || props.direction == "down"
+    () => props.direction == "up" || props.direction == "down",
   );
   const before = createMemo(
-    () => props.direction == "up" || props.direction == "left"
+    () => props.direction == "up" || props.direction == "left",
   );
 
   const flexDir = createMemo(() => (vertical() ? "col" : "row"));
   const sizeClass = createMemo(() => (vertical() ? "h-1" : "w-1"));
   const cursor = createMemo(() =>
-    vertical() ? "cursor-ns-resize" : "cursor-ew-resize"
+    vertical() ? "cursor-ns-resize" : "cursor-ew-resize",
   );
 
   // reset to size in props if that is changed externally

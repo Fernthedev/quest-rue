@@ -2,8 +2,25 @@
   @apply bg-zinc-400 dark:bg-zinc-800;
 
   display: flex;
-  flex-flow: column wrap;
-  gap: 10px;
+  gap: 20px;
   padding: 10px;
   border-radius: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.devlist {
+  @apply bg-zinc-300 dark:bg-zinc-900;
+
+  padding: 10px;
+  border-radius: 8px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
 }

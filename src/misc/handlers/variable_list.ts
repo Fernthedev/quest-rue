@@ -23,14 +23,14 @@ export const [variables, setVariables] = createStore<{
 }>({});
 
 export function handleSafePtrAddresses(
-  getSafePtrAddressesResult: GetSafePtrAddressesResult
+  getSafePtrAddressesResult: GetSafePtrAddressesResult,
 ) {
   batch(async () => {
     const typeSafeMap = new Map(
       Object.entries(getSafePtrAddressesResult.address).map(([addr, i]) => [
         BigInt(addr),
         i as ProtoClassInfo,
-      ])
+      ]),
     );
 
     // Find addresses no longer in backend
@@ -41,7 +41,7 @@ export function handleSafePtrAddresses(
     const newVariables = generateNewVariableRecord(typeSafeMap);
 
     const modifiedVariableMap: Record<string, Variable> = Object.fromEntries(
-      removedAddresses.concat(await newVariables)
+      removedAddresses.concat(await newVariables),
     );
 
     // This merges with the previous value
@@ -57,12 +57,12 @@ export function requestVariables() {
         $case: "getSafePtrAddresses",
         getSafePtrAddresses: {},
       },
-    })
+    }),
   );
 }
 
 function findRemovedAddresses(
-  packetAddresses: Map<bigint, ProtoClassInfo>
+  packetAddresses: Map<bigint, ProtoClassInfo>,
 ): [string, Variable][] {
   return Object.keys(variables)
     .filter((addr) => !packetAddresses.has(BigInt(addr)))
@@ -70,7 +70,7 @@ function findRemovedAddresses(
 }
 
 async function generateNewVariableRecord(
-  packetAddresses: Map<bigint, ProtoClassInfo>
+  packetAddresses: Map<bigint, ProtoClassInfo>,
 ) {
   // find class details of all the new variables
   const addressToDetails = await Promise.all(
@@ -88,7 +88,7 @@ async function generateNewVariableRecord(
         const classDetails = await classDetailsPromise;
 
         return [addr, classDetails.classDetails] as [bigint, ProtoClassDetails];
-      })
+      }),
   );
 
   const addressToVariables = addressToDetails.map(([addr, classDetails]) => {
@@ -105,7 +105,7 @@ async function generateNewVariableRecord(
 
 export function firstFree(
   beginning = "Unnamed Variable",
-  ignoreAddress?: bigint
+  ignoreAddress?: bigint,
 ) {
   const usedNums = Object.entries(variables).reduce((set, [addr, { name }]) => {
     if (ignoreAddress && BigInt(addr) == ignoreAddress) return set;
@@ -135,27 +135,36 @@ export function addrToString(addr: bigint) {
 
 export function isVariableNameFree(
   varName = "Unnamed Variable",
-  ignoreAddress?: bigint
+  ignoreAddress?: bigint,
 ) {
   if (Object.keys(reservedNames).includes(varName)) return false;
 
   return !Object.entries(variables).some(
     ([addr, { name }]) =>
       (ignoreAddress == undefined || BigInt(addr) != ignoreAddress) &&
-      name == varName.trim()
+      name == varName.trim(),
   );
 }
-export function getVariableValue(variable: string): [string, Variable] | undefined {
+export function getVariableValue(
+  variable: string,
+): [string, Variable] | undefined {
   const reserved = reservedNames[variable];
-  if (reserved != undefined) return [reserved.toString(), {name: variable, type: ProtoClassDetails.fromPartial({
-    clazz: {
-      namespaze: "System",
-      clazz: "Object",
-    }
-  })}];
+  if (reserved != undefined)
+    return [
+      reserved.toString(),
+      {
+        name: variable,
+        type: ProtoClassDetails.fromPartial({
+          clazz: {
+            namespaze: "System",
+            clazz: "Object",
+          },
+        }),
+      },
+    ];
 
   const addr = Object.entries(variables).find(
-    ([, { name }]) => name === variable
+    ([, { name }]) => name === variable,
   );
 
   return addr;
@@ -180,7 +189,7 @@ export function removeVariable(address: bigint) {
 export function updateVariable(
   address: bigint,
   type: ProtoClassDetails,
-  name?: string
+  name?: string,
 ) {
   const addressStr = addrToString(address);
   if (!(addressStr in variables)) {
@@ -197,7 +206,7 @@ export function updateVariable(
 export function addVariable(
   address: bigint,
   type: ProtoClassDetails,
-  name?: string
+  name?: string,
 ) {
   const addressStr = addrToString(address);
   if (addressStr in variables) return;

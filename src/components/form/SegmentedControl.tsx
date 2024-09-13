@@ -14,7 +14,7 @@ export default function SegmentedControl(props: SegmentedControlProps) {
     e: Event & {
       currentTarget: HTMLInputElement;
       target: HTMLInputElement;
-    }
+    },
   ) => {
     if (!e.currentTarget.checked) return;
     props.onValueSelect(e.currentTarget.value);

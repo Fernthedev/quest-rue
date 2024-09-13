@@ -68,7 +68,7 @@ const primitiveStringMap = new TwoWayMap({
 
 export function stringToProtoType(
   input: string,
-  requireValid = true
+  requireValid = true,
 ): ProtoTypeInfo | undefined {
   const byRef = input.startsWith("ref ");
   if (byRef) input = input.slice(4).trim();
@@ -158,18 +158,18 @@ export function protoTypeToString(type?: Partial<PacketJSON<ProtoTypeInfo>>) {
 }
 
 export function stringToPrimitive(
-  str: string
+  str: string,
 ): ProtoTypeInfo_Primitive | undefined {
   return primitiveStringMap.get(str);
 }
 export function primitiveToString(
-  primitive: ProtoTypeInfo_Primitive
+  primitive: ProtoTypeInfo_Primitive,
 ): string | undefined {
   return primitiveStringMap.getStr(primitive);
 }
 export function stringToProtoData(
   input: string,
-  typeInfo: PacketJSON<ProtoTypeInfo>
+  typeInfo: PacketJSON<ProtoTypeInfo>,
 ) {
   return {
     typeInfo: typeInfo,

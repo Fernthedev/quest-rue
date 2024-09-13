@@ -26,6 +26,9 @@ export const PaperLogData = {
       writer.uint32(10).string(message.str);
     }
     if (message.threadId !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.threadId) !== message.threadId) {
+        throw new globalThis.Error("value provided for field message.threadId of type uint64 too large");
+      }
       writer.uint32(16).uint64(message.threadId.toString());
     }
     if (message.tag !== "") {
@@ -113,32 +116,45 @@ export const PaperLogData = {
 
   fromJSON(object: any): PaperLogData {
     return {
-      str: isSet(object.str) ? String(object.str) : "",
+      str: isSet(object.str) ? globalThis.String(object.str) : "",
       threadId: isSet(object.threadId) ? BigInt(object.threadId) : BigInt("0"),
-      tag: isSet(object.tag) ? String(object.tag) : "",
-      fileName: isSet(object.fileName) ? String(object.fileName) : "",
-      functionName: isSet(object.functionName) ? String(object.functionName) : "",
-      fileLine: isSet(object.fileLine) ? Number(object.fileLine) : 0,
+      tag: isSet(object.tag) ? globalThis.String(object.tag) : "",
+      fileName: isSet(object.fileName) ? globalThis.String(object.fileName) : "",
+      functionName: isSet(object.functionName) ? globalThis.String(object.functionName) : "",
+      fileLine: isSet(object.fileLine) ? globalThis.Number(object.fileLine) : 0,
       logTime: isSet(object.logTime) ? fromJsonTimestamp(object.logTime) : undefined,
     };
   },
 
   toJSON(message: PaperLogData): unknown {
     const obj: any = {};
-    message.str !== undefined && (obj.str = message.str);
-    message.threadId !== undefined && (obj.threadId = message.threadId.toString());
-    message.tag !== undefined && (obj.tag = message.tag);
-    message.fileName !== undefined && (obj.fileName = message.fileName);
-    message.functionName !== undefined && (obj.functionName = message.functionName);
-    message.fileLine !== undefined && (obj.fileLine = Math.round(message.fileLine));
-    message.logTime !== undefined && (obj.logTime = message.logTime.toISOString());
+    if (message.str !== "") {
+      obj.str = message.str;
+    }
+    if (message.threadId !== BigInt("0")) {
+      obj.threadId = message.threadId.toString();
+    }
+    if (message.tag !== "") {
+      obj.tag = message.tag;
+    }
+    if (message.fileName !== "") {
+      obj.fileName = message.fileName;
+    }
+    if (message.functionName !== "") {
+      obj.functionName = message.functionName;
+    }
+    if (message.fileLine !== 0) {
+      obj.fileLine = Math.round(message.fileLine);
+    }
+    if (message.logTime !== undefined) {
+      obj.logTime = message.logTime.toISOString();
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<PaperLogData>, I>>(base?: I): PaperLogData {
-    return PaperLogData.fromPartial(base ?? {});
+    return PaperLogData.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<PaperLogData>, I>>(object: I): PaperLogData {
     const message = createBasePaperLogData();
     message.str = object.str ?? "";
@@ -155,7 +171,8 @@ export const PaperLogData = {
 type Builtin = Date | Function | Uint8Array | string | number | boolean | bigint | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
@@ -171,16 +188,16 @@ function toTimestamp(date: Date): Timestamp {
 }
 
 function fromTimestamp(t: Timestamp): Date {
-  let millis = (Number(t.seconds.toString()) || 0) * 1_000;
+  let millis = (globalThis.Number(t.seconds.toString()) || 0) * 1_000;
   millis += (t.nanos || 0) / 1_000_000;
-  return new Date(millis);
+  return new globalThis.Date(millis);
 }
 
 function fromJsonTimestamp(o: any): Date {
-  if (o instanceof Date) {
+  if (o instanceof globalThis.Date) {
     return o;
   } else if (typeof o === "string") {
-    return new Date(o);
+    return new globalThis.Date(o);
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }

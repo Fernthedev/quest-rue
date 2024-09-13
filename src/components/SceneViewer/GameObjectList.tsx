@@ -27,6 +27,7 @@ import { VirtualList } from "../utils/VirtualList";
 import { plus } from "solid-heroicons/outline";
 import { Icon } from "solid-heroicons";
 import { CreateGameObjectResult } from "../../misc/proto/qrue";
+import { ActionButton } from "./InputCell";
 
 function GameObjectListItem(props: {
   item: GameObjectIndex;
@@ -102,10 +103,18 @@ function inSearch(
 ): boolean {
   if (addressMap.has(object.transform!.address!)) return true;
 
+  let thisSearch = searchLower;
+  const hierarchySplit = searchLower.split("/");
+  if (hierarchySplit.length > 1) thisSearch = hierarchySplit.splice(0, 1)[0];
+
   let childMatches = false;
-  let selfMatches = false;
-  if (object.name?.toLocaleLowerCase().includes(searchLower))
-    selfMatches = true;
+  // require all parts separated by spaces match
+  const selfMatches =
+    thisSearch.split(" ").findIndex((searchPart) => {
+      if (!object.name?.toLocaleLowerCase().includes(searchPart)) return true;
+    }) == -1;
+
+  if (selfMatches) searchLower = hierarchySplit.join("/");
 
   for (const addr of gameObjectsStore.childrenMap?.get(
     object.transform!.address!,
@@ -209,32 +218,7 @@ export default function GameObjectList() {
   function refresh() {
     if (!requesting()) requestGameObjects();
     setRequesting(true);
-    // setSearch(""); // TODO: Is this necessary?
   }
-
-  const refreshButton = (
-    <button class="flex-none p-2" onClick={refresh}>
-      <Show
-        when={requesting()}
-        fallback={
-          <img
-            src="/src/assets/refresh.svg"
-            elementtiming={"Refresh icon"}
-            fetchpriority={"auto"}
-            alt="Refresh"
-          />
-        }
-      >
-        <img
-          src="/src/assets/loading.svg"
-          class="animate-spin"
-          elementtiming={"Spinning icon"}
-          fetchpriority={"auto"}
-          alt="Loading"
-        />
-      </Show>
-    </button>
-  );
 
   return (
     <div class="flex flex-col items-stretch h-full">
@@ -247,7 +231,12 @@ export default function GameObjectList() {
           }}
           class="flex-1 w-0"
         />
-        {refreshButton}
+        <ActionButton
+          class="flex-none p-2"
+          onClick={refresh}
+          img="refresh"
+          loading={requesting()}
+        />
         <AddGameObject />
       </div>
       <Show when={!requesting()} fallback="Loading...">

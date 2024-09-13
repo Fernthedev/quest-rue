@@ -39,7 +39,7 @@ export function handleGameObjects(packet: PacketJSON<GetAllGameObjectsResult>) {
         objectsMap.set(o.transform!.address!, [
           o,
           Symbol(o.transform!.address.toString()),
-        ])
+        ]),
       );
 
       if (childrenMap) {
@@ -74,6 +74,6 @@ export function requestGameObjects() {
         $case: "getAllGameObjects",
         getAllGameObjects: {},
       },
-    })
+    }),
   );
 }

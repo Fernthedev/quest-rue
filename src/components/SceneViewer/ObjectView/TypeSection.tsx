@@ -69,8 +69,8 @@ export function TypeSection(props: {
       () => {
         if (!collapsed()) recalculateSize();
       },
-      { defer: true }
-    )
+      { defer: true },
+    ),
   );
   // loses observation after collapsing
   createEffect(() => {
@@ -78,22 +78,22 @@ export function TypeSection(props: {
   });
 
   const fields = createMemo(() =>
-    props.statics ? props.details?.staticFields : props.details?.fields
+    props.statics ? props.details?.staticFields : props.details?.fields,
   );
   const properties = createMemo(() =>
-    props.statics ? props.details?.staticProperties : props.details?.properties
+    props.statics ? props.details?.staticProperties : props.details?.properties,
   );
   const methods = createMemo(() =>
-    props.statics ? props.details?.staticMethods : props.details?.methods
+    props.statics ? props.details?.staticMethods : props.details?.methods,
   );
   const filteredFields = createDeferred(() =>
-    filterFields(fields() ?? [], props.search, props.filters)
+    filterFields(fields() ?? [], props.search, props.filters),
   );
   const filteredProps = createDeferred(() => {
     return filterProperties(properties() ?? [], props.search, props.filters);
   });
   const filteredMethods = createDeferred(() =>
-    filterMethods(methods() ?? [], props.search, props.filters)
+    filterMethods(methods() ?? [], props.search, props.filters),
   );
 
   const fieldVals = createMemo(
@@ -102,7 +102,7 @@ export function TypeSection(props: {
         | {
             [key: string]: ProtoDataSegment;
           }
-        | undefined
+        | undefined,
   );
   const propVals = createMemo(
     () =>
@@ -110,7 +110,7 @@ export function TypeSection(props: {
         | {
             [key: string]: ProtoDataSegment;
           }
-        | undefined
+        | undefined,
   );
 
   // Groups methods as [methodName, Methods[]]
@@ -136,7 +136,7 @@ export function TypeSection(props: {
         if (methodInfos.length > 1) map.set(name, false);
         return map;
       }, new Map<string, boolean>()),
-    { equals: false }
+    { equals: false },
   );
 
   // adds the current class to statics, trimming unnecessary data
@@ -261,7 +261,7 @@ export function TypeSection(props: {
               // shenanigans to distinguish between methods and overloads
               const overload = createMemo(() => item as OverloadInfo);
               const isOverload = createMemo(
-                () => overload().count !== undefined
+                () => overload().count !== undefined,
               );
 
               return (
@@ -282,7 +282,7 @@ export function TypeSection(props: {
                     count={overload().count}
                     toggleFn={() =>
                       setExpanded((prev) =>
-                        prev.set(item.name, !prev.get(item.name))
+                        prev.set(item.name, !prev.get(item.name)),
                       )
                     }
                     colSize={colSize()}

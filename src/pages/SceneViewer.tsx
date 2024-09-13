@@ -3,7 +3,6 @@ import GameObjectList from "../components/SceneViewer/GameObjectList";
 import ObjectView from "../components/SceneViewer/ObjectView/ObjectView";
 
 import styles from "./SceneViewer.module.css";
-import { isConnected } from "../misc/commands";
 import { requestGameObjects } from "../misc/handlers/gameobject";
 import { useNavigate, useParams } from "@solidjs/router";
 import { getEvents } from "../misc/events";
@@ -16,6 +15,7 @@ import { VariablesList } from "../components/SceneViewer/VariablesList";
 import { requestVariables } from "../misc/handlers/variable_list";
 import { Tabs } from "../components/Tabs";
 import { Logger } from "../components/SceneViewer/Logger";
+import { socket } from "../misc/commands";
 
 export default function SceneViewer() {
   const navigate = useNavigate();
@@ -26,9 +26,7 @@ export default function SceneViewer() {
 
   // TODO: Reconnect if possible
   onMount(() => {
-    if (isConnected()) return;
-
-    navigate("/");
+    if (!socket.connected()) navigate("/");
   });
   getEvents().DISCONNECTED_EVENT.addListener(() => navigate("/"));
 
@@ -40,13 +38,13 @@ export default function SceneViewer() {
   const selected = createMemo(() =>
     routeParams.selectedData
       ? ProtoDataPayload.fromJSON(
-          JSON.parse(decodeURIComponent(routeParams.selectedData))
+          JSON.parse(decodeURIComponent(routeParams.selectedData)),
         )
-      : undefined
+      : undefined,
   );
 
   const [leftPanel, setLeftPanel] = createSignal<JSX.Element | undefined>(
-    undefined
+    undefined,
   );
 
   return (

@@ -1,0 +1,116 @@
+name: Build Qmod
+
+env:
+  module_id: questeditor
+  qmodName: Quest Editor
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./qmod
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          submodules: true
+          lfs: true
+
+      - uses: seanmiddleditch/gha-setup-ninja@v3
+
+      - name: Create ndkpath.txt
+        run: |
+          echo "$ANDROID_NDK_LATEST_HOME" > ./ndkpath.txt
+          cat ./ndkpath.txt
+
+      - name: QPM Action
+        uses: Fernthedev/qpm-action@main
+        with:
+          workflow_token: ${{ secrets.GITHUB_TOKEN }}
+
+          restore: false
+          cache: false
+
+          publish: false
+
+      - name: Restore
+        run: |
+          qpm restore
+
+      - name: List Post Restore
+        run: |
+          echo includes:
+          ls -la ./extern/includes
+          echo libs:
+          ls -la ./extern/libs
+
+      - name: Restore vcpkg_installed
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg_installed
+          key: ${{ runner.os }}-vcpkg_installed
+
+      - name: Create protobuf files
+        run: |
+          cd ..
+          pwsh install-deps.ps1
+          pwsh make-proto.ps1 -y
+
+      - name: List protobuf files
+        run: |
+          ls -la ./protobuf
+
+      - name: Save vcpkg_installed
+        id: cache-vcpkg-save
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg_installed
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+
+      - name: Build & create qmod
+        run: |
+          export VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}
+          qpm s qmod
+
+      - name: Get Library Name
+        id: libname
+        run: |
+          cd ./build/
+          pattern="lib${module_id}*.so"
+          files=( $pattern )
+          echo NAME="${files[0]}" >> $GITHUB_OUTPUT
+
+      - name: Rename debug
+        run: |
+          mv ${GITHUB_WORKSPACE}/qmod/build/debug/${{ steps.libname.outputs.NAME }} ${GITHUB_WORKSPACE}/qmod/build/debug/debug_${{ steps.libname.outputs.NAME }}
+
+      - name: Upload non-debug artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.libname.outputs.NAME }}
+          path: ${{ github.workspace }}/qmod/build/${{ steps.libname.outputs.NAME }}
+          if-no-files-found: error
+
+      - name: Upload debug artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug_${{ steps.libname.outputs.NAME }}
+          path: ${{ github.workspace }}/qmod/build/debug/debug_${{ steps.libname.outputs.NAME }}
+          if-no-files-found: error
+
+      - name: Upload qmod artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.qmodName }}.qmod
+          path: ${{ github.workspace }}/qmod/${{ env.qmodName }}.qmod
+          if-no-files-found: error

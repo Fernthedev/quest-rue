@@ -182,7 +182,7 @@
         "returnType": {
           "Info": {
             "$case": "genericInfo",
-            "genericInfo": { "genericIndex": 623, "name": "T" }
+            "genericInfo": { "genericHandle": 623, "name": "T" }
           },
           "size": 8,
           "isByref": false
@@ -360,7 +360,7 @@
         "returnType": {
           "Info": {
             "$case": "genericInfo",
-            "genericInfo": { "genericIndex": 624, "name": "T" }
+            "genericInfo": { "genericHandle": 624, "name": "T" }
           },
           "size": 8,
           "isByref": false
@@ -382,7 +382,7 @@
         "returnType": {
           "Info": {
             "$case": "genericInfo",
-            "genericInfo": { "genericIndex": 625, "name": "T" }
+            "genericInfo": { "genericHandle": 625, "name": "T" }
           },
           "size": 8,
           "isByref": false
@@ -421,7 +421,7 @@
         "returnType": {
           "Info": {
             "$case": "genericInfo",
-            "genericInfo": { "genericIndex": 626, "name": "T" }
+            "genericInfo": { "genericHandle": 626, "name": "T" }
           },
           "size": 8,
           "isByref": false
@@ -544,7 +544,7 @@
                 "Info": {
                   "$case": "genericInfo",
                   "genericInfo": {
-                    "genericIndex": 627,
+                    "genericHandle": 627,
                     "name": "T"
                   }
                 },
@@ -616,7 +616,7 @@
                     "Info": {
                       "$case": "genericInfo",
                       "genericInfo": {
-                        "genericIndex": 628,
+                        "genericHandle": 628,
                         "name": "T"
                       }
                     },
@@ -735,7 +735,7 @@
                 "Info": {
                   "$case": "genericInfo",
                   "genericInfo": {
-                    "genericIndex": 629,
+                    "genericHandle": 629,
                     "name": "T"
                   }
                 },
@@ -771,7 +771,7 @@
                     "Info": {
                       "$case": "genericInfo",
                       "genericInfo": {
-                        "genericIndex": 630,
+                        "genericHandle": 630,
                         "name": "T"
                       }
                     },
@@ -803,7 +803,7 @@
                 "Info": {
                   "$case": "genericInfo",
                   "genericInfo": {
-                    "genericIndex": 631,
+                    "genericHandle": 631,
                     "name": "T"
                   }
                 },
@@ -831,7 +831,7 @@
                     "Info": {
                       "$case": "genericInfo",
                       "genericInfo": {
-                        "genericIndex": 632,
+                        "genericHandle": 632,
                         "name": "T"
                       }
                     },
@@ -944,7 +944,7 @@
                     "Info": {
                       "$case": "genericInfo",
                       "genericInfo": {
-                        "genericIndex": 633,
+                        "genericHandle": 633,
                         "name": "T"
                       }
                     },
@@ -993,7 +993,7 @@
                 "Info": {
                   "$case": "genericInfo",
                   "genericInfo": {
-                    "genericIndex": 634,
+                    "genericHandle": 634,
                     "name": "T"
                   }
                 },
@@ -1018,7 +1018,7 @@
                 "Info": {
                   "$case": "genericInfo",
                   "genericInfo": {
-                    "genericIndex": 635,
+                    "genericHandle": 635,
                     "name": "T"
                   }
                 },
@@ -1038,7 +1038,7 @@
           "component": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 636, "name": "T" }
+              "genericInfo": { "genericHandle": 636, "name": "T" }
             },
             "size": 8,
             "isByref": true
@@ -1326,7 +1326,7 @@
         "returnType": {
           "Info": {
             "$case": "genericInfo",
-            "genericInfo": { "genericIndex": 637, "name": "T" }
+            "genericInfo": { "genericHandle": 637, "name": "T" }
           },
           "size": 8,
           "isByref": false
@@ -2476,7 +2476,7 @@
               "Info": {
                 "$case": "genericInfo",
                 "genericInfo": {
-                  "genericIndex": 643,
+                  "genericHandle": 643,
                   "name": "T"
                 }
               },
@@ -2487,7 +2487,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 643, "name": "T" }
+              "genericInfo": { "genericHandle": 643, "name": "T" }
             },
             "size": 8,
             "isByref": false
@@ -2501,7 +2501,7 @@
               "Info": {
                 "$case": "genericInfo",
                 "genericInfo": {
-                  "genericIndex": 644,
+                  "genericHandle": 644,
                   "name": "T"
                 }
               },
@@ -2628,7 +2628,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 644, "name": "T" }
+              "genericInfo": { "genericHandle": 644, "name": "T" }
             },
             "size": 8,
             "isByref": false
@@ -2770,7 +2770,7 @@
               "Info": {
                 "$case": "genericInfo",
                 "genericInfo": {
-                  "genericIndex": 645,
+                  "genericHandle": 645,
                   "name": "T"
                 }
               },
@@ -2781,7 +2781,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 645, "name": "T" }
+              "genericInfo": { "genericHandle": 645, "name": "T" }
             },
             "size": 8,
             "isByref": false
@@ -2807,7 +2807,7 @@
               "Info": {
                 "$case": "genericInfo",
                 "genericInfo": {
-                  "genericIndex": 646,
+                  "genericHandle": 646,
                   "name": "T"
                 }
               },
@@ -2818,7 +2818,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 646, "name": "T" }
+              "genericInfo": { "genericHandle": 646, "name": "T" }
             },
             "size": 8,
             "isByref": false
@@ -2852,7 +2852,7 @@
               "Info": {
                 "$case": "genericInfo",
                 "genericInfo": {
-                  "genericIndex": 647,
+                  "genericHandle": 647,
                   "name": "T"
                 }
               },
@@ -2863,7 +2863,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 647, "name": "T" }
+              "genericInfo": { "genericHandle": 647, "name": "T" }
             },
             "size": 8,
             "isByref": false
@@ -3062,7 +3062,7 @@
                   "Info": {
                     "$case": "genericInfo",
                     "genericInfo": {
-                      "genericIndex": 648,
+                      "genericHandle": 648,
                       "name": "T"
                     }
                   },
@@ -3082,7 +3082,7 @@
           "returnType": {
             "Info": {
               "$case": "genericInfo",
-              "genericInfo": { "genericIndex": 649, "name": "T" }
+              "genericInfo": { "genericHandle": 649, "name": "T" }
             },
             "size": 8,
             "isByref": false

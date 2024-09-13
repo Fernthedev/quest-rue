@@ -1,4 +1,5 @@
 #include "MainThreadRunner.hpp"
+
 #include "main.hpp"
 
 #ifdef BEAT_SABER
@@ -7,7 +8,6 @@
 #include "UnityEngine/KeyCode.hpp"
 #endif
 
-#include <functional>
 #include <thread>
 
 DEFINE_TYPE(QRUE, MainThreadRunner);
@@ -18,9 +18,9 @@ std::thread::id mainThreadId;
 
 static std::vector<std::function<void()>> scheduledFunctions{};
 static std::mutex scheduleLock;
-static MainThreadRunner *mainThreadRunnerInstance;
+static MainThreadRunner* mainThreadRunnerInstance;
 
-void scheduleFunction(std::function<void()> const &func) {
+void scheduleFunction(std::function<void()> const& func) {
     if (mainThreadId == std::this_thread::get_id()) {
         func();
         return;
@@ -35,19 +35,20 @@ void MainThreadRunner::Awake() {
     mainThreadRunnerInstance = this;
 }
 
-MainThreadRunner *getUnityHandle() { return mainThreadRunnerInstance; }
+MainThreadRunner* getUnityHandle() {
+    return mainThreadRunnerInstance;
+}
 
 void MainThreadRunner::Update() {
-
 #ifdef BEAT_SABER
     // listen for fpfc enable key (C)
-    if(UnityEngine::Input::GetKey(UnityEngine::KeyCode::Z)) {
-        enabled = true;
+    if (UnityEngine::Input::GetKey(UnityEngine::KeyCode::Z)) {
+        fpfcEnabled = true;
         EnableFPFC();
     }
 #endif
 
-    if(scheduledFunctions.empty())
+    if (scheduledFunctions.empty())
         return;
 
     LOG_INFO("Running scheduled functions on main thread");
@@ -66,6 +67,7 @@ void MainThreadRunner::addKeepAlive(Il2CppObject* obj) {
 
     this->keepAliveObjects->Add(obj);
 }
-void MainThreadRunner::removeKeepAlive(Il2CppObject *obj) {
+
+void MainThreadRunner::removeKeepAlive(Il2CppObject* obj) {
     this->keepAliveObjects->Remove(obj);
 }
