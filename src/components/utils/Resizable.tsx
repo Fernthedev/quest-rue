@@ -60,7 +60,7 @@ export function Resizable(
   // declare here to not do so twice in the two <Show> blocks
   const dragger = (
     <div
-      class={`flex-none ${sizeClass()} bg-blue-200 dark:bg-zinc-500 ${cursor()}`}
+      class={`flex-none ${sizeClass()} bg-zinc-400 dark:bg-zinc-500 ${cursor()}`}
       onMouseDown={add}
       role="none"
     />

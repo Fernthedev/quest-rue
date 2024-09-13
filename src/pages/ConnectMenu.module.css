@@ -1,5 +1,5 @@
 .wrapper {
-  @apply bg-zinc-400 dark:bg-zinc-800;
+  @apply bg-zinc-300 dark:bg-zinc-800;
 
   display: flex;
   gap: 20px;
@@ -14,7 +14,7 @@
 }
 
 .devlist {
-  @apply bg-zinc-300 dark:bg-zinc-900;
+  @apply bg-zinc-200 dark:bg-zinc-900;
 
   padding: 10px;
   border-radius: 8px;

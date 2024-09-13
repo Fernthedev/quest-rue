@@ -4,7 +4,7 @@
   /* divide-y-2 divide-x-2 divide-blue-200 dark:divide-zinc-600  */
 }
 .list > div {
-  @apply divide-y-2 divide-blue-200 dark:divide-zinc-600;
+  @apply divide-y-2 divide-zinc-400 dark:divide-zinc-600;
 }
 .listItem {
   cursor: pointer;
@@ -13,6 +13,6 @@
   display: flex;
 }
 .highlighted {
-  @apply bg-zinc-300 dark:bg-zinc-900;
+  @apply bg-zinc-200 dark:bg-zinc-900;
   font-weight: bolder;
 }

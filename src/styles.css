@@ -5,7 +5,9 @@
 @tailwind utilities;
 
 :root {
-  @apply bg-white dark:bg-zinc-900;
+  @apply bg-zinc-100 dark:bg-zinc-900
+         text-black dark:text-white
+         fill-black dark:fill-white;
 
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -42,8 +44,8 @@ div {
 }
 
 .header {
-  @apply bg-zinc-400 dark:bg-zinc-800
-        text-lg font-mono px-2;
+  @apply bg-zinc-300 dark:bg-zinc-800
+           text-lg font-mono px-2;
 
   cursor: pointer;
   display: flex;
@@ -56,14 +58,14 @@ div {
 }
 
 a {
+  @apply text-blue-700 dark:text-blue-300;
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
 
 a:hover,
 a:focus {
-  color: #535bf2;
+  @apply text-blue-800 dark:text-blue-200;
 }
 
 h1 {
@@ -71,19 +73,28 @@ h1 {
   font-size: 2rem;
 }
 
+@media (prefers-color-scheme: light) {
+  img.light-invert {
+    @apply invert;
+  }
+}
+
 input,
 button,
 button[type="submit"] {
+  @apply bg-white dark:bg-black;
+
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
   transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 2px lightgrey;
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 2px 2px black;
+  }
 }
 
 input:not(.toggle) {
@@ -99,11 +110,10 @@ input:not(.toggle):hover,
 button:hover,
 input:not(.toggle):focus,
 button:focus {
-  border-color: #396cd8;
+  @apply border-blue-300 dark:border-blue-600;
 }
 button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
+  @apply bg-slate-100 dark:bg-slate-900;
 }
 
 input:not(.toggle):hover,
@@ -115,11 +125,20 @@ input:not(.toggle):focus {
 input:not(.toggle).invalid {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  border-color: #d82f2f;
+  border-color: red;
 }
 
 input:placeholder-shown {
   text-overflow: ellipsis;
+}
+
+/* segmented control */
+.btn:is(input[type="radio"]:checked) {
+  @apply bg-blue-200 dark:bg-blue-800
+         text-black dark:text-white;
+}
+.btn:is(input[type="radio"]:checked):hover {
+  @apply bg-blue-300 dark:bg-blue-700
 }
 
 input,
@@ -165,8 +184,6 @@ input[type="number"] {
 .solid-select-control {
   border: none;
   padding: 0px;
-  color: #0f0f0f;
-  background-color: #ffffff;
 }
 
 .solid-select-placeholder {
@@ -197,8 +214,8 @@ input[type="number"] {
 }
 .solid-select-placeholder:hover,
 .solid-select-single-value:hover {
-  background-color: #0f0f0f;
-  border-bottom-color: #396cd8;
+  @apply border-blue-300 dark:border-blue-600
+         bg-white dark:bg-black;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -210,7 +227,7 @@ input[type="number"] {
 }
 
 .solid-select-list {
-  @apply bg-neutral-400 dark:bg-zinc-800
+  @apply bg-neutral-100 dark:bg-zinc-800
     space-y-1;
   border-radius: 8px;
   padding: 2px;
@@ -224,35 +241,8 @@ input[type="number"] {
   border-radius: 8px;
 }
 .solid-select-option[data-focused="true"] {
-  @apply bg-neutral-500 dark:bg-zinc-700;
+  @apply bg-neutral-200 dark:bg-zinc-700;
 }
 .solid-select-option:hover {
-  @apply bg-neutral-600 dark:bg-zinc-600;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    /* background-color: #2f2f2f; */
-  }
-
-  a:hover,
-  a:focus {
-    color: #24c8db;
-  }
-
-  input,
-  button,
-  button[type="submit"] {
-    color: #ffffff;
-    background-color: #0f0f0fff;
-  }
-  button:active {
-    background-color: #0f0f0fff;
-  }
-
-  .solid-select-control {
-    color: #ffffff;
-    background-color: #0f0f0fff;
-  }
+  @apply bg-neutral-300 dark:bg-zinc-600;
 }

@@ -54,11 +54,10 @@ export function SettingsMenu() {
       </button>
 
       <div
-        class="
-                dropdown-content shadow menu text-base
-                bg-neutral-400 dark:bg-zinc-800
-                justify-center gap-2 w-60 p-3
-                my-2 z-10 rounded-box cursor-auto"
+        class="dropdown-content shadow menu text-base
+               bg-zinc-300 dark:bg-zinc-800
+               justify-center gap-2 w-60 p-3
+               my-2 z-10 rounded-box cursor-auto"
       >
         <Toggle
           class="h-8"

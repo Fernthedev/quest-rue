@@ -47,11 +47,10 @@ export function ActionButton(props: {
   label?: string;
   tooltip?: string;
 }) {
-  const classes = createMemo(() => props.class);
-
   const icon = createMemo(() =>
     typeof props.img == "string" ? (
       <img
+        class="light-invert"
         src={`/${props.img}.svg`}
         elementtiming={"Action"}
         fetchpriority={"auto"}
@@ -66,7 +65,7 @@ export function ActionButton(props: {
     <button
       // Accessibility is important
       aria-label={props.label ?? props.tooltip}
-      class={classes()}
+      class={props.class}
       classList={{ tooltip: props.tooltip !== undefined }}
       // False positive
       // eslint-disable-next-line solid/reactivity
@@ -78,7 +77,7 @@ export function ActionButton(props: {
       <Show when={props.loading} fallback={icon()}>
         <img
           src="/loading.svg"
-          class="animate-spin"
+          class="animate-spin light-invert"
           elementtiming={"Loading"}
           fetchpriority={"auto"}
           alt="Loading"

@@ -147,7 +147,7 @@ export function StaticsView(props: {
             >
               <img
                 src="/loading.svg"
-                class="animate-spin"
+                class="animate-spin light-invert"
                 elementtiming={"Loading"}
                 fetchpriority={"auto"}
                 alt="Loading"
