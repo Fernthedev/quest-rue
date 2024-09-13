@@ -47,6 +47,8 @@ Run `vcpkg install` in this directory. This will download protobuf and websocket
 
 Run `pwsh ./make-proto.ps1` to generate the protobuf headers.
 
+> Make sure there are no spaces in the paths to vcpkg or the project directory.
+
 ### Client app
 
 Install [pnpm](https://pnpm.io/installation) and [rust](https://www.rust-lang.org/tools/install).

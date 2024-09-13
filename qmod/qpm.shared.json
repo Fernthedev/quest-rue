@@ -15,24 +15,24 @@
     "workspace": {
       "scripts": {
         "build": [
-          "pwsh ./scripts/build.ps1"
+          "pwsh ./scripts/build.ps1 $0?"
         ],
         "copy": [
-          "pwsh ./scripts/copy.ps1",
+          "pwsh ./scripts/copy.ps1 $0:?",
           "pwsh ./scripts/restart-game.ps1"
         ],
         "log": [
-          "pwsh ./scripts/start-logging.ps1 $0:?"
+          "pwsh ./scripts/start-logging.ps1 $0:"
         ],
         "qmod": [
-          "pwsh ./scripts/build.ps1",
+          "pwsh ./scripts/build.ps1 $0?",
           "pwsh ./scripts/createqmod.ps1"
         ],
         "restart": [
           "pwsh ./scripts/restart-game.ps1"
         ],
         "stack": [
-          "pwsh ./scripts/ndk-stack.ps1 $0"
+          "pwsh ./scripts/ndk-stack.ps1 $0?"
         ],
         "tomb": [
           "pwsh ./scripts/pull-tombstone.ps1 -analyze"
@@ -45,7 +45,7 @@
     "dependencies": [
       {
         "id": "beatsaber-hook",
-        "versionRange": "^5.1.2",
+        "versionRange": "^5.1.9",
         "additionalData": {
           "extraFiles": [
             "src/inline-hook"
@@ -54,12 +54,12 @@
       },
       {
         "id": "bs-cordl",
-        "versionRange": "^3500.0.0",
+        "versionRange": "^3700.0.0",
         "additionalData": {}
       },
       {
         "id": "paper",
-        "versionRange": "^3.6.1",
+        "versionRange": "^3.6.4",
         "additionalData": {}
       },
       {
@@ -71,7 +71,7 @@
       },
       {
         "id": "custom-types",
-        "versionRange": "^0.17.3",
+        "versionRange": "^0.17.10",
         "additionalData": {}
       },
       {
@@ -147,10 +147,10 @@
     {
       "dependency": {
         "id": "bs-cordl",
-        "versionRange": "=3500.0.0",
+        "versionRange": "=3700.0.0",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v3500_0_0",
+          "branchName": "version/v3700_0_0",
           "compileOptions": {
             "includePaths": [
               "include"
@@ -165,7 +165,7 @@
           }
         }
       },
-      "version": "3500.0.0"
+      "version": "3700.0.0"
     },
     {
       "dependency": {
