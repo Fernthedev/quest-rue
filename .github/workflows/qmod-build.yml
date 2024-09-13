@@ -57,7 +57,7 @@ jobs:
         id: cache-vcpkg-restore
         uses: actions/cache/restore@v4
         with:
-          path: ${GITHUB_WORKSPACE}/../vcpkg_installed
+          path: vcpkg_installed
           key: ${{ runner.os }}-vcpkg_installed
 
       - name: Create protobuf files
@@ -74,7 +74,7 @@ jobs:
         id: cache-vcpkg-save
         uses: actions/cache/save@v4
         with:
-          path: ${GITHUB_WORKSPACE}/../vcpkg_installed
+          path: vcpkg_installed
           key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build & create qmod
