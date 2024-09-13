@@ -1,49 +1,67 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { isTauri } from "./dev";
+import { Command } from "@tauri-apps/api/shell";
 
 let forwarded: [string, string] | undefined = undefined;
 
-export function has_adb(): Promise<string | undefined> {
+export async function has_adb(): Promise<string | undefined> {
   // todo: replace with webadb in this case? idk
   if (!isTauri()) return Promise.resolve(undefined);
 
-  return invoke("check_adb").catch((e) => {
-    console.log("check_adb err", e);
-    return false;
-  }) as Promise<string | undefined>;
+  const output = await new Command("adb", "--version").execute();
+  if (output.code !== 0) return undefined;
+  return output.stdout;
 }
 
-export function adb_devices(): Promise<[string, string][]> {
-  // return Promise.resolve([["1WMHH825340391", "Quest 2"], ["id 2", "device 2"], ["id 3", "device 3!!"], ["id 3", "device 4!!!!"]]);
+export async function adb_devices(): Promise<[string, string][]> {
   if (!isTauri()) return Promise.resolve([]);
 
-  return invoke("list_devices").catch((e) => {
-    console.log("list_devices err", e);
-    return [];
-  }) as Promise<[string, string][]>;
+  const output = await new Command("adb", "devices").execute();
+  if (output.code !== 0) return [];
+
+  const ret: [string, string][] = [];
+  const lines = output.stdout.split("\n").slice(1);
+  for (const line of lines) {
+    const split = line.trim().split(RegExp("\\s+"), 2);
+    if (split.length < 2 || split[1] !== "device") continue;
+
+    const [id] = split;
+    const cmd = new Command("adb", [
+      "-s",
+      id,
+      "shell",
+      "getprop ro.product.model",
+    ]);
+    const name = await (await cmd.execute()).stdout;
+
+    if (name.trim().length > 0) ret.push([id, name.trim()]);
+  }
+  return ret;
 }
 
-export function adb_forward(device: string, port: string): Promise<void> {
+export async function adb_forward(device: string, port: string): Promise<void> {
   if (!isTauri()) return Promise.resolve();
 
   cleanup_forward();
   forwarded = [device, port];
 
-  return invoke("adb_forward", { device, port }).catch((e) => {
-    console.log("adb_forward err", e);
-  }) as Promise<void>;
+  const tcp = `tcp:${port}`;
+  const cmd = new Command("adb", ["-s", device, "forward", tcp, tcp]);
+  await cmd.execute();
 }
 
-export function adb_unforward(device: string, port: string): Promise<void> {
+export async function adb_unforward(
+  device: string,
+  port: string,
+): Promise<void> {
   if (!isTauri()) return Promise.resolve();
 
   forwarded = undefined;
 
-  return invoke("adb_unforward", { device, port }).catch((e) => {
-    console.log("adb_unforward err", e);
-  }) as Promise<void>;
+  const tcp = `tcp:${port}`;
+  const cmd = new Command("adb", ["-s", device, "forward", "--remove", tcp]);
+  await cmd.execute();
 }
 
-export function cleanup_forward() {
-  if (forwarded) adb_unforward(...forwarded);
+export async function cleanup_forward() {
+  if (forwarded) await adb_unforward(...forwarded);
 }
