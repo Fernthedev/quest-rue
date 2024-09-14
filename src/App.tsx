@@ -5,10 +5,10 @@ import { Toaster } from "solid-toast";
 
 const SceneViewer = lazy(() => import("./pages/SceneViewer"));
 import ConnectMenu from "./pages/ConnectMenu";
-import { SettingsProvider } from "./components/Settings";
 import { ProtoDataPayload } from "./misc/proto/il2cpp";
 import { sendPacketResult } from "./misc/commands";
 import { GetInstanceClassResult } from "./misc/proto/qrue";
+import { useSettings } from "./components/Settings";
 
 export function selectData(navigate: Navigator, data: ProtoDataPayload) {
   const selected = encodeURIComponent(
@@ -45,9 +45,11 @@ export function selectClass(navigate: Navigator, address?: bigint) {
 }
 
 export default function App() {
+  const { darkMode } = useSettings();
+
   return (
-    <div class="w-screen h-screen overflow-hidden">
-      <SettingsProvider>
+    <div class={darkMode() ? "dark" : ""}>
+      <div id="app">
         <Router>
           <Route path="/scene/:selectedData?" component={SceneViewer} />
           <Route path="/" component={ConnectMenu} />
@@ -55,7 +57,7 @@ export default function App() {
         <div>
           <Toaster />
         </div>
-      </SettingsProvider>
+      </div>
     </div>
   );
 }

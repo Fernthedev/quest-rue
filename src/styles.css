@@ -4,10 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+#app {
   @apply bg-zinc-100 dark:bg-zinc-900
          text-black dark:text-white
-         fill-black dark:fill-white;
+         fill-black dark:fill-white
+         w-screen h-screen overflow-hidden;
 
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -73,16 +74,15 @@ h1 {
   font-size: 2rem;
 }
 
-@media (prefers-color-scheme: light) {
-  img.light-invert {
-    @apply invert;
-  }
+img.light-invert {
+  @apply invert dark:filter-none;
 }
 
 input,
 button,
 button[type="submit"] {
-  @apply bg-white dark:bg-black;
+  @apply bg-white dark:bg-black
+         shadow-gray-400 dark:shadow-black;
 
   border-radius: 8px;
   border: 1px solid transparent;
@@ -91,15 +91,20 @@ button[type="submit"] {
   font-weight: 500;
   font-family: inherit;
   transition: border-color 0.25s;
-  box-shadow: 0 2px 2px lightgrey;
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 2px 2px black;
-  }
+  box-shadow: 0 2px 2px var(--tw-shadow-color);
 }
 
 input:not(.toggle) {
   border-style: none none solid none;
   transition: border-radius 0.1s;
+}
+input.toggle {
+  @apply bg-zinc-300 dark:bg-zinc-700;
+  --tglbg: white;
+  border: none;
+}
+input.toggle:is(.dark *) {
+  --tglbg: black;
 }
 button {
   align-content: center;
@@ -133,12 +138,22 @@ input:placeholder-shown {
 }
 
 /* segmented control */
-.btn:is(input[type="radio"]:checked) {
+
+input.btn {
+  @apply bg-white dark:bg-black
+         shadow-gray-400 dark:shadow-black
+         text-black dark:text-white;
+  border-color: transparent;
+}
+input.btn:hover {
+  @apply bg-zinc-100 dark:bg-zinc-900
+}
+input[type="radio"].btn:checked {
   @apply bg-blue-200 dark:bg-blue-800
          text-black dark:text-white;
 }
-.btn:is(input[type="radio"]:checked):hover {
-  @apply bg-blue-300 dark:bg-blue-700
+input[type="radio"].btn:checked:hover {
+  @apply bg-blue-300 dark:bg-blue-700;
 }
 
 input,

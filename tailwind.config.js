@@ -4,6 +4,8 @@ module.exports = {
     theme: {
         extend: {},
     },
+    // hack-ish to work with modules
+    darkMode: ["variant", ["&:is(:global(.dark) *)", "&:is(.dark *)"]],
     daisyui: {
         themes: [
             {

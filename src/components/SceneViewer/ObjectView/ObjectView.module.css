@@ -4,7 +4,7 @@
 }
 
 .separator {
-  @apply bg-zinc-700 dark:bg-zinc-500;
+  @apply bg-zinc-400 dark:bg-zinc-500;
 
   /* margin: 5px 0 5px -0.5rem; */
   height: 2px;

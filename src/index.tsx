@@ -11,6 +11,7 @@ import "solid-devtools";
 import { initSocket } from "./misc/commands";
 import { cleanup_forward } from "./misc/adb";
 import { appWindow } from "@tauri-apps/api/window";
+import { SettingsProvider } from "./components/Settings";
 
 initSocket();
 initializeEvents();
@@ -18,7 +19,14 @@ initializeEvents();
 devSetup();
 
 appWindow.onCloseRequested(async () => {
-    await cleanup_forward();
+  await cleanup_forward();
 });
 
-render(() => <App />, document.getElementById("root") as HTMLElement);
+render(
+  () => (
+    <SettingsProvider>
+      <App />
+    </SettingsProvider>
+  ),
+  document.getElementById("root") as HTMLElement,
+);
