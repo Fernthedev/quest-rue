@@ -94,7 +94,7 @@ function VariableCell(props: { addr: bigint }) {
         />
       </span>
       <Show when={rawInput()}>
-        <span class="font-mono">0x{BigInt(props.addr).toString(16)}</span>
+        <span class="mono">0x{BigInt(props.addr).toString(16)}</span>
       </Show>
     </span>
   );

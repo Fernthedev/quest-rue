@@ -20,6 +20,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --mono-font: ui-monospace, monospace;
+}
+
+.mono {
+  font-family: var(--mono-font);
 }
 
 div {
@@ -46,7 +52,7 @@ div {
 
 .header {
   @apply bg-zinc-300 dark:bg-zinc-800
-           text-lg font-mono px-2;
+           text-lg mono px-2;
 
   cursor: pointer;
   display: flex;
@@ -146,7 +152,7 @@ input.btn {
   border-color: transparent;
 }
 input.btn:hover {
-  @apply bg-zinc-100 dark:bg-zinc-900
+  @apply bg-zinc-100 dark:bg-zinc-900;
 }
 input[type="radio"].btn:checked {
   @apply bg-blue-200 dark:bg-blue-800

@@ -74,7 +74,7 @@ export function FieldCell(props: {
   return (
     <span
       ref={element}
-      class={`font-mono overflow-visible ${styles.field} ${styles.gridElement}`}
+      class={`mono overflow-visible ${styles.field} ${styles.gridElement}`}
     >
       {props.field.name + " = "}
       <InputCell

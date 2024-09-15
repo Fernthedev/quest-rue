@@ -139,7 +139,7 @@ export function MethodCell(props: {
   return (
     <span
       ref={element}
-      class={`font-mono method overflow-visible ${styles.method} ${styles.gridElement}`}
+      class={`mono method overflow-visible ${styles.method} ${styles.gridElement}`}
       classList={{ [styles.highlighted]: props.highlight }}
     >
       <text class="pr-1 pl-2 -mx-2">{props.method.name}</text>

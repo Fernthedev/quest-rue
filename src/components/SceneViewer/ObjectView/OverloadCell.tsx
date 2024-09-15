@@ -20,7 +20,7 @@ export function OverloadCell(props: {
   return (
     <span
       ref={element}
-      class={`font-mono method ${styles.overload} ${styles.gridElement}`}
+      class={`mono method ${styles.overload} ${styles.gridElement}`}
       classList={{ [styles.highlighted]: props.expanded }}
     >
       <Icon path={props.expanded ? minus : plus} class="w-4 h-4 antialiased" />

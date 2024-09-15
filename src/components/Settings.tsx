@@ -17,6 +17,10 @@ function makeSettingsContext(
   const [getDarkMode, setDarkMode] = createPersistentSignal("darkMode", () =>
     darkMode ? "true" : "false",
   );
+  const [getMonoFont, setMonoFont] = createPersistentSignal(
+    "monoFont",
+    () => "",
+  );
   const [getColumnCount, setColumnCount] = createPersistentSignal(
     "columnCount",
     () => columnCount.toString(),
@@ -28,6 +32,8 @@ function makeSettingsContext(
     setRawInput: (val: boolean) => setRawInput(val ? "true" : "false"),
     darkMode: () => getDarkMode() == "true",
     setDarkMode: (val: boolean) => setDarkMode(val ? "true" : "false"),
+    monoFont: getMonoFont,
+    setMonoFont: setMonoFont,
     columnCount: getColumnCount,
     setColumnCount: setColumnCount,
   } as const;
@@ -43,6 +49,8 @@ export function SettingsMenu() {
     setRawInput,
     darkMode,
     setDarkMode,
+    monoFont,
+    setMonoFont,
     columnCount,
     setColumnCount,
   } = useSettings();
@@ -65,6 +73,14 @@ export function SettingsMenu() {
           value={darkMode()}
           onToggle={setDarkMode}
         />
+        <span class={`flex items-center h-8`}>
+          <label class="flex-1">{"Mono Font"}</label>
+          <input
+            class="small-input w-28"
+            value={monoFont()}
+            onInput={(e) => setMonoFont(e.target.value)}
+          />
+        </span>
         <Toggle
           class="h-8"
           title="Use raw input"

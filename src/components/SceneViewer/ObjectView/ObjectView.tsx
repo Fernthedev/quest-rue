@@ -241,15 +241,15 @@ export default function ObjectView(props: {
           <div class="flex-grow-0 overflow-visible min-w-0">
             <div class="flex gap-x-2 flex-wrap">
               <span class="text-lg flex-none">Selected:</span>
-              <span class="text-xl font-mono flex-none">{className()}</span>
+              <span class="text-xl mono flex-none">{className()}</span>
               <Show when={selectedAddress()}>
                 <span class="text-lg flex-none">at</span>
-                <span class="text-xl font-mono flex-none">
+                <span class="text-xl mono flex-none">
                   0x{selectedAddress()!.toString(16)}
                 </span>
                 {saveButton}
               </Show>
-              <span class="text-lg font-mono">{interfaces()}</span>
+              <span class="text-lg mono">{interfaces()}</span>
             </div>
           </div>
           <span class="flex-1 -ml-2" />

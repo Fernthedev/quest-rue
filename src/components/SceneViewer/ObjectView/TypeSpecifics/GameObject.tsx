@@ -225,7 +225,7 @@ export function GameObjectSection(
             class="flex-1"
           />
         </span>
-        <div class={`${styles.method} flex font-mono border-l-4 items-center`}>
+        <div class={`${styles.method} flex mono border-l-4 items-center`}>
           <text class="pr-2 pl-1 flex-none">GetComponents = </text>
           <div class="flex flex-1 min-w-min gap-1 flex-wrap">
             <For each={components()}>

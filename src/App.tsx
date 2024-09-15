@@ -45,11 +45,11 @@ export function selectClass(navigate: Navigator, address?: bigint) {
 }
 
 export default function App() {
-  const { darkMode } = useSettings();
+  const { darkMode, monoFont } = useSettings();
 
   return (
     <div class={darkMode() ? "dark" : ""}>
-      <div id="app">
+      <div id="app" style={{ "--mono-font": monoFont() }}>
         <Router>
           <Route path="/scene/:selectedData?" component={SceneViewer} />
           <Route path="/" component={ConnectMenu} />

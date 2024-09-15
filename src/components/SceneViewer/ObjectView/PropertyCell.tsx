@@ -111,7 +111,7 @@ export function PropertyCell(props: {
   return (
     <span
       ref={element}
-      class={`font-mono ${
+      class={`mono ${
         propertyBoth() || propertySetter() || propertyGetter()
       } ${styles.gridElement} overflow-visible`}
     >
