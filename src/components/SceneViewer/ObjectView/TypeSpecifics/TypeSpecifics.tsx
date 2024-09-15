@@ -152,15 +152,14 @@ import { PropertyCell } from "../PropertyCell";
 import { MethodCell } from "../MethodCell";
 
 export function searchSelfAndParents<T>(
-  details: ProtoClassDetails,
+  details: ProtoClassDetails | undefined,
   fn: (details: ProtoClassDetails) => T | undefined,
 ) {
-  let classDetails: ProtoClassDetails | undefined = details;
   let ret: T | undefined = undefined;
-  while (classDetails != undefined) {
-    ret = fn(classDetails);
+  while (details != undefined) {
+    ret = fn(details);
     if (ret !== undefined) return ret;
-    classDetails = classDetails.parent;
+    details = details.parent;
   }
   return ret;
 }
@@ -213,18 +212,18 @@ export function FieldCellByName(props: {
 
 export function PropertyCellByName(props: {
   propertyName: string;
-  instance: ProtoDataPayload;
-  instanceDetails: ProtoClassDetails;
+  instance?: ProtoDataPayload;
+  instanceDetails?: ProtoClassDetails;
   initVals?: GetInstanceValuesResult;
   class?: string;
   extraFilter?: (item: ProtoPropertyInfo) => boolean;
 }) {
-  const property = createMemo(() =>
-    // eslint-disable-next-line solid/reactivity
-    searchSelfAndParents(props.instanceDetails, (details) =>
-      findByName(details.properties, props.propertyName, props.extraFilter),
-    ),
-  );
+  const property = createMemo(() => {
+    const [name, extraFilter] = [props.propertyName, props.extraFilter];
+    return searchSelfAndParents(props.instanceDetails, (details) =>
+      findByName(details.properties, name, extraFilter),
+    );
+  });
   const propVals = createMemo(
     () =>
       props.initVals?.propertyValues as
@@ -243,7 +242,8 @@ export function PropertyCellByName(props: {
         <PropertyCell
           prop={property()!}
           selected={props.instance}
-          initVal={propVals()?.[property()!.getterId?.toString() ?? ""]}
+          initVal={propVals()?.[property()?.getterId?.toString() ?? ""]}
+          runGet
         />
       </Show>
     </div>
@@ -252,17 +252,17 @@ export function PropertyCellByName(props: {
 
 export function MethodCellByName(props: {
   methodName: string;
-  instance: ProtoDataPayload;
-  instanceDetails: ProtoClassDetails;
+  instance?: ProtoDataPayload;
+  instanceDetails?: ProtoClassDetails;
   class?: string;
   extraFilter?: (item: ProtoMethodInfo) => boolean;
 }) {
-  const method = createMemo(() =>
-    // eslint-disable-next-line solid/reactivity
-    searchSelfAndParents(props.instanceDetails, (details) =>
-      findByName(details.methods, props.methodName, props.extraFilter),
-    ),
-  );
+  const method = createMemo(() => {
+    const [name, extraFilter] = [props.methodName, props.extraFilter];
+    return searchSelfAndParents(props.instanceDetails, (details) =>
+      findByName(details.methods, name, extraFilter),
+    );
+  });
 
   return (
     <div class={props.class} style={{ display: "flex" }}>

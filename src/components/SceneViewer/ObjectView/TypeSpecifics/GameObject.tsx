@@ -155,8 +155,8 @@ export function GameObjectSection(
       <div class="flex flex-col gap-1 my-1 content-stretch">
         <PropertyCellByName
           propertyName="name"
-          instance={gameObjectInst()!}
-          instanceDetails={gameObjectDetails()!}
+          instance={gameObjectInst()}
+          instanceDetails={gameObjectDetails()}
           initVals={initVals}
         />
         <Show
@@ -164,31 +164,31 @@ export function GameObjectSection(
           fallback={
             <PropertyCellByName
               propertyName="transform"
-              instance={gameObjectInst()!}
-              instanceDetails={gameObjectDetails()!}
+              instance={gameObjectInst()}
+              instanceDetails={gameObjectDetails()}
               initVals={initVals}
             />
           }
         >
           <PropertyCellByName
             propertyName="gameObject"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
           />
         </Show>
         <span class="flex gap-2">
           <PropertyCellByName
             propertyName="position"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
           <PropertyCellByName
             propertyName="localPosition"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
@@ -196,15 +196,15 @@ export function GameObjectSection(
         <span class="flex gap-2">
           <PropertyCellByName
             propertyName="eulerAngles"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
           <PropertyCellByName
             propertyName="localEulerAngles"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
@@ -212,15 +212,15 @@ export function GameObjectSection(
         <span class="flex gap-2">
           <PropertyCellByName
             propertyName="localScale"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
           <PropertyCellByName
             propertyName="lossyScale"
-            instance={transformInst()!}
-            instanceDetails={transformDetails()!}
+            instance={transformInst()}
+            instanceDetails={transformDetails()}
             initVals={initVals}
             class="flex-1"
           />
@@ -261,8 +261,8 @@ export function GameObjectSection(
         </div>
         <MethodCellByName
           methodName="AddComponent"
-          instance={gameObjectInst()!}
-          instanceDetails={gameObjectDetails()!}
+          instance={gameObjectInst()}
+          instanceDetails={gameObjectDetails()}
           extraFilter={(info) => info.returnType?.Info?.$case == "genericInfo"}
         />
       </div>

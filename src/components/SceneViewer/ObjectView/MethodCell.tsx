@@ -26,7 +26,7 @@ import { SpanFn } from "./ObjectView";
 export function MethodCell(props: {
   method: PacketJSON<ProtoMethodInfo>;
   colSize?: number;
-  selected: ProtoDataPayload;
+  selected?: ProtoDataPayload;
   spanFn?: SpanFn;
   highlight: boolean;
 }) {
@@ -84,6 +84,7 @@ export function MethodCell(props: {
     useRequestAndResponsePacket<InvokeMethodResult>();
 
   function run() {
+    if (!props.selected) return;
     const genericsData = updateGenerics(true);
     const argsData = argInputs().map((str, index) =>
       stringToProtoData(str, latestArgs()[index].type!),

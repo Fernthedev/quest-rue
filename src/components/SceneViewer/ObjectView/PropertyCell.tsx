@@ -5,6 +5,7 @@ import {
   ProtoDataPayload,
   ProtoDataSegment,
   ProtoPropertyInfo,
+  ProtoTypeInfo,
 } from "../../../misc/proto/il2cpp";
 import { stringToProtoData } from "../../../misc/types/type_format";
 import { protoDataToString } from "../../../misc/types/type_format";
@@ -18,9 +19,10 @@ import { createUpdatingSignal } from "../../../misc/utils";
 export function PropertyCell(props: {
   prop: PacketJSON<ProtoPropertyInfo>;
   colSize?: number;
-  selected: ProtoDataPayload;
+  selected?: ProtoDataPayload;
   spanFn?: SpanFn;
   initVal?: ProtoDataSegment;
+  runGet?: boolean;
 }) {
   // update element span when colSize updates
   let element: HTMLDivElement | undefined;
@@ -32,16 +34,21 @@ export function PropertyCell(props: {
   const [value, valueLoading, requestGet] =
     useRequestAndResponsePacket<InvokeMethodResult>();
   function get() {
+    if (!props.prop.getterId || !props.selected) return;
     requestGet({
       $case: "invokeMethod",
       invokeMethod: {
         generics: [],
-        methodId: props.prop.getterId!,
+        methodId: props.prop.getterId,
         inst: props.selected,
         args: [],
       },
     });
   }
+
+  createEffect(() => {
+    if (!props.initVal && props.runGet && props.selected) get();
+  });
 
   // run setter on input and check if no error
   const [valueSetter, valueSetting, requestSet] =
@@ -50,12 +57,13 @@ export function PropertyCell(props: {
   // when the refresh button is pressed, even if it hasn't changed
   const [inputValue, setInputValue] = createSignal("");
   function set() {
-    const protoData = stringToProtoData(inputValue(), props.prop.type!);
+    if (!props.prop.type || !props.prop.setterId || !props.selected) return;
+    const protoData = stringToProtoData(inputValue(), props.prop.type);
     requestSet({
       $case: "invokeMethod",
       invokeMethod: {
         generics: [],
-        methodId: props.prop.setterId!,
+        methodId: props.prop.setterId,
         inst: props.selected,
         args: [protoData],
       },
@@ -66,7 +74,7 @@ export function PropertyCell(props: {
   );
 
   createEffect(() => {
-    if (!props.initVal) return;
+    if (!props.initVal || !props.prop.type) return;
 
     const data = ProtoDataPayload.fromPartial({
       typeInfo: props.prop.type,
@@ -114,7 +122,7 @@ export function PropertyCell(props: {
         onInput={setInputValue}
         onEnter={set}
         value={serverValue()}
-        type={props.prop.type!}
+        type={props.prop.type ?? ProtoTypeInfo.fromPartial({})}
       />
       <Show when={props.prop.getterId}>
         <ActionButton
