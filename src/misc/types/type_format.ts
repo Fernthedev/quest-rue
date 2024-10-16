@@ -9,8 +9,8 @@ import { stringToDataSegment } from "./type_serialization";
 import { protoDataToRealValue } from "./type_serialization";
 
 export function protoDataToString(data?: PacketJSON<ProtoDataPayload>) {
-  if (!data) return "";
-  const typeInfo = data.typeInfo!;
+  if (!data || !data.typeInfo) return "";
+  const typeInfo = data.typeInfo;
   const ret = protoDataToRealValue(typeInfo, data.data);
   console.log(ret);
   if (

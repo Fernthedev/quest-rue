@@ -368,7 +368,7 @@ namespace FieldUtils {
         if (!ClassUtils::GetIsStatic(field))
             inst = HandleType(object.typeinfo(), object.data());
 
-        return Get(field, inst, object.typeinfo().has_classinfo() | object.typeinfo().has_arrayinfo());
+        return Get(field, inst, object.typeinfo().has_classinfo() || object.typeinfo().has_arrayinfo());
     }
     ProtoDataPayload Get(FieldInfo const* field, void* object, bool isObject) {
         LOG_DEBUG("Getting field {}", field->name);

@@ -88,12 +88,8 @@ std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
     std::vector<FieldInfo const*> ret;
     ret.reserve(klass->field_count);
 
-    for (auto const& field : std::span(klass->fields, klass->field_count)) {
-        if (GetIsStatic(&field))
-            continue;
-
+    for (auto const& field : std::span(klass->fields, klass->field_count))
         ret.emplace_back(&field);
-    }
     return ret;
 }
 
@@ -113,11 +109,9 @@ std::vector<PropertyInfo const*> ClassUtils::GetProperties(Il2CppClass const* kl
 
     for (auto const& property : std::span(klass->properties, klass->property_count)) {
         bool normal = !property.get || property.get->parameters_count == 0;
-        normal = normal && !property.set || property.set->parameters_count == 1;
-        if (!normal)
-            continue;
-
-        ret.emplace_back(&property);
+        normal = normal && (!property.set || property.set->parameters_count == 1);
+        if (normal)
+            ret.emplace_back(&property);
     }
     return ret;
 }
@@ -127,9 +121,8 @@ std::vector<MethodInfo const*> ClassUtils::GetMethods(Il2CppClass const* klass) 
     ret.reserve(klass->method_count);
 
     for (auto const& method : std::span(klass->methods, klass->method_count)) {
-        if (!method)
-            continue;
-        ret.emplace_back(method);
+        if (method)
+            ret.emplace_back(method);
     }
     return ret;
 }
@@ -139,9 +132,8 @@ std::vector<Il2CppClass const*> ClassUtils::GetInterfaces(Il2CppClass const* kla
     ret.reserve(klass->interfaces_count);
 
     for (auto const& interface : std::span(klass->implementedInterfaces, klass->interfaces_count)) {
-        if (!interface)
-            continue;
-        ret.push_back(interface);
+        if (interface)
+            ret.push_back(interface);
     }
     return ret;
 }
@@ -318,6 +310,8 @@ ProtoStructInfo ClassUtils::GetStructInfo(Il2CppType const* type) {
 
     *structInfo.mutable_clazz() = GetClassInfo(type);
     for (auto const& field : GetFields(classoftype(type))) {
+        if (GetIsStatic(field))
+            continue;
         LOG_DEBUG("Field {} ({}) at offset {}", field->name, il2cpp_functions::type_get_name(field->type), field->offset - sizeof(Il2CppObject));
         structInfo.mutable_fieldoffsets()->insert({(int) (field->offset - sizeof(Il2CppObject)), FieldUtils::GetFieldInfo(field)});
     }
