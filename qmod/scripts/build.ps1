@@ -3,6 +3,9 @@ Param(
     [Switch] $clean,
 
     [Parameter(Mandatory=$false)]
+    [Switch] $gameAgnostic,
+
+    [Parameter(Mandatory=$false)]
     [Switch] $help
 )
 
@@ -18,14 +21,18 @@ if ($help -eq $true) {
 # if user specified clean, remove all build files
 if ($clean.IsPresent) {
     if (Test-Path -Path "build") {
-        remove-item build -R
+        Remove-Item "build" -R
     }
 }
 
-
 if (($clean.IsPresent) -or (-not (Test-Path -Path "build"))) {
-    new-item -Path build -ItemType Directory
+    New-Item -Path "build" -ItemType Directory
 }
 
-& cmake -G "Ninja" -DCMAKE_BUILD_TYPE="RelWithDebInfo" -B build -Wno-dev
+$def = "ON"
+if ($gameAgnostic.IsPresent) {
+    $def = "OFF"
+}
+
+& cmake -G "Ninja" -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DBEAT_SABER="$def" -B build -Wno-dev
 & cmake --build ./build

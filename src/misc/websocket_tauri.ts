@@ -8,13 +8,16 @@ export class TauriWebSocket extends QuestRUESocket {
     const url = `ws://${ip}:${port}`;
 
     const socket = await WebSocket.connect(url);
+    console.log("connection done");
     if (this.connectionId !== id) {
+      console.log("disconnecting due to connection id");
       socket.disconnect();
       return false;
     }
 
     this.socket = socket;
     this.socket.addListener((arg) => {
+      if (arg.type !== "Binary") console.log(arg, id, this.connectionId);
       if (this.connectionId !== id) return;
       switch (arg.type) {
         case undefined: // error: close without handshake

@@ -3,7 +3,13 @@ cmake_minimum_required(VERSION 3.21)
 # include some defines automatically made by qpm
 include(qpm_defines.cmake)
 
-add_compile_definitions(BEAT_SABER)
+# override android platform for MediaCodec features
+set(ANDROID_PLATFORM 28)
+
+if (BEAT_SABER)
+    message("Building for beat saber")
+    add_compile_definitions(BEAT_SABER=\"\")
+endif()
 
 # Enable link time optimization
 # In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
@@ -80,6 +86,8 @@ target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
 target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog)
+# video stuff
+target_link_libraries(${COMPILE_ID} PRIVATE mediandk -lOpenSLES GLESv3 -lEGL -landroid)
 
 # add extern stuff like libs and other includes
 include(extern.cmake)
@@ -103,3 +111,5 @@ add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E rename stripped_lib${COMPILE_ID}.so lib${COMPILE_ID}.so
     COMMENT "Rename the stripped lib to regular"
 )
+
+include(assets.cmake)

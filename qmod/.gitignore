@@ -48,7 +48,8 @@ Oo]bj/
 Oo]bjs/
 ndkpath.txt
 *.zip
-*.cmake
+extern.cmake
+qpm_defines.cmake
 
 extern/
 
