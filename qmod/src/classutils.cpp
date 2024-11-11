@@ -85,6 +85,9 @@ handle_enum:
 
 // field_get_value, field_set_value
 std::vector<FieldInfo const*> ClassUtils::GetFields(Il2CppClass const* klass) {
+    if (!klass->fields)
+        return {};
+
     std::vector<FieldInfo const*> ret;
     ret.reserve(klass->field_count);
 
@@ -104,6 +107,9 @@ std::pair<MethodInfo const*, MethodInfo const*> ClassUtils::GetPropMethods(Prope
 }
 
 std::vector<PropertyInfo const*> ClassUtils::GetProperties(Il2CppClass const* klass) {
+    if (!klass->properties)
+        return {};
+
     std::vector<PropertyInfo const*> ret;
     ret.reserve(klass->property_count);
 
@@ -117,6 +123,9 @@ std::vector<PropertyInfo const*> ClassUtils::GetProperties(Il2CppClass const* kl
 }
 
 std::vector<MethodInfo const*> ClassUtils::GetMethods(Il2CppClass const* klass) {
+    if (!klass->methods)
+        return {};
+
     std::vector<MethodInfo const*> ret;
     ret.reserve(klass->method_count);
 
@@ -128,6 +137,9 @@ std::vector<MethodInfo const*> ClassUtils::GetMethods(Il2CppClass const* klass) 
 }
 
 std::vector<Il2CppClass const*> ClassUtils::GetInterfaces(Il2CppClass const* klass) {
+    if (!klass->implementedInterfaces)
+        return {};
+
     std::vector<Il2CppClass const*> ret;
     ret.reserve(klass->interfaces_count);
 
