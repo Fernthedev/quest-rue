@@ -83,14 +83,15 @@ void DisableFPFC() {
 
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
 
-MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene,
+MAKE_HOOK_MATCH(
+    DefaultScenesTransitionsFromInit_TransitionToNextScene,
     &DefaultScenesTransitionsFromInit::TransitionToNextScene,
     void,
     DefaultScenesTransitionsFromInit* self,
     bool goStraightToMenu,
     bool goStraightToEditor,
-    bool goToRecordingToolScene) {
-
+    bool goToRecordingToolScene
+) {
     DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
 }
 
@@ -98,7 +99,8 @@ MAKE_HOOK_MATCH(DefaultScenesTransitionsFromInit_TransitionToNextScene,
 #include "System/Action_1.hpp"
 #include "Zenject/DiContainer.hpp"
 
-MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
+MAKE_HOOK_MATCH(
+    GameScenesManager_ScenesTransitionCoroutine,
     &GameScenesManager::ScenesTransitionCoroutine,
     System::Collections::IEnumerator*,
     GameScenesManager* self,
@@ -110,17 +112,20 @@ MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
     float_t minDuration,
     System::Action* afterMinDurationCallback,
     System::Action_1<Zenject::DiContainer*>* extraBindingsCallback,
-    System::Action_1<Zenject::DiContainer*>* finishCallback) {
-
+    System::Action_1<Zenject::DiContainer*>* finishCallback
+) {
     DisableFPFC();
 
-    finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(finishCallback,
+    finishCallback = (System::Action_1<Zenject::DiContainer*>*) System::MulticastDelegate::Combine(
+        finishCallback,
         custom_types::MakeDelegate<System::Action_1<Zenject::DiContainer*>*>((std::function<void(Zenject::DiContainer*)>) [](Zenject::DiContainer*) {
             if (fpfcEnabled)
                 EnableFPFC();
-        }));
+        })
+    );
 
-    return GameScenesManager_ScenesTransitionCoroutine(self,
+    return GameScenesManager_ScenesTransitionCoroutine(
+        self,
         newScenesTransitionSetupData,
         scenesToPresent,
         presentType,
@@ -129,7 +134,8 @@ MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
         minDuration,
         afterMinDurationCallback,
         extraBindingsCallback,
-        finishCallback);
+        finishCallback
+    );
 }
 
 #include "VRUIControls/ButtonState.hpp"
@@ -139,12 +145,13 @@ MAKE_HOOK_MATCH(GameScenesManager_ScenesTransitionCoroutine,
 
 static bool clickedLastFrame = false;
 
-MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
+MAKE_HOOK_MATCH(
+    VRInputModule_GetMousePointerEventData,
     &VRUIControls::VRInputModule::GetMousePointerEventData,
     VRUIControls::MouseState*,
     VRUIControls::VRInputModule* self,
-    int id) {
-
+    int id
+) {
     using EventData = UnityEngine::EventSystems::PointerEventData;
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
@@ -168,11 +175,12 @@ MAKE_HOOK_MATCH(VRInputModule_GetMousePointerEventData,
 #include "GlobalNamespace/VRPlatformUtils.hpp"
 #include "UnityEngine/Input.hpp"
 
-MAKE_HOOK_MATCH(VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation,
+MAKE_HOOK_MATCH(
+    VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation,
     &VRPlatformUtils::GetAnyJoystickMaxAxisDefaultImplementation,
     Vector2,
-    IVRPlatformHelper* self) {
-
+    IVRPlatformHelper* self
+) {
     auto ret = VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation(self);
     if (fpfcEnabled)
         return {0, UnityEngine::Input::GetAxis("Mouse ScrollWheel")};
@@ -199,14 +207,15 @@ MAKE_HOOK_MATCH(UIKeyboardManager_CloseKeyboard, &UIKeyboardManager::CloseKeyboa
 #include "UnityEngine/SpatialTracking/PoseDataFlags.hpp"
 #include "UnityEngine/SpatialTracking/TrackedPoseDriver.hpp"
 
-MAKE_HOOK_MATCH(TrackedPoseDriver_GetPoseData,
+MAKE_HOOK_MATCH(
+    TrackedPoseDriver_GetPoseData,
     &SpatialTracking::TrackedPoseDriver::GetPoseData,
     SpatialTracking::PoseDataFlags,
     SpatialTracking::TrackedPoseDriver* self,
     SpatialTracking::TrackedPoseDriver::DeviceType device,
     SpatialTracking::TrackedPoseDriver::TrackedPose poseSource,
-    ByRef<Pose> resultPose) {
-
+    ByRef<Pose> resultPose
+) {
     if (fpfcEnabled) {
         resultPose = Pose(fpfcPos, Quaternion::Euler(fpfcRot));
         return (int) SpatialTracking::PoseDataFlags::Position | (int) SpatialTracking::PoseDataFlags::Rotation;

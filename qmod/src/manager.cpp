@@ -358,7 +358,8 @@ ProtoClassDetails getClassDetails_internal(Il2CppClass* clazz) {
     // method to improve stack allocations
     while (currentClass != nullptr) {
         LOG_INFO(
-            "Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass));
+            "Finding class details for {}::{}", il2cpp_functions::class_get_namespace(currentClass), il2cpp_functions::class_get_name(currentClass)
+        );
         *currentClassProto->mutable_clazz() = GetClassInfo(typeofclass(currentClass));
 
         for (auto f : GetFields(currentClass)) {
