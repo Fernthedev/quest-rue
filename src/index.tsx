@@ -1,4 +1,3 @@
-/* @refresh reload */
 import { render } from "solid-js/web";
 
 import "@thisbeyond/solid-select/style.css";

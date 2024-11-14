@@ -40,7 +40,7 @@ if(EXISTS ${ASSETS_DIRECTORY})
 
         add_custom_command(
             OUTPUT ${PREPENDED_ASSETS_DIR}/${ASSET}
-            COMMAND ${CMAKE_COMMAND} -E cat ${ASSETS_DIRECTORY}/${ASSET} >> ${PREPENDED_ASSETS_DIR}/${ASSET}
+            COMMAND ${CMAKE_COMMAND} -E cat ${ASSETS_DIRECTORY}/${ASSET} > ${PREPENDED_ASSETS_DIR}/${ASSET}
             COMMAND ${CMAKE_COMMAND} -E echo_append " " >> ${PREPENDED_ASSETS_DIR}/${ASSET}
             DEPENDS ${ASSETS_DIRECTORY}/${ASSET}
         )

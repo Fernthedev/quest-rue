@@ -1,7 +1,18 @@
-#ifdef BEAT_SABER
 #include "CameraController.hpp"
 
+#include <EGL/eglext.h>
+#include <GLES/gl.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl32.h>
+#include <GLES3/gl3ext.h>
+#include <android/native_window.h>
+
+#include <chrono>
+#include <thread>
+
+#include "assets.hpp"
 #include "main.hpp"
+#include "media/NdkMediaFormat.h"
 #include "sombrero/shared/FastVector2.hpp"
 #include "sombrero/shared/FastVector3.hpp"
 
@@ -10,15 +21,10 @@ DEFINE_TYPE(QRUE, CameraController);
 DEFINE_TYPE(QRUE, CameraStreamer);
 #endif
 
-bool fpfcEnabled = true;
-#ifdef UNITY_2021
-Sombrero::FastVector3 fpfcPos;
-Sombrero::FastVector3 fpfcRot;
-#endif
+using namespace QRUE;
+using namespace UnityEngine;
 
-bool click = false;
-bool clickOnce = false;
-HMUI::UIKeyboard* keyboardOpen = nullptr;
+bool fpfcEnabled = true;
 
 float rotateSensitivity = 1;
 float moveSensitivity = 1;
@@ -26,12 +32,26 @@ float clickTime = 0.2;
 float movementThreshold = 1;
 float backspaceTime = 0.5;
 
+#ifdef BEAT_SABER
+bool click = false;
+bool clickOnce = false;
+HMUI::UIKeyboard* keyboardOpen = nullptr;
+
+#include "GlobalNamespace/FirstPersonFlyingController.hpp"
+#include "GlobalNamespace/PauseController.hpp"
+#include "GlobalNamespace/PauseMenuManager.hpp"
+#include "GlobalNamespace/UIKeyboardManager.hpp"
+#include "GlobalNamespace/VRCenterAdjust.hpp"
 #include "UnityEngine/EventSystems/PointerEventData.hpp"
 #include "VRUIControls/VRInputModule.hpp"
+#include "VRUIControls/VRLaserPointer.hpp"
+#include "VRUIControls/VRPointer.hpp"
+
+using namespace GlobalNamespace;
 
 SafePtrUnity<VRUIControls::VRInputModule> latestInputModule;
 
-UnityEngine::GameObject* GetHovered() {
+GameObject* GetHovered() {
     if (!latestInputModule)
         return nullptr;
     auto eventData = latestInputModule->GetLastPointerEventData(-1);
@@ -40,63 +60,35 @@ UnityEngine::GameObject* GetHovered() {
     return nullptr;
 }
 
-UnityEngine::GameObject* GetPauseMenu() {
-    if (auto ret = UnityEngine::GameObject::Find("PauseMenu"))
+GameObject* GetPauseMenu() {
+    if (auto ret = GameObject::Find("PauseMenu"))
         return ret;
-    else if (auto ret = UnityEngine::GameObject::Find("TutorialPauseMenu"))
+    else if (auto ret = GameObject::Find("TutorialPauseMenu"))
         return ret;
-    else if (auto ret = UnityEngine::GameObject::Find("MultiplayerLocalActivePlayerInGameMenuViewController"))
+    else if (auto ret = GameObject::Find("MultiplayerLocalActivePlayerInGameMenuViewController"))
         return ret;
     else
         return nullptr;
 }
-
-using namespace QRUE;
-using namespace UnityEngine;
-using namespace GlobalNamespace;
-
-#include "GlobalNamespace/FirstPersonFlyingController.hpp"
-#include "GlobalNamespace/VRCenterAdjust.hpp"
-#include "VRUIControls/VRLaserPointer.hpp"
-#include "VRUIControls/VRPointer.hpp"
+#endif
 
 void CameraController::OnEnable() {
     fpfcEnabled = true;
     LOG_INFO("CameraController enable");
 
-    childTransform = get_transform();
-#ifdef UNITY_2021
-    fpfcPos = {0, 1.5, 0};
-    fpfcRot = {};
-#else
-    parentTransform = childTransform->GetParent();
-
-    if (!parentTransform) {
-        set_enabled(false);
-        return;
-    }
-
-    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
-    disablePositionalTracking(true);
-
-    parentTransform->set_position({0, 1.5, 0});
-    parentTransform->set_eulerAngles({0, 0, 0});
-    childTransform->set_localPosition({0, 0, 0});
-    childTransform->set_localEulerAngles({0, 0, 0});
-#endif
-
+#ifdef BEAT_SABER
 #ifdef UNITY_2021
     // in level
     if (auto pauseMenu = GetPauseMenu()) {
         // can't just search for "MenuControllers" because there are two, we need
         // the one that's a child of the pause menu
-        auto transform = pauseMenu->get_transform()->Find("MenuControllers");
+        auto transform = pauseMenu->transform->Find("MenuControllers");
         controller0 = transform->Find("ControllerLeft")->GetComponent<VRController*>();
         controller1 = transform->Find("ControllerRight")->GetComponent<VRController*>();
         // in main menu
     } else if (auto objectsSource = Object::FindObjectOfType<FirstPersonFlyingController*>()) {
         objectsSource->_centerAdjust->ResetRoom();
-        objectsSource->_centerAdjust->set_enabled(false);
+        objectsSource->_centerAdjust->enabled = false;
         for (auto gameObject : objectsSource->_controllerModels) {
             if (gameObject)
                 gameObject->SetActive(false);
@@ -146,24 +138,14 @@ void CameraController::OnEnable() {
         if (auto pointer = controller1->get_transform()->Find("MenuHandle"))
             pointer->get_gameObject()->SetActive(false);
     }
+#endif
 }
 
 void CameraController::OnDisable() {
     fpfcEnabled = false;
     LOG_INFO("CameraController disable");
 
-#ifndef UNITY_2021
-    if (!parentTransform)
-        return;
-
-    // reverse of enable
-    static auto disablePositionalTracking = il2cpp_utils::resolve_icall<void, bool>("UnityEngine.XR.InputTracking::set_disablePositionalTracking");
-    disablePositionalTracking(false);
-
-    parentTransform->set_position({0, 0, 0});
-    parentTransform->set_eulerAngles({0, 0, 0});
-#endif
-
+#ifdef BEAT_SABER
 #ifdef UNITY_2021
     if (auto pauseMenu = GetPauseMenu()) {
         LOG_DEBUG("Using controllers from pause menu");
@@ -221,37 +203,14 @@ void CameraController::OnDisable() {
             pointer->get_gameObject()->SetActive(true);
     } else
         LOG_INFO("Failed to find menu controllers for FPFC");
+#endif
 }
-
-#include "GlobalNamespace/DepthTextureController.hpp"
-#include "GlobalNamespace/MainCamera.hpp"
-#include "GlobalNamespace/MainCameraCullingMask.hpp"
-#include "GlobalNamespace/PauseController.hpp"
-#include "GlobalNamespace/PauseMenuManager.hpp"
-#include "GlobalNamespace/UIKeyboardManager.hpp"
 #include "System/Action.hpp"
 #include "System/Action_1.hpp"
-#include "UnityEngine/Camera.hpp"
-#include "UnityEngine/CameraType.hpp"
-#include "UnityEngine/FilterMode.hpp"
 #include "UnityEngine/Input.hpp"
 #include "UnityEngine/KeyCode.hpp"
-#include "UnityEngine/RenderTexture.hpp"
-#include "UnityEngine/RenderTextureFormat.hpp"
-#include "UnityEngine/RenderTextureReadWrite.hpp"
-#include "UnityEngine/StereoTargetEyeMask.hpp"
-#include "UnityEngine/TextureWrapMode.hpp"
 #include "UnityEngine/Time.hpp"
 #include "UnityEngine/Touch.hpp"
-
-RenderTexture* CreateCameraTexture(int w, int h) {
-    auto texture = RenderTexture::New_ctor(w, h, 24, RenderTextureFormat::Default, RenderTextureReadWrite::Default);
-    Object::DontDestroyOnLoad(texture);
-    texture->wrapMode = TextureWrapMode::Clamp;
-    texture->filterMode = FilterMode::Bilinear;
-    texture->Create();
-    return texture;
-}
 
 void CameraController::Update() {
     if (Input::GetKeyDown(KeyCode::X)) {
@@ -262,65 +221,8 @@ void CameraController::Update() {
         return;
     }
 
-#ifdef UNITY_2021
-    if (Input::GetKeyDown(KeyCode::V)) {
-        if (recording) {
-            LOG_INFO("Disabling recording");
-
-            Object::DestroyImmediate(customCamera->gameObject);
-            customCamera = nullptr;
-            recording = false;
-        } else {
-            LOG_INFO("Enabling recording");
-            auto mainCamera = GetComponent<Camera*>();
-            if (auto comp = mainCamera->GetComponent<DepthTextureController*>())
-                Object::DestroyImmediate(comp);
-            customCamera = Object::Instantiate(mainCamera);
-            customCamera->gameObject->active = false;
-            customCamera->enabled = true;
-
-            while (customCamera->transform->childCount > 0)
-                Object::DestroyImmediate(customCamera->transform->GetChild(0)->gameObject);
-
-            if (auto comp = customCamera->GetComponent<MainCameraCullingMask*>())
-                Object::DestroyImmediate(comp);
-            if (auto comp = customCamera->GetComponent<MainCamera*>())
-                Object::DestroyImmediate(comp);
-            if (auto comp = customCamera->GetComponent<SpatialTracking::TrackedPoseDriver*>())
-                Object::DestroyImmediate(comp);
-            if (auto comp = customCamera->GetComponent("CameraController"))
-                Object::DestroyImmediate(comp);
-
-            customCamera->clearFlags = mainCamera->clearFlags;
-            customCamera->nearClipPlane = mainCamera->nearClipPlane;
-            customCamera->farClipPlane = mainCamera->farClipPlane;
-            customCamera->backgroundColor = mainCamera->backgroundColor;
-            customCamera->hideFlags = mainCamera->hideFlags;
-            customCamera->depthTextureMode = mainCamera->depthTextureMode;
-            customCamera->cullingMask = mainCamera->cullingMask;
-            // Makes the camera render after the main
-            customCamera->depth = mainCamera->depth + 1;
-
-            customCamera->stereoTargetEye = StereoTargetEyeMask::None;
-
-            int w = 1080;
-            int h = 720;
-            auto tex = CreateCameraTexture(w, h);
-            customCamera->targetTexture = tex;
-            auto streamer = customCamera->gameObject->AddComponent<CameraStreamer*>();
-            streamer->texture = (uintptr_t) tex->GetNativeTexturePtr().m_value.convert();
-            streamer->onOutputFrame = [](uint8_t* data, size_t length) {
-                // LOG_DEBUG("output frame callback!");
-            };
-            streamer->Init(w, h, 1000000);
-            customCamera->gameObject->active = true;
-
-            recording = true;
-        }
-    }
-#endif
-
     float time = UnityEngine::Time::get_time();
+    auto transform = get_transform();
 
     if (Input::get_touchCount() > 0) {
         auto touch = Input::GetTouch(0);
@@ -352,17 +254,17 @@ void CameraController::Update() {
     if (!keyboardOpen) {
         Sombrero::FastVector3 movement = {0};
         if (Input::GetKey(KeyCode::W))
-            movement = movement + childTransform->get_forward();
+            movement = movement + transform->get_forward();
         if (Input::GetKey(KeyCode::S))
-            movement = movement - childTransform->get_forward();
+            movement = movement - transform->get_forward();
         if (Input::GetKey(KeyCode::D))
-            movement = movement + childTransform->get_right();
+            movement = movement + transform->get_right();
         if (Input::GetKey(KeyCode::A))
-            movement = movement - childTransform->get_right();
+            movement = movement - transform->get_right();
         if (Input::GetKey(KeyCode::Space))
-            movement = movement + childTransform->get_up();
+            movement = movement + transform->get_up();
         if (Input::GetKey(KeyCode::LeftControl) || Input::GetKey(KeyCode::RightControl))
-            movement = movement - childTransform->get_up();
+            movement = movement - transform->get_up();
         if (movement != Sombrero::FastVector3::zero())
             Move(movement);
 
@@ -407,45 +309,23 @@ void CameraController::Update() {
     }
 
     if (controller0 && controller1) {
-        controller0->get_transform()->SetPositionAndRotation(childTransform->get_position(), childTransform->get_rotation());
-        controller1->get_transform()->SetPositionAndRotation(childTransform->get_position(), childTransform->get_rotation());
+        controller0->get_transform()->SetPositionAndRotation(transform->get_position(), transform->get_rotation());
+        controller1->get_transform()->SetPositionAndRotation(transform->get_position(), transform->get_rotation());
     }
 }
 
 void CameraController::Rotate(Sombrero::FastVector2 delta) {
     delta = delta * rotateSensitivity * 20;
     lastMovement += delta.get_magnitude();
-#ifdef UNITY_2021
-    fpfcRot += Sombrero::FastVector3{-delta.y, delta.x, 0};
-#else
-    Sombrero::FastVector3 prev = parentTransform->get_eulerAngles();
-    parentTransform->set_eulerAngles(prev + Sombrero::FastVector3{-delta.y, delta.x, 0});
-#endif
+    Sombrero::FastVector3 prev = get_transform()->get_eulerAngles();
+    get_transform()->set_eulerAngles(prev + Sombrero::FastVector3{-delta.y, delta.x, 0});
 }
 
 void CameraController::Move(Sombrero::FastVector3 delta) {
     delta = delta * moveSensitivity / 50;
-#ifdef UNITY_2021
-    fpfcPos += delta;
-#else
-    Sombrero::FastVector3 prev = parentTransform->get_position();
-    parentTransform->set_position(prev + delta);
-#endif
+    Sombrero::FastVector3 prev = get_transform()->get_position();
+    get_transform()->set_position(prev + delta);
 }
-
-// should be easily ported to 2019 as well
-#ifdef UNITY_2021
-#include <EGL/eglext.h>
-#include <GLES/gl.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl32.h>
-#include <GLES3/gl3ext.h>
-#include <android/native_window.h>
-
-#include "assets.hpp"
-#include "media/NdkMediaFormat.h"
-
-static FILE* f;
 
 // clang-format off
 // if you change these, it will probably break
@@ -735,6 +615,11 @@ namespace RenderThread {
         LOG_INFO("Initializing EGL for streamer {}", id);
 
         auto streamer = CameraStreamer::GetById(id);
+        if (!streamer->initializedEgl || streamer->stopping) {
+            EGLState::Load();
+            return;
+        }
+
         streamer->surface = eglCreateWindowSurface(display, config, streamer->window, 0);
         EGL_BOOL_CHECK(eglMakeCurrent(display, streamer->surface, streamer->surface, context), "make current");
 
@@ -755,6 +640,11 @@ namespace RenderThread {
         EGLState::Save();
 
         auto streamer = CameraStreamer::GetById(id);
+        if (!streamer->initializedEgl || streamer->stopping) {
+            EGLState::Load();
+            return;
+        }
+
         EGL_BOOL_CHECK(eglMakeCurrent(display, streamer->surface, streamer->surface, context), "make current");
 
 #ifdef NO_GAMMA_SHADER
@@ -794,21 +684,24 @@ namespace RenderThread {
         EGLState::Save();
 
         auto streamer = CameraStreamer::GetById(id);
-        eglDestroySurface(display, streamer->surface);
+        if (streamer->surface)
+            eglDestroySurface(display, streamer->surface);
         streamer->surface = nullptr;
 
 #ifdef NO_GAMMA_SHADER
         GLuint fboId = streamer->buffer;
-        glDeleteFramebuffers(1, &fboId);
+        if (fboId >= 0)
+            glDeleteFramebuffers(1, &fboId);
 #else
         GLuint vboId = streamer->buffer;
-        glDeleteVertexArrays(1, &vboId);
+        if (vboId >= 0)
+            glDeleteVertexArrays(1, &vboId);
 #endif
         streamer->buffer = -1;
 
-        streamer->FinishStop();
-
         EGLState::Load();
+
+        streamer->FinishStop();
     }
 }
 
@@ -827,7 +720,6 @@ void IssuePluginEvent(void (*function)(int), int id) {
 //         uint8_t* data = AMediaCodec_getOutputBuffer(codec, index, &outSize);
 //         streamer->framesProcessing--;
 //         streamer->onOutputFrame(data, bufferInfo->size);
-//         fwrite(data, sizeof(uint8_t), bufferInfo->size, f);
 //         AMediaCodec_releaseOutputBuffer(codec, index, false);
 //     }
 
@@ -846,13 +738,21 @@ void IssuePluginEvent(void (*function)(int), int id) {
 // }
 
 void CameraStreamer::Init(int width, int height, int bitrate) {
+    // this threading stuff is probably still unsafe because threads are terrible
+    if (stopping) {
+        LOG_DEBUG("Streamer is stopping, should restart");
+        shouldRestart = true;
+        restartWidth = width;
+        restartHeight = height;
+        restartBitrate = bitrate;
+        return;
+    }
+    shouldRestart = false;
+
     if (initializedEncoder)
         return;
 
     std::unique_lock lock(idMapMutex);
-    if (id >= 0)
-        idMap.erase(id);
-
     id = maxId++;
     idMap[id] = this;
     lock.unlock();
@@ -916,31 +816,42 @@ void CameraStreamer::Init(int width, int height, int bitrate) {
         return;
     }
 
-    f = fopen("/sdcard/test.h264", "wb");
-    if (!f)
-        logger.error("Could not open /sdcard/test.h264");
-
     framesProcessing = 0;
     initializedEncoder = true;
 
-    stopThread = false;
+    stopping = false;
     threadInst = std::thread(&CameraStreamer::EncodingThread, this);
 
     LOG_INFO("Finished initializing encoder");
 }
 
 void CameraStreamer::Stop() {
+    if (stopping)
+        return;
+
     LOG_INFO("Stopping streamer {}", id);
 
+    stopping = true;
+
+    bool waitForPlugin = initializedEgl;
     if (initializedEgl)
         IssuePluginEvent(RenderThread::StopId, id);
-    initializedEgl = false;
-    stopThread = true;
-    threadInst.join();
-    // wait until the event happens before we do the rest
+
+    if (threadInst.joinable())
+        threadInst.join();
+
+    // if called, wait until the event happens before we do the rest
+    if (!waitForPlugin)
+        FinishStop();
 }
 
 void CameraStreamer::FinishStop() {
+    initializedEgl = false;
+
+    // make sure encoding thread has stopped
+    while (threadRunning)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
     if (initializedEncoder) {
         ANativeWindow_release(window);
         AMediaCodec_stop(encoder);
@@ -949,18 +860,19 @@ void CameraStreamer::FinishStop() {
         initializedEncoder = false;
     }
 
-    std::unique_lock lock(idMapMutex);
-    LOG_INFO("Finished stopping streamer {}", id);
+    LOG_INFO("Finished stopping streamer {} {}", id, shouldRestart);
 
+    std::unique_lock lock(idMapMutex);
     idMap.erase(id);
     id = -1;
-
-    fclose(f);
-    f = nullptr;
+    stopping = false;
 }
 
 void CameraStreamer::Update() {
-    if (!initializedEncoder)
+    if (!stopping && shouldRestart)
+        Init(restartWidth, restartHeight, restartBitrate);
+
+    if (!initializedEncoder || stopping)
         return;
 
     if (!initializedEgl) {
@@ -984,10 +896,11 @@ CameraStreamer* CameraStreamer::GetById(int id) {
 
 void CameraStreamer::EncodingThread() {
     AMediaCodecBufferInfo bufferInfo;
+    threadRunning = true;
 
     LOG_DEBUG("starting thread");
 
-    while (!stopThread) {
+    while (!stopping) {
         ssize_t index = AMediaCodec_dequeueOutputBuffer(encoder, &bufferInfo, 10000);
 
         if (index >= 0) {
@@ -996,6 +909,8 @@ void CameraStreamer::EncodingThread() {
             uint8_t* data = AMediaCodec_getOutputBuffer(encoder, index, &outSize);
 
             // note: make sure to write the CODEC_CONFIG to have a valid raw .h264 file
+            if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG)
+                LOG_DEBUG("codec_config packet {}", bufferInfo.size);
 
             // not sure what outSize represents, but it seems wrong
             if (bufferInfo.size != 0) {
@@ -1003,18 +918,15 @@ void CameraStreamer::EncodingThread() {
 
                 // bufferInfo.offset seems to always be 0 for encoding
                 onOutputFrame(data, bufferInfo.size);
-                fwrite(data, sizeof(uint8_t), bufferInfo.size, f);
             }
 
             AMediaCodec_releaseOutputBuffer(encoder, index, false);
 
-            if ((bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) != 0)
+            if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM)
                 break;
         }
     }
 
-    LOG_DEBUG("stopping thread");
+    threadRunning = false;
+    LOG_DEBUG("stopped thread");
 }
-#endif
-
-#endif

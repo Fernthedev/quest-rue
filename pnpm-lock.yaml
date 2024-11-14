@@ -59,7 +59,7 @@ importers:
         version: 20.11.20
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.1.0
-        version: 7.1.0(@typescript-eslint/parser@7.1.0)(eslint@8.57.0)(typescript@5.3.3)
+        version: 7.1.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint@8.57.0)(typescript@5.3.3)
       '@typescript-eslint/parser':
         specifier: ^7.1.0
         version: 7.1.0(eslint@8.57.0)(typescript@5.3.3)
@@ -92,7 +92,7 @@ importers:
         version: 3.2.5
       solid-devtools:
         specifier: ^0.29.3
-        version: 0.29.3(solid-js@1.8.15)(vite@5.2.7)
+        version: 0.29.3(solid-js@1.8.15)(vite@5.2.7(@types/node@20.11.20))
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.1
@@ -104,7 +104,7 @@ importers:
         version: 5.2.7(@types/node@20.11.20)
       vite-plugin-solid:
         specifier: ^2.10.1
-        version: 2.10.1(solid-js@1.8.15)(vite@5.2.7)
+        version: 2.10.1(solid-js@1.8.15)(vite@5.2.7(@types/node@20.11.20))
 
 packages:
 
@@ -2355,7 +2355,6 @@ packages:
 
   tauri-plugin-websocket-api@https://codeload.github.com/tauri-apps/tauri-plugin-websocket/tar.gz/c7ac2dfb949db67397931878aeda034e3921c514:
     resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-websocket/tar.gz/c7ac2dfb949db67397931878aeda034e3921c514}
-    name: tauri-plugin-websocket-api
     version: 0.0.0
 
   text-table@0.2.0:
@@ -3128,7 +3127,7 @@ snapshots:
 
   '@types/semver@7.5.8': {}
 
-  '@typescript-eslint/eslint-plugin@7.1.0(@typescript-eslint/parser@7.1.0)(eslint@8.57.0)(typescript@5.3.3)':
+  '@typescript-eslint/eslint-plugin@7.1.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint@8.57.0)(typescript@5.3.3)':
     dependencies:
       '@eslint-community/regexpp': 4.10.0
       '@typescript-eslint/parser': 7.1.0(eslint@8.57.0)(typescript@5.3.3)
@@ -3143,6 +3142,7 @@ snapshots:
       natural-compare: 1.4.0
       semver: 7.6.0
       ts-api-utils: 1.2.1(typescript@5.3.3)
+    optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
@@ -3155,6 +3155,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 7.1.0
       debug: 4.3.4
       eslint: 8.57.0
+    optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
@@ -3176,6 +3177,7 @@ snapshots:
       debug: 4.3.4
       eslint: 8.57.0
       ts-api-utils: 1.2.1(typescript@5.3.3)
+    optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
@@ -3194,6 +3196,7 @@ snapshots:
       minimatch: 9.0.3
       semver: 7.6.0
       ts-api-utils: 1.2.1(typescript@5.3.3)
+    optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
@@ -3208,6 +3211,7 @@ snapshots:
       minimatch: 9.0.3
       semver: 7.6.0
       ts-api-utils: 1.2.1(typescript@5.3.3)
+    optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
@@ -4491,8 +4495,9 @@ snapshots:
   postcss-load-config@4.0.2(postcss@8.4.35):
     dependencies:
       lilconfig: 3.1.1
-      postcss: 8.4.35
       yaml: 2.4.0
+    optionalDependencies:
+      postcss: 8.4.35
 
   postcss-merge-longhand@6.0.5(postcss@8.4.35):
     dependencies:
@@ -4788,7 +4793,7 @@ snapshots:
 
   slash@3.0.0: {}
 
-  solid-devtools@0.29.3(solid-js@1.8.15)(vite@5.2.7):
+  solid-devtools@0.29.3(solid-js@1.8.15)(vite@5.2.7(@types/node@20.11.20)):
     dependencies:
       '@babel/core': 7.23.9
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.23.9)
@@ -4796,6 +4801,7 @@ snapshots:
       '@solid-devtools/debugger': 0.23.3(solid-js@1.8.15)
       '@solid-devtools/shared': 0.13.1(solid-js@1.8.15)
       solid-js: 1.8.15
+    optionalDependencies:
       vite: 5.2.7(@types/node@20.11.20)
     transitivePeerDependencies:
       - supports-color
@@ -5051,7 +5057,7 @@ snapshots:
 
   validate-html-nesting@1.2.2: {}
 
-  vite-plugin-solid@2.10.1(solid-js@1.8.15)(vite@5.2.7):
+  vite-plugin-solid@2.10.1(solid-js@1.8.15)(vite@5.2.7(@types/node@20.11.20)):
     dependencies:
       '@babel/core': 7.23.9
       '@types/babel__core': 7.20.5
@@ -5060,21 +5066,21 @@ snapshots:
       solid-js: 1.8.15
       solid-refresh: 0.6.3(solid-js@1.8.15)
       vite: 5.2.7(@types/node@20.11.20)
-      vitefu: 0.2.5(vite@5.2.7)
+      vitefu: 0.2.5(vite@5.2.7(@types/node@20.11.20))
     transitivePeerDependencies:
       - supports-color
 
   vite@5.2.7(@types/node@20.11.20):
     dependencies:
-      '@types/node': 20.11.20
       esbuild: 0.20.2
       postcss: 8.4.38
       rollup: 4.13.2
     optionalDependencies:
+      '@types/node': 20.11.20
       fsevents: 2.3.3
 
-  vitefu@0.2.5(vite@5.2.7):
-    dependencies:
+  vitefu@0.2.5(vite@5.2.7(@types/node@20.11.20)):
+    optionalDependencies:
       vite: 5.2.7(@types/node@20.11.20)
 
   which-boxed-primitive@1.0.2:

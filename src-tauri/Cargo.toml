@@ -14,13 +14,14 @@ tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
 tauri-plugin-websocket = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio = { version = "1", features = ["full"] }
 tokio-util = { version = "0.7", features = ["full"] }
 bytes = "*"
 futures = "*"
 anyhow = "1.0"
 serde_json = "1.0"
-tauri = { version = "1.6", features = [ "window-all", "shell-execute", "shell-open", "shell-open-api", "devtools"] }
+tauri = { version = "1.6", features = [ "fs-all", "window-all", "shell-execute", "shell-open", "shell-open-api", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 env_logger = "0.10"
