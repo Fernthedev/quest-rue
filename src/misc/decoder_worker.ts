@@ -4,6 +4,8 @@ let spsPacket: Uint8Array | undefined;
 let canvasContext: OffscreenCanvasRenderingContext2D | undefined;
 let decoder: VideoDecoder | undefined;
 
+const isChrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+
 const config: VideoDecoderConfig = {
   codec: "avc1.42000a",
   codedWidth: 1080,
@@ -44,7 +46,8 @@ self.onmessage = (event: MessageEvent) => {
       let array = data.val;
       if (array[0] !== 0 || array[1] !== 0 || array[2] !== 0 || array[3] !== 1)
         console.warn("invalid header", array);
-      if (array[4] === 103) {
+      // firefox takes sps as a separate packet, chrome wants it stuck together with a keyframe
+      if (isChrome && array[4] === 103) {
         spsPacket = new Uint8Array(array);
         return;
       }
