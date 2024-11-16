@@ -6,32 +6,28 @@ import WebSocketRS from "tauri-plugin-websocket-api";
 import { isTauri } from "./misc/dev";
 
 // todo: refactor websocket.ts
-function connect(url: string, worker: Worker) {
+async function connect(url: string, worker: Worker) {
   if (isTauri()) {
-    WebSocketRS.connect(url)
-      .then((connected) => {
-        console.log("socket connected");
-        connected.addListener((arg) => {
-          switch (arg.type) {
-            case undefined: // error: close without handshake
-            case "Close": {
-              console.log("socket closed");
-              break;
-            }
-            case "Binary": {
-              worker.postMessage({
-                type: "data",
-                val: new Uint8Array(arg.data),
-              });
-              break;
-            }
-          }
-        });
-        connected.send("start");
-      })
-      .catch((err) => {
-        console.log("failure connecting socket", err);
-      });
+    const socket = await WebSocketRS.connect(url);
+    console.log("socket connected");
+    socket.addListener((arg) => {
+      switch (arg.type) {
+        case undefined: // error: close without handshake
+        case "Close": {
+          console.log("socket closed");
+          break;
+        }
+        case "Binary": {
+          worker.postMessage({
+            type: "data",
+            val: new Uint8Array(arg.data),
+          });
+          break;
+        }
+      }
+    });
+    socket.send("start");
+    return socket;
   } else {
     const socket = new WebSocket(url);
     socket.binaryType = "arraybuffer";
@@ -45,7 +41,15 @@ function connect(url: string, worker: Worker) {
         val: new Uint8Array(event.data),
       });
     };
+    return socket;
   }
+}
+
+function format(n: number, len: number) {
+  n = Math.min(Math.round(n), Math.pow(10, len) - 1);
+  const s = n.toString();
+  if (s.startsWith("-")) return "-" + s.slice(1).padStart(len - 1, "0");
+  return s.padStart(len, "0");
 }
 
 function Stream() {
@@ -54,34 +58,48 @@ function Stream() {
   );
 
   let canvas: HTMLCanvasElement | undefined;
+  let socket: WebSocketRS | WebSocket | undefined;
 
   createEffect(() => {
     const offscreen = canvas!.transferControlToOffscreen();
     decoder.postMessage({ type: "context", val: offscreen }, [offscreen]);
   });
 
-  connect("ws://localhost:3307", decoder);
+  connect("ws://localhost:3307", decoder)
+    .then((connected) => {
+      socket = connected;
+    })
+    .catch((e) => {
+      console.error("error connecting socket", e);
+    });
 
   const [pointerLocked, setPointerLocked] = createSignal(false);
 
   const onMouseMove = (event: MouseEvent) => {
-    console.log("mouse move", event.movementX, event.movementY);
+    // console.log("mouse move", event.movementX, event.movementY);
+    socket?.send(
+      "mse" + format(event.movementX, 4) + format(-event.movementY, 4),
+    );
   };
 
   const onMouseDown = (event: MouseEvent) => {
-    console.log("mouse down", event.button, event.button === 0);
+    // console.log("mouse down", event.button, event.button === 0);
+    if (event.button === 0) socket?.send("msed");
   };
 
   const onMouseUp = (event: MouseEvent) => {
-    console.log("mouse up", event.button, event.button === 0);
+    // console.log("mouse up", event.button, event.button === 0);
+    if (event.button === 0) socket?.send("mseu");
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    console.log("key down", event.key);
+    // console.log("key down", event.key);
+    socket?.send("keyd" + event.key);
   };
 
   const onKeyUp = (event: KeyboardEvent) => {
-    console.log("key up", event.key);
+    // console.log("key up", event.key);
+    socket?.send("keyu" + event.key);
   };
 
   document.addEventListener("pointerlockchange", () => {

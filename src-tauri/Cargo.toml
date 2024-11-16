@@ -21,7 +21,7 @@ bytes = "*"
 futures = "*"
 anyhow = "1.0"
 serde_json = "1.0"
-tauri = { version = "1.6", features = [ "fs-all", "window-all", "shell-execute", "shell-open", "shell-open-api", "devtools"] }
+tauri = { version = "1.6", features = [ "window-all", "shell-execute", "shell-open", "shell-open-api", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 env_logger = "0.10"

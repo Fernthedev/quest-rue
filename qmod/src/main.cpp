@@ -23,6 +23,7 @@
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 #include "custom-types/shared/delegate.hpp"
 #include "custom-types/shared/register.hpp"
+#include "hollywood/shared/hollywood.hpp"
 #include "manager.hpp"
 #include "scotland2/shared/modloader.h"
 
@@ -32,45 +33,16 @@ using namespace UnityEngine;
 using namespace websocketpp;
 
 static Camera* mainCamera;
-static QRUE::CameraStreamer* streamer;
+static QRUE::CameraController* fpfc;
+static Hollywood::CameraCapture* streamer;
 
 typedef websocketpp::server<websocketpp::config::asio> WebSocketServer;
 static std::unique_ptr<WebSocketServer> streamSocketHandler;
 static std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> connections;
 
-RenderTexture* CreateCameraTexture(int w, int h) {
-    auto texture = RenderTexture::New_ctor(w, h, 24, RenderTextureFormat::Default, RenderTextureReadWrite::Default);
-    Object::DontDestroyOnLoad(texture);
-    texture->wrapMode = TextureWrapMode::Clamp;
-    texture->filterMode = FilterMode::Bilinear;
-    texture->Create();
-    return texture;
-}
-
-inline UnityEngine::Matrix4x4 MatrixTranslate(UnityEngine::Vector3 const& vector) {
-    UnityEngine::Matrix4x4 result;
-    result.m00 = 1;
-    result.m01 = 0;
-    result.m02 = 0;
-    result.m03 = vector.x;
-    result.m10 = 0;
-    result.m11 = 1;
-    result.m12 = 0;
-    result.m13 = vector.y;
-    result.m20 = 0;
-    result.m21 = 0;
-    result.m22 = 1;
-    result.m23 = vector.z;
-    result.m30 = 0;
-    result.m31 = 0;
-    result.m32 = 0;
-    result.m33 = 1;
-    return result;
-}
-
 void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     if (auto main = Camera::get_main()) {
-        main->set_enabled(false);
+        // main->set_enabled(false);
         mainCamera = main;
     }
 
@@ -85,41 +57,14 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     Object::DontDestroyOnLoad(go);
     go->AddComponent<QRUE::MainThreadRunner*>();
 
-    auto cam = go->AddComponent<Camera*>();
-
-    int w = 1080;
-    int h = 720;
-
-    cam->set_stereoTargetEye(StereoTargetEyeMask::None);
-    cam->set_backgroundColor({0, 0, 0, 0});
-    cam->set_aspect(w / (float) h);
-    cam->set_fieldOfView(80);
-    cam->set_pixelRect({0, 0, (float) w, (float) h});
-    cam->set_rect({0, 0, 1, 1});
-
-#ifdef UNITY_2021
-    auto forwardMult = UnityEngine::Vector3::op_Multiply(UnityEngine::Vector3::get_forward(), -49999.5);
-    auto mat = UnityEngine::Matrix4x4::Ortho(-99999, 99999, -99999, 99999, 0.001, 99999);
-    mat = UnityEngine::Matrix4x4::op_Multiply(mat, MatrixTranslate(forwardMult));
-    mat = UnityEngine::Matrix4x4::op_Multiply(mat, cam->worldToCameraMatrix);
-    cam->cullingMatrix = mat;
-#endif
-
-    auto tex = CreateCameraTexture(w, h);
-    cam->set_targetTexture(tex);
-
-    streamer = go->AddComponent<QRUE::CameraStreamer*>();
-#ifdef UNITY_2021
-    streamer->texture = (uintptr_t) tex->GetNativeTexturePtr().m_value.convert();
-#else
-    streamer->texture = (uintptr_t) tex->GetNativeTexturePtr();
-#endif
-    streamer->onOutputFrame = [](uint8_t* data, size_t length) {
+    go->AddComponent<Camera*>();
+    fpfc = go->AddComponent<QRUE::CameraController*>();
+    streamer = go->AddComponent<Hollywood::CameraCapture*>();
+    streamer->onOutputUnit = [](uint8_t* data, size_t length) {
         if (!streamSocketHandler)
             return;
         for (auto const& hdl : connections) {
             try {
-                // LOG_DEBUG("sending {} data", length);
                 streamSocketHandler->send(hdl, (void*) data, length, frame::opcode::value::BINARY);
             } catch (exception const& e) {
                 LOG_ERROR("send failed: {}", e.what());
@@ -150,9 +95,27 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     });
     streamSocketHandler->set_message_handler([](websocketpp::connection_hdl hdl, WebSocketServer::message_ptr msg) {
         scheduleFunction([packet = std::string(msg->get_payload().data(), msg->get_payload().size())]() {
-            LOG_DEBUG("got packet {}", packet);
-            if (packet == "start")
-                streamer->Init(1080, 720, 1000000);
+            if (packet.starts_with("key") && packet.size() >= 5) {
+                std::string key = packet.substr(4);
+                if (packet[3] == 'd')
+                    fpfc->KeyDown(key);
+                else
+                    fpfc->KeyUp(key);
+            } else if (packet.starts_with("mse") && packet.size() >= 4) {
+                if (packet[3] == 'd')
+                    fpfc->MouseDown();
+                else if (packet[3] == 'u')
+                    fpfc->MouseUp();
+                else {
+                    float x = std::stoi(packet.substr(3, 4));
+                    float y = std::stoi(packet.substr(7, 4));
+                    fpfc->Rotate({x, y});
+                }
+            } else if (packet == "start") {
+                streamer->Init(1080, 720, 30, 10000000, 80);
+                if (mainCamera)
+                    mainCamera->set_enabled(false);
+            }
         });
     });
 
@@ -200,8 +163,6 @@ MAKE_HOOK_MATCH(
     DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
 }
 
-static bool clickedLastFrame = false;
-
 MAKE_HOOK_MATCH(
     VRInputModule_GetMousePointerEventData,
     &VRUIControls::VRInputModule::GetMousePointerEventData,
@@ -211,6 +172,8 @@ MAKE_HOOK_MATCH(
 ) {
     using EventData = UnityEngine::EventSystems::PointerEventData;
 
+    static bool clickedLastFrame = false;
+
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
     if (fpfcEnabled) {
         auto state = EventData::FramePressState::NotChanged;
@@ -218,10 +181,6 @@ MAKE_HOOK_MATCH(
             state = EventData::FramePressState::Pressed;
         if (!click && clickedLastFrame)
             state = EventData::FramePressState::Released;
-        if (clickOnce) {
-            state = EventData::FramePressState::PressedAndReleased;
-            clickOnce = false;
-        }
         ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = state;
         clickedLastFrame = click;
     } else
@@ -262,7 +221,7 @@ MAKE_HOOK_MATCH(MainCamera_Awake, &MainCamera::Awake, void, MainCamera* self) {
     if (!self->_camera || !streamer)
         return;
     mainCamera = self->_camera;
-    self->_camera->enabled = false;
+    // self->_camera->enabled = false;
 
     auto cam = streamer->GetComponent<Camera*>();
     auto mainBloom = self->_camera->GetComponent<BloomPrePass*>();
@@ -285,13 +244,14 @@ MAKE_HOOK_MATCH(MainCamera_Awake, &MainCamera::Awake, void, MainCamera* self) {
 
 extern "C" void load() {
     il2cpp_functions::Init();
+    Hollywood::Init();
 
     custom_types::Register::AutoRegister();
 
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(logger, DefaultScenesTransitionsFromInit_TransitionToNextScene);
-    INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
+    // INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
     INSTALL_HOOK(logger, VRInputModule_GetMousePointerEventData);
     INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
     INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);

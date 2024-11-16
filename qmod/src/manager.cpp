@@ -546,16 +546,10 @@ void Manager::setCameraOptions(CameraOptions const& packet, uint64_t id) {
         moveSensitivity = packet.movesensitivity();
     if (packet.rotsensitivity() > 0)
         rotateSensitivity = packet.rotsensitivity();
-    if (packet.clicktime() > 0)
-        clickTime = packet.clicktime();
-    if (packet.clickmovementthreshold() > 0)
-        movementThreshold = packet.clickmovementthreshold();
 
     auto& res = *wrapper.mutable_cameraoptionsresult();
     res.set_movesensitivity(moveSensitivity);
     res.set_rotsensitivity(rotateSensitivity);
-    res.set_clicktime(clickTime);
-    res.set_clickmovementthreshold(movementThreshold);
 
     handler->sendPacket(wrapper);
 }

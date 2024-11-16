@@ -77,6 +77,11 @@
       "id": "sombrero",
       "versionRange": "^0.1.40",
       "additionalData": {}
+    },
+    {
+      "id": "hollywood",
+      "versionRange": "^1.0.0",
+      "additionalData": {}
     }
   ]
 }

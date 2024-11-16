@@ -86,8 +86,6 @@ target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
 target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog)
-# video stuff
-target_link_libraries(${COMPILE_ID} PRIVATE mediandk -lOpenSLES GLESv3 -lEGL -landroid)
 
 # add extern stuff like libs and other includes
 include(extern.cmake)

@@ -78,6 +78,11 @@
         "id": "sombrero",
         "versionRange": "^0.1.40",
         "additionalData": {}
+      },
+      {
+        "id": "hollywood",
+        "versionRange": "^1.0.0",
+        "additionalData": {}
       }
     ]
   },
@@ -85,13 +90,13 @@
     {
       "dependency": {
         "id": "paper",
-        "versionRange": "=3.6.4",
+        "versionRange": "=3.7.0",
         "additionalData": {
-          "soLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.4/libpaperlog.so",
-          "debugSoLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.4/debug_libpaperlog.so",
+          "soLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.7.0/libpaperlog.so",
+          "debugSoLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.7.0/debug_libpaperlog.so",
           "overrideSoName": "libpaperlog.so",
-          "modLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.4/paperlog.qmod",
-          "branchName": "version/v3_6_4",
+          "modLink": "https://github.com/Fernthedev/paperlog/releases/download/v3.7.0/paperlog.qmod",
+          "branchName": "version/v3_7_0",
           "compileOptions": {
             "systemIncludes": [
               "shared/utfcpp/source"
@@ -100,7 +105,7 @@
           "cmake": false
         }
       },
-      "version": "3.6.4"
+      "version": "3.7.0"
     },
     {
       "dependency": {
@@ -169,6 +174,16 @@
     },
     {
       "dependency": {
+        "id": "hollywood",
+        "versionRange": "=1.0.0",
+        "additionalData": {
+          "overrideSoName": "libhollywood.so"
+        }
+      },
+      "version": "1.0.0"
+    },
+    {
+      "dependency": {
         "id": "beatsaber-hook",
         "versionRange": "=5.1.9",
         "additionalData": {
@@ -196,10 +211,10 @@
     {
       "dependency": {
         "id": "fmt",
-        "versionRange": "=10.0.0",
+        "versionRange": "=11.0.2",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v10_0_0",
+          "branchName": "version/v11_0_2",
           "compileOptions": {
             "systemIncludes": [
               "fmt/include/"
@@ -210,7 +225,7 @@
           }
         }
       },
-      "version": "10.0.0"
+      "version": "11.0.2"
     }
   ]
 }
