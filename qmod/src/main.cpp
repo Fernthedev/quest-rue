@@ -59,6 +59,7 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
 
     go->AddComponent<Camera*>();
     fpfc = go->AddComponent<QRUE::CameraController*>();
+    fpfc->set_enabled(false);
     streamer = go->AddComponent<Hollywood::CameraCapture*>();
     streamer->onOutputUnit = [](uint8_t* data, size_t length) {
         if (!streamSocketHandler)
@@ -91,8 +92,11 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
             streamer->Stop();
             connections.erase(hdl);
             LOG_INFO("Connected {} status: disconnected", hdl.lock().get());
-            if (mainCamera && connections.empty())
-                mainCamera->set_enabled(true);
+            if (connections.empty()) {
+                if (mainCamera)
+                    mainCamera->set_enabled(true);
+                fpfc->set_enabled(false);
+            }
         });
     });
     streamSocketHandler->set_message_handler([](websocketpp::connection_hdl hdl, WebSocketServer::message_ptr msg) {
@@ -119,6 +123,7 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
                 streamer->Init(1080, 720, 30, 10000000, 80);
                 if (mainCamera)
                     mainCamera->set_enabled(false);
+                fpfc->set_enabled(true);
             }
         });
     });
