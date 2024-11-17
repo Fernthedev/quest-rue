@@ -173,7 +173,8 @@ button > svg {
 }
 
 .small-button {
-  padding: 2px;
+  padding: 2px 5px;
+  line-height: 20px;
 }
 .small-button > img,
 .small-button > svg {
@@ -194,7 +195,7 @@ input[type="number"] {
 }
 
 .small-input {
-  padding: 2px;
+  padding: 2px 5px;
   line-height: 16px;
 }
 

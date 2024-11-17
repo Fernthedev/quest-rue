@@ -50,7 +50,7 @@ export function StaticsView(props: {
   );
 
   const [search, setSearch] = createSignal("");
-  const [deferredColumnCount, setDeferredColumnCount] = createSignal(2);
+  const [deferredColumnCount, setDeferredColumnCount] = createSignal(columnCount());
 
   const [classInput, setClassInput] = createSignal("");
   const [newDetails, newDetailsLoading, requestNewDetails] =
@@ -94,8 +94,11 @@ export function StaticsView(props: {
   createEffect(
     on(columnCount, () => {
       if (container) {
-        container.style.setProperty("--type-grid-columns", columnCount());
-        setDeferredColumnCount(Number.parseInt(columnCount()));
+        container.style.setProperty(
+          "--type-grid-columns",
+          columnCount().toString(),
+        );
+        setDeferredColumnCount(columnCount());
       }
     }),
   );

@@ -122,9 +122,6 @@ void Manager::processMessage(PacketWrapper const& packet) {
             case PacketWrapper::kRequestLogger:
                 setLoggerListener(packet.requestlogger(), id);
                 break;
-            case PacketWrapper::kCameraOptions:
-                setCameraOptions(packet.cameraoptions(), id);
-                break;
             case PacketWrapper::kGetCameraHovered:
                 getHoveredObject(packet.getcamerahovered(), id);
                 break;
@@ -536,22 +533,6 @@ void Manager::sendSafePtrList(uint64_t id) {
 
 void Manager::setLoggerListener(RequestLogger const& packet, uint64_t id) {
     this->sendLoggerUpdates = packet.listen();
-}
-
-void Manager::setCameraOptions(CameraOptions const& packet, uint64_t id) {
-    PacketWrapper wrapper;
-    wrapper.set_queryresultid(id);
-
-    if (packet.movesensitivity() > 0)
-        moveSensitivity = packet.movesensitivity();
-    if (packet.rotsensitivity() > 0)
-        rotateSensitivity = packet.rotsensitivity();
-
-    auto& res = *wrapper.mutable_cameraoptionsresult();
-    res.set_movesensitivity(moveSensitivity);
-    res.set_rotsensitivity(rotateSensitivity);
-
-    handler->sendPacket(wrapper);
 }
 
 void Manager::getHoveredObject(GetCameraHovered const& packet, uint64_t id) {

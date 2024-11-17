@@ -34,23 +34,27 @@ export function createUpdatingSignal<T>(
  *
  * @param key
  * @param defaultVal
+ * @param fromString
+ * @param toString
  * @param options
  * @returns
  */
-export function createPersistentSignal(
+export function createPersistentSignal<T>(
   key: string,
-  defaultVal: () => string,
-  options?: SignalOptions<string>,
-): Signal<string> {
-  const [valAccessor, valSetter] = createSignal(
-    localStorage.getItem(key) ?? defaultVal(),
+  defaultVal: () => T,
+  fromString?: (value: string) => T,
+  toString?: (value: T) => string,
+  options?: SignalOptions<T>,
+): Signal<T> {
+  const stored = localStorage.getItem(key);
+  const [val, setVal] = createSignal(
+    stored ? fromString?.(stored) ?? (stored as T) : defaultVal(),
     options,
   );
-  // store the value every time val is modified
   createEffect(() => {
-    localStorage.setItem(key, valAccessor());
+    localStorage.setItem(key, toString ? toString(val()) : String(val()));
   });
-  return [valAccessor, valSetter];
+  return [val, setVal];
 }
 
 /**

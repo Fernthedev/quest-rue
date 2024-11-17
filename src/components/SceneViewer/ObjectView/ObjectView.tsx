@@ -145,16 +145,18 @@ export default function ObjectView(props: {
 
   const [search, setSearch] = createSignal("");
   // we need to make sure the span calculation happens after the grid has updated its column number
-  const [deferredColumnCount, setDeferredColumnCount] = createSignal(
-    Number.parseInt(columnCount()),
-  );
+  const [deferredColumnCount, setDeferredColumnCount] =
+    createSignal(columnCount());
 
   let container: HTMLDivElement | undefined;
   createEffect(
     on(columnCount, () => {
       if (container) {
-        container.style.setProperty("--type-grid-columns", columnCount());
-        setDeferredColumnCount(Number.parseInt(columnCount()));
+        container.style.setProperty(
+          "--type-grid-columns",
+          columnCount().toString(),
+        );
+        setDeferredColumnCount(columnCount());
       }
     }),
   );

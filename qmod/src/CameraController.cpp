@@ -101,7 +101,7 @@ void CameraController::Update() {
 }
 
 void CameraController::Rotate(UnityEngine::Vector2 delta) {
-    delta = Sombrero::FastVector2(delta) * rotateSensitivity / 3;
+    delta = Sombrero::FastVector2(delta) * rotateSensitivity / 4;
     Sombrero::FastVector3 prev = get_transform()->get_eulerAngles();
     get_transform()->set_eulerAngles(prev + Vector3(-delta.y, delta.x, 0));
 }

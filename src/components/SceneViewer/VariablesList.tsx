@@ -262,51 +262,6 @@ function CreateObject() {
 }
 
 function CameraSettings() {
-  const [moveInput, setMoveInput] = createSignal("");
-  const [rotInput, setRotInput] = createSignal("");
-  const [clickInput, setClickInput] = createSignal("");
-  const [clickMoveInput, setClickMoveInput] = createSignal("");
-
-  createEffect(() =>
-    sendPacketResult<CameraOptionsResult>({
-      $case: "cameraOptions",
-      cameraOptions: {
-        moveSensitivity: moveInput() ? Number(moveInput()) : -1,
-        rotSensitivity: rotInput() ? Number(rotInput()) : -1,
-        clickTime: clickInput() ? Number(clickInput()) : -1,
-        clickMovementThreshold: clickMoveInput()
-          ? Number(clickMoveInput())
-          : -1,
-      },
-      // eslint-disable-next-line solid/reactivity
-    })[0].then((result) => {
-      if (moveInput() == "") setMoveInput(result.moveSensitivity.toFixed(2));
-      if (rotInput() == "") setRotInput(result.rotSensitivity.toFixed(2));
-      if (clickInput() == "") setClickInput(result.clickTime.toFixed(2));
-      if (moveInput() == "")
-        setClickMoveInput(result.clickMovementThreshold.toFixed(2));
-    }),
-  );
-
-  onMount(async () => {
-    const [initValsPromise] = sendPacketResult<CameraOptionsResult>({
-      $case: "cameraOptions",
-      cameraOptions: {
-        moveSensitivity: -1,
-        rotSensitivity: -1,
-        clickTime: -1,
-        clickMovementThreshold: -1,
-      },
-    });
-
-    const initVals = await initValsPromise;
-
-    setMoveInput(initVals.moveSensitivity.toFixed(2));
-    setRotInput(initVals.rotSensitivity.toFixed(2));
-    setClickInput(initVals.clickTime.toFixed(2));
-    setClickMoveInput(initVals.clickMovementThreshold.toFixed(2));
-  });
-
   const navigate = useNavigate();
 
   const selectHovered = () =>
@@ -320,55 +275,12 @@ function CameraSettings() {
 
   return (
     <div class="dropdown dropdown-bottom flex-none">
-      <ActionButton class="p-2" img={videoCamera} tooltip="Camera options" />
-
-      <div
-        class="
-                dropdown-content shadow menu text-base
-                bg-neutral-200 dark:bg-zinc-900
-                justify-center gap-2 w-60 p-3 -ml-24
-                my-2 z-10 rounded-box cursor-auto"
-      >
-        <input
-          placeholder="Move Speed"
-          title="Movement Speed"
-          class="w-full"
-          value={moveInput()}
-          onInput={(e) => {
-            setMoveInput(e.currentTarget.value);
-          }}
-        />
-        <input
-          placeholder="Rotate Sensitivity"
-          title="Rotation Sensitivity"
-          class="w-full"
-          value={rotInput()}
-          onInput={(e) => {
-            setRotInput(e.currentTarget.value);
-          }}
-        />
-        <input
-          placeholder="Max Click Time"
-          title="Max Click Time"
-          class="w-full"
-          value={clickInput()}
-          onInput={(e) => {
-            setClickInput(e.currentTarget.value);
-          }}
-        />
-        <input
-          placeholder="Max Click Movement"
-          title="Max Click Movement"
-          class="w-full"
-          value={clickMoveInput()}
-          onInput={(e) => {
-            setClickMoveInput(e.currentTarget.value);
-          }}
-        />
-        <button onClick={selectHovered} onKeyPress={selectHovered}>
-          Select Hovered
-        </button>
-      </div>
+      <ActionButton
+        class="p-2"
+        img={videoCamera}
+        tooltip="Select hovered object"
+        onClick={selectHovered}
+      />
     </div>
   );
 }

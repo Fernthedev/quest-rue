@@ -287,22 +287,6 @@ export interface ResponseLoggerUpdate {
   paperLogs: PaperLogData[];
 }
 
-export interface CameraOptions {
-  /** set to negative values to leave the options unchanged */
-  moveSensitivity: number;
-  rotSensitivity: number;
-  clickTime: number;
-  clickMovementThreshold: number;
-}
-
-export interface CameraOptionsResult {
-  /** the current values for the options */
-  moveSensitivity: number;
-  rotSensitivity: number;
-  clickTime: number;
-  clickMovementThreshold: number;
-}
-
 export interface GetCameraHovered {
 }
 
@@ -347,8 +331,6 @@ export interface PacketWrapper {
     | { $case: "getSafePtrAddressesResult"; getSafePtrAddressesResult: GetSafePtrAddressesResult }
     | { $case: "requestLogger"; requestLogger: RequestLogger }
     | { $case: "responseLoggerUpdate"; responseLoggerUpdate: ResponseLoggerUpdate }
-    | { $case: "cameraOptions"; cameraOptions: CameraOptions }
-    | { $case: "cameraOptionsResult"; cameraOptionsResult: CameraOptionsResult }
     | { $case: "getCameraHovered"; getCameraHovered: GetCameraHovered }
     | { $case: "getCameraHoveredResult"; getCameraHoveredResult: GetCameraHoveredResult }
     | undefined;
@@ -2952,218 +2934,6 @@ export const ResponseLoggerUpdate = {
   },
 };
 
-function createBaseCameraOptions(): CameraOptions {
-  return { moveSensitivity: 0, rotSensitivity: 0, clickTime: 0, clickMovementThreshold: 0 };
-}
-
-export const CameraOptions = {
-  encode(message: CameraOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.moveSensitivity !== 0) {
-      writer.uint32(13).float(message.moveSensitivity);
-    }
-    if (message.rotSensitivity !== 0) {
-      writer.uint32(21).float(message.rotSensitivity);
-    }
-    if (message.clickTime !== 0) {
-      writer.uint32(29).float(message.clickTime);
-    }
-    if (message.clickMovementThreshold !== 0) {
-      writer.uint32(37).float(message.clickMovementThreshold);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): CameraOptions {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCameraOptions();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 13) {
-            break;
-          }
-
-          message.moveSensitivity = reader.float();
-          continue;
-        case 2:
-          if (tag !== 21) {
-            break;
-          }
-
-          message.rotSensitivity = reader.float();
-          continue;
-        case 3:
-          if (tag !== 29) {
-            break;
-          }
-
-          message.clickTime = reader.float();
-          continue;
-        case 4:
-          if (tag !== 37) {
-            break;
-          }
-
-          message.clickMovementThreshold = reader.float();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CameraOptions {
-    return {
-      moveSensitivity: isSet(object.moveSensitivity) ? globalThis.Number(object.moveSensitivity) : 0,
-      rotSensitivity: isSet(object.rotSensitivity) ? globalThis.Number(object.rotSensitivity) : 0,
-      clickTime: isSet(object.clickTime) ? globalThis.Number(object.clickTime) : 0,
-      clickMovementThreshold: isSet(object.clickMovementThreshold)
-        ? globalThis.Number(object.clickMovementThreshold)
-        : 0,
-    };
-  },
-
-  toJSON(message: CameraOptions): unknown {
-    const obj: any = {};
-    if (message.moveSensitivity !== 0) {
-      obj.moveSensitivity = message.moveSensitivity;
-    }
-    if (message.rotSensitivity !== 0) {
-      obj.rotSensitivity = message.rotSensitivity;
-    }
-    if (message.clickTime !== 0) {
-      obj.clickTime = message.clickTime;
-    }
-    if (message.clickMovementThreshold !== 0) {
-      obj.clickMovementThreshold = message.clickMovementThreshold;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<CameraOptions>, I>>(base?: I): CameraOptions {
-    return CameraOptions.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<CameraOptions>, I>>(object: I): CameraOptions {
-    const message = createBaseCameraOptions();
-    message.moveSensitivity = object.moveSensitivity ?? 0;
-    message.rotSensitivity = object.rotSensitivity ?? 0;
-    message.clickTime = object.clickTime ?? 0;
-    message.clickMovementThreshold = object.clickMovementThreshold ?? 0;
-    return message;
-  },
-};
-
-function createBaseCameraOptionsResult(): CameraOptionsResult {
-  return { moveSensitivity: 0, rotSensitivity: 0, clickTime: 0, clickMovementThreshold: 0 };
-}
-
-export const CameraOptionsResult = {
-  encode(message: CameraOptionsResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.moveSensitivity !== 0) {
-      writer.uint32(13).float(message.moveSensitivity);
-    }
-    if (message.rotSensitivity !== 0) {
-      writer.uint32(21).float(message.rotSensitivity);
-    }
-    if (message.clickTime !== 0) {
-      writer.uint32(29).float(message.clickTime);
-    }
-    if (message.clickMovementThreshold !== 0) {
-      writer.uint32(37).float(message.clickMovementThreshold);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): CameraOptionsResult {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCameraOptionsResult();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 13) {
-            break;
-          }
-
-          message.moveSensitivity = reader.float();
-          continue;
-        case 2:
-          if (tag !== 21) {
-            break;
-          }
-
-          message.rotSensitivity = reader.float();
-          continue;
-        case 3:
-          if (tag !== 29) {
-            break;
-          }
-
-          message.clickTime = reader.float();
-          continue;
-        case 4:
-          if (tag !== 37) {
-            break;
-          }
-
-          message.clickMovementThreshold = reader.float();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CameraOptionsResult {
-    return {
-      moveSensitivity: isSet(object.moveSensitivity) ? globalThis.Number(object.moveSensitivity) : 0,
-      rotSensitivity: isSet(object.rotSensitivity) ? globalThis.Number(object.rotSensitivity) : 0,
-      clickTime: isSet(object.clickTime) ? globalThis.Number(object.clickTime) : 0,
-      clickMovementThreshold: isSet(object.clickMovementThreshold)
-        ? globalThis.Number(object.clickMovementThreshold)
-        : 0,
-    };
-  },
-
-  toJSON(message: CameraOptionsResult): unknown {
-    const obj: any = {};
-    if (message.moveSensitivity !== 0) {
-      obj.moveSensitivity = message.moveSensitivity;
-    }
-    if (message.rotSensitivity !== 0) {
-      obj.rotSensitivity = message.rotSensitivity;
-    }
-    if (message.clickTime !== 0) {
-      obj.clickTime = message.clickTime;
-    }
-    if (message.clickMovementThreshold !== 0) {
-      obj.clickMovementThreshold = message.clickMovementThreshold;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(base?: I): CameraOptionsResult {
-    return CameraOptionsResult.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<CameraOptionsResult>, I>>(object: I): CameraOptionsResult {
-    const message = createBaseCameraOptionsResult();
-    message.moveSensitivity = object.moveSensitivity ?? 0;
-    message.rotSensitivity = object.rotSensitivity ?? 0;
-    message.clickTime = object.clickTime ?? 0;
-    message.clickMovementThreshold = object.clickMovementThreshold ?? 0;
-    return message;
-  },
-};
-
 function createBaseGetCameraHovered(): GetCameraHovered {
   return {};
 }
@@ -3375,12 +3145,6 @@ export const PacketWrapper = {
         break;
       case "responseLoggerUpdate":
         ResponseLoggerUpdate.encode(message.Packet.responseLoggerUpdate, writer.uint32(266).fork()).ldelim();
-        break;
-      case "cameraOptions":
-        CameraOptions.encode(message.Packet.cameraOptions, writer.uint32(274).fork()).ldelim();
-        break;
-      case "cameraOptionsResult":
-        CameraOptionsResult.encode(message.Packet.cameraOptionsResult, writer.uint32(282).fork()).ldelim();
         break;
       case "getCameraHovered":
         GetCameraHovered.encode(message.Packet.getCameraHovered, writer.uint32(290).fork()).ldelim();
@@ -3696,23 +3460,6 @@ export const PacketWrapper = {
             responseLoggerUpdate: ResponseLoggerUpdate.decode(reader, reader.uint32()),
           };
           continue;
-        case 34:
-          if (tag !== 274) {
-            break;
-          }
-
-          message.Packet = { $case: "cameraOptions", cameraOptions: CameraOptions.decode(reader, reader.uint32()) };
-          continue;
-        case 35:
-          if (tag !== 282) {
-            break;
-          }
-
-          message.Packet = {
-            $case: "cameraOptionsResult",
-            cameraOptionsResult: CameraOptionsResult.decode(reader, reader.uint32()),
-          };
-          continue;
         case 36:
           if (tag !== 290) {
             break;
@@ -3845,13 +3592,6 @@ export const PacketWrapper = {
           $case: "responseLoggerUpdate",
           responseLoggerUpdate: ResponseLoggerUpdate.fromJSON(object.responseLoggerUpdate),
         }
-        : isSet(object.cameraOptions)
-        ? { $case: "cameraOptions", cameraOptions: CameraOptions.fromJSON(object.cameraOptions) }
-        : isSet(object.cameraOptionsResult)
-        ? {
-          $case: "cameraOptionsResult",
-          cameraOptionsResult: CameraOptionsResult.fromJSON(object.cameraOptionsResult),
-        }
         : isSet(object.getCameraHovered)
         ? { $case: "getCameraHovered", getCameraHovered: GetCameraHovered.fromJSON(object.getCameraHovered) }
         : isSet(object.getCameraHoveredResult)
@@ -3965,12 +3705,6 @@ export const PacketWrapper = {
     }
     if (message.Packet?.$case === "responseLoggerUpdate") {
       obj.responseLoggerUpdate = ResponseLoggerUpdate.toJSON(message.Packet.responseLoggerUpdate);
-    }
-    if (message.Packet?.$case === "cameraOptions") {
-      obj.cameraOptions = CameraOptions.toJSON(message.Packet.cameraOptions);
-    }
-    if (message.Packet?.$case === "cameraOptionsResult") {
-      obj.cameraOptionsResult = CameraOptionsResult.toJSON(message.Packet.cameraOptionsResult);
     }
     if (message.Packet?.$case === "getCameraHovered") {
       obj.getCameraHovered = GetCameraHovered.toJSON(message.Packet.getCameraHovered);
@@ -4285,26 +4019,6 @@ export const PacketWrapper = {
       message.Packet = {
         $case: "responseLoggerUpdate",
         responseLoggerUpdate: ResponseLoggerUpdate.fromPartial(object.Packet.responseLoggerUpdate),
-      };
-    }
-    if (
-      object.Packet?.$case === "cameraOptions" &&
-      object.Packet?.cameraOptions !== undefined &&
-      object.Packet?.cameraOptions !== null
-    ) {
-      message.Packet = {
-        $case: "cameraOptions",
-        cameraOptions: CameraOptions.fromPartial(object.Packet.cameraOptions),
-      };
-    }
-    if (
-      object.Packet?.$case === "cameraOptionsResult" &&
-      object.Packet?.cameraOptionsResult !== undefined &&
-      object.Packet?.cameraOptionsResult !== null
-    ) {
-      message.Packet = {
-        $case: "cameraOptionsResult",
-        cameraOptionsResult: CameraOptionsResult.fromPartial(object.Packet.cameraOptionsResult),
       };
     }
     if (

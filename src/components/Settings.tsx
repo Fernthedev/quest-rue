@@ -7,35 +7,37 @@ import SegmentedControl from "./form/SegmentedControl";
 import { socket } from "../misc/commands";
 
 function makeSettingsContext(
-  rawInput = false,
-  darkMode = true,
-  columnCount = 2,
+  rawInputInit = false,
+  darkModeInit = true,
+  columnCountInit = 2,
 ) {
-  const [getRawInput, setRawInput] = createPersistentSignal("rawInput", () =>
-    rawInput ? "true" : "false",
+  const [rawInput, setRawInput] = createPersistentSignal(
+    "rawInput",
+    () => rawInputInit,
+    (val) => val === "true",
   );
-  const [getDarkMode, setDarkMode] = createPersistentSignal("darkMode", () =>
-    darkMode ? "true" : "false",
+  const [darkMode, setDarkMode] = createPersistentSignal(
+    "darkMode",
+    () => darkModeInit,
+    (val) => val === "true",
   );
-  const [getMonoFont, setMonoFont] = createPersistentSignal(
-    "monoFont",
-    () => "",
-  );
-  const [getColumnCount, setColumnCount] = createPersistentSignal(
+  const [monoFont, setMonoFont] = createPersistentSignal("monoFont", () => "");
+  const [columnCount, setColumnCount] = createPersistentSignal(
     "columnCount",
-    () => columnCount.toString(),
+    () => columnCountInit,
+    Number.parseInt,
   );
 
   // convert to and from strings
   return {
-    rawInput: () => getRawInput() == "true",
-    setRawInput: (val: boolean) => setRawInput(val ? "true" : "false"),
-    darkMode: () => getDarkMode() == "true",
-    setDarkMode: (val: boolean) => setDarkMode(val ? "true" : "false"),
-    monoFont: getMonoFont,
-    setMonoFont: setMonoFont,
-    columnCount: getColumnCount,
-    setColumnCount: setColumnCount,
+    rawInput,
+    setRawInput,
+    darkMode,
+    setDarkMode,
+    monoFont,
+    setMonoFont,
+    columnCount,
+    setColumnCount,
   } as const;
 }
 
@@ -90,8 +92,8 @@ export function SettingsMenu() {
         <SegmentedControl
           class={"h-8"}
           values={["1", "2", "3", "4"]}
-          onValueSelect={setColumnCount}
-          selectedValue={columnCount()}
+          onValueSelect={(val: string) => setColumnCount(Number.parseInt(val))}
+          selectedValue={columnCount().toString()}
           title="Columns"
         />
         <button

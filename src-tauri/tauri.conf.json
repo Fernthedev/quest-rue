@@ -51,7 +51,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "maximized": true,
+        "visible": false,
         "title": "Quest RUE"
       }
     ]

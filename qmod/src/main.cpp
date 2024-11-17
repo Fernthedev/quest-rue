@@ -91,6 +91,8 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
             streamer->Stop();
             connections.erase(hdl);
             LOG_INFO("Connected {} status: disconnected", hdl.lock().get());
+            if (mainCamera && connections.empty())
+                mainCamera->set_enabled(true);
         });
     });
     streamSocketHandler->set_message_handler([](websocketpp::connection_hdl hdl, WebSocketServer::message_ptr msg) {
@@ -111,7 +113,9 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
                     float y = std::stoi(packet.substr(7, 4));
                     fpfc->Rotate({x, y});
                 }
-            } else if (packet == "start") {
+            } else if (packet.starts_with("start")) {
+                moveSensitivity = std::stof(packet.substr(5, 5));
+                rotateSensitivity = std::stof(packet.substr(10, 5));
                 streamer->Init(1080, 720, 30, 10000000, 80);
                 if (mainCamera)
                     mainCamera->set_enabled(false);

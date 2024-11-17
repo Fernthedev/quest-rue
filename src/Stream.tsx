@@ -1,15 +1,19 @@
 import { render } from "solid-js/web";
 import "./styles.css";
 import "solid-devtools";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, onMount } from "solid-js";
 import WebSocketRS from "tauri-plugin-websocket-api";
 import { isTauri } from "./misc/dev";
+import { createPersistentSignal } from "./misc/utils";
 
 // todo: refactor websocket.ts
-async function connect(url: string, worker: Worker) {
+async function connect(
+  url: string,
+  worker: Worker,
+): Promise<WebSocketRS | WebSocket> {
   if (isTauri()) {
     const socket = await WebSocketRS.connect(url);
-    console.log("socket connected");
+    console.log("rust socket connected");
     socket.addListener((arg) => {
       switch (arg.type) {
         case undefined: // error: close without handshake
@@ -26,30 +30,37 @@ async function connect(url: string, worker: Worker) {
         }
       }
     });
-    socket.send("start");
     return socket;
   } else {
-    const socket = new WebSocket(url);
-    socket.binaryType = "arraybuffer";
-    socket.onopen = () => {
-      console.log("socket connected");
-      socket.send("start");
-    };
-    socket.onmessage = (event) => {
-      worker.postMessage({
-        type: "data",
-        val: new Uint8Array(event.data),
-      });
-    };
-    return socket;
+    return new Promise((resolve, reject) => {
+      const socket = new WebSocket(url);
+      socket.binaryType = "arraybuffer";
+      socket.onopen = () => {
+        console.log("browser socket connected");
+        resolve(socket);
+      };
+      socket.onerror = reject;
+      socket.onmessage = (event) => {
+        worker.postMessage({
+          type: "data",
+          val: new Uint8Array(event.data),
+        });
+      };
+    });
   }
 }
 
+// todo: replace these with protobuf or at least json
 function format(n: number, len: number) {
   n = Math.min(Math.round(n), Math.pow(10, len) - 1);
   const s = n.toString();
   if (s.startsWith("-")) return "-" + s.slice(1).padStart(len - 1, "0");
   return s.padStart(len, "0");
+}
+
+function fformat(n: number, len: number) {
+  n = Math.min(n, 10 - Math.pow(10, 2 - len));
+  return n.toFixed(len - 2);
 }
 
 function Stream() {
@@ -60,18 +71,53 @@ function Stream() {
   let canvas: HTMLCanvasElement | undefined;
   let socket: WebSocketRS | WebSocket | undefined;
 
+  const [speed, setSpeed] = createPersistentSignal(
+    "fpfcMoveSpeed",
+    () => 1,
+    Number.parseFloat,
+  );
+  const [sensitivity, setSensitivity] = createPersistentSignal(
+    "fpfcRotSensitivity",
+    () => 1,
+    Number.parseFloat,
+  );
+
+  const [speedInput, setSpeedInput] = createSignal(speed().toString());
+  const [sensitivityInput, setSensitivityInput] = createSignal(
+    sensitivity().toString(),
+  );
+
   createEffect(() => {
+    if (!Number.isNaN(Number.parseFloat(speedInput())))
+      setSpeed(Number.parseFloat(speedInput()));
+  });
+  createEffect(() => {
+    if (!Number.isNaN(Number.parseFloat(sensitivityInput())))
+      setSensitivity(Number.parseFloat(sensitivityInput()));
+  });
+
+  onMount(() => {
     const offscreen = canvas!.transferControlToOffscreen();
     decoder.postMessage({ type: "context", val: offscreen }, [offscreen]);
   });
 
-  connect("ws://localhost:3307", decoder)
-    .then((connected) => {
-      socket = connected;
-    })
-    .catch((e) => {
-      console.error("error connecting socket", e);
-    });
+  const doConnect = () => {
+    connect("ws://localhost:3307", decoder)
+      .then((connected) => {
+        socket = connected;
+        socket.send("start" + fformat(speed(), 5) + fformat(sensitivity(), 5));
+      })
+      .catch((e) => {
+        console.error("error connecting socket", e);
+      });
+  };
+  doConnect();
+
+  const refresh = () => {
+    if (socket instanceof WebSocketRS) socket.disconnect();
+    else socket?.close();
+    doConnect();
+  };
 
   const [pointerLocked, setPointerLocked] = createSignal(false);
 
@@ -125,21 +171,40 @@ function Stream() {
   });
 
   return (
-    <div class="w-screen h-screen overflow-hidden">
-      <canvas
-        width={1080}
-        height={720}
-        class="absolute-centered"
-        style={{
-          border: "1px solid white",
-          "max-width": "100vw",
-          "max-height": "100vh",
-        }}
-        ref={canvas}
-        onClick={() => {
-          canvas?.requestPointerLock();
-        }}
-      />
+    <div class="w-screen h-screen dark">
+      <div class="p-2">
+        <canvas
+          width={1080}
+          height={720}
+          style={{
+            border: "2px solid black",
+            width: "min(100%, calc(100vh - 60px) * 1080 / 720)",
+            "max-width": "1080px",
+            "max-height": "720px",
+          }}
+          ref={canvas}
+          onClick={() => {
+            canvas?.requestPointerLock();
+          }}
+        />
+        <div class="flex items-baseline pt-2 gap-2">
+          Speed
+          <input
+            class="small-input mr-5 w-28"
+            value={speedInput()}
+            onInput={(event) => setSpeedInput(event.target.value)}
+          />
+          Sensitivity
+          <input
+            class="small-input mr-5 w-28"
+            value={sensitivityInput()}
+            onInput={(event) => setSensitivityInput(event.target.value)}
+          />
+          <button class="small-button" onClick={refresh}>
+            Refresh
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
