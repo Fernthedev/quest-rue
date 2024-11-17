@@ -60,7 +60,7 @@ self.onmessage = (event: MessageEvent) => {
         const chunk = new EncodedVideoChunk({
           data: array,
           timestamp: 0,
-          type: array[4] === 101 ? "key" : "delta",
+          type: (array[4] === 101 || array[4] === 103) ? "key" : "delta",
         });
         decoder.decode(chunk);
       } else console.log("skipping chunk!");
