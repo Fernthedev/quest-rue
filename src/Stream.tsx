@@ -63,6 +63,29 @@ function fformat(n: number, len: number) {
   return n.toFixed(len - 2);
 }
 
+function NumberInput(props: {
+  value: () => number;
+  setValue: (val: number) => void;
+  isInt?: boolean;
+}) {
+  // eslint-disable-next-line solid/reactivity
+  const [input, setInput] = createSignal(props.value().toString());
+  createEffect(() => {
+    const n = props.isInt
+      ? Number.parseInt(input())
+      : Number.parseFloat(input());
+    if (!Number.isNaN(n)) props.setValue(n);
+  });
+
+  return (
+    <input
+      class="small-input mr-5 w-24"
+      value={input()}
+      onInput={(event) => setInput(event.target.value)}
+    />
+  );
+}
+
 function Stream() {
   const decoder = new Worker(
     new URL("misc/decoder_worker.ts", import.meta.url),
@@ -81,20 +104,16 @@ function Stream() {
     () => 1,
     Number.parseFloat,
   );
-
-  const [speedInput, setSpeedInput] = createSignal(speed().toString());
-  const [sensitivityInput, setSensitivityInput] = createSignal(
-    sensitivity().toString(),
+  const [fps, setFps] = createPersistentSignal(
+    "fpfcFps",
+    () => 30,
+    Number.parseInt,
   );
-
-  createEffect(() => {
-    if (!Number.isNaN(Number.parseFloat(speedInput())))
-      setSpeed(Number.parseFloat(speedInput()));
-  });
-  createEffect(() => {
-    if (!Number.isNaN(Number.parseFloat(sensitivityInput())))
-      setSensitivity(Number.parseFloat(sensitivityInput()));
-  });
+  const [fov, setFov] = createPersistentSignal(
+    "fpfcFov",
+    () => 80,
+    Number.parseFloat,
+  );
 
   onMount(() => {
     const offscreen = canvas!.transferControlToOffscreen();
@@ -105,7 +124,13 @@ function Stream() {
     connect("ws://localhost:3307", decoder)
       .then((connected) => {
         socket = connected;
-        socket.send("start" + fformat(speed(), 5) + fformat(sensitivity(), 5));
+        socket.send(
+          "start" +
+            fformat(speed(), 5) +
+            fformat(sensitivity(), 5) +
+            format(fps(), 3) +
+            fformat(fov() / 20, 5),
+        );
       })
       .catch((e) => {
         console.error("error connecting socket", e);
@@ -189,17 +214,13 @@ function Stream() {
         />
         <div class="flex items-baseline pt-2 gap-2">
           Speed
-          <input
-            class="small-input mr-5 w-28"
-            value={speedInput()}
-            onInput={(event) => setSpeedInput(event.target.value)}
-          />
+          <NumberInput value={speed} setValue={setSpeed} />
           Sensitivity
-          <input
-            class="small-input mr-5 w-28"
-            value={sensitivityInput()}
-            onInput={(event) => setSensitivityInput(event.target.value)}
-          />
+          <NumberInput value={sensitivity} setValue={setSensitivity} />
+          FPS
+          <NumberInput value={fps} setValue={setFps} isInt />
+          FOV
+          <NumberInput value={fov} setValue={setFov} />
           <button class="small-button" onClick={refresh}>
             Refresh
           </button>

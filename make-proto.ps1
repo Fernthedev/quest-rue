@@ -12,9 +12,6 @@ if (Test-Path ./qmod/protobuf/) {
     }
 }
 mkdir ./qmod/protobuf
-# & protoc -I="..\protos" --cpp_out="protobuf" ..\protos\qrue.proto
-# Use VCPKG protobuf for consistency
 
-& vcpkg_installed/arm64-android/tools/protobuf/protoc --proto_path=./protos `
-    --cpp_out=./qmod/protobuf `
-    ./protos/qrue.proto ./protos/il2cpp.proto ./protos/unity.proto ./protos/paper.proto
+# Use VCPKG protobuf for consistency
+& vcpkg_installed/arm64-android/tools/protobuf/protoc -Iprotos --cpp_out=./qmod/protobuf ./protos/*

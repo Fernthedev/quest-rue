@@ -14,6 +14,7 @@
 #include "UnityEngine/RenderTexture.hpp"
 #include "UnityEngine/RenderTextureFormat.hpp"
 #include "UnityEngine/RenderTextureReadWrite.hpp"
+#include "UnityEngine/Resources.hpp"
 #include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
@@ -32,8 +33,8 @@ static modloader::ModInfo modInfo{MOD_ID, VERSION, 1};
 using namespace UnityEngine;
 using namespace websocketpp;
 
-static Camera* mainCamera;
-static QRUE::CameraController* fpfc;
+static Camera* mainCamera = nullptr;
+static QRUE::CameraController* fpfc = nullptr;
 static Hollywood::CameraCapture* streamer;
 
 typedef websocketpp::server<websocketpp::config::asio> WebSocketServer;
@@ -41,12 +42,17 @@ static std::unique_ptr<WebSocketServer> streamSocketHandler;
 static std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> connections;
 
 void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
-    if (auto main = Camera::get_main()) {
-        // main->set_enabled(false);
-        mainCamera = main;
-    }
+    mainCamera = Resources::FindObjectsOfTypeAll<Camera*>()->FirstOrDefault([](Camera* c) { return c->tag == "MainCamera"; });
 
     LOG_DEBUG("scene load, main camera is {}", fmt::ptr(mainCamera));
+
+    if (fpfc) {
+        if (UnityW(mainCamera))
+            mainCamera->set_enabled(!fpfc->get_enabled());
+#ifdef BEAT_SABER
+        fpfc->GetControllers();
+#endif
+    }
 
     static bool loaded;
     if (!scene.IsValid() || loaded)
@@ -93,7 +99,7 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
             connections.erase(hdl);
             LOG_INFO("Connected {} status: disconnected", hdl.lock().get());
             if (connections.empty()) {
-                if (mainCamera)
+                if (UnityW(mainCamera))
                     mainCamera->set_enabled(true);
                 fpfc->set_enabled(false);
             }
@@ -120,8 +126,10 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
             } else if (packet.starts_with("start")) {
                 moveSensitivity = std::stof(packet.substr(5, 5));
                 rotateSensitivity = std::stof(packet.substr(10, 5));
-                streamer->Init(1080, 720, 30, 10000000, 80);
-                if (mainCamera)
+                int fps = std::stoi(packet.substr(15, 3));
+                float fov = std::stoi(packet.substr(18, 5)) * 20;
+                streamer->Init(1080, 720, fps, 10000000, fov);
+                if (UnityW(mainCamera))
                     mainCamera->set_enabled(false);
                 fpfc->set_enabled(true);
             }
