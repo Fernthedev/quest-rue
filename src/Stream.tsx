@@ -147,30 +147,29 @@ function Stream() {
   const [pointerLocked, setPointerLocked] = createSignal(false);
 
   const onMouseMove = (event: MouseEvent) => {
-    // console.log("mouse move", event.movementX, event.movementY);
     socket?.send(
       "mse" + format(event.movementX, 4) + format(-event.movementY, 4),
     );
   };
 
   const onMouseDown = (event: MouseEvent) => {
-    // console.log("mouse down", event.button, event.button === 0);
     if (event.button === 0) socket?.send("msed");
   };
 
   const onMouseUp = (event: MouseEvent) => {
-    // console.log("mouse up", event.button, event.button === 0);
     if (event.button === 0) socket?.send("mseu");
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    // console.log("key down", event.key);
     socket?.send("keyd" + event.key);
   };
 
   const onKeyUp = (event: KeyboardEvent) => {
-    // console.log("key up", event.key);
     socket?.send("keyu" + event.key);
+  };
+
+  const onWheel = (event: WheelEvent) => {
+    socket?.send("scr" + fformat(-event.deltaY / 50, 5));
   };
 
   document.addEventListener("pointerlockchange", () => {
@@ -186,12 +185,14 @@ function Stream() {
       document.addEventListener("mouseup", onMouseUp);
       document.addEventListener("keydown", onKeyDown);
       document.addEventListener("keyup", onKeyUp);
+      document.addEventListener("wheel", onWheel);
     } else {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mousedown", onMouseDown);
       document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
+      document.removeEventListener("wheel", onWheel);
     }
   });
 

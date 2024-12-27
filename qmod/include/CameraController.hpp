@@ -22,6 +22,8 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_METHOD(void, KeyUp, StringW);
     DECLARE_INSTANCE_METHOD(void, MouseDown);
     DECLARE_INSTANCE_METHOD(void, MouseUp);
+    DECLARE_INSTANCE_METHOD(void, AddScroll, float);
+    DECLARE_INSTANCE_METHOD(float, GetScroll);
 
 #ifdef BEAT_SABER
     DECLARE_INSTANCE_METHOD(void, GetControllers);
@@ -33,9 +35,8 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
    private:
     UnityEngine::Vector3 movementF;
     UnityEngine::Vector3 movementB;
+    float scroll;
 )
-
-extern bool fpfcEnabled;
 
 extern float rotateSensitivity;
 extern float moveSensitivity;

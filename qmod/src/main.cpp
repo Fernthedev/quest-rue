@@ -50,7 +50,8 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
         if (UnityW(mainCamera))
             mainCamera->set_enabled(!fpfc->get_enabled());
 #ifdef BEAT_SABER
-        fpfc->GetControllers();
+        if (fpfc->get_enabled())
+            fpfc->GetControllers();
 #endif
     }
 
@@ -123,11 +124,14 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
                     float y = std::stoi(packet.substr(7, 4));
                     fpfc->Rotate({x, y});
                 }
+            } else if (packet.starts_with("scr") && packet.size() >= 4) {
+                float scroll = std::stof(packet.substr(3, 5));
+                fpfc->AddScroll(scroll);
             } else if (packet.starts_with("start")) {
                 moveSensitivity = std::stof(packet.substr(5, 5));
                 rotateSensitivity = std::stof(packet.substr(10, 5));
                 int fps = std::stoi(packet.substr(15, 3));
-                float fov = std::stoi(packet.substr(18, 5)) * 20;
+                float fov = std::stof(packet.substr(18, 5)) * 20;
                 streamer->Init(1080, 720, fps, 10000000, fov);
                 if (UnityW(mainCamera))
                     mainCamera->set_enabled(false);
@@ -158,6 +162,7 @@ extern "C" void setup(CModInfo* info) {
 #include "GlobalNamespace/BloomPrePass.hpp"
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
 #include "GlobalNamespace/MainCamera.hpp"
+#include "GlobalNamespace/OculusVRHelper.hpp"
 #include "GlobalNamespace/UIKeyboardManager.hpp"
 #include "GlobalNamespace/VRPlatformUtils.hpp"
 #include "UnityEngine/Input.hpp"
@@ -192,7 +197,7 @@ MAKE_HOOK_MATCH(
     static bool clickedLastFrame = false;
 
     auto ret = VRInputModule_GetMousePointerEventData(self, id);
-    if (fpfcEnabled) {
+    if (fpfc && fpfc->get_enabled()) {
         auto state = EventData::FramePressState::NotChanged;
         if (click && !clickedLastFrame)
             state = EventData::FramePressState::Pressed;
@@ -212,9 +217,25 @@ MAKE_HOOK_MATCH(
     IVRPlatformHelper* self
 ) {
     auto ret = VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation(self);
-    if (fpfcEnabled)
-        return {0, UnityEngine::Input::GetAxis("Mouse ScrollWheel")};
+    if (fpfc && fpfc->get_enabled())
+        return {0, fpfc->GetScroll()};
     return ret;
+}
+
+MAKE_HOOK_MATCH(
+    OculusVRHelper_TriggerHapticPulse,
+    &OculusVRHelper::TriggerHapticPulse,
+    void,
+    OculusVRHelper* self,
+    XR::XRNode node,
+    float duration,
+    float strength,
+    float frequency
+) {
+    if (fpfc && fpfc->get_enabled())
+        return;
+
+    OculusVRHelper_TriggerHapticPulse(self, node, duration, strength, frequency);
 }
 
 MAKE_HOOK_MATCH(UIKeyboardManager_OpenKeyboardFor, &UIKeyboardManager::OpenKeyboardFor, void, UIKeyboardManager* self, HMUI::InputFieldView* input) {
@@ -268,8 +289,9 @@ extern "C" void load() {
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(logger, DefaultScenesTransitionsFromInit_TransitionToNextScene);
-    // INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
+    INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
     INSTALL_HOOK(logger, VRInputModule_GetMousePointerEventData);
+    INSTALL_HOOK(logger, OculusVRHelper_TriggerHapticPulse);
     INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
     INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);
 #ifdef UNITY_2021

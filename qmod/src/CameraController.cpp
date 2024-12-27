@@ -12,8 +12,6 @@ DEFINE_TYPE(QRUE, CameraController);
 using namespace QRUE;
 using namespace UnityEngine;
 
-bool fpfcEnabled = true;
-
 float rotateSensitivity = 1;
 float moveSensitivity = 1;
 
@@ -57,11 +55,11 @@ GameObject* GetPauseMenu() {
 #endif
 
 void CameraController::OnEnable() {
-    fpfcEnabled = true;
     LOG_INFO("CameraController enable");
 
     movementF = {0, 0, 0};
     movementB = {0, 0, 0};
+    scroll = 0;
 
 #ifdef BEAT_SABER
     GetControllers();
@@ -69,7 +67,6 @@ void CameraController::OnEnable() {
 }
 
 void CameraController::OnDisable() {
-    fpfcEnabled = false;
     LOG_INFO("CameraController disable");
 
     click = false;
@@ -113,7 +110,7 @@ void CameraController::KeyDown(StringW key) {
             keyboardOpen->deleteButtonWasPressedEvent->Invoke();
         else if (key == "Enter")
             keyboardOpen->okButtonWasPressedEvent->Invoke();
-        else
+        else if (key->Length == 1)
             keyboardOpen->keyWasPressedEvent->Invoke(key[0]);
         return;
     }
@@ -193,6 +190,16 @@ void CameraController::MouseUp() {
 #ifdef BEAT_SABER
     click = false;
 #endif
+}
+
+void CameraController::AddScroll(float amount) {
+    scroll += amount;
+}
+
+float CameraController::GetScroll() {
+    float ret = scroll;
+    scroll = 0;
+    return ret;
 }
 
 #ifdef BEAT_SABER
