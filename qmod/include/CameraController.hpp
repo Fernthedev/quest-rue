@@ -11,7 +11,7 @@
 #include "HMUI/UIKeyboard.hpp"
 #endif
 
-DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour) {
     DECLARE_DEFAULT_CTOR();
 
     DECLARE_INSTANCE_METHOD(void, OnEnable);
@@ -20,31 +20,15 @@ DECLARE_CLASS_CODEGEN(QRUE, CameraController, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_METHOD(void, Rotate, UnityEngine::Vector2);
     DECLARE_INSTANCE_METHOD(void, KeyDown, StringW);
     DECLARE_INSTANCE_METHOD(void, KeyUp, StringW);
-    DECLARE_INSTANCE_METHOD(void, MouseDown);
-    DECLARE_INSTANCE_METHOD(void, MouseUp);
-    DECLARE_INSTANCE_METHOD(void, AddScroll, float);
-    DECLARE_INSTANCE_METHOD(float, GetScroll);
 
-#ifdef BEAT_SABER
-    DECLARE_INSTANCE_METHOD(void, GetControllers);
-    DECLARE_INSTANCE_METHOD(void, ReleaseControllers);
-
-    DECLARE_INSTANCE_FIELD(GlobalNamespace::VRController*, controller0);
-    DECLARE_INSTANCE_FIELD(GlobalNamespace::VRController*, controller1);
-#endif
    private:
     UnityEngine::Vector3 movementF;
     UnityEngine::Vector3 movementB;
-    float scroll;
-)
+};
 
 extern float rotateSensitivity;
 extern float moveSensitivity;
 
 #ifdef BEAT_SABER
-extern bool click;
-extern HMUI::UIKeyboard* keyboardOpen;
-
 UnityEngine::GameObject* GetHovered();
 #endif
-

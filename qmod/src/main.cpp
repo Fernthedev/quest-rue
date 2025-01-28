@@ -49,10 +49,6 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
     if (fpfc) {
         if (UnityW(mainCamera))
             mainCamera->set_enabled(!fpfc->get_enabled());
-#ifdef BEAT_SABER
-        if (fpfc->get_enabled())
-            fpfc->GetControllers();
-#endif
     }
 
     static bool loaded;
@@ -114,19 +110,6 @@ void onSceneLoad(SceneManagement::Scene scene, SceneManagement::LoadSceneMode) {
                     fpfc->KeyDown(key);
                 else
                     fpfc->KeyUp(key);
-            } else if (packet.starts_with("mse") && packet.size() >= 4) {
-                if (packet[3] == 'd')
-                    fpfc->MouseDown();
-                else if (packet[3] == 'u')
-                    fpfc->MouseUp();
-                else {
-                    float x = std::stoi(packet.substr(3, 4));
-                    float y = std::stoi(packet.substr(7, 4));
-                    fpfc->Rotate({x, y});
-                }
-            } else if (packet.starts_with("scr") && packet.size() >= 4) {
-                float scroll = std::stof(packet.substr(3, 5));
-                fpfc->AddScroll(scroll);
             } else if (packet.starts_with("start")) {
                 moveSensitivity = std::stof(packet.substr(5, 5));
                 rotateSensitivity = std::stof(packet.substr(10, 5));
@@ -159,17 +142,7 @@ extern "C" void setup(CModInfo* info) {
 }
 
 #ifdef BEAT_SABER
-#include "GlobalNamespace/BloomPrePass.hpp"
 #include "GlobalNamespace/DefaultScenesTransitionsFromInit.hpp"
-#include "GlobalNamespace/MainCamera.hpp"
-#include "GlobalNamespace/OculusVRHelper.hpp"
-#include "GlobalNamespace/UIKeyboardManager.hpp"
-#include "GlobalNamespace/VRPlatformUtils.hpp"
-#include "UnityEngine/Input.hpp"
-#include "VRUIControls/ButtonState.hpp"
-#include "VRUIControls/MouseButtonEventData.hpp"
-#include "VRUIControls/MouseState.hpp"
-#include "VRUIControls/VRInputModule.hpp"
 
 using namespace GlobalNamespace;
 
@@ -180,104 +153,11 @@ MAKE_HOOK_MATCH(
     DefaultScenesTransitionsFromInit* self,
     bool goStraightToMenu,
     bool goStraightToEditor,
-    bool goToRecordingToolScene
+    bool goToRecordingToolScene,
+    System::Action* onFinishShaderWarmup
 ) {
-    DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene);
+    DefaultScenesTransitionsFromInit_TransitionToNextScene(self, true, goStraightToEditor, goToRecordingToolScene, onFinishShaderWarmup);
 }
-
-MAKE_HOOK_MATCH(
-    VRInputModule_GetMousePointerEventData,
-    &VRUIControls::VRInputModule::GetMousePointerEventData,
-    VRUIControls::MouseState*,
-    VRUIControls::VRInputModule* self,
-    int id
-) {
-    using EventData = UnityEngine::EventSystems::PointerEventData;
-
-    static bool clickedLastFrame = false;
-
-    auto ret = VRInputModule_GetMousePointerEventData(self, id);
-    if (fpfc && fpfc->get_enabled()) {
-        auto state = EventData::FramePressState::NotChanged;
-        if (click && !clickedLastFrame)
-            state = EventData::FramePressState::Pressed;
-        if (!click && clickedLastFrame)
-            state = EventData::FramePressState::Released;
-        ret->GetButtonState(EventData::InputButton::Left)->eventData->buttonState = state;
-        clickedLastFrame = click;
-    } else
-        clickedLastFrame = false;
-    return ret;
-}
-
-MAKE_HOOK_MATCH(
-    VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation,
-    &VRPlatformUtils::GetAnyJoystickMaxAxisDefaultImplementation,
-    Vector2,
-    IVRPlatformHelper* self
-) {
-    auto ret = VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation(self);
-    if (fpfc && fpfc->get_enabled())
-        return {0, fpfc->GetScroll()};
-    return ret;
-}
-
-MAKE_HOOK_MATCH(
-    OculusVRHelper_TriggerHapticPulse,
-    &OculusVRHelper::TriggerHapticPulse,
-    void,
-    OculusVRHelper* self,
-    XR::XRNode node,
-    float duration,
-    float strength,
-    float frequency
-) {
-    if (fpfc && fpfc->get_enabled())
-        return;
-
-    OculusVRHelper_TriggerHapticPulse(self, node, duration, strength, frequency);
-}
-
-MAKE_HOOK_MATCH(UIKeyboardManager_OpenKeyboardFor, &UIKeyboardManager::OpenKeyboardFor, void, UIKeyboardManager* self, HMUI::InputFieldView* input) {
-
-    UIKeyboardManager_OpenKeyboardFor(self, input);
-
-    keyboardOpen = self->_uiKeyboard;
-}
-MAKE_HOOK_MATCH(UIKeyboardManager_CloseKeyboard, &UIKeyboardManager::CloseKeyboard, void, UIKeyboardManager* self) {
-
-    UIKeyboardManager_CloseKeyboard(self);
-
-    keyboardOpen = nullptr;
-}
-
-#ifdef UNITY_2021
-MAKE_HOOK_MATCH(MainCamera_Awake, &MainCamera::Awake, void, MainCamera* self) {
-
-    MainCamera_Awake(self);
-
-    if (!self->_camera || !streamer)
-        return;
-    mainCamera = self->_camera;
-    // self->_camera->enabled = false;
-
-    auto cam = streamer->GetComponent<Camera*>();
-    auto mainBloom = self->_camera->GetComponent<BloomPrePass*>();
-    if (!cam || !mainBloom)
-        return;
-
-    cam->gameObject->SetActive(false);
-    auto bloom = cam->gameObject->AddComponent<BloomPrePass*>();
-    if (!bloom)
-        bloom = cam->GetComponent<BloomPrePass*>();
-    bloom->_bloomPrePassEffectContainer = mainBloom->_bloomPrePassEffectContainer;
-    bloom->_bloomPrepassRenderer = mainBloom->_bloomPrepassRenderer;
-    bloom->_bloomPrePassRenderData = mainBloom->_bloomPrePassRenderData;
-    bloom->_mode = mainBloom->_mode;
-    bloom->_renderData = mainBloom->_renderData;
-    cam->gameObject->SetActive(true);
-}
-#endif
 #endif
 
 extern "C" void load() {
@@ -289,14 +169,6 @@ extern "C" void load() {
 #ifdef BEAT_SABER
     LOG_INFO("Installing hooks...");
     INSTALL_HOOK(logger, DefaultScenesTransitionsFromInit_TransitionToNextScene);
-    INSTALL_HOOK(logger, VRPlatformUtils_GetAnyJoystickMaxAxisDefaultImplementation);
-    INSTALL_HOOK(logger, VRInputModule_GetMousePointerEventData);
-    INSTALL_HOOK(logger, OculusVRHelper_TriggerHapticPulse);
-    INSTALL_HOOK(logger, UIKeyboardManager_OpenKeyboardFor);
-    INSTALL_HOOK(logger, UIKeyboardManager_CloseKeyboard);
-#ifdef UNITY_2021
-    INSTALL_HOOK(logger, MainCamera_Awake);
-#endif
     LOG_INFO("Installed hooks!");
 #endif
 

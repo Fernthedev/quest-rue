@@ -152,24 +152,12 @@ function Stream() {
     );
   };
 
-  const onMouseDown = (event: MouseEvent) => {
-    if (event.button === 0) socket?.send("msed");
-  };
-
-  const onMouseUp = (event: MouseEvent) => {
-    if (event.button === 0) socket?.send("mseu");
-  };
-
   const onKeyDown = (event: KeyboardEvent) => {
     socket?.send("keyd" + event.key);
   };
 
   const onKeyUp = (event: KeyboardEvent) => {
     socket?.send("keyu" + event.key);
-  };
-
-  const onWheel = (event: WheelEvent) => {
-    socket?.send("scr" + fformat(-event.deltaY / 50, 5));
   };
 
   document.addEventListener("pointerlockchange", () => {
@@ -181,18 +169,12 @@ function Stream() {
   createEffect(() => {
     if (pointerLocked()) {
       document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mousedown", onMouseDown);
-      document.addEventListener("mouseup", onMouseUp);
       document.addEventListener("keydown", onKeyDown);
       document.addEventListener("keyup", onKeyUp);
-      document.addEventListener("wheel", onWheel);
     } else {
       document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
-      document.removeEventListener("wheel", onWheel);
     }
   });
 

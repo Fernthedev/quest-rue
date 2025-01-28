@@ -5,7 +5,7 @@
 
 #include "classutils.hpp"
 #include "main.hpp"
-#include "paper/shared/string_convert.hpp"
+#include "paper2_scotland2/shared/string_convert.hpp"
 
 // array of arguments:
 // pointers to whatever data is stored, whether it be value or reference
