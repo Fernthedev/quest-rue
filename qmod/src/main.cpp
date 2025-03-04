@@ -182,4 +182,6 @@ extern "C" void load() {
     auto delegate = custom_types::MakeDelegate<Events::UnityAction_2<SceneManagement::Scene, SceneManagement::LoadSceneMode>*>(onSceneChanged);
 
     SceneManagement::SceneManager::add_sceneLoaded(delegate);
+
+    LOG_INFO("Completed load!");
 }
