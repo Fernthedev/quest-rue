@@ -162,7 +162,6 @@ MAKE_HOOK_MATCH(
 
 extern "C" void load() {
     il2cpp_functions::Init();
-    Hollywood::Init();
 
     custom_types::Register::AutoRegister();
 
