@@ -9,8 +9,9 @@ import { devSetup } from "./misc/dev";
 import "solid-devtools";
 import { initSocket } from "./misc/commands";
 import { cleanup_forward } from "./misc/adb";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { SettingsProvider } from "./components/Settings";
+const appWindow = getCurrentWebviewWindow()
 
 initSocket();
 initializeEvents();

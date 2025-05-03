@@ -2,52 +2,25 @@ import { render } from "solid-js/web";
 import "./styles.css";
 import "solid-devtools";
 import { createEffect, createSignal, onMount } from "solid-js";
-import WebSocketRS from "tauri-plugin-websocket-api";
-import { isTauri } from "./misc/dev";
 import { createPersistentSignal } from "./misc/utils";
 
 // todo: refactor websocket.ts
-async function connect(
-  url: string,
-  worker: Worker,
-): Promise<WebSocketRS | WebSocket> {
-  if (isTauri()) {
-    const socket = await WebSocketRS.connect(url);
-    console.log("rust socket connected");
-    socket.addListener((arg) => {
-      switch (arg.type) {
-        case undefined: // error: close without handshake
-        case "Close": {
-          console.log("socket closed");
-          break;
-        }
-        case "Binary": {
-          worker.postMessage({
-            type: "data",
-            val: new Uint8Array(arg.data),
-          });
-          break;
-        }
-      }
-    });
-    return socket;
-  } else {
-    return new Promise((resolve, reject) => {
-      const socket = new WebSocket(url);
-      socket.binaryType = "arraybuffer";
-      socket.onopen = () => {
-        console.log("browser socket connected");
-        resolve(socket);
-      };
-      socket.onerror = reject;
-      socket.onmessage = (event) => {
-        worker.postMessage({
-          type: "data",
-          val: new Uint8Array(event.data),
-        });
-      };
-    });
-  }
+async function connect(url: string, worker: Worker): Promise<WebSocket> {
+  return new Promise((resolve, reject) => {
+    const socket = new WebSocket(url);
+    socket.binaryType = "arraybuffer";
+    socket.onopen = () => {
+      console.log("browser socket connected");
+      resolve(socket);
+    };
+    socket.onerror = reject;
+    socket.onmessage = (event) => {
+      worker.postMessage({
+        type: "data",
+        val: new Uint8Array(event.data),
+      });
+    };
+  });
 }
 
 // todo: replace these with protobuf or at least json
@@ -92,7 +65,7 @@ function Stream() {
   );
 
   let canvas: HTMLCanvasElement | undefined;
-  let socket: WebSocketRS | WebSocket | undefined;
+  let socket: WebSocket | undefined;
 
   const [speed, setSpeed] = createPersistentSignal(
     "fpfcMoveSpeed",
@@ -139,8 +112,7 @@ function Stream() {
   doConnect();
 
   const refresh = () => {
-    if (socket instanceof WebSocketRS) socket.disconnect();
-    else socket?.close();
+    socket?.close();
     doConnect();
   };
 

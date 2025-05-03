@@ -1,5 +1,5 @@
 import { isTauri } from "./dev";
-import { Command } from "@tauri-apps/api/shell";
+import { Command } from "@tauri-apps/plugin-shell";
 
 let forwarded: [string, string] | undefined = undefined;
 
@@ -7,7 +7,7 @@ export async function has_adb(): Promise<string | undefined> {
   // todo: replace with webadb in this case? idk
   if (!isTauri()) return Promise.resolve(undefined);
 
-  const output = await new Command("adb", "--version").execute();
+  const output = await Command.create("adb", "--version").execute();
   if (output.code !== 0) return undefined;
   return output.stdout;
 }
@@ -15,7 +15,7 @@ export async function has_adb(): Promise<string | undefined> {
 export async function adb_devices(): Promise<[string, string][]> {
   if (!isTauri()) return Promise.resolve([]);
 
-  const output = await new Command("adb", "devices").execute();
+  const output = await Command.create("adb", "devices").execute();
   if (output.code !== 0) return [];
 
   const ret: [string, string][] = [];
@@ -25,13 +25,13 @@ export async function adb_devices(): Promise<[string, string][]> {
     if (split.length < 2 || split[1] !== "device") continue;
 
     const [id] = split;
-    const cmd = new Command("adb", [
+    const cmd = Command.create("adb", [
       "-s",
       id,
       "shell",
       "getprop ro.product.model",
     ]);
-    const name = await (await cmd.execute()).stdout;
+    const name = (await cmd.execute()).stdout;
 
     if (name.trim().length > 0) ret.push([id, name.trim()]);
   }
@@ -45,7 +45,7 @@ export async function adb_forward(device: string, port: string): Promise<void> {
   forwarded = [device, port];
 
   const tcp = `tcp:${port}`;
-  const cmd = new Command("adb", ["-s", device, "forward", tcp, tcp]);
+  const cmd = Command.create("adb", ["-s", device, "forward", tcp, tcp]);
   await cmd.execute();
 }
 
@@ -58,7 +58,7 @@ export async function adb_unforward(
   forwarded = undefined;
 
   const tcp = `tcp:${port}`;
-  const cmd = new Command("adb", ["-s", device, "forward", "--remove", tcp]);
+  const cmd = Command.create("adb", ["-s", device, "forward", "--remove", tcp]);
   await cmd.execute();
 }
 

@@ -1,11 +1,10 @@
-import { devPacketResponse, isTauri } from "./dev";
+import { devPacketResponse } from "./dev";
 import { PacketTypes, getEvents, ListenerCallbackFunction } from "./events";
 import { handleGameObjects } from "./handlers/gameobject";
 import { handleSafePtrAddresses } from "./handlers/variable_list";
 import { PacketWrapper } from "./proto/qrue";
 import { uniqueBigNumber } from "./utils";
 import { MockWebSocket, NodeWebSocket, QuestRUESocket } from "./websocket";
-import { TauriWebSocket } from "./websocket_tauri";
 
 // late init!
 export let socket: QuestRUESocket = undefined!;
@@ -14,9 +13,6 @@ export function initSocket() {
   if (import.meta.env.VITE_USE_QUEST_MOCK == "true") {
     socket = new MockWebSocket();
     console.log("Using mock web socket");
-  } else if (isTauri()) {
-    socket = new TauriWebSocket();
-    console.log("Using tauri web socket");
   } else {
     socket = new NodeWebSocket();
     console.log("Using node web socket");

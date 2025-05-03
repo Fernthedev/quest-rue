@@ -26,7 +26,8 @@ export abstract class QuestRUESocket {
     const promise = this.connectImpl(address, port, id);
     if (toastDisplay)
       this.loadingToast = toast.loading(`Connecting to ${toastDisplay}`);
-    return promise.catch(() => {
+    return promise.catch((e) => {
+      console.log(`connection failed: ${e}`);
       if (this.connectionId === id) this.onError();
       return false;
     });
