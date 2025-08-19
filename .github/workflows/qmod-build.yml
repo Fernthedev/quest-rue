@@ -51,6 +51,7 @@ jobs:
         uses: Fernthedev/qpm-action@v1
         with:
           workflow_token: ${{ secrets.GITHUB_TOKEN }}
+          package_path: ./qmod
           restore: true
           cache: true
           publish: false
