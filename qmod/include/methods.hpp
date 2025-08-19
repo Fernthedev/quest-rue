@@ -1,7 +1,7 @@
 #pragma once
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "protobuf/qrue.pb.h"
+#include "qrue.pb.h"
 
 namespace MethodUtils {
     ProtoDataPayload Run(MethodInfo const* method, ProtoDataPayload const& object, std::vector<ProtoDataPayload> const& args, std::string& error);

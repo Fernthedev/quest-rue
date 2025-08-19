@@ -1,7 +1,6 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "";
 
@@ -13,11 +12,11 @@ export interface PaperLogData {
   fileName: string;
   functionName: string;
   fileLine: number;
-  logTime: Date | undefined;
+  logTime: bigint;
 }
 
 function createBasePaperLogData(): PaperLogData {
-  return { str: "", threadId: BigInt("0"), tag: "", fileName: "", functionName: "", fileLine: 0, logTime: undefined };
+  return { str: "", threadId: BigInt("0"), tag: "", fileName: "", functionName: "", fileLine: 0, logTime: BigInt("0") };
 }
 
 export const PaperLogData = {
@@ -43,8 +42,11 @@ export const PaperLogData = {
     if (message.fileLine !== 0) {
       writer.uint32(48).int32(message.fileLine);
     }
-    if (message.logTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.logTime), writer.uint32(58).fork()).ldelim();
+    if (message.logTime !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.logTime) !== message.logTime) {
+        throw new globalThis.Error("value provided for field message.logTime of type uint64 too large");
+      }
+      writer.uint32(56).uint64(message.logTime.toString());
     }
     return writer;
   },
@@ -99,11 +101,11 @@ export const PaperLogData = {
           message.fileLine = reader.int32();
           continue;
         case 7:
-          if (tag !== 58) {
+          if (tag !== 56) {
             break;
           }
 
-          message.logTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.logTime = longToBigint(reader.uint64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -122,7 +124,7 @@ export const PaperLogData = {
       fileName: isSet(object.fileName) ? globalThis.String(object.fileName) : "",
       functionName: isSet(object.functionName) ? globalThis.String(object.functionName) : "",
       fileLine: isSet(object.fileLine) ? globalThis.Number(object.fileLine) : 0,
-      logTime: isSet(object.logTime) ? fromJsonTimestamp(object.logTime) : undefined,
+      logTime: isSet(object.logTime) ? BigInt(object.logTime) : BigInt("0"),
     };
   },
 
@@ -146,8 +148,8 @@ export const PaperLogData = {
     if (message.fileLine !== 0) {
       obj.fileLine = Math.round(message.fileLine);
     }
-    if (message.logTime !== undefined) {
-      obj.logTime = message.logTime.toISOString();
+    if (message.logTime !== BigInt("0")) {
+      obj.logTime = message.logTime.toString();
     }
     return obj;
   },
@@ -163,7 +165,7 @@ export const PaperLogData = {
     message.fileName = object.fileName ?? "";
     message.functionName = object.functionName ?? "";
     message.fileLine = object.fileLine ?? 0;
-    message.logTime = object.logTime ?? undefined;
+    message.logTime = object.logTime ?? BigInt("0");
     return message;
   },
 };
@@ -180,28 +182,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = BigInt(Math.trunc(date.getTime() / 1_000));
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (globalThis.Number(t.seconds.toString()) || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToBigint(long: Long) {
   return BigInt(long.toString());

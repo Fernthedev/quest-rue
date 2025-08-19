@@ -3,7 +3,6 @@
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/Time.hpp"
 #include "UnityEngine/Transform.hpp"
-#include "assets.hpp"
 #include "main.hpp"
 #include "sombrero/shared/FastVector2.hpp"
 #include "sombrero/shared/FastVector3.hpp"

@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "protobuf/qrue.pb.h"
+#include "qrue.pb.h"
 
 using ReceivePacketFunc = std::function<void(PacketWrapper const& packet)>;
 

@@ -1,66 +1,16 @@
-vcpkg_installed
-
-# Prerequisites
-*.d
-
-# clangd
-.cache
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
 # VSCode config stuff
 !.vscode/c_cpp_properties.json
 !.vscode/tasks.json
+.cache
 
-# NDK stuff
-out/
-Ll]ib/
-Ll]ibs/
-Oo]bj/
-Oo]bjs/
+# QPM stuff
 ndkpath.txt
-*.zip
 extern.cmake
 qpm_defines.cmake
-
 extern/
 
+# build stuff
 build/
-
 mod.json
-
-protobuf/*
-!*.proto
-
+*.zip
 *.qmod
-perf.data
-binary_cache
-report.html

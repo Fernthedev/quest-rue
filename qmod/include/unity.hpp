@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UnityEngine/GameObject.hpp"
-#include "protobuf/qrue.pb.h"
+#include "qrue.pb.h"
 
 ProtoGameObject ReadGameObject(UnityEngine::GameObject* obj);
 

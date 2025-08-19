@@ -19,11 +19,26 @@ jobs:
         working-directory: ./qmod
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         name: Checkout
         with:
           submodules: true
           lfs: true
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+
+      - name: Configure CPM cache path
+        run: |
+          echo "CPM_SOURCE_CACHE=$HOME/.cache/CPM" >> $GITHUB_ENV
+
+      - name: Cache CPM packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: ${{ runner.os }}-cpm-packages-${{ hashFiles('**/CMakeLists.txt', 'CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: |
+            ${{ runner.os }}-cpm-packages-
 
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
@@ -33,53 +48,15 @@ jobs:
           cat ./ndkpath.txt
 
       - name: QPM Action
-        uses: Fernthedev/qpm-action@main
+        uses: Fernthedev/qpm-action@v1
         with:
           workflow_token: ${{ secrets.GITHUB_TOKEN }}
-
-          restore: false
-          cache: false
-
+          restore: true
+          cache: true
           publish: false
-
-      - name: Restore
-        run: |
-          qpm restore
-
-      - name: List Post Restore
-        run: |
-          echo includes:
-          ls -la ./extern/includes
-          echo libs:
-          ls -la ./extern/libs
-
-      - name: Restore vcpkg_installed
-        id: cache-vcpkg-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: vcpkg_installed
-          key: ${{ runner.os }}-vcpkg_installed
-
-      - name: Create protobuf files
-        run: |
-          cd ..
-          pwsh install-deps.ps1
-          pwsh make-proto.ps1 -y
-
-      - name: List protobuf files
-        run: |
-          ls -la ./protobuf
-
-      - name: Save vcpkg_installed
-        id: cache-vcpkg-save
-        uses: actions/cache/save@v4
-        with:
-          path: vcpkg_installed
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build & create qmod
         run: |
-          export VCPKG_ROOT=${VCPKG_INSTALLATION_ROOT}
           qpm s qmod
 
       - name: Get Library Name

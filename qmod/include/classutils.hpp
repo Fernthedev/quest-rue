@@ -1,7 +1,7 @@
 #pragma once
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "protobuf/qrue.pb.h"
+#include "qrue.pb.h"
 
 size_t fieldTypeSize(Il2CppType const* type);
 
