@@ -17,6 +17,9 @@ jobs:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        working-directory: ./app
     steps:
       - uses: actions/checkout@v4
 
@@ -44,9 +47,11 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: ./app
 
       - uses: actions/upload-artifact@v4
         with:
           name: tauri-${{ matrix.platform }}
-          path: ./src-tauri/target/release/bundle/*
+          path: ./app/src-tauri/target/release/bundle/*
           if-no-files-found: error

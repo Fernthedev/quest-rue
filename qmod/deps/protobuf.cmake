@@ -88,9 +88,10 @@ protobuf_generate(
 target_include_directories(protos PUBLIC "${PROTOC_OUT_DIR}")
 target_link_libraries(protos PUBLIC protobuf::libprotobuf)
 
-set(TS_PROTO_PLUGIN "${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/.bin/protoc-gen-ts_proto.CMD")
+set(APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src")
+set(TS_PROTO_PLUGIN "${APP_DIR}/node_modules/.bin/protoc-gen-ts_proto.CMD")
 if(EXISTS ${TS_PROTO_PLUGIN})
-    set(PROTOC_OUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src/misc/proto/")
+    set(PROTOC_OUT_DIR "${APP_DIR}/src/misc/proto/")
     protobuf_generate(
         TARGET
         protos

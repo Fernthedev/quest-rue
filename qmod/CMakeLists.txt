@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 3.21)
 # include some defines automatically made by qpm
 include(qpm_defines.cmake)
 
-# override android platform for MediaCodec features
-set(ANDROID_PLATFORM 28)
-
 if(BEAT_SABER)
     message("Building for beat saber")
     add_compile_definitions(BEAT_SABER=\"\")

@@ -5,7 +5,7 @@
 A _bLAzINg FaSt_ (hopefully) desktop app built using Tauri and SolidJS. Like the PC Runtime Unity Editor, this is intended to allow for debugging and modifying Unity objects at runtime, but for games built with il2cpp. It also supports arbitrary C# objects, not only those from Unity.
 
 This is not Electron. 🦀
-Most of the app is built using TypeScript and Node. Tauri is mostly used as a package format, but the rust backend is used for some plugins.
+The app is built using TypeScript and Node. Tauri is mostly used as a package format, but is also needed to run some ADB commands.
 
 Currently on the roadmap:
 
@@ -37,25 +37,18 @@ Currently on the roadmap:
 
 ### Quest mod
 
-Install QPM and the normal quest mod build tools. [Install vcpkg](#installing-vcpkg), run `qpm restore`, and run `qpm s qmod`. To copy changes to your quest without a qmod, run `qpm s copy`.
+Install QPM and the normal quest mod build tools. In the `qmod` directory, run `qpm restore` and `qpm s qmod`. To copy changes to your quest without a qmod, run `qpm s copy`.
 
-#### Installing vcpkg
-
-Install [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd#1---set-up-vcpkg) and set the `VCPKG_ROOT` environment variable.
-
-Run `vcpkg install` in this directory. This will download protobuf and websocketpp for the qmod. It may take a while.
-
-Run `pwsh ./make-proto.ps1` to generate the protobuf headers.
-
-> Make sure there are no spaces in the paths to vcpkg or the project directory.
+> [!TIP]
+> For code editing, opening the `qmod` directory instead of the root project in your editor is recommended.
 
 ### Client app
 
 Install [pnpm](https://pnpm.io/installation) and [rust](https://www.rust-lang.org/tools/install).
 
-If modifying the protobuf schemas, [install vcpkg](#installing-vcpkg) and run `make-proto-ts.ps1` instead of `make-proto.ps1`.
+In the `app` directory, run `pnpm install` and `pnpm tauri dev`. This will start up both the web frontend and the rust backend, and launch the app when both are ready.
 
-Run `pnpm install` and `pnpm tauri dev`. This will start up both the web frontend and the rust backend, and launch the app when both are ready.
+If modifying the protobuf schemas, follow the steps to build the quest mod after running `pnpm install`, and the Typescript protobuf files will also be updated.
 
 #### Node frontend
 
@@ -65,8 +58,8 @@ Some features may not work without the backend.
 
 #### Debug builds
 
-As stated in the [Tauri docs](https://tauri.studio/docs/debugging/#create-a-debug-build), run `pnpm tauri build --debug` or `cargo tauri build --debug`
+As stated in the [Tauri docs](https://tauri.studio/docs/debugging/#create-a-debug-build), run `pnpm tauri build --debug`.
 
 #### Release builds
 
-`pnpm tauri build` or `cargo tauri build`
+`pnpm tauri build`.
